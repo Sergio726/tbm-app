@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ────────────────────────────────────────────────────────────
+   THE BUSINESS MULTIPLIER — Design System
+   Dark mode profesional / Navy + Electric Blue
+──────────────────────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    /* Fondos */
+    --bg-global:     #0A1628;
+    --bg-surface:    #0F1B2D;
+    --bg-elevated:   #162238;
+    --bg-card:       #111E30;
+
+    /* Bordes */
+    --border:        #1E3050;
+    --border-subtle: #152540;
+
+    /* Texto */
+    --text-primary:   #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted:     #64748B;
+
+    /* Acento */
+    --accent:        #2563EB;
+    --accent-light:  #3B82F6;
+    --accent-muted:  #1E3A8A;
+
+    /* Semáforo TBM */
+    --semaforo-verde:    #10B981;
+    --semaforo-amarillo: #F59E0B;
+    --semaforo-rojo:     #EF4444;
+
+    /* Semáforo fondos (versiones oscurecidas para badges) */
+    --semaforo-verde-bg:    rgba(16, 185, 129, 0.12);
+    --semaforo-amarillo-bg: rgba(245, 158, 11, 0.12);
+    --semaforo-rojo-bg:     rgba(239, 68, 68, 0.12);
+
+    /* Radios */
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-width: 240px;
+    --sidebar-collapsed: 64px;
+
+    /* shadcn/ui variables (dark) */
+    --background:   222.2 84% 4.9%;
+    --foreground:   210 40% 98%;
+    --card:         222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover:      222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary:      217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary:    217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted:        217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent-css:   217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive:  0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border-css:   217.2 32.6% 17.5%;
+    --input:        217.2 32.6% 17.5%;
+    --ring:         224.3 76.3% 48%;
+  }
+}
+
+/* ── Reset base ───────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-tbm-border;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    background-color: var(--bg-global);
+    color: var(--text-primary);
+    font-family: "Inter", system-ui, sans-serif;
+    @apply antialiased;
+  }
+
+  /* Scrollbar custom (dark) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+}
+
+/* ── Componentes TBM ──────────────────────────────────────── */
+@layer components {
+
+  /* Card estándar */
+  .tbm-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    @apply shadow-tbm-card;
+  }
+
+  /* Badge de semáforo */
+  .badge-verde {
+    background-color: var(--semaforo-verde-bg);
+    color: var(--semaforo-verde);
+    @apply text-xs font-semibold px-2 py-0.5 rounded-full;
+  }
+  .badge-amarillo {
+    background-color: var(--semaforo-amarillo-bg);
+    color: var(--semaforo-amarillo);
+    @apply text-xs font-semibold px-2 py-0.5 rounded-full;
+  }
+  .badge-rojo {
+    background-color: var(--semaforo-rojo-bg);
+    color: var(--semaforo-rojo);
+    @apply text-xs font-semibold px-2 py-0.5 rounded-full;
+  }
+
+  /* Input TBM */
+  .tbm-input {
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    @apply rounded-md px-3 py-2 text-sm w-full
+           focus:outline-none focus:ring-2 focus:ring-tbm-blue
+           placeholder:text-tbm-text-muted
+           transition-colors duration-150;
+  }
+
+  /* Botón primario */
+  .tbm-btn-primary {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    color: white;
+    @apply rounded-md px-4 py-2 text-sm font-semibold
+           hover:brightness-110 active:brightness-90
+           transition-all duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Sidebar item */
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-md
+           text-tbm-text-secondary text-sm font-medium
+           hover:bg-tbm-elevated hover:text-tbm-text-primary
+           transition-colors duration-150 cursor-pointer;
+  }
+  .sidebar-item.active {
+    background-color: var(--accent-muted);
+    color: var(--accent-light);
+    @apply font-semibold;
+  }
+
+  /* Semáforo dot */
+  .dot-verde    { @apply w-2.5 h-2.5 rounded-full bg-tbm-green; }
+  .dot-amarillo { @apply w-2.5 h-2.5 rounded-full bg-tbm-yellow; }
+  .dot-rojo     { @apply w-2.5 h-2.5 rounded-full bg-tbm-red; }
+}
+
+/* ── Utilidades ───────────────────────────────────────────── */
+@layer utilities {
+  .text-gradient-blue {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+}
