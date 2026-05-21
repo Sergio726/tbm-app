@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   RotateCcw,
@@ -13,8 +14,10 @@ import {
   Zap,
   LineChart,
   Bell,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
+import { createBrowserClient } from "@/lib/supabase/client";
 
 // ── Módulos TBM ──────────────────────────────────────────────
 type ModuleItem = {
@@ -53,6 +56,21 @@ export function Sidebar({
   userStatusLabel,
 }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      const supabase = createBrowserClient();
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch {
+      setSigningOut(false);
+    }
+  };
 
   return (
     <aside
@@ -216,28 +234,64 @@ export function Sidebar({
                 {userStatusLabel ?? "En sesión"}
               </p>
             </div>
-            <button
-              type="button"
-              aria-label="Notificaciones"
-              className="relative flex items-center justify-center transition-colors hover:text-white"
-              style={{ color: "rgba(255,255,255,0.55)" }}
-            >
-              <Bell size={16} strokeWidth={1.6} />
-              {/* Indicador de notificación */}
-              <span
-                aria-hidden
-                className="absolute"
+            <div className="flex items-center" style={{ gap: 6 }}>
+              <button
+                type="button"
+                aria-label="Notificaciones"
+                className="relative flex items-center justify-center transition-colors hover:text-white"
                 style={{
-                  top: -3,
-                  right: -3,
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: "#5b8aff",
-                  border: "2px solid #0a0e18",
+                  color: "rgba(255,255,255,0.55)",
+                  padding: 4,
+                  borderRadius: 6,
                 }}
-              />
-            </button>
+              >
+                <Bell size={16} strokeWidth={1.6} />
+                {/* Indicador de notificación */}
+                <span
+                  aria-hidden
+                  className="absolute"
+                  style={{
+                    top: 0,
+                    right: 0,
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "#5b8aff",
+                    border: "2px solid #0a0e18",
+                  }}
+                />
+              </button>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                disabled={signingOut}
+                aria-label="Cerrar sesión"
+                title="Cerrar sesión"
+                className="flex items-center justify-center transition-colors hover:bg-red-400/10 hover:text-red-400 disabled:opacity-50"
+                style={{
+                  color: "rgba(255,255,255,0.55)",
+                  padding: 4,
+                  borderRadius: 6,
+                  cursor: signingOut ? "not-allowed" : "pointer",
+                }}
+              >
+                {signingOut ? (
+                  <span
+                    className="animate-spin"
+                    aria-hidden
+                    style={{
+                      width: 14,
+                      height: 14,
+                      borderRadius: "50%",
+                      border: "2px solid currentColor",
+                      borderTopColor: "transparent",
+                    }}
+                  />
+                ) : (
+                  <LogOut size={16} strokeWidth={1.6} />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

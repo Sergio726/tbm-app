@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
 import type { KPI } from "@/types/database";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Pencil, TrendingUp, TrendingDown, Minus } from "lucide-react";
+
+const MONO: CSSProperties = {
+  fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
+};
 
 interface Props {
   kpi: KPI;
 }
 
+/**
+ * KPI card — estilo Aurora: gradiente sutil, delta badge, big number,
+ * progress bar tintada por semáforo.
+ */
 export default function KpiCard({ kpi }: Props) {
   const supabase = createBrowserClient();
   const [editing, setEditing] = useState(false);
@@ -19,18 +26,20 @@ export default function KpiCard({ kpi }: Props) {
 
   const pct =
     kpi.weekly_target > 0
-      ? Math.round((currentValue / kpi.weekly_target) * 100)
+      ? Math.min(Math.round((currentValue / kpi.weekly_target) * 100), 999)
       : 0;
 
-  const semaforo =
+  const semaforo: "verde" | "amarillo" | "rojo" =
     pct >= 100 ? "verde" : pct >= 85 ? "amarillo" : "rojo";
 
-  const colorMap = {
-    verde:    { bar: "bg-tbm-green",  text: "text-tbm-green",  border: "border-tbm-green/30"  },
-    amarillo: { bar: "bg-tbm-yellow", text: "text-tbm-yellow", border: "border-tbm-yellow/30" },
-    rojo:     { bar: "bg-tbm-red",    text: "text-tbm-red",    border: "border-tbm-red/30"    },
-  };
-  const colors = colorMap[semaforo];
+  const TONE = {
+    verde: "#34d399",
+    amarillo: "#fbbf24",
+    rojo: "#f87171",
+  }[semaforo];
+
+  const DeltaIcon =
+    pct >= 100 ? TrendingUp : pct >= 85 ? Minus : TrendingDown;
 
   const handleSave = async () => {
     const num = parseFloat(value);
@@ -47,84 +56,183 @@ export default function KpiCard({ kpi }: Props) {
     setSaving(false);
   };
 
-  const Icon =
-    pct >= 100 ? TrendingUp : pct >= 85 ? Minus : TrendingDown;
-
   return (
-    <div className={cn("tbm-card p-4 border", colors.border)}>
-      {/* Header */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-tbm-text-muted uppercase tracking-wide truncate">
-            {kpi.type === "leading" ? "Leading" : "Lagging"}
-          </p>
-          <p className="text-sm font-medium text-white truncate">{kpi.name}</p>
-        </div>
-        <Icon className={cn("w-4 h-4 flex-shrink-0 ml-2 mt-0.5", colors.text)} />
-      </div>
-
-      {/* Valor actual vs meta */}
-      <div className="flex items-end gap-1 mb-2">
-        {editing ? (
-          <div className="flex items-center gap-2 w-full">
-            <input
-              type="number"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              className="tbm-input text-lg font-bold w-24 py-1"
-              autoFocus
-            />
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="text-xs text-tbm-blue hover:underline"
-            >
-              {saving ? "..." : "Guardar"}
-            </button>
-            <button
-              onClick={() => {
-                setValue(String(currentValue));
-                setEditing(false);
-              }}
-              className="text-xs text-tbm-text-muted hover:text-white"
-            >
-              Cancelar
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setEditing(true)}
-            className="group flex items-end gap-1 hover:opacity-80 transition-opacity"
-            title="Actualizar valor"
-          >
-            <span className={cn("text-2xl font-bold", colors.text)}>
-              {currentValue}
-              {kpi.unit ? (
-                <span className="text-sm font-normal text-tbm-text-muted ml-0.5">
-                  {kpi.unit}
-                </span>
-              ) : null}
-            </span>
-            <span className="text-tbm-text-muted text-sm mb-0.5">
-              / {kpi.weekly_target}
-              {kpi.unit ?? ""}
-            </span>
-            <span className="text-xs text-tbm-blue opacity-0 group-hover:opacity-100 ml-1 mb-0.5 transition-opacity">
-              ✏️
-            </span>
-          </button>
-        )}
-      </div>
-
-      {/* Barra de progreso */}
-      <div className="h-1.5 bg-tbm-border rounded-full overflow-hidden">
+    <div
+      className="relative transition-all hover:border-white/10"
+      style={{
+        padding: "18px 20px",
+        borderRadius: 14,
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+        border: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
+      {/* Header: label + delta badge */}
+      <div
+        className="flex items-baseline justify-between"
+        style={{ marginBottom: 14 }}
+      >
         <div
-          className={cn("h-full rounded-full transition-all duration-500", colors.bar)}
-          style={{ width: `${Math.min(pct, 100)}%` }}
-        />
+          className="uppercase truncate"
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: "rgba(255,255,255,0.65)",
+            letterSpacing: 1,
+            maxWidth: "70%",
+          }}
+        >
+          {kpi.name}
+        </div>
+        <div
+          className="flex items-center"
+          style={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: TONE,
+            gap: 4,
+            padding: "2px 8px",
+            borderRadius: 99,
+            background: `${TONE}14`,
+            border: `1px solid ${TONE}30`,
+          }}
+        >
+          <DeltaIcon size={10} strokeWidth={2.4} />
+          {pct}%
+        </div>
       </div>
-      <p className={cn("text-xs mt-1 font-medium", colors.text)}>{pct}%</p>
+
+      {/* Big number + target */}
+      <div
+        className="flex items-end justify-between"
+        style={{ gap: 16, marginBottom: 14 }}
+      >
+        <div>
+          {editing ? (
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSave()}
+                className="tbm-input"
+                style={{ width: 100, padding: "4px 8px", fontSize: 20, fontWeight: 700 }}
+                autoFocus
+              />
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="text-xs hover:underline"
+                style={{ color: "#9fb9ff" }}
+              >
+                {saving ? "..." : "Guardar"}
+              </button>
+              <button
+                onClick={() => {
+                  setValue(String(currentValue));
+                  setEditing(false);
+                }}
+                className="text-xs hover:text-white"
+                style={{ color: "rgba(255,255,255,0.5)" }}
+              >
+                Cancelar
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="group flex items-baseline transition-opacity hover:opacity-80"
+              style={{ gap: 6 }}
+              title="Actualizar valor"
+            >
+              <span
+                style={{
+                  fontSize: 30,
+                  fontWeight: 700,
+                  color: "#fff",
+                  letterSpacing: -0.6,
+                  lineHeight: 1,
+                }}
+              >
+                {currentValue}
+                {kpi.unit && (
+                  <span
+                    style={{
+                      fontSize: 14,
+                      color: "rgba(255,255,255,0.5)",
+                      marginLeft: 2,
+                      fontWeight: 400,
+                    }}
+                  >
+                    {kpi.unit}
+                  </span>
+                )}
+              </span>
+              <span
+                style={{
+                  ...MONO,
+                  fontSize: 13,
+                  color: "rgba(255,255,255,0.4)",
+                }}
+              >
+                / {kpi.weekly_target}
+                {kpi.unit ?? ""}
+              </span>
+              <span
+                className="opacity-0 transition-opacity group-hover:opacity-100"
+                style={{ color: "#9fb9ff" }}
+              >
+                <Pencil size={12} />
+              </span>
+            </button>
+          )}
+          <div
+            style={{
+              fontSize: 11.5,
+              color: "rgba(255,255,255,0.45)",
+              marginTop: 4,
+            }}
+          >
+            {kpi.type === "leading" ? "Leading" : "Lagging"}
+            {kpi.entered_at && " · actualizado"}
+          </div>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div>
+        <div
+          style={{
+            height: 4,
+            background: "rgba(255,255,255,0.06)",
+            borderRadius: 99,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            className="transition-all duration-500"
+            style={{
+              width: `${Math.min(pct, 100)}%`,
+              height: "100%",
+              background: `linear-gradient(90deg, ${TONE}88, ${TONE})`,
+              borderRadius: 99,
+            }}
+          />
+        </div>
+        <div
+          className="flex justify-between"
+          style={{
+            ...MONO,
+            marginTop: 5,
+            fontSize: 10.5,
+            color: "rgba(255,255,255,0.4)",
+          }}
+        >
+          <span>{pct}% del objetivo</span>
+          <span>semana actual</span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -230,3 +230,29 @@ input.tbm-range:focus {
 }
 .tbm-slide-right { animation: tbm-slide-in-right .35s cubic-bezier(.4,0,.2,1) both; }
 .tbm-slide-left  { animation: tbm-slide-in-left  .35s cubic-bezier(.4,0,.2,1) both; }
+
+/* ── Dashboard — pulse + live strip ───────────────────────── */
+@keyframes tbm-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+@keyframes tbm-live {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+.tbm-pulse-dot { animation: tbm-pulse 1.6s ease-in-out infinite; }
+.tbm-live-strip { animation: tbm-live 2s ease-in-out infinite; }
+
+/* ── Login split-screen — responsive ──────────────────────── */
+@media (max-width: 900px) {
+  .login-split {
+    flex-direction: column;
+  }
+  .login-split > div:first-child {
+    padding: 28px 24px !important;
+    min-height: 380px;
+  }
+  .login-split > div:last-child {
+    padding: 32px 24px !important;
+  }
+}

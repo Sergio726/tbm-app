@@ -3,12 +3,19 @@
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { AuthCard } from "@/components/auth/auth-card";
 
 export default function AcceptInvitePage() {
   return (
-    <Suspense fallback={<div className="text-center text-tbm-text-secondary p-8">Cargando...</div>}>
-      <AcceptInviteContent />
-    </Suspense>
+    <AuthCard>
+      <Suspense
+        fallback={
+          <div className="text-center text-tbm-text-secondary p-8">Cargando...</div>
+        }
+      >
+        <AcceptInviteContent />
+      </Suspense>
+    </AuthCard>
   );
 }
 

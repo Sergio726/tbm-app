@@ -1,37 +1,758 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
-import { SCORECARD_AREAS } from "@/types/database";
-import { cn } from "@/lib/utils";
+import { SCORECARD_AREAS, type Scorecard, type ScorecardKey } from "@/types/database";
 import EnergySelector from "@/components/dashboard/EnergySelector";
 import KpiCard from "@/components/dashboard/KpiCard";
+import {
+  Sparkles,
+  Search,
+  Bell,
+  Target,
+  RotateCcw,
+  Zap,
+  Users,
+  TrendingUp,
+  ArrowRight,
+  Plus,
+  Shield,
+  Send,
+  MessageSquare,
+  Workflow,
+  Clock,
+  CircleDollarSign,
+  Heart,
+  Sunrise,
+  Sun,
+  Sunset,
+  Check,
+  Play,
+  ChevronRight,
+  type LucideIcon,
+} from "lucide-react";
+import type { CSSProperties, ReactNode } from "react";
 
-// ── Helper: semáforo por score 1–5 ─────────────────────────────────────────
-function semaforoScore(score: number | null): {
-  colorClass: string;
-  dotColor: string;
-  label: string;
-} {
-  if (!score)
-    return { colorClass: "", dotColor: "bg-tbm-border", label: "Sin dato" };
-  if (score >= 4)
-    return {
-      colorClass: "bg-tbm-green/10 border-tbm-green/30",
-      dotColor: "bg-tbm-green",
-      label: "Bien",
-    };
-  if (score === 3)
-    return {
-      colorClass: "bg-tbm-yellow/10 border-tbm-yellow/30",
-      dotColor: "bg-tbm-yellow",
-      label: "Regular",
-    };
-  return {
-    colorClass: "bg-tbm-red/10 border-tbm-red/30",
-    dotColor: "bg-tbm-red",
-    label: "Crítico",
-  };
+// =============================================================
+// Helpers
+// =============================================================
+const MONO: CSSProperties = {
+  fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
+};
+
+type ScoreTone = { label: string; color: string };
+function scoreTone(v: number | null): ScoreTone {
+  if (!v) return { label: "Sin dato", color: "#64748b" };
+  if (v <= 1) return { label: "Crítico", color: "#f87171" };
+  if (v <= 2) return { label: "Bajo", color: "#fb923c" };
+  if (v <= 3) return { label: "Regular", color: "#fbbf24" };
+  if (v <= 4) return { label: "Bien", color: "#a3e635" };
+  return { label: "Excelente", color: "#34d399" };
 }
 
+const SCORECARD_ICONS: Record<ScorecardKey, LucideIcon> = {
+  score_liderazgo: Shield,
+  score_equipo: Users,
+  score_delegacion: Send,
+  score_comunicacion: MessageSquare,
+  score_procesos: Workflow,
+  score_tiempo: Clock,
+  score_dinero: CircleDollarSign,
+  score_cultura: Heart,
+};
+
+function greetingForHour(h: number) {
+  if (h < 6) return "Buenas noches";
+  if (h < 12) return "Buenos días";
+  if (h < 19) return "Buenas tardes";
+  return "Buenas noches";
+}
+
+// =============================================================
+// Hero Strip — 4 tiles (Plan 90D, Sprint, Multiplicador, Equipo)
+// Datos placeholder hasta tener Plan 90D real en Sprint 2+
+// =============================================================
+function HeroTile({
+  Icon,
+  label,
+  value,
+  sub,
+  accent,
+  tone,
+  children,
+}: {
+  Icon: LucideIcon;
+  label: string;
+  value: string;
+  sub?: string;
+  accent: string;
+  tone?: "accent";
+  children?: ReactNode;
+}) {
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        flex: 1,
+        padding: "18px 20px",
+        borderRadius: 14,
+        background:
+          tone === "accent"
+            ? "linear-gradient(135deg, rgba(91,138,255,0.16) 0%, rgba(91,138,255,0.04) 100%)"
+            : "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+        border:
+          tone === "accent"
+            ? "1px solid rgba(91,138,255,0.28)"
+            : "1px solid rgba(255,255,255,0.06)",
+        boxShadow: tone === "accent" ? "0 8px 24px rgba(91,138,255,0.16)" : "none",
+      }}
+    >
+      <div
+        className="flex items-center"
+        style={{ gap: 8, marginBottom: 10 }}
+      >
+        <div
+          className="flex items-center justify-center"
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 8,
+            background: `${accent}1f`,
+            border: `1px solid ${accent}33`,
+            color: accent,
+          }}
+        >
+          <Icon size={14} strokeWidth={2} />
+        </div>
+        <div
+          className="uppercase"
+          style={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: "rgba(255,255,255,0.55)",
+            letterSpacing: 1.2,
+          }}
+        >
+          {label}
+        </div>
+      </div>
+      <div
+        style={{
+          fontSize: 28,
+          fontWeight: 700,
+          letterSpacing: -0.6,
+          color: "#fff",
+          lineHeight: 1.1,
+        }}
+      >
+        {value}
+      </div>
+      {sub && (
+        <div
+          style={{
+            fontSize: 12,
+            color: "rgba(255,255,255,0.5)",
+            marginTop: 6,
+          }}
+        >
+          {sub}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}
+
+function HeroStrip() {
+  return (
+    <div className="flex" style={{ gap: 12, marginBottom: 32 }}>
+      <HeroTile
+        Icon={Target}
+        label="Plan 90D"
+        value="73 días"
+        accent="#5b8aff"
+        tone="accent"
+      >
+        <div
+          style={{
+            height: 4,
+            background: "rgba(255,255,255,0.06)",
+            borderRadius: 99,
+            marginTop: 10,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: "19%",
+              height: "100%",
+              background: "linear-gradient(90deg, #5b8aff, #34d399)",
+              borderRadius: 99,
+            }}
+          />
+        </div>
+        <div
+          className="flex justify-between"
+          style={{
+            ...MONO,
+            marginTop: 6,
+            fontSize: 10.5,
+            color: "rgba(255,255,255,0.45)",
+          }}
+        >
+          <span>día 17/90</span>
+          <span>19%</span>
+        </div>
+      </HeroTile>
+
+      <HeroTile
+        Icon={RotateCcw}
+        label="Sprint actual"
+        value="Sprint 2"
+        sub="día 4 de 14 · cierra viernes"
+        accent="#34d399"
+      />
+
+      <HeroTile
+        Icon={Zap}
+        label="Multiplicador"
+        value="2.3×"
+        accent="#fbbf24"
+      >
+        <div
+          className="flex items-center"
+          style={{ gap: 6, marginTop: 6, fontSize: 12 }}
+        >
+          <span
+            className="flex items-center"
+            style={{ color: "#34d399", gap: 3, fontWeight: 600 }}
+          >
+            <TrendingUp size={11} strokeWidth={2.4} />
+            +0.5×
+          </span>
+          <span style={{ color: "rgba(255,255,255,0.45)" }}>vs semana pasada</span>
+        </div>
+      </HeroTile>
+
+      <HeroTile
+        Icon={Users}
+        label="Equipo hoy"
+        value="8 / 12"
+        sub="activos esta mañana"
+        accent="#a78bfa"
+      >
+        <div className="flex" style={{ marginTop: 8 }}>
+          {[
+            ["#f87171", "A"],
+            ["#5b8aff", "L"],
+            ["#34d399", "M"],
+            ["#fbbf24", "C"],
+            ["#a78bfa", "P"],
+          ].map(([c, i], idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-center text-white"
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: "50%",
+                background: c,
+                border: "2px solid #0a0e1a",
+                marginLeft: idx === 0 ? 0 : -6,
+                fontSize: 10,
+                fontWeight: 600,
+              }}
+            >
+              {i}
+            </div>
+          ))}
+          <div
+            className="flex items-center justify-center"
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.06)",
+              border: "2px solid #0a0e1a",
+              marginLeft: -6,
+              fontSize: 10,
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.55)",
+            }}
+          >
+            +3
+          </div>
+        </div>
+      </HeroTile>
+    </div>
+  );
+}
+
+// =============================================================
+// Scorecard cards
+// =============================================================
+function TrendDots({ values }: { values: number[] }) {
+  return (
+    <div className="flex items-end" style={{ gap: 4, height: 22 }}>
+      {values.map((v, i) => {
+        const { color } = scoreTone(v);
+        const h = 6 + (v / 5) * 16;
+        return (
+          <div
+            key={i}
+            style={{
+              width: 4,
+              height: h,
+              borderRadius: 2,
+              background: color,
+              opacity: 0.35 + (i / values.length) * 0.65,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function ScoreCard({
+  Icon,
+  label,
+  score,
+  trend,
+}: {
+  Icon: LucideIcon;
+  label: string;
+  score: number | null;
+  trend: number[];
+}) {
+  const { color, label: toneLabel } = scoreTone(score);
+  const isHigh = (score ?? 0) >= 4;
+  return (
+    <div
+      className="relative overflow-hidden transition-all"
+      style={{
+        padding: "16px 18px",
+        borderRadius: 14,
+        background: isHigh
+          ? "linear-gradient(135deg, rgba(52,211,153,0.10) 0%, rgba(52,211,153,0.02) 100%)"
+          : "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+        border: isHigh
+          ? "1px solid rgba(52,211,153,0.25)"
+          : "1px solid rgba(255,255,255,0.06)",
+        boxShadow: isHigh ? "0 6px 18px rgba(52,211,153,0.10)" : "none",
+      }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between"
+        style={{ marginBottom: 14 }}
+      >
+        <div className="flex items-center" style={{ gap: 9 }}>
+          <div
+            className="flex items-center justify-center"
+            style={{
+              width: 26,
+              height: 26,
+              borderRadius: 7,
+              background: `${color}1c`,
+              border: `1px solid ${color}33`,
+              color,
+            }}
+          >
+            <Icon size={13} strokeWidth={2} />
+          </div>
+          <div
+            className="uppercase"
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.7)",
+              letterSpacing: 1.2,
+            }}
+          >
+            {label}
+          </div>
+        </div>
+        <div
+          style={{
+            width: 7,
+            height: 7,
+            borderRadius: "50%",
+            background: color,
+            boxShadow: `0 0 8px ${color}aa`,
+          }}
+        />
+      </div>
+
+      {/* Score + trend */}
+      <div
+        className="flex items-end justify-between"
+        style={{ marginBottom: 12 }}
+      >
+        <div className="flex items-baseline" style={{ gap: 2 }}>
+          <span
+            style={{
+              fontSize: 38,
+              fontWeight: 700,
+              color: "#fff",
+              letterSpacing: -1,
+              lineHeight: 1,
+            }}
+          >
+            {score ?? "–"}
+          </span>
+          <span
+            style={{
+              ...MONO,
+              fontSize: 14,
+              color: "rgba(255,255,255,0.4)",
+            }}
+          >
+            /5
+          </span>
+        </div>
+        <TrendDots values={trend} />
+      </div>
+
+      {/* Footer */}
+      <div
+        className="flex items-center justify-between"
+        style={{
+          paddingTop: 10,
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+        }}
+      >
+        <div style={{ fontSize: 12, color, fontWeight: 600 }}>{toneLabel}</div>
+        <div
+          style={{
+            ...MONO,
+            fontSize: 10.5,
+            color: "rgba(255,255,255,0.4)",
+          }}
+        >
+          5 sem
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================
+// Rituales — 3 cards (Pre-game ✓ done, Warm Up live, Cool Down upcoming)
+// Placeholder hasta tener Rituales reales en Sprint 2+
+// =============================================================
+type RitualStatus = "done" | "live" | "upcoming";
+type RitualDef = {
+  id: string;
+  title: string;
+  desc: string;
+  Icon: LucideIcon;
+  time: string;
+  sprint: string;
+  status: RitualStatus;
+  statusLabel: string;
+  duration?: string;
+  solo?: boolean;
+  participants?: number;
+  total?: number;
+};
+
+const RITUALS: RitualDef[] = [
+  {
+    id: "pregame",
+    title: "Pre-game",
+    desc: "Rutina matutina personal",
+    Icon: Sunrise,
+    time: "06:30 – 07:00",
+    sprint: "Sprint 2",
+    status: "done",
+    statusLabel: "Completado",
+    duration: "24 min",
+    solo: true,
+  },
+  {
+    id: "warmup",
+    title: "Warm Up",
+    desc: "Inicio del día con el equipo",
+    Icon: Sun,
+    time: "09:00 – 09:30",
+    sprint: "Sprint 2",
+    status: "live",
+    statusLabel: "En vivo · 12 min restantes",
+    participants: 8,
+    total: 12,
+  },
+  {
+    id: "cooldown",
+    title: "Cool Down",
+    desc: "Cierre y Victory Log",
+    Icon: Sunset,
+    time: "17:30 – 18:00",
+    sprint: "Sprint 2",
+    status: "upcoming",
+    statusLabel: "Programado",
+    participants: 0,
+    total: 12,
+  },
+];
+
+const STATUS_STYLES: Record<RitualStatus, { color: string; cta: string; CTAIcon: LucideIcon }> = {
+  done: { color: "#34d399", cta: "Ver resumen", CTAIcon: ArrowRight },
+  live: { color: "#5b8aff", cta: "Unirme ahora", CTAIcon: Play },
+  upcoming: { color: "#fbbf24", cta: "Preparar", CTAIcon: ChevronRight },
+};
+
+function Avatars({ count, total }: { count: number; total: number }) {
+  const names = ["A", "L", "M", "C", "P", "R", "S", "D"];
+  const colors = [
+    "#f87171",
+    "#5b8aff",
+    "#34d399",
+    "#fbbf24",
+    "#a78bfa",
+    "#f472b6",
+    "#06b6d4",
+    "#fb923c",
+  ];
+  const shown = Math.min(count, 4);
+  return (
+    <div className="flex items-center" style={{ gap: 8 }}>
+      <div className="flex">
+        {names.slice(0, shown).map((n, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-center text-white"
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: "50%",
+              background: colors[i],
+              border: "2px solid #0a0e1a",
+              marginLeft: i === 0 ? 0 : -6,
+              fontSize: 10,
+              fontWeight: 600,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
+            }}
+          >
+            {n}
+          </div>
+        ))}
+        {count > shown && (
+          <div
+            className="flex items-center justify-center"
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.06)",
+              border: "2px solid #0a0e1a",
+              marginLeft: -6,
+              fontSize: 9.5,
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.55)",
+            }}
+          >
+            +{count - shown}
+          </div>
+        )}
+      </div>
+      <span
+        style={{
+          ...MONO,
+          fontSize: 11.5,
+          color: "rgba(255,255,255,0.5)",
+        }}
+      >
+        {count}/{total}
+      </span>
+    </div>
+  );
+}
+
+function RitualCard({ ritual }: { ritual: RitualDef }) {
+  const isLive = ritual.status === "live";
+  const isDone = ritual.status === "done";
+  const s = STATUS_STYLES[ritual.status];
+  const { Icon, CTAIcon } = { Icon: ritual.Icon, CTAIcon: s.CTAIcon };
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        padding: "20px 22px",
+        borderRadius: 14,
+        background: isLive
+          ? "linear-gradient(135deg, rgba(91,138,255,0.16) 0%, rgba(91,138,255,0.04) 100%)"
+          : "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+        border: isLive ? "1px solid rgba(91,138,255,0.35)" : "1px solid rgba(255,255,255,0.06)",
+        boxShadow: isLive ? "0 10px 30px rgba(91,138,255,0.18)" : "none",
+      }}
+    >
+      {/* Live pulse strip */}
+      {isLive && (
+        <div
+          className="tbm-live-strip absolute left-0 right-0"
+          style={{
+            top: 0,
+            height: 2,
+            background: "linear-gradient(90deg, transparent, #5b8aff, transparent)",
+          }}
+        />
+      )}
+
+      <div
+        className="flex items-start justify-between"
+        style={{ marginBottom: 14 }}
+      >
+        <div className="flex items-center" style={{ gap: 12 }}>
+          <div
+            className="flex items-center justify-center"
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 11,
+              background: `${s.color}1c`,
+              border: `1px solid ${s.color}40`,
+              color: s.color,
+            }}
+          >
+            <Icon size={18} strokeWidth={1.8} />
+          </div>
+          <div>
+            <div
+              className="flex items-center"
+              style={{ fontSize: 15.5, fontWeight: 600, color: "#fff", gap: 8 }}
+            >
+              {ritual.title}
+              {isDone && (
+                <span
+                  className="flex items-center justify-center"
+                  style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: "50%",
+                    background: "#34d399",
+                    color: "#0a0e1a",
+                  }}
+                >
+                  <Check size={10} strokeWidth={3} />
+                </span>
+              )}
+            </div>
+            <div
+              style={{
+                fontSize: 12.5,
+                color: "rgba(255,255,255,0.55)",
+                marginTop: 2,
+              }}
+            >
+              {ritual.desc}
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            padding: "3px 10px",
+            borderRadius: 99,
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            fontSize: 10.5,
+            fontWeight: 600,
+            color: "rgba(255,255,255,0.6)",
+            letterSpacing: 0.4,
+          }}
+        >
+          {ritual.sprint}
+        </div>
+      </div>
+
+      {/* Meta */}
+      <div
+        className="flex items-center"
+        style={{
+          gap: 14,
+          paddingTop: 14,
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+        }}
+      >
+        <div
+          className="flex items-center"
+          style={{
+            ...MONO,
+            gap: 6,
+            color: "rgba(255,255,255,0.6)",
+            fontSize: 12,
+          }}
+        >
+          <Clock size={12} />
+          {ritual.time}
+        </div>
+        {ritual.solo ? (
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>· Personal</div>
+        ) : (
+          <Avatars count={ritual.participants ?? 0} total={ritual.total ?? 0} />
+        )}
+      </div>
+
+      {/* Status + CTA */}
+      <div
+        className="flex items-center justify-between"
+        style={{ marginTop: 14 }}
+      >
+        <div
+          className="flex items-center"
+          style={{
+            gap: 7,
+            fontSize: 12,
+            color: s.color,
+            fontWeight: 600,
+          }}
+        >
+          <span
+            className={isLive ? "tbm-pulse-dot" : ""}
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: s.color,
+              boxShadow: `0 0 8px ${s.color}`,
+            }}
+          />
+          {ritual.statusLabel}
+          {isDone && ritual.duration && (
+            <span style={{ color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>
+              · {ritual.duration}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          className="flex items-center transition-all"
+          style={{
+            gap: 6,
+            padding: "6px 12px",
+            borderRadius: 8,
+            border: isLive ? "none" : "1px solid rgba(255,255,255,0.08)",
+            background: isLive
+              ? "linear-gradient(180deg, #4f86ff, #2c5fe6)"
+              : "transparent",
+            color: "#fff",
+            fontSize: 12.5,
+            fontWeight: 600,
+            cursor: "pointer",
+            boxShadow: isLive
+              ? "0 4px 12px rgba(54,114,255,0.32), inset 0 1px 0 rgba(255,255,255,0.2)"
+              : "none",
+          }}
+        >
+          {s.cta}
+          <CTAIcon size={12} strokeWidth={2.2} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================
+// Página
+// =============================================================
 export default async function DashboardPage() {
   const supabase = await createServerClient();
 
@@ -40,24 +761,20 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Cargar perfil + empresa
+  // Perfil + empresa
   const { data: profile } = await supabase
     .from("profiles")
     .select("*, companies(*)")
     .eq("id", user.id)
     .single();
-
   if (!profile) redirect("/login");
 
-  // Redirigir al onboarding si no lo completó
-  if (!profile.onboarding_completed) {
-    redirect("/onboarding");
-  }
+  if (!profile.onboarding_completed) redirect("/onboarding");
 
-  const company = (profile as any).companies;
+  const company = (profile as { companies?: { name: string } | null }).companies ?? null;
   const firstName = profile.full_name?.split(" ")[0] ?? "Arquitecto";
 
-  // Cargar scorecard más reciente
+  // Scorecard
   const { data: latestScorecard } = await supabase
     .from("scorecards")
     .select("*")
@@ -66,10 +783,10 @@ export default async function DashboardPage() {
     .limit(1)
     .single();
 
-  // Cargar KPIs de la semana actual
+  // KPIs de la semana
   const today = new Date();
   const monday = new Date(today);
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7)); // lunes
+  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
   const weekDate = monday.toISOString().split("T")[0];
 
   const { data: kpis } = await supabase
@@ -81,7 +798,7 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: true })
     .limit(5);
 
-  // Cargar energía de hoy
+  // Energía de hoy
   const todayStr = today.toISOString().split("T")[0];
   const { data: energyToday } = await supabase
     .from("energy_logs")
@@ -90,120 +807,397 @@ export default async function DashboardPage() {
     .eq("log_date", todayStr)
     .single();
 
-  // Detectar áreas críticas (score <= 2)
+  // Áreas críticas
   const areasCriticas = latestScorecard
-    ? SCORECARD_AREAS.filter(
-        (a) =>
-          (latestScorecard as any)[a.key] !== null &&
-          (latestScorecard as any)[a.key] <= 2
-      )
+    ? SCORECARD_AREAS.filter((a) => {
+        const v = (latestScorecard as Scorecard)[a.key];
+        return v !== null && v <= 2;
+      })
     : [];
 
-  const hora = today.getHours();
-  const saludo =
-    hora < 12 ? "Buenos días" : hora < 18 ? "Buenas tardes" : "Buenas noches";
+  const greeting = greetingForHour(today.getHours());
+  const dateStr = today.toLocaleDateString("es-AR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
+  // Promedio del scorecard
+  const sc = latestScorecard as Scorecard | null;
+  const scoreValues = sc
+    ? SCORECARD_AREAS.map((a) => sc[a.key]).filter((v): v is number => v !== null)
+    : [];
+  const avg =
+    scoreValues.length > 0
+      ? (scoreValues.reduce((s, v) => s + v, 0) / scoreValues.length).toFixed(1)
+      : "–";
+
+  // Total rituales programados hoy (placeholder)
+  const ritualsProgramados = RITUALS.length;
 
   return (
-    <div className="p-6 space-y-6 max-w-5xl">
-      {/* ── Bienvenida ──────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">
-            {saludo}, {firstName} 👋
+    <div
+      className="text-white"
+      style={{
+        padding: "32px 40px 60px",
+        maxWidth: 1600,
+        margin: "0 auto",
+        width: "100%",
+        fontFamily: "Inter, system-ui, sans-serif",
+      }}
+    >
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div
+        className="flex items-start justify-between"
+        style={{ gap: 24, marginBottom: 32 }}
+      >
+        <div className="min-w-0 flex-1">
+          <div
+            className="flex items-center"
+            style={{
+              ...MONO,
+              gap: 10,
+              fontSize: 12,
+              color: "rgba(255,255,255,0.45)",
+              letterSpacing: 0.4,
+              marginBottom: 8,
+            }}
+          >
+            <span
+              className="inline-flex items-center uppercase"
+              style={{
+                gap: 6,
+                padding: "3px 9px",
+                borderRadius: 99,
+                background: "rgba(91,138,255,0.10)",
+                border: "1px solid rgba(91,138,255,0.22)",
+                color: "#9fb9ff",
+                fontWeight: 600,
+              }}
+            >
+              <span
+                style={{
+                  width: 5,
+                  height: 5,
+                  borderRadius: "50%",
+                  background: "#5b8aff",
+                  boxShadow: "0 0 6px #5b8aff",
+                }}
+              />
+              {company?.name ?? "Mi Empresa"}
+            </span>
+            <span style={{ textTransform: "capitalize" }}>{dateStr}</span>
+          </div>
+          <h1
+            className="flex items-center"
+            style={{
+              fontSize: 32,
+              fontWeight: 700,
+              margin: 0,
+              letterSpacing: -0.6,
+              color: "#fff",
+              gap: 12,
+            }}
+          >
+            {greeting}, {firstName}
+            <span style={{ color: "#fbbf24" }}>
+              <Sparkles size={22} strokeWidth={1.8} />
+            </span>
           </h1>
-          <p className="text-tbm-text-secondary text-sm mt-0.5">
-            {company?.name ?? "Tu empresa"} ·{" "}
-            {today.toLocaleDateString("es-AR", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            })}
-          </p>
+          <div
+            style={{
+              fontSize: 14,
+              color: "rgba(255,255,255,0.55)",
+              marginTop: 6,
+            }}
+          >
+            {areasCriticas.length > 0 ? (
+              <>
+                Atención:{" "}
+                <span style={{ color: "#f87171", fontWeight: 500 }}>
+                  {areasCriticas.length}{" "}
+                  {areasCriticas.length === 1 ? "área crítica" : "áreas críticas"}
+                </span>{" "}
+                · {ritualsProgramados} rituales programados para hoy.
+              </>
+            ) : (
+              <>
+                Tu Plan 90D avanza fuerte. Tenés{" "}
+                <span style={{ color: "#9fb9ff", fontWeight: 500 }}>
+                  {ritualsProgramados} rituales
+                </span>{" "}
+                programados para hoy.
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Energía del líder — componente client */}
-        <EnergySelector
-          userId={user.id}
-          companyId={profile.company_id!}
-          currentLevel={energyToday?.level ?? null}
-          date={todayStr}
-        />
+        <div
+          className="flex items-center"
+          style={{ gap: 16, flexShrink: 0 }}
+        >
+          {/* Search (placeholder visual, futuro ⌘K) */}
+          <div
+            className="hidden lg:flex items-center"
+            style={{
+              gap: 8,
+              padding: "8px 12px",
+              borderRadius: 10,
+              background: "rgba(255,255,255,0.025)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              color: "rgba(255,255,255,0.5)",
+              fontSize: 13,
+              minWidth: 220,
+              cursor: "pointer",
+            }}
+          >
+            <Search size={14} />
+            <span style={{ flex: 1 }}>Buscar</span>
+            <div
+              className="flex"
+              style={{
+                gap: 3,
+                fontSize: 10,
+                color: "rgba(255,255,255,0.45)",
+              }}
+            >
+              <kbd
+                style={{
+                  padding: "1px 5px",
+                  borderRadius: 4,
+                  background: "rgba(255,255,255,0.06)",
+                }}
+              >
+                ⌘
+              </kbd>
+              <kbd
+                style={{
+                  padding: "1px 5px",
+                  borderRadius: 4,
+                  background: "rgba(255,255,255,0.06)",
+                }}
+              >
+                K
+              </kbd>
+            </div>
+          </div>
+
+          {/* Notifications */}
+          <button
+            type="button"
+            aria-label="Notificaciones"
+            className="relative flex items-center justify-center"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              background: "rgba(255,255,255,0.025)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              color: "rgba(255,255,255,0.7)",
+              cursor: "pointer",
+            }}
+          >
+            <Bell size={16} />
+            <span
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 9,
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
+                background: "#f87171",
+                border: "2px solid #0a0e1a",
+              }}
+            />
+          </button>
+
+          {/* Energía — selector ACTUAL (mantenido por requerimiento) */}
+          <EnergySelector
+            userId={user.id}
+            companyId={profile.company_id!}
+            currentLevel={energyToday?.level ?? null}
+            date={todayStr}
+          />
+        </div>
       </div>
 
-      {/* ── Alerta roja si hay áreas críticas ──────────────────────── */}
+      {/* ── Hero strip Plan 90D ────────────────────────────── */}
+      <HeroStrip />
+
+      {/* ── Alerta áreas críticas ──────────────────────────── */}
       {areasCriticas.length > 0 && (
-        <div className="p-4 rounded-xl bg-tbm-red/10 border border-tbm-red/40 flex items-start gap-3">
-          <span className="text-xl">🔴</span>
+        <div
+          className="flex items-start"
+          style={{
+            gap: 12,
+            padding: "14px 16px",
+            borderRadius: 12,
+            background: "rgba(248,113,113,0.08)",
+            border: "1px solid rgba(248,113,113,0.3)",
+            marginBottom: 28,
+          }}
+        >
+          <span
+            className="flex items-center justify-center"
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: "50%",
+              background: "#f87171",
+              color: "#0a0e1a",
+              flexShrink: 0,
+              marginTop: 1,
+            }}
+          >
+            <TrendingUp size={12} strokeWidth={2.6} style={{ transform: "rotate(180deg)" }} />
+          </span>
           <div>
-            <p className="text-white font-semibold text-sm">
+            <p style={{ color: "#fff", fontWeight: 600, fontSize: 13.5 }}>
               {areasCriticas.length === 1
                 ? "Hay un área crítica que necesita atención inmediata"
                 : `Hay ${areasCriticas.length} áreas críticas que necesitan atención`}
             </p>
-            <p className="text-tbm-text-secondary text-xs mt-0.5">
+            <p
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: 12,
+                marginTop: 2,
+              }}
+            >
               {areasCriticas.map((a) => a.label).join(", ")}
             </p>
           </div>
         </div>
       )}
 
-      {/* ── Semáforo de 8 Áreas ─────────────────────────────────────── */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-tbm-text-secondary uppercase tracking-wider">
-            Team Performance Scorecard
-          </h2>
-          {latestScorecard && (
-            <span className="text-xs text-tbm-text-muted">
-              Promedio:{" "}
-              <span className="text-white font-medium">
-                {latestScorecard.total_score}/5
+      {/* ── Team Performance Scorecard ─────────────────────── */}
+      <section style={{ marginBottom: 36 }}>
+        <div
+          className="flex items-baseline justify-between"
+          style={{ marginBottom: 14 }}
+        >
+          <div>
+            <div
+              className="uppercase"
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: "rgba(255,255,255,0.5)",
+                letterSpacing: 1.4,
+                marginBottom: 4,
+              }}
+            >
+              Team Performance Scorecard
+            </div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
+              {latestScorecard
+                ? "Última actualización · " +
+                  new Date(latestScorecard.created_at ?? today).toLocaleDateString("es-AR", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                  })
+                : "Completá tu diagnóstico inicial para ver los semáforos"}
+            </div>
+          </div>
+          <div className="flex items-center" style={{ gap: 12 }}>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
+              Promedio
+            </div>
+            <div
+              className="flex items-baseline"
+              style={{
+                gap: 2,
+                padding: "6px 12px",
+                borderRadius: 8,
+                background: "rgba(91,138,255,0.10)",
+                border: "1px solid rgba(91,138,255,0.25)",
+              }}
+            >
+              <span
+                style={{
+                  ...MONO,
+                  fontSize: 18,
+                  fontWeight: 700,
+                  color: "#9fb9ff",
+                }}
+              >
+                {avg}
               </span>
-            </span>
-          )}
+              <span
+                style={{
+                  ...MONO,
+                  fontSize: 12,
+                  color: "rgba(255,255,255,0.4)",
+                }}
+              >
+                /5
+              </span>
+            </div>
+            <a
+              href="/onboarding"
+              className="flex items-center transition-colors hover:text-white"
+              style={{
+                gap: 6,
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.08)",
+                padding: "7px 12px",
+                borderRadius: 8,
+                color: "rgba(255,255,255,0.7)",
+                fontSize: 12.5,
+                fontWeight: 500,
+                textDecoration: "none",
+              }}
+            >
+              Actualizar
+              <RotateCcw size={13} strokeWidth={1.8} />
+            </a>
+          </div>
         </div>
 
         {latestScorecard ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+            style={{ gap: 12 }}
+          >
             {SCORECARD_AREAS.map((area) => {
-              const score = (latestScorecard as any)[area.key] as
-                | number
-                | null;
-              const sem = semaforoScore(score);
+              const score = (latestScorecard as Scorecard)[area.key];
+              const trend = score !== null ? [score, score, score, score, score] : [0, 0, 0, 0, 0];
               return (
-                <div
+                <ScoreCard
                   key={area.key}
-                  className={cn("tbm-card p-4 border", sem.colorClass)}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-tbm-text-secondary uppercase tracking-wide">
-                      {area.label}
-                    </span>
-                    <span
-                      className={cn("w-2 h-2 rounded-full", sem.dotColor)}
-                    />
-                  </div>
-                  <p className="text-2xl font-bold text-white">
-                    {score ?? "–"}
-                    <span className="text-sm text-tbm-text-muted font-normal">
-                      /5
-                    </span>
-                  </p>
-                  <p className="text-xs text-tbm-text-muted mt-1">
-                    {sem.label}
-                  </p>
-                </div>
+                  Icon={SCORECARD_ICONS[area.key]}
+                  label={area.label}
+                  score={score}
+                  trend={trend}
+                />
               );
             })}
           </div>
         ) : (
-          <div className="tbm-card p-8 text-center border-dashed">
-            <p className="text-tbm-text-secondary text-sm">
+          <div
+            className="text-center"
+            style={{
+              padding: "32px 20px",
+              borderRadius: 14,
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+              border: "1px dashed rgba(255,255,255,0.10)",
+            }}
+          >
+            <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 14 }}>
               Completá el diagnóstico inicial para ver tus semáforos
             </p>
             <a
               href="/onboarding"
-              className="inline-block mt-3 text-tbm-blue text-sm hover:underline"
+              className="inline-block hover:underline"
+              style={{
+                marginTop: 12,
+                color: "#9fb9ff",
+                fontSize: 13,
+                fontWeight: 500,
+              }}
             >
               Ir al diagnóstico →
             </a>
@@ -211,78 +1205,139 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      {/* ── KPIs de la semana ───────────────────────────────────────── */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-tbm-text-secondary uppercase tracking-wider">
-            KPIs de la semana
-          </h2>
+      {/* ── KPIs ───────────────────────────────────────────── */}
+      <section style={{ marginBottom: 36 }}>
+        <div
+          className="flex items-baseline justify-between"
+          style={{ marginBottom: 14 }}
+        >
+          <div>
+            <div
+              className="uppercase"
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: "rgba(255,255,255,0.5)",
+                letterSpacing: 1.4,
+                marginBottom: 4,
+              }}
+            >
+              KPIs de la semana
+            </div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
+              {kpis && kpis.length > 0
+                ? `${kpis.length} indicadores activos`
+                : "Todavía no configuraste KPIs para esta semana"}
+            </div>
+          </div>
           <a
             href="/dashboard/kpis"
-            className="text-xs text-tbm-blue hover:underline"
+            className="flex items-center transition-opacity hover:opacity-80"
+            style={{
+              gap: 6,
+              color: "#9fb9ff",
+              fontSize: 13,
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
           >
-            Gestionar →
+            Gestionar
+            <ArrowRight size={13} strokeWidth={2} />
           </a>
         </div>
 
-        {kpis && kpis.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {kpis.map((kpi) => (
-              <KpiCard key={kpi.id} kpi={kpi} />
-            ))}
-          </div>
-        ) : (
-          <div className="tbm-card p-6 text-center border-dashed">
-            <p className="text-tbm-text-secondary text-sm">
-              Todavía no configuraste los KPIs de esta semana
-            </p>
-            <a
-              href="/dashboard/kpis"
-              className="inline-block mt-2 text-tbm-blue text-sm hover:underline"
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          style={{ gap: 12 }}
+        >
+          {kpis && kpis.map((kpi) => <KpiCard key={kpi.id} kpi={kpi} />)}
+
+          {/* Add slot */}
+          <a
+            href="/dashboard/kpis"
+            className="flex flex-col items-center justify-center transition-all"
+            style={{
+              padding: 20,
+              borderRadius: 14,
+              background: "transparent",
+              border: "1.5px dashed rgba(255,255,255,0.10)",
+              color: "rgba(255,255,255,0.5)",
+              gap: 10,
+              minHeight: 168,
+              textDecoration: "none",
+            }}
+          >
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 10,
+                border: "1.5px dashed currentColor",
+              }}
             >
-              Configurar KPIs →
-            </a>
-          </div>
-        )}
+              <Plus size={18} strokeWidth={2} />
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 500 }}>Agregar KPI</div>
+            <div
+              className="text-center"
+              style={{
+                fontSize: 11,
+                color: "rgba(255,255,255,0.35)",
+                maxWidth: 140,
+              }}
+            >
+              Trackeá un nuevo indicador esta semana
+            </div>
+          </a>
+        </div>
       </section>
 
-      {/* ── Estado de rituales ──────────────────────────────────────── */}
+      {/* ── Rituales ───────────────────────────────────────── */}
       <section>
-        <h2 className="text-sm font-semibold text-tbm-text-secondary uppercase tracking-wider mb-3">
-          Rituales de hoy
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            {
-              label: "Pre-game",
-              href: "/rituales/pregame",
-              desc: "Rutina matutina personal",
-            },
-            {
-              label: "Warm Up",
-              href: "/rituales/warmup",
-              desc: "Inicio del día con el equipo",
-            },
-            {
-              label: "Cool Down",
-              href: "/rituales/cooldown",
-              desc: "Cierre y Victory Log",
-            },
-          ].map((r) => (
+        <div
+          className="flex items-baseline justify-between"
+          style={{ marginBottom: 14 }}
+        >
+          <div>
             <div
-              key={r.label}
-              className="tbm-card p-4 opacity-60 cursor-not-allowed"
+              className="uppercase"
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: "rgba(255,255,255,0.5)",
+                letterSpacing: 1.4,
+                marginBottom: 4,
+              }}
             >
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-medium text-white text-sm">
-                  {r.label}
-                </span>
-                <span className="text-xs bg-tbm-border text-tbm-text-muted px-2 py-0.5 rounded-full">
-                  Sprint 2
-                </span>
-              </div>
-              <p className="text-xs text-tbm-text-muted">{r.desc}</p>
+              Rituales de hoy
             </div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
+              1 completado · 1 en vivo · 1 programado
+            </div>
+          </div>
+          <a
+            href="/rituales"
+            className="flex items-center transition-opacity hover:opacity-80"
+            style={{
+              gap: 6,
+              color: "#9fb9ff",
+              fontSize: 13,
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+          >
+            Ver semana
+            <ArrowRight size={13} strokeWidth={2} />
+          </a>
+        </div>
+
+        <div
+          className="grid grid-cols-1 lg:grid-cols-3"
+          style={{ gap: 12 }}
+        >
+          {RITUALS.map((r) => (
+            <RitualCard key={r.id} ritual={r} />
           ))}
         </div>
       </section>
