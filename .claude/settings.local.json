@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.anthropic.com)",
+      "PowerShell($env:NODE_EXTRA_CA_CERTS = \"$env:USERPROFILE\\\\norton-root.pem\"; npm run type-check)"
+    ]
+  }
+}
