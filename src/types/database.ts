@@ -340,6 +340,369 @@ export type Database = {
           },
         ]
       }
+      ritual_configs: {
+        Row: {
+          company_id: string
+          mode: string
+          war_up_deadline: string
+          cool_down_start: string
+          pre_game_reminder: string
+          los_5_grandes_reminder: string
+          timezone: string
+          updated_by: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          mode?: string
+          war_up_deadline?: string
+          cool_down_start?: string
+          pre_game_reminder?: string
+          los_5_grandes_reminder?: string
+          timezone?: string
+          updated_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          mode?: string
+          war_up_deadline?: string
+          cool_down_start?: string
+          pre_game_reminder?: string
+          los_5_grandes_reminder?: string
+          timezone?: string
+          updated_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      pre_games: {
+        Row: {
+          id: string
+          user_id: string
+          company_id: string
+          log_date: string
+          big_win_1: string | null
+          big_win_2: string | null
+          big_win_3: string | null
+          twenty_mile_march: string | null
+          physical_activation: boolean | null
+          notes: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          company_id: string
+          log_date?: string
+          big_win_1?: string | null
+          big_win_2?: string | null
+          big_win_3?: string | null
+          twenty_mile_march?: string | null
+          physical_activation?: boolean | null
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          company_id?: string
+          log_date?: string
+          big_win_1?: string | null
+          big_win_2?: string | null
+          big_win_3?: string | null
+          twenty_mile_march?: string | null
+          physical_activation?: boolean | null
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      los_5_grandes: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          for_date: string
+          notes: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          for_date: string
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          for_date?: string
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      los_5_grandes_items: {
+        Row: {
+          id: string
+          los_5_grandes_id: string
+          position: number
+          title: string
+          rock_label: string | null
+          rock_id: string | null
+          executed: boolean | null
+          executed_at: string | null
+          execution_note: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          los_5_grandes_id: string
+          position: number
+          title: string
+          rock_label?: string | null
+          rock_id?: string | null
+          executed?: boolean | null
+          executed_at?: string | null
+          execution_note?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          los_5_grandes_id?: string
+          position?: number
+          title?: string
+          rock_label?: string | null
+          rock_id?: string | null
+          executed?: boolean | null
+          executed_at?: string | null
+          execution_note?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      war_ups: {
+        Row: {
+          id: string
+          company_id: string
+          war_up_date: string
+          started_by: string | null
+          started_at: string | null
+          ended_at: string | null
+          status: string
+          timer_duration_min: number | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          war_up_date?: string
+          started_by?: string | null
+          started_at?: string | null
+          ended_at?: string | null
+          status?: string
+          timer_duration_min?: number | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          war_up_date?: string
+          started_by?: string | null
+          started_at?: string | null
+          ended_at?: string | null
+          status?: string
+          timer_duration_min?: number | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      war_up_entries: {
+        Row: {
+          id: string
+          war_up_id: string
+          user_id: string
+          what_today: string | null
+          why_today: string | null
+          blocker: string | null
+          rock_label: string | null
+          rock_id: string | null
+          validation_status: string | null
+          validated_by: string | null
+          validated_at: string | null
+          validation_note: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          war_up_id: string
+          user_id: string
+          what_today?: string | null
+          why_today?: string | null
+          blocker?: string | null
+          rock_label?: string | null
+          rock_id?: string | null
+          validation_status?: string | null
+          validated_by?: string | null
+          validated_at?: string | null
+          validation_note?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          war_up_id?: string
+          user_id?: string
+          what_today?: string | null
+          why_today?: string | null
+          blocker?: string | null
+          rock_label?: string | null
+          rock_id?: string | null
+          validation_status?: string | null
+          validated_by?: string | null
+          validated_at?: string | null
+          validation_note?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      cool_downs: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          log_date: string
+          victory_log: string
+          reality_check: string | null
+          next_day: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          log_date?: string
+          victory_log: string
+          reality_check?: string | null
+          next_day?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          log_date?: string
+          victory_log?: string
+          reality_check?: string | null
+          next_day?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      parking_lot: {
+        Row: {
+          id: string
+          company_id: string
+          source: string
+          source_entry_id: string | null
+          proposed_by: string | null
+          title: string
+          rationale: string | null
+          rock_label: string | null
+          status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          source: string
+          source_entry_id?: string | null
+          proposed_by?: string | null
+          title: string
+          rationale?: string | null
+          rock_label?: string | null
+          status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          source?: string
+          source_entry_id?: string | null
+          proposed_by?: string | null
+          title?: string
+          rationale?: string | null
+          rock_label?: string | null
+          status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      weekly_reports: {
+        Row: {
+          id: string
+          company_id: string
+          week_start: string
+          week_end: string
+          generated_at: string | null
+          generated_by: string | null
+          payload: Json
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          week_start: string
+          week_end: string
+          generated_at?: string | null
+          generated_by?: string | null
+          payload?: Json
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          week_start?: string
+          week_end?: string
+          generated_at?: string | null
+          generated_by?: string | null
+          payload?: Json
+          created_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -444,6 +807,23 @@ export type Scorecard = Database["public"]["Tables"]["scorecards"]["Row"];
 export type KPI = Database["public"]["Tables"]["kpis"]["Row"];
 export type EnergyLog = Database["public"]["Tables"]["energy_logs"]["Row"];
 export type Invitation = Database["public"]["Tables"]["invitations"]["Row"];
+
+// Sprint 2 — Rituales
+export type RitualConfig = Database["public"]["Tables"]["ritual_configs"]["Row"];
+export type PreGame = Database["public"]["Tables"]["pre_games"]["Row"];
+export type Los5Grandes = Database["public"]["Tables"]["los_5_grandes"]["Row"];
+export type Los5GrandesItem = Database["public"]["Tables"]["los_5_grandes_items"]["Row"];
+export type WarUp = Database["public"]["Tables"]["war_ups"]["Row"];
+export type WarUpEntry = Database["public"]["Tables"]["war_up_entries"]["Row"];
+export type CoolDown = Database["public"]["Tables"]["cool_downs"]["Row"];
+export type ParkingLotItem = Database["public"]["Tables"]["parking_lot"]["Row"];
+export type WeeklyReport = Database["public"]["Tables"]["weekly_reports"]["Row"];
+
+export type RitualMode = "daily" | "A" | "B" | "C";
+export type WarUpStatus = "pending" | "active" | "closed";
+export type ValidationStatus = "with_criteria" | "without_criteria";
+export type ParkingSource = "war_up" | "5_grandes" | "manual";
+export type ParkingStatus = "parked" | "promoted" | "discarded";
 
 export type UserRole = "arquitecto" | "colaborador" | "observador";
 export type DiscStatus = "pendiente" | "enviado" | "completado";
