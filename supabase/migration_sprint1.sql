@@ -6,7 +6,7 @@
 
 -- ============================================================
 -- TABLA: scorecards
--- Team Performance Scorecard — 8 áreas, slider 1–5
+-- Diagnóstico Organizacional TBM — 8 áreas, slider 1–5
 -- ============================================================
 create table public.scorecards (
   id            uuid primary key default uuid_generate_v4(),

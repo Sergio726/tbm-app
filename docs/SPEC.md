@@ -72,7 +72,7 @@ La app tiene **8 módulos** que espejean la progresión del programa TBM:
 **Propósito:** Vista de un vistazo del estado de la empresa según el método TBM.
 
 **Componentes:**
-- **Semáforo de las 8 Áreas** (del Team Performance Scorecard): cada área muestra Verde / Amarillo / Rojo según el último diagnóstico
+- **Semáforo de las 8 Áreas** (del Diagnóstico Organizacional TBM): cada área muestra Verde / Amarillo / Rojo según el último diagnóstico
 - **5 Leading Indicators (BOS — S7):** métricas predictivas con dueño + meta semanal + semáforo TBM (🟢 ≥100% de meta / 🟡 85–99% de meta / 🔴 <85% de meta). Tracking por 3 semanas visibles simultáneamente (S1 / S2 / S3). El semáforo usa el último valor ingresado vs. la meta — calculado automáticamente.
 - **Número único por colaborador:** un KPI principal que justifica el salario de cada miembro
 - **Progreso del Plan 90D:** % de avance en cada Roca del trimestre
@@ -300,7 +300,7 @@ Marcar como "entregado" → Historial
 
 | Sesión | Ejercicio principal | Se convierte en... |
 |---|---|---|
-| S1 | Team Performance Scorecard | → Semáforo del Dashboard (M1) |
+| S1 | Diagnóstico Organizacional TBM | → Semáforo del Dashboard (M1) |
 | S1 | Los 5 Grandes | → Tareas del día en Rituales (M2) |
 | S1 | Protocolo de Delegación | → Checklist del Pase de Estafeta (M4) |
 | S2 | Mapeo DISC del equipo | → Perfil del colaborador en M3 |
@@ -384,7 +384,7 @@ Antes del diagnóstico formal, el Arquitecto responde una sola pregunta brutal:
 
 | Diagnóstico | Frecuencia recomendada | Origen |
 |---|---|---|
-| Team Performance Scorecard (8 áreas) | Cada 14 días | S1 |
+| Diagnóstico Organizacional TBM (8 áreas) | Cada 14 días | S1 |
 | Auditoría A.R.Q.U.I. (5 pilares) | Mensual | S3 |
 | Auditoría de Energía del Líder | Semanal (autodiagnóstico) | S4 |
 | ROI de Talento (% capacidad del equipo) | Mensual | S5 |
@@ -402,7 +402,7 @@ Antes del diagnóstico formal, el Arquitecto responde una sola pregunta brutal:
 ### Flujo 1 — Onboarding (Primera vez)
 ```
 Registro (nombre, empresa, # colaboradores) 
-→ Team Performance Scorecard (diagnóstico inicial)
+→ Diagnóstico Organizacional TBM (diagnóstico inicial)
 → Configurar equipo (invitar colaboradores, asignar perfil DISC)
 → Definir primera Roca del trimestre
 → Configurar rituales (frecuencia Warm Up / Cool Down)

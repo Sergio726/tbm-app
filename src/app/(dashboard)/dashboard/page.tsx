@@ -1071,7 +1071,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* ── Team Performance Scorecard ─────────────────────── */}
+      {/* ── Diagnóstico Organizacional TBM ─────────────────────── */}
       <section style={{ marginBottom: 36 }}>
         <div
           className="flex items-baseline justify-between"
@@ -1088,7 +1088,7 @@ export default async function DashboardPage() {
                 marginBottom: 4,
               }}
             >
-              Team Performance Scorecard
+              Diagnóstico Organizacional TBM
             </div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
               {latestScorecard

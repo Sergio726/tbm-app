@@ -78,7 +78,7 @@ S4 Energía & Dinero → S5 Multiplicación → S6 Delegación → S7 [?] → S8
 
 **Herramientas:**
 
-1. **Team Performance Scorecard** — Diagnóstico de 8 fallas críticas (escala 1–5):
+1. **Diagnóstico Organizacional TBM** — Diagnóstico de 8 fallas críticas (escala 1–5):
    - Roles Difusos / Delegación Ineficiente / Dependencia del Líder / Retrabajo Constante / Fricción Interdepartamental / Reuniones Improductivas / Decisiones sin Datos / Operación que No Escala
    - Score < 25 = intervención urgente
 
@@ -361,7 +361,7 @@ Tres niveles de autonomía financiera:
 | 2 | Warm Up de Equipo | Pre-game / S4 | Reunión | QUÉ + POR QUÉ + BLOQUEO. 15 min, de pie |
 | 3 | Cool Down | Pre-game / S4 | Ritual | Victory Log + Reality Check + Cierre de ciclos |
 | 4 | Feedback S.E.C. | Pre-game / S4 | Conversación | Sostener + Elevar + Corregir |
-| 5 | Team Performance Scorecard | S1 | Diagnóstico | 8 fallas críticas, escala 1–5. Score < 25 = urgente |
+| 5 | Diagnóstico Organizacional TBM | S1 | Diagnóstico | 8 fallas críticas, escala 1–5. Score < 25 = urgente |
 | 6 | Dashboard de Productividad | S1 | KPIs | 3 KPIs de impacto real por semana |
 | 7 | Protocolo de Delegación | S1 | Checklist | 5 puntos antes de asignar cualquier tarea |
 | 8 | Los 5 Grandes | S1 | Planificación | 5 prioridades estratégicas del día siguiente |
@@ -505,7 +505,7 @@ Basado en el análisis de todas las herramientas, la app debe tener:
 - Plan de 14 días de la Sesión 1
 
 ### M8 — Diagnósticos y Scorecards
-- Team Performance Scorecard (8 áreas)
+- Diagnóstico Organizacional TBM (8 áreas)
 - Auditoría A.R.Q.U.I.
 - Diagnóstico de Energía
 - ROI de Talento (% de capacidad del equipo usada)
@@ -516,7 +516,7 @@ Basado en el análisis de todas las herramientas, la app debe tener:
 
 ### Flujo 1 — Onboarding
 ```
-Registro → Perfil del líder → Team Performance Scorecard inicial → 
+Registro → Perfil del líder → Diagnóstico Organizacional TBM inicial → 
 Mapeo del equipo (DISC) → Primera Roca del trimestre → 
 Configurar rituales (frecuencia Warm Up / Cool Down)
 ```
