@@ -9,9 +9,11 @@ import {
   Inbox,
   Settings,
   ArrowRight,
+  AlertTriangle,
   type LucideIcon,
 } from "lucide-react";
 import type { CSSProperties } from "react";
+import { isoDate } from "@/lib/dates";
 
 const MONO: CSSProperties = {
   fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
@@ -98,7 +100,28 @@ export default async function RitualesHubPage() {
 
   if (!profile?.company_id) redirect("/onboarding");
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = isoDate();
+
+  // Últimos War Up cerrados — para alerta de 3+ días sin ritual
+  const sinceLookup = new Date();
+  sinceLookup.setDate(sinceLookup.getDate() - 14);
+  const { data: recentWarUps } = await supabase
+    .from("war_ups")
+    .select("war_up_date, status")
+    .eq("company_id", profile.company_id)
+    .eq("status", "closed")
+    .gte("war_up_date", isoDate(sinceLookup))
+    .order("war_up_date", { ascending: false })
+    .limit(1);
+
+  const lastWarUpDate = recentWarUps?.[0]?.war_up_date ?? null;
+  const daysSinceLastWarUp = lastWarUpDate
+    ? Math.floor(
+        (new Date(today).getTime() - new Date(lastWarUpDate).getTime()) /
+          (1000 * 60 * 60 * 24)
+      )
+    : null;
+  const warUpAlert = !lastWarUpDate || (daysSinceLastWarUp ?? 0) >= 3;
 
   // Estado del día — para badges "hecho hoy"
   const [preGameRes, warUpRes, coolDownRes, los5Res] = await Promise.all([
@@ -171,6 +194,33 @@ export default async function RitualesHubPage() {
           en una Roca se aparca, no se pierde.
         </p>
       </header>
+
+      {warUpAlert && (
+        <div
+          className="flex items-center"
+          style={{
+            gap: 12,
+            padding: "14px 18px",
+            borderRadius: 12,
+            background:
+              "linear-gradient(135deg, rgba(248,113,113,0.12), rgba(248,113,113,0.04))",
+            border: "1px solid rgba(248,113,113,0.32)",
+            marginBottom: 22,
+          }}
+        >
+          <AlertTriangle size={18} color="#f87171" />
+          <div>
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: "#fca5a5" }}>
+              {lastWarUpDate
+                ? `Hace ${daysSinceLastWarUp} día${daysSinceLastWarUp === 1 ? "" : "s"} sin War Up`
+                : "No hay War Ups registrados en las últimas 2 semanas"}
+            </div>
+            <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.6)" }}>
+              El ritual diario es lo que hace que el método funcione. Volvé a arrancarlo desde la card del War Up.
+            </div>
+          </div>
+        </div>
+      )}
 
       <div
         style={{
