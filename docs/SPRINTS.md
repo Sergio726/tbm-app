@@ -6,20 +6,44 @@
 
 ---
 
+## CHANGELOG — Actualización v1.1 (Mayo 2026)
+> Basado en las **18 respuestas oficiales de Dilio Donado** — fuente de verdad del método.
+
+| Ref. | Impacto | Cambio |
+|---|---|---|
+| I1 | Sprint 4 | Módulo de Delegación se construye sobre S6 (5 puntos). S1 es solo introducción conceptual. Ya correcto en el plan. |
+| I2 | Sprint 2 + 6 | Flujo único: Rocas 90D → Los 5 Grandes (noche) → War Up (mañana, alineado) → Dashboard. Parking Lot obligatorio. |
+| I3 | Sprint 2 | Los 5 Grandes ≠ 3 Big Wins. Son herramientas distintas en momentos distintos. Añadido ritual nocturno "Los 5 Grandes". |
+| **I4** | **Sprint 1 + 7** | **BUG DE NAMING:** El diagnóstico de 8 áreas de S1 se llama "Diagnóstico Organizacional TBM". "Team Performance Scorecard" es la herramienta de S7 (KPI individual). Corregido en sprint 1 y 7. |
+| I5 | Sprint 3 | ARQI / LOS / Matriz son tres lentes complementarios — ninguno reemplaza a otro. Ya correcto en el plan. |
+| B2 | Sprint 5 | Sesiones de Escape = metodología 3 Streaks. El feedback es de aprendizaje, no de cumplimiento del Scorecard. Añadido. |
+| B3 | Sprint 6 | Confirmado: la app necesita módulo "Activos del Sistema" (repositorio de procesos documentados). Añadido a Sprint 6. |
+| B4 | Sprint 2 | Reporte Semanal = Cool Down del viernes, generado automáticamente por la app. Añadido. |
+| L1 | Sprint 2 | War Up es en vivo, de pie, en tiempo real. La corrección es presencial. La app soporta flujo en vivo como sala digital. |
+| L2 | Sprint 0 | Modo solopreneur: sistema completo, nada deshabilitado. Ya correcto en el plan. |
+| L3 | Sprint 7 | Desbloqueo híbrido: mínimo 7 días + botón "Solicitar avance anticipado" al llegar al 100% de completitud. Corregido. |
+| L4 | Sprint 6 | Sin graduación. Ciclo continuo de 90 días. Indicador financiero: mes anterior año pasado vs. mes actual. Añadido. |
+| N1 | Sprint 9 | Panel Super Coach en 3 capas: semáforo general, deep dive por alumno, canal de nota de coaching. Añadido a Sprint 9. |
+| N2 | Sprint 0 | Dos tipos de acceso: Alumno TBM (visible al coach) vs. Usuario Independiente (self-service). Añadido al schema. |
+| N3 | — | 100% individual, cada empresa a su propio ritmo. Sin cohorts. Ya correcto en el plan. |
+| N4 | Sprint 10 | Suscripción anual: Bundle con mentoría (precio con descuento) vs. Sistema Standalone (precio sin descuento). Anotado. |
+
+---
+
 ## RESUMEN EJECUTIVO DE SPRINTS
 
 | Sprint | Tema | Semanas | Entregable clave |
 |---|---|---|---|
-| **S0** | Setup & Auth | 1–2 | App en producción con login |
-| **S1** | Onboarding + Dashboard | 3–4 | Diagnóstico inicial + semáforos |
-| **S2** | Rituales | 5–6 | Warm Up / Cool Down funcional |
+| **S0** | Setup & Auth | 1–2 | App en producción con login + 2 tipos de usuario |
+| **S1** | Onboarding + Dashboard | 3–4 | Diagnóstico Organizacional TBM + semáforos |
+| **S2** | Rituales | 5–6 | Los 5 Grandes + War Up en vivo + Cool Down |
 | **S3** | Mi Equipo (DISC + LOS) | 7–8 | Mapa completo del equipo |
-| **S4** | Delegación | 9–10 | Pase de Estafeta con validaciones |
-| **S5** | Feedback S.E.C. | 11–12 | Sistema de feedback estructurado |
-| **S6** | Plan 90D + BOS | 13–14 | Planificación estratégica completa |
-| **S7** | Workbooks S1–S4 | 15–16 | Primeras 4 sesiones digitalizadas |
+| **S4** | Delegación | 9–10 | Pase de Estafeta (S6) con 5 puntos + ARQI |
+| **S5** | Feedback S.E.C. | 11–12 | Sistema de feedback + 3 Streaks |
+| **S6** | Plan 90D + BOS + Activos | 13–14 | Planificación estratégica + repositorio de procesos |
+| **S7** | Workbooks S1–S4 | 15–16 | Primeras 4 sesiones digitalizadas (unlock híbrido) |
 | **S8** | Workbooks S5–S8 | 17–18 | Programa completo digitalizado |
-| **S9** | Polish + Exportación | 19–20 | App lista para beta |
+| **S9** | Polish + Exportación + Super Coach | 19–20 | App lista para beta + panel de Dilio |
 | **S10** | Beta cerrada | 21–22 | Feedback real de 3–5 empresas piloto |
 
 ---
@@ -41,8 +65,14 @@
 ```sql
 -- Tablas del Sprint 0
 companies (id, name, owner_id, created_at, settings jsonb)
-profiles (id, company_id, full_name, email, role, avatar_url, created_at)
+profiles (
+  id, company_id, full_name, email, role, avatar_url, created_at,
+  access_type varchar(20) DEFAULT 'independent'  -- 'mentored' | 'independent' [N2]
+  -- 'mentored': alumno TBM, visible en panel Super Coach de Dilio
+  -- 'independent': self-service, no aparece en panel del coach
+)
 ```
+> ⚠️ **[N2]** El tipo de acceso se define en el registro. Determina si el usuario aparece en el panel Super Coach.
 - [ ] Crear tablas en Supabase
 - [ ] Configurar Row Level Security (RLS): cada usuario solo ve datos de su empresa
 - [ ] Crear triggers: auto-crear `profile` cuando se registra un usuario
@@ -85,8 +115,8 @@ kpis (id, company_id, name, owner_id, weekly_target, current_value, week_date)
 ### Tareas
 
 **Onboarding flow (6h)**
-- [ ] Pantalla 1: Datos de empresa (nombre, sector, cantidad de colaboradores)
-- [ ] Pantalla 2: Team Performance Scorecard — 8 áreas, slider 1–5 con descripción de cada área
+- [ ] Pantalla 1: Datos de empresa (nombre, sector, cantidad de colaboradores) + selector de tipo de acceso (Alumno TBM con mentoría / Usuario Independiente) [N2]
+- [ ] Pantalla 2: **Diagnóstico Organizacional TBM** — 8 áreas, slider 1–5 con descripción de cada área _(⚠️ NO llamar "Team Performance Scorecard" — ese nombre es exclusivo del módulo S7 de KPI individual por colaborador)_ [I4]
 - [ ] Pantalla 3: Configurar rituales (frecuencia: Modo A/B/C/Diario)
 - [ ] Pantalla 4: Invitar colaboradores (input de emails → Supabase invite)
 - [ ] Guardar progreso de onboarding (si cierra y vuelve, retoma donde quedó)
@@ -127,24 +157,35 @@ ritual_entries (id, ritual_id, user_id,
 
 ### Tareas
 
+**Los 5 Grandes — Ritual Nocturno (3h)** _(nuevo — [I2] [I3])_
+> Las 5 prioridades del NEGOCIO para el día siguiente, alineadas a las Rocas del trimestre. Se hacen la noche anterior. Herramienta distinta al Pre-game matutino.
+- [ ] Formulario nocturno (accesible desde las 6pm): 5 slots de texto con label "¿Qué tiene que pasar mañana para que el trimestre avance?"
+- [ ] Cada slot muestra su Roca asociada (selector dropdown de Rocas activas del Plan 90D)
+- [ ] Si un ítem NO se puede vincular a ninguna Roca → botón "Enviar al Parking Lot" (no al día de mañana)
+- [ ] **REGLA CRÍTICA:** Todo lo que no esté alineado a las Rocas va al Parking Lot, no al día de hoy. La app lo enforcea con aviso visual.
+- [ ] Historial de Los 5 Grandes (los últimos 7 días visibles en timeline)
+
 **Pre-game personal (3h)**
+> Herramienta MATUTINA y PERSONAL. Distinta a Los 5 Grandes (que son nocturnos y del negocio). [I3]
 - [ ] Formulario matutino privado del Arquitecto:
-  - Big Win 1, 2, 3 (3 inputs de texto)
+  - **3 Big Wins** (3 victorias personales que se propone para sí mismo ese día — no del negocio, del líder como persona) [I3]
   - Mi Marcha de 20 Millas (acción diaria constante — editable solo 1 vez por semana)
   - ¿Hice activación física? (toggle)
-- [ ] Pre-game como gate: el Warm Up no se puede iniciar hasta que el Arquitecto lo complete
+- [ ] Pre-game como gate: el War Up no se puede iniciar hasta que el Arquitecto lo complete
 - [ ] Historial de pre-games (calendario de días completados)
 
-**Warm Up del equipo (8h)**
-- [ ] El Arquitecto inicia el Warm Up del día (botón "Iniciar Warm Up")
+**War Up del equipo (8h)** _(⚠️ es "War Up", no "Warm Up")_
+> **[L1] DISEÑO CRÍTICO:** El War Up es un ritual EN VIVO, DE PIE, en tiempo real. La corrección ocurre presencialmente mientras el equipo presenta. La app es la sala digital del stand-up — NO un formulario asíncrono.
+- [ ] El Arquitecto inicia el War Up del día (botón "Iniciar War Up" → abre sala en vivo)
 - [ ] Cada colaborador ve la pantalla de entrada con 3 campos:
   - **QUÉ:** "¿Qué vas a lograr hoy?" (placeholder: "No digas 'trabajar', di el entregable exacto")
-  - **POR QUÉ:** "¿Por qué es lo más rentable hoy?"
+  - **POR QUÉ:** "¿Por qué es lo más rentable hoy?" (debe poder vincularse a una Roca)
   - **BLOQUEO:** "¿Qué necesitás del líder para lograrlo?"
-- [ ] El Arquitecto ve todas las entradas en tiempo real (Supabase Realtime)
-- [ ] Por cada entrada: botón "✓ Con criterio" o "✗ Sin criterio claro" → si marca sin criterio, el ítem se tilda visualmente
+- [ ] El Arquitecto ve todas las entradas en tiempo real (Supabase Realtime) — como sala de stand-up digital
+- [ ] Por cada entrada: botón "✓ Con criterio" o "✗ Sin criterio claro" → si marca sin criterio, el ítem se tilda visualmente + notificación al colaborador para corregir en el acto
+- [ ] Ítem no alineado a Rocas → botón "→ Parking Lot" disponible para el Arquitecto
 - [ ] Timer visible: 15 minutos recomendados (no bloqueante, solo visual)
-- [ ] Modo asincrónico: plazo hasta las 9am para ingresar
+- [ ] Modo secundario asincrónico: plazo hasta las 9am si el equipo es remoto o distribuido
 
 **Cool Down (6h)**
 - [ ] Formulario de cierre accesible desde las 5pm
@@ -153,6 +194,7 @@ ritual_entries (id, ritual_id, user_id,
   - **Reality Check:** "¿Qué NO se logró y por qué?" (hechos, no excusas)
   - **Cierre de ciclos:** "¿Qué queda agendado para mañana?"
 - [ ] El Arquitecto ve resumen del equipo al final del día
+- [ ] **Reporte Semanal automático del viernes:** [B4] El Cool Down del viernes genera automáticamente el cierre de semana (celebración de victorias O reflexión sobre derrotas). No es manual — la app lo compila y presenta como ritual de cultura. Formato: victorias + realidades + compromisos del equipo consolidados.
 
 **Configuración y alertas (5h)**
 - [ ] Pantalla de configuración de rituales (Modo A/B/C/Diario)
@@ -254,16 +296,18 @@ task_updates (id, task_id, user_id, type, content, created_at)
 ### Tareas
 
 **Creador de tareas con validación (8h)**
+> ⚠️ **[I1]** Este wizard está basado en el Pase de Estafeta de S6 (protocolo definitivo de 5 puntos), NO en el Protocolo de Delegación de S1 (introducción conceptual).
 - [ ] Formulario en 5 pasos (wizard):
   - Paso 1 — **QUÉ:** Definition of Done (texto + opción de adjuntar imagen)
   - Paso 2 — **POR QUÉ:** Contexto e impacto
   - Paso 3 — **CÓMO:** Restricciones (presupuesto, herramientas, qué NO romper)
-  - Paso 4 — **CUÁNDO:** Date-time picker exacto
-  - Paso 5 — **CHEQUEO:** Cuándo se revisa el borrador
+  - Paso 4 — **CUÁNDO:** Date-time picker exacto + canal de entrega
+  - Paso 5 — **FEEDBACK LOOP:** Check-in antes del vencimiento (cuándo, cómo)
 - [ ] Barra de progreso del wizard (1/5 → 5/5)
 - [ ] Botón "Guardar" deshabilitado hasta completar los 5 pasos
 - [ ] Mensaje de error si intenta saltear: "Este punto es obligatorio. Si falta, el error es tuyo."
 - [ ] Selector de colaborador asignado + nivel LOS requerido
+- [ ] **Nivel ARQI de la tarea** [I5]: radio button → Informar / Consultar / Delegar _(ARQI define los derechos de decisión para esa tarea específica. Informar = lo ejecuta y avisa. Consultar = lo ejecuta pero pide opinión antes. Delegar = autonomía total dentro de los límites del QUÉ.)_
 
 **Escudo Anti-Boomerang (5h)**
 - [ ] Cuando un colaborador marca "Estoy bloqueado" → NO notifica al Arquitecto directamente
@@ -333,8 +377,19 @@ feedbacks (id, company_id, from_user, to_user,
 - [ ] Ej: S para perfil D → directo y específico. S para perfil I → público si es posible.
 - [ ] Estas guías aparecen como tooltip/sidebar mientras se escribe el feedback
 
+**Sesiones de Escape — Metodología 3 Streaks (3h)** _(nuevo — [B2])_
+> ⚠️ El feedback en las Sesiones de Escape es para APRENDIZAJE, no para mostrar indicadores de cumplimiento del Scorecard. El Scorecard mide rendimiento; el ESC construye capacidad.
+- [ ] Módulo de Sesión de Escape: el Arquitecto la crea asignada a un colaborador + proceso a enseñar
+- [ ] 3 fases visibles con estado:
+  - **Streak 1 — Yo hago, tú ves:** El líder demuestra. La persona observa. Estado: Aprendiendo.
+  - **Streak 2 — Tú haces, yo acompaño:** La persona ejecuta. El líder acompaña. Estado: Practicando.
+  - **Streak 3 — Tú haces, yo superviso:** Autonomía total con check-in ligero. Estado: Autónomo.
+- [ ] Regresión documentada: si hay error en Streak 2 → botón "Volver a Streak 1" + nota obligatoria de qué falló
+- [ ] Lógica de protección al líder: el registro de los 3 Streaks queda guardado como evidencia de que se dio todo el apoyo necesario
+- [ ] **Distinción clara en UI:** Las Sesiones de Escape son un módulo de desarrollo (ícono aprendizaje). Los feedbacks S/E/C son para rendimiento (ícono semáforo). No mezclar.
+
 ### ✅ Criterio de éxito del Sprint 5
-> El Arquitecto puede construir un feedback S/E/C en < 3 minutos con el template, con sugerencia de tono según el perfil DISC del colaborador, y ver el historial de balance S/E/C por persona.
+> El Arquitecto puede construir un feedback S/E/C en < 3 minutos con el template, con sugerencia de tono según el perfil DISC del colaborador, y ver el historial de balance S/E/C por persona. Las Sesiones de Escape quedan registradas con los 3 Streaks y evidencia de soporte al colaborador.
 
 ---
 
@@ -397,8 +452,33 @@ leading_indicators (id, company_id, name, owner_id,
 - [ ] Historial de decisiones tomadas y su resultado posterior
 - [ ] Registro de Disagree & Commit: ¿Con quién? ¿Sobre qué? ¿Se ejecutó al 100%?
 
+**Activos del Sistema — Repositorio de Procesos (4h)** _(nuevo — [B3])_
+> El líder graba un proceso una sola vez → queda disponible para el equipo 24/7. Esto crea un activo que trabaja sin el líder. Se actualiza SOLO cuando el proceso cambia.
+```sql
+process_assets (id, company_id, created_by,
+  title text NOT NULL,
+  description text,
+  video_url text,           -- link a Drive, Loom, YouTube, etc.
+  drive_link text,          -- documento de referencia
+  category varchar(50),     -- 'operativo' | 'comercial' | 'rrhh' | 'financiero'
+  last_updated_at timestamptz,
+  is_active boolean DEFAULT true)
+```
+- [ ] Vista de repositorio: lista de procesos con título, categoría, fecha de última actualización y link
+- [ ] Al crear un proceso: título + descripción + URL del video/doc + categoría
+- [ ] Badge "Desactualizado" si `last_updated_at` > 90 días
+- [ ] El equipo puede acceder en modo lectura (no puede editar, solo el Arquitecto)
+- [ ] Integración con Drive: campo de link directo al documento del proceso
+
+**Indicador Financiero YoY + Ciclo Continuo (2h)** _(nuevo — [L4])_
+> El programa TBM no tiene graduación. Es un ciclo continuo de sprints de 90 días. El termómetro de valor es el crecimiento real del negocio.
+- [ ] Widget en Dashboard: "Facturación mismo mes del año anterior vs. mes actual" (el Arquitecto ingresa ambos números manualmente)
+- [ ] Display visual: barra de crecimiento con % de variación YoY (promesa del framework: 15-30%)
+- [ ] Al completar el Día 90: pantalla de celebración → activación automática del Ciclo 2 (no hay graduación, hay inicio del siguiente trimestre)
+- [ ] Título de la pantalla: "Ciclo 1 completado → ¿Listo para las Rocas del Q2?"
+
 ### ✅ Criterio de éxito del Sprint 6
-> El Arquitecto define las Rocas del trimestre, ve el Dashboard con Leading Indicators y semáforos reales, puede aparcar ideas con fecha de liberación automática, y registra decisiones con el filtro del 70%.
+> El Arquitecto define las Rocas del trimestre, ve el Dashboard con Leading Indicators y semáforos reales, puede aparcar ideas con fecha de liberación automática, registra decisiones con el filtro del 70%, tiene un repositorio de procesos documentados, y ve el indicador financiero YoY.
 
 ---
 
@@ -420,12 +500,13 @@ workbook_progress (id, company_id, user_id, session_number,
 
 **Engine de workbooks (4h)**
 - [ ] Componente genérico `<WorkbookExercise>` que recibe tipo (texto, slider, tabla, checklist, reflexión) y guarda en `workbook_responses`
-- [ ] Sistema de desbloqueo: S2 se activa cuando S1 tiene ≥ 70% completado
+- [ ] **Sistema de desbloqueo híbrido [L3]:** mínimo 7 días calendario por sesión (no se puede avanzar antes aunque se complete todo). Si el usuario llega al 100% de completitud ANTES de los 7 días → aparece botón **"Solicitar avance anticipado"** que desbloquea automáticamente sin aprobación del coach.
 - [ ] Barra de progreso por sesión
+- [ ] Contador de días: "Día X/7 de esta sesión"
 - [ ] Cierre de sesión: "Mi compromiso de esta semana:" → guarda en `workbook_progress`
 
 **Sesión 1 — Diagnóstico (4h)**
-- [ ] Team Performance Scorecard (8 áreas 1–5) → actualiza semáforos del Dashboard
+- [ ] **Diagnóstico Organizacional TBM** (8 áreas 1–5) → actualiza semáforos del Dashboard _(⚠️ [I4] NO llamar "Team Performance Scorecard" en ninguna parte de la UI)_
 - [ ] Dashboard de Productividad → crea los 3 KPI slots del Dashboard
 - [ ] Protocolo de Delegación → aparece como checklist en el módulo Delegación
 - [ ] Los 5 Grandes → se convierten en tarea del Pre-game diario
@@ -521,16 +602,43 @@ workbook_progress (id, company_id, user_id, session_number,
 - [ ] Gráfica de KPIs vs. meta (últimas 4 semanas)
 - [ ] "¿Cuánto avanzaste?" — comparativa día 1 vs. hoy en formato visual
 
+**Panel Super Coach — Vista de Dilio (8h)** _(nuevo — [N1] [N2])_
+> Solo accesible para usuarios con rol `coach`. Solo ve alumnos con `access_type = 'mentored'`. Los usuarios independientes son invisibles para el coach.
+```sql
+coaching_notes (id, coach_id, student_company_id, 
+  linked_metric varchar(100),  -- ej: 'kpi:ventas_semana_22' o 'ritual:warmup'
+  note text NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  read_at timestamptz)
+```
+- [ ] **Capa 1 — Vista general de alumnos:**
+  - Tabla: nombre, sesión actual, último acceso, estado de salud (🟢/🟡/🔴)
+  - Estado calculado: verde = rituales OK + KPIs OK, amarillo = alguno flojo, rojo = sin actividad > 3 días o KPIs todos rojos
+  - Filtro rápido: "Solo mostrar rojos" (el botón más importante de esta vista)
+  - En 30 segundos Dilio sabe a quién llamar hoy
+- [ ] **Capa 2 — Deep dive por alumno:**
+  - Rocas del trimestre con % de cumplimiento
+  - Dashboard de 5 KPIs con semáforos de la última semana
+  - Consistencia en rituales: % de días completados en las últimas 4 semanas
+  - Indicador financiero YoY del alumno
+  - Tamaño del equipo + nivel LOS de cada colaborador
+- [ ] **Capa 3 — Canal de nota de coaching:**
+  - Input de texto libre + selector de métrica vinculada (KPI específico, ritual, Roca)
+  - La nota aparece en la app del alumno como un mensaje destacado del coach
+  - El alumno puede marcarla como leída
+  - El coach ve cuándo fue leída
+- [ ] ⚠️ Sin ranking entre alumnos. El valor está en saber quién necesita intervención, no quién va adelante.
+
 **Polish general (5h)**
 - [ ] Loading states en todos los formularios
 - [ ] Empty states con instrucción clara (cuando no hay datos aún)
 - [ ] Error handling: mensajes de error humanizados
-- [ ] Responsive check en mobile (Warm Up debe ser 100% usable en celular)
+- [ ] Responsive check en mobile (War Up debe ser 100% usable en celular)
 - [ ] Performance: lazy loading de módulos pesados
 - [ ] Accesibilidad básica (contraste, navegación por teclado)
 
 ### ✅ Criterio de éxito del Sprint 9
-> La app se ve y se siente profesional. Todos los flujos tienen loading/empty/error states. Se puede exportar un reporte PDF del diagnóstico. Las notificaciones llegan a tiempo.
+> La app se ve y se siente profesional. Todos los flujos tienen loading/empty/error states. Se puede exportar un reporte PDF del diagnóstico. Las notificaciones llegan a tiempo. Dilio puede entrar al Panel Super Coach y saber en < 30 segundos a qué alumno llamar hoy.
 
 ---
 
@@ -540,8 +648,16 @@ workbook_progress (id, company_id, user_id, session_number,
 
 ### Tareas
 
+**Modelo comercial — Definir e integrar [N4]**
+> Suscripción anual en DOS versiones:
+> - **Bundle con mentoría TBM:** precio con descuento — la app está incluida como parte del programa de Dilio. Estos usuarios tienen `access_type = 'mentored'`.
+> - **Sistema Standalone:** precio sin descuento — el usuario compra el BOS sin acceso a la mentoría. Tienen `access_type = 'independent'`.
+> La mentoría actúa como canal de adquisición con precio preferencial. El standalone es el producto de escala masiva.
+- [ ] Definir con Dilio los precios de cada tier antes de lanzar la beta
+- [ ] Evaluar integración con Stripe para manejo de suscripciones (puede ir en v1.1)
+
 **Lanzamiento beta (3h)**
-- [ ] Seleccionar 3–5 alumnos activos del programa TBM de Dilio
+- [ ] Seleccionar 3–5 alumnos activos del programa TBM de Dilio (con `access_type = 'mentored'`)
 - [ ] Sesión de onboarding guiada (30 min por empresa)
 - [ ] Grupo de WhatsApp/Slack de beta testers
 - [ ] Formulario de feedback semanal
