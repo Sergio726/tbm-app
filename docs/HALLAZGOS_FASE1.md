@@ -68,6 +68,8 @@ La Fase 1 reveló **4 conflictos críticos** entre fuentes que deben resolverse 
 
 ---
 
+> 🚫 **ANULADO por Dilio (Mayo 2026) — ver [RESPUESTAS_DILIO.md](./RESPUESTAS_DILIO.md) [N3]:** Los hallazgos de esta sección sobre **cohorts** (soporte multi-cohorte, `cohort_id`, estados por cohorte) quedan **sin efecto**. Dilio confirmó que el programa es **100% individual**: cada empresa avanza a su propio ritmo, **sin módulo de cohorts**. El spreadsheet de seguimiento era una herramienta interna de Dilio, no un requisito de la app. El modelo de datos correcto es por **empresa** (`companies` + `profiles`), como ya está en `schema.sql`.
+
 ## Documento 3 — SEGUIMIENTO DE IMPLEMENTACIONES (Spreadsheet)
 
 **Leído:** Mayo 2026  

@@ -598,15 +598,17 @@ Resumen automático enviado al equipo
 
 ---
 
-## 13. PREGUNTAS PENDIENTES PARA DILIO
+## 13. PREGUNTAS PENDIENTES PARA DILIO — ✅ RESUELTAS
 
-1. ¿Qué contiene exactamente la Sesión 7? (PDF imagen no extraíble)
-2. ¿El programa es individual (1 empresa = 1 usuario) o grupal (múltiples empresas en cohort)?
-3. ¿Hay un proceso de evaluación/certificación al final del programa?
-4. ¿El programa tiene acceso a Dilio de forma directa (1:1 coaching)? ¿Eso va en la app?
-5. ¿Cuál es el stack tecnológico preferido? (No-code primero, luego custom — según la visión)
-6. ¿Hay alguna herramienta existente (Notion, Airtable, etc.) que se esté usando hoy que debamos integrar o reemplazar?
-7. ¿El modelo de negocio de la app es: incluida en el programa / suscripción separada / lifetime?
+> Mayo 2026 — Respondidas oficialmente. Fuente de verdad: [RESPUESTAS_DILIO.md](./RESPUESTAS_DILIO.md).
+
+1. ~~¿Qué contiene la Sesión 7?~~ → ✅ BOS (Dashboard 5 Leading Indicators, Team Performance Scorecard, Matriz de Autoridad, Reunión de Silencio).
+2. ~~¿Individual o grupal (cohort)?~~ → ✅ **100% individual, sin cohorts** [N3].
+3. ~~¿Evaluación/certificación al final?~~ → ✅ **Sin graduación; ciclo continuo de 90 días** [L4].
+4. ~~¿Acceso directo a Dilio (1:1) en la app?~~ → ✅ **Panel Super Coach (3 capas) + nota de coaching** [N1].
+5. ~~¿Stack tecnológico?~~ → ✅ Next.js 14 + Supabase + Vercel.
+6. ~~¿Herramienta existente a integrar/reemplazar?~~ → ✅ Build custom; Drive/Loom opcional para Activos del Sistema [B3].
+7. ~~¿Modelo de negocio?~~ → ✅ **Suscripción anual:** Bundle con mentoría vs. Standalone [N2][N4].
 
 ---
 

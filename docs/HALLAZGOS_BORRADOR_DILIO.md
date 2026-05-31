@@ -237,8 +237,11 @@ Este módulo es **completamente nuevo** y no estaba en nuestro SPEC ni DISCOVERY
 - 🟢 Nombres de perfiles DISC: Motor / Combustible / Chasis / Sensor — confirmados
 - 🟢 Niveles LOS N1 y N5: Cadete y Socio — confirmados
 
-### ⏳ AÚN PENDIENTES DE RESOLVER
-- Nombres canónicos de pilares LOST (3 versiones distintas según fuente)
-- Qué son exactamente las 4 columnas del Seguimiento de Implementaciones
-- Contenido repetido en Workbook 8
-- Qué es el Método ARQI (mencionado para S3)
+### ✅ RESUELTAS por Dilio (Mayo 2026 — ver [RESPUESTAS_DILIO.md](./RESPUESTAS_DILIO.md))
+- **Cohorts / multi-empresa:** ❌ NO se construye — programa 100% individual [N3]. (Anula la fila "Multi-empresa / cohortes con cohort_id" de la tabla de arriba.)
+- **4 columnas del Seguimiento de Implementaciones:** irrelevante — era herramienta interna de Dilio, no requisito de la app [N3].
+- **Método ARQI:** lente de **derechos de decisión por tarea**, 3 niveles: Informar / Consultar / Delegar [I5].
+
+### ⏳ AÚN PENDIENTES (editoriales — no bloquean desarrollo)
+- Nombres canónicos de pilares LOST (Sebas confirmó: usar los de las presentaciones — Operaciones optimizadas / Sistemas escalables / Tiempo multiplicado).
+- Contenido repetido en Workbook 8 (limpieza editorial antes de digitalizar S8).

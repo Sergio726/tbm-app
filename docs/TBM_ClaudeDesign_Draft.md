@@ -438,7 +438,7 @@ Below: comparison with previous scorecard (if available) — "Mejoró 12 puntos 
 
 **Layout:** Wide dashboard, data-dense.
 
-**Top filters:** Filter by cohort, session, status, DISC type
+**Top filters:** Filter by session, status, DISC type _(no cohort filter — el programa es 100% individual [N3], ver RESPUESTAS_DILIO.md)_
 
 **Main grid — All Leaders:**
 A sortable table with columns:

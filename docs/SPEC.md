@@ -648,17 +648,19 @@ WorkbookProgress (progreso de sesiones)
 
 ---
 
-## 10. PREGUNTAS ABIERTAS (para resolver antes de Sprint 0)
+## 10. PREGUNTAS ABIERTAS — ✅ RESUELTAS por Dilio (ver [RESPUESTAS_DILIO.md](./RESPUESTAS_DILIO.md))
 
-| # | Pregunta | Impacta en... | Urgencia |
-|---|---|---|---|
-| ~~1~~ | ~~¿Qué contiene la Sesión 7?~~ | ~~M7 Workbooks~~ | ✅ Resuelta — BOS: Dashboard, Scorecard, Matriz de Autoridad, Reunión de Silencio |
-| 2 | ¿El programa es individual o grupal (cohort)? | Roles, multi-empresa | Alta |
-| 3 | ¿Hay evaluación/certificación al final? | M8 Diagnósticos | Media |
-| 4 | ¿El acceso a Dilio (coaching 1:1) va en la app? | Nuevo módulo | Media |
-| 5 | ¿Stack tecnológico preferido? | Fase 1 | Alta |
-| 6 | ¿Hay herramienta actual (Notion/Airtable) que integrar o reemplazar? | Fase 1 | Alta |
-| 7 | ¿Modelo de negocio de la app? | Roadmap, pricing | Alta |
+> Mayo 2026 — Las 18 preguntas fueron respondidas oficialmente por el autor. Todas las de esta sección quedan resueltas.
+
+| # | Pregunta | Resolución oficial (ref.) |
+|---|---|---|
+| ~~1~~ | ~~¿Qué contiene la Sesión 7?~~ | ✅ BOS: Dashboard, Scorecard, Matriz de Autoridad, Reunión de Silencio |
+| ~~2~~ | ~~¿Individual o grupal (cohort)?~~ | ✅ **100% individual, SIN cohorts** [N3]. No se construye módulo de cohorts ni `cohort_id`. |
+| ~~3~~ | ~~¿Evaluación/certificación al final?~~ | ✅ **Sin graduación. Ciclo continuo de 90 días** [L4]. Indicador financiero YoY como termómetro de valor. |
+| ~~4~~ | ~~¿Acceso a Dilio (coaching 1:1) en la app?~~ | ✅ **Sí — Panel Super Coach en 3 capas** [N1] + nota de coaching vinculada a un dato. |
+| ~~5~~ | ~~¿Stack tecnológico preferido?~~ | ✅ Next.js 14 + TypeScript + Tailwind + Supabase + Vercel (ver SPRINTS.md). |
+| ~~6~~ | ~~¿Herramienta actual (Notion/Airtable) a integrar?~~ | ✅ Build custom. Integración opcional con Drive/Loom para "Activos del Sistema" [B3]. |
+| ~~7~~ | ~~¿Modelo de negocio?~~ | ✅ **Suscripción anual:** Bundle con mentoría (`mentored`) vs. Standalone (`independent`) [N2][N4]. |
 
 ---
 
