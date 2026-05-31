@@ -323,3 +323,49 @@ input.tbm-range:focus {
     padding: 32px 24px !important;
   }
 }
+
+/* ── Impresión del informe DISC (Descargar → PDF) ─────────── */
+@media print {
+  /* Imprimir SOLO el informe */
+  body * { visibility: hidden; }
+  .disc-report, .disc-report * { visibility: visible; }
+  .disc-report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 8px !important;
+    color: #1f2937 !important;
+  }
+  .no-print { display: none !important; }
+  @page { margin: 1.4cm; }
+
+  /* Conservar barras/letras/íconos a color */
+  .disc-report,
+  .disc-report * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Tema claro (la app es dark) — override de tokens tbm */
+  .disc-report .tbm-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  .disc-report .text-tbm-text-primary { color: #0f172a !important; }
+  .disc-report .text-tbm-text-secondary { color: #334155 !important; }
+  .disc-report .text-tbm-text-muted { color: #64748b !important; }
+  .disc-report .bg-tbm-elevated { background: #eef2f7 !important; }
+
+  /* Sin animaciones/transiciones al imprimir */
+  .disc-report .tbm-rise,
+  .disc-report .tbm-bar,
+  .disc-report .tbm-glow-pulse {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

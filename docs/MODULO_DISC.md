@@ -63,6 +63,7 @@ Configurar en Vercel → Project → Settings → Environment Variables:
 | `NEXT_PUBLIC_APP_URL` | ✅ | URL pública (links de invitación y de test). En prod = dominio Vercel |
 | `ANTHROPIC_API_KEY` | ⬜ opcional | Habilita la síntesis IA del informe. Sin ella, informe estático |
 | `DISC_AI_MODEL` | ⬜ opcional | Modelo (default `claude-haiku-4-5`) |
+| `DISC_AI_TEMPERATURE` | ⬜ opcional | Temperatura 0–1 de la síntesis IA (default `0.6`) |
 
 > `NEXT_PUBLIC_APP_URL` debe apuntar al dominio de producción para que los links de invitación/test funcionen en el deploy.
 
@@ -85,15 +86,18 @@ Configurar en Vercel → Project → Settings → Environment Variables:
 - [x] **Movimiento / "dopamina"**: `ProfileIcon` con emoji animado de Google (Noto WebP por CDN) + halo de color y fallback CSS (`src/components/disc/profile-icon.tsx`); reveal del resultado (barras que crecen + cards en cascada); micro-interacciones del test (pop en MÁS/MENOS, realce de palabra, pulso de progreso); `prefers-reduced-motion` respetado. Keyframes en `globals.css`.
 - [x] `tsc --noEmit` y `next build` limpios.
 - [x] **KPI obligatorio**: no se puede guardar un rol sin su KPI principal (botón bloqueado + aviso + guard en `handleSave`).
+- [x] **Descargar informe (PDF)**: botón "Descargar informe" en el resultado → Imprimir→PDF con vista en tema claro (`@media print` en `globals.css`).
+- [x] **Síntesis IA afinada**: prompt reescrito (estructura, ~180 palabras, tono cálido, anti-invención) + `DISC_AI_TEMPERATURE` configurable.
+- [x] **Warning de Turbopack** resuelto (`turbopack.root` en `next.config.mjs`).
+- [x] `tsc --noEmit` y `next build` limpios.
 
 ---
 
 ## 6. Estado — Pendiente ⏳
 
-### 6.1 Otras mejoras detectadas
-- Compartir/descargar el informe del resultado (PDF propio de la app).
-- Afinar tono/largo del prompt de la síntesis IA sobre casos reales.
-- Quitar el warning de Turbopack por doble lockfile (raíz + tbm-app) seteando `turbopack.root`.
+Sin pendientes abiertos del módulo DISC. Próximos pasos posibles (no comprometidos):
+- Iterar el prompt de la síntesis IA sobre casos reales (requiere `ANTHROPIC_API_KEY`).
+- Permitir al Arquitecto descargar el informe de un miembro desde `/equipo` (hoy se hace abriendo su link completado).
 
 ---
 

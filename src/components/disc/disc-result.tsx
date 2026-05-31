@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles, Sun, Moon } from "lucide-react";
+import { Sparkles, Sun, Moon, Download } from "lucide-react";
 import {
   DISC_COLORS,
   DISC_DIMENSIONS,
@@ -46,7 +46,18 @@ export function DiscResult({
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 disc-report">
+      {/* Acción: descargar como PDF (oculto en la impresión) */}
+      <div className="flex justify-end no-print">
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="flex items-center gap-2 text-xs font-medium text-tbm-text-secondary border border-tbm-border rounded-lg px-3 py-1.5 hover:text-tbm-text-primary hover:bg-tbm-elevated transition-colors"
+        >
+          <Download size={14} /> Descargar informe (PDF)
+        </button>
+      </div>
+
       {/* Encabezado del perfil */}
       <div className="text-center tbm-rise" style={{ animationDelay: "0ms" }}>
         {firstName && (

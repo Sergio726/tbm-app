@@ -50,21 +50,35 @@ export async function generateDiscNarrative(input: DiscNarrativeInput): Promise<
     sombra: factor?.sombra ?? [],
   };
 
-  const system =
-    "Sos un coach de liderazgo del método The Business Multiplier (TBM) de Dilio Donado. " +
-    "Escribís síntesis DISC personalizadas, cálidas y profesionales, en español neutro-rioplatense, " +
-    "dirigidas a la persona evaluada (segunda persona). REGLAS ESTRICTAS: " +
-    "1) Usá EXCLUSIVAMENTE la información canónica provista; no inventes rasgos, datos ni diagnósticos. " +
-    "2) El DISC describe estilos de comportamiento; nunca lo presentes como medida de capacidad, " +
-    "inteligencia o valor de la persona. 3) No hay perfiles buenos ni malos. " +
-    "4) Tono motivador y respetuoso, sin tecnicismos innecesarios.";
+  const system = [
+    "Sos un coach de liderazgo del método The Business Multiplier (TBM) de Dilio Donado.",
+    "Escribís síntesis DISC personalizadas, cálidas y profesionales, en español neutro con voseo rioplatense, dirigidas a la persona evaluada (segunda persona, 'vos').",
+    "",
+    "REGLAS ESTRICTAS:",
+    "1) Usá EXCLUSIVAMENTE la información canónica provista (perfil, factor, puntajes). No inventes rasgos, anécdotas, datos ni diagnósticos nuevos.",
+    "2) Sintetizá e integrá; NO copies frases literales del material ni lo enumeres. Que suene a una persona escribiéndole a otra, no a un informe técnico.",
+    "3) El DISC describe estilos de comportamiento: NUNCA lo presentes como medida de inteligencia, capacidad o valor de la persona. No hay perfiles buenos ni malos.",
+    "4) Tono motivador, respetuoso y concreto; nada de clichés de autoayuda ni adulación vacía.",
+  ].join("\n");
 
-  const prompt =
-    "Escribí una síntesis de 2 a 3 párrafos cortos (máximo ~200 palabras) del perfil DISC de esta persona, " +
-    "integrando su letra primaria y secundaria, lo que aporta, lo que conviene cuidar y un cierre alentador " +
-    "orientado a su desarrollo (su 'PRIME'). No uses encabezados ni listas; prosa fluida. " +
-    "No repitas literalmente los textos: sintetizalos.\n\nINFORMACIÓN CANÓNICA (JSON):\n" +
-    JSON.stringify(canon, null, 2);
+  const prompt = [
+    "Escribí una síntesis personalizada del perfil DISC de esta persona, en prosa fluida (sin títulos, sin viñetas, sin emojis), de 2 a 3 párrafos y ~160–200 palabras en total.",
+    "",
+    "Seguí este hilo, integrándolo con naturalidad:",
+    "1. Abrí describiendo su estilo dominante combinando su letra primaria y secundaria (cómo tiende a operar).",
+    "2. Lo que aporta a un equipo desde ese estilo.",
+    "3. Un punto a cuidar (su sombra) planteado como oportunidad, no como defecto.",
+    "4. Un cierre alentador orientado a su crecimiento (su 'PRIME').",
+    "",
+    "Si hay nombre, podés dirigirte a la persona por su nombre una vez. Devolvé SOLO la síntesis, sin preámbulos ni comentarios.",
+    "",
+    "INFORMACIÓN CANÓNICA (JSON):",
+    JSON.stringify(canon, null, 2),
+  ].join("\n");
+
+  // Temperatura configurable (default 0.6). Acotada a [0, 1].
+  const tempRaw = Number.parseFloat(process.env.DISC_AI_TEMPERATURE ?? "");
+  const temperature = Number.isFinite(tempRaw) ? Math.min(1, Math.max(0, tempRaw)) : 0.6;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
@@ -80,6 +94,7 @@ export async function generateDiscNarrative(input: DiscNarrativeInput): Promise<
       body: JSON.stringify({
         model: process.env.DISC_AI_MODEL || DEFAULT_MODEL,
         max_tokens: 700,
+        temperature,
         system,
         messages: [{ role: "user", content: prompt }],
       }),
