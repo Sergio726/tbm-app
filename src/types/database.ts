@@ -203,6 +203,9 @@ export type Database = {
           disc_state: string | null
           disc_status: string | null
           disc_temor: string | null
+          cargo: string | null
+          disc_profile_key: string | null
+          disc_scores: Json | null
           email: string | null
           full_name: string | null
           id: string
@@ -228,6 +231,9 @@ export type Database = {
           disc_state?: string | null
           disc_status?: string | null
           disc_temor?: string | null
+          cargo?: string | null
+          disc_profile_key?: string | null
+          disc_scores?: Json | null
           email?: string | null
           full_name?: string | null
           id: string
@@ -253,6 +259,9 @@ export type Database = {
           disc_state?: string | null
           disc_status?: string | null
           disc_temor?: string | null
+          cargo?: string | null
+          disc_profile_key?: string | null
+          disc_scores?: Json | null
           email?: string | null
           full_name?: string | null
           id?: string
@@ -703,12 +712,107 @@ export type Database = {
         }
         Relationships: []
       }
+      disc_assessments: {
+        Row: {
+          id: string
+          token: string
+          company_id: string
+          profile_id: string | null
+          full_name: string | null
+          cargo: string | null
+          email: string | null
+          status: string
+          answers: Json | null
+          raw: Json | null
+          segments: Json | null
+          profile_key: string | null
+          disc_letters: string | null
+          ai_narrative: string | null
+          created_by: string | null
+          created_at: string | null
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          token: string
+          company_id: string
+          profile_id?: string | null
+          full_name?: string | null
+          cargo?: string | null
+          email?: string | null
+          status?: string
+          answers?: Json | null
+          raw?: Json | null
+          segments?: Json | null
+          profile_key?: string | null
+          disc_letters?: string | null
+          ai_narrative?: string | null
+          created_by?: string | null
+          created_at?: string | null
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          token?: string
+          company_id?: string
+          profile_id?: string | null
+          full_name?: string | null
+          cargo?: string | null
+          email?: string | null
+          status?: string
+          answers?: Json | null
+          raw?: Json | null
+          segments?: Json | null
+          profile_key?: string | null
+          disc_letters?: string | null
+          ai_narrative?: string | null
+          created_by?: string | null
+          created_at?: string | null
+          completed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disc_assessments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disc_assessments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_disc_assessment: {
+        Args: { p_token: string }
+        Returns: Json
+      }
+      submit_disc: {
+        Args: {
+          p_token: string
+          p_full_name: string | null
+          p_cargo: string | null
+          p_email: string | null
+          p_answers: Json
+          p_raw: Json
+          p_segments: Json
+          p_profile_key: string
+          p_letters: string
+          p_disc_name: string | null
+          p_disc_icon: string | null
+          p_narrative?: string | null
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
