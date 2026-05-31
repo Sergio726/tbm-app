@@ -178,6 +178,10 @@ export function EquipoClient({
 
   async function handleSave() {
     if (!selected || !draft || saving) return;
+    if (!draft.kpi_name.trim()) {
+      alert("Definí el KPI principal del rol (número único) antes de guardar.");
+      return;
+    }
     setSaving(true);
     try {
       const supabase = createBrowserClient();
@@ -567,6 +571,8 @@ function MemberDetail({
   const isSombra = draft.disc_state === "sombra";
   const align = draft.alignment as AlignmentValue | null;
   const suggestedAlign = computeAlignment(draft.cargo, draft.disc_letters);
+  const kpiMissing = draft.kpi_name.trim() === "";
+  const canSave = dirty && !saving && !kpiMissing;
 
   return (
     <div className="flex flex-col" style={{ gap: 16 }}>
@@ -847,10 +853,13 @@ function MemberDetail({
             />
           </Field>
         </div>
-        {draft.kpi_name.trim() === "" && (
+        {kpiMissing && (
           <div className="flex items-center" style={{ gap: 7, marginTop: 10, fontSize: 11.5, color: "#fbbf24" }}>
             <AlertTriangle size={13} />
-            Rol sin número único: si no se puede medir, el cargo es ambiguo (Ley de Pearson, S7).
+            <span>
+              <strong>Requerido para guardar:</strong> definí el KPI principal (número único). Si no se
+              puede medir, el cargo es ambiguo (Ley de Pearson, S7).
+            </span>
           </div>
         )}
       </Card>
@@ -892,22 +901,28 @@ function MemberDetail({
               <Check size={14} /> Guardado
             </span>
           )}
+          {dirty && kpiMissing && !savedFlash && (
+            <span className="flex items-center" style={{ gap: 6, fontSize: 12, color: "#fbbf24" }}>
+              <AlertTriangle size={13} /> Falta el KPI para poder guardar
+            </span>
+          )}
           <button
             type="button"
             onClick={onSave}
-            disabled={!dirty || saving}
+            disabled={!canSave}
+            title={kpiMissing ? "Definí el KPI principal del rol para guardar" : undefined}
             className="flex items-center transition-all"
             style={{
               gap: 8,
               padding: "10px 20px",
               borderRadius: 10,
               border: "none",
-              background: dirty && !saving ? "linear-gradient(180deg, #4f86ff, #2c5fe6)" : "rgba(255,255,255,0.06)",
-              color: dirty && !saving ? "#fff" : "rgba(255,255,255,0.4)",
+              background: canSave ? "linear-gradient(180deg, #4f86ff, #2c5fe6)" : "rgba(255,255,255,0.06)",
+              color: canSave ? "#fff" : "rgba(255,255,255,0.4)",
               fontSize: 13.5,
               fontWeight: 600,
-              cursor: dirty && !saving ? "pointer" : "default",
-              boxShadow: dirty && !saving ? "0 6px 18px rgba(54,114,255,0.3)" : "none",
+              cursor: canSave ? "pointer" : "default",
+              boxShadow: canSave ? "0 6px 18px rgba(54,114,255,0.3)" : "none",
             }}
           >
             {saving ? "Guardando…" : "Guardar cambios"}
