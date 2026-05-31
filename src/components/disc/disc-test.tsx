@@ -241,8 +241,10 @@ export function DiscTest({
             ⏱ {fmtTime(elapsed)}
           </span>
         </div>
-        <div className="h-1.5 rounded-full bg-tbm-elevated overflow-hidden">
-          <div className="h-full bg-tbm-blue transition-all duration-300" style={{ width: `${pct}%` }} />
+        <div key={idx} className="tbm-progress-pulse rounded-full">
+          <div className="h-1.5 rounded-full bg-tbm-elevated overflow-hidden">
+            <div className="h-full bg-tbm-blue transition-all duration-300" style={{ width: `${pct}%` }} />
+          </div>
         </div>
         <div className="text-right text-[11px] text-tbm-text-muted mt-1">
           {idx + 1}/{TOTAL_GROUPS}
@@ -268,12 +270,27 @@ export function DiscTest({
             const def = wordDefinition(word);
             const defOpen = openDef === w;
             return (
-              <div key={w} className="tbm-card px-3 py-2.5">
+              <div
+                key={w}
+                className="tbm-card px-3 py-2.5 transition-colors"
+                style={{
+                  borderColor: isMost
+                    ? "rgba(16,185,129,0.45)"
+                    : isLeast
+                    ? "rgba(239,68,68,0.45)"
+                    : undefined,
+                  background: isMost
+                    ? "rgba(16,185,129,0.07)"
+                    : isLeast
+                    ? "rgba(239,68,68,0.07)"
+                    : undefined,
+                }}
+              >
                 <div className="flex items-center gap-3">
                   <button
                     aria-label="Más"
                     onClick={() => setMost(w)}
-                    className="w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors"
+                    className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${isMost ? "tbm-tap" : ""}`}
                     style={{
                       borderColor: isMost ? "#10B981" : "#1E3050",
                       background: isMost ? "#10B981" : "transparent",
@@ -296,7 +313,7 @@ export function DiscTest({
                   <button
                     aria-label="Menos"
                     onClick={() => setLeast(w)}
-                    className="w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors"
+                    className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${isLeast ? "tbm-tap" : ""}`}
                     style={{
                       borderColor: isLeast ? "#EF4444" : "#1E3050",
                       background: isLeast ? "#EF4444" : "transparent",

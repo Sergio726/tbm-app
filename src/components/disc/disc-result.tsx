@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Sparkles, Sun, Moon } from "lucide-react";
 import {
   DISC_COLORS,
@@ -10,6 +11,7 @@ import {
   type DiscLetter,
 } from "@/lib/disc";
 import type { DiscScores, DiscSegments } from "@/lib/disc-evaluator";
+import { ProfileIcon } from "./profile-icon";
 
 const DIM_ORDER: DiscLetter[] = ["D", "I", "S", "C"];
 
@@ -34,15 +36,25 @@ export function DiscResult({
   const primary = primaryLetter(letters);
   const factor = primary ? DISC_FACTORS[primary] : null;
   const firstName = fullName?.trim().split(" ")[0];
+  const iconColor = primary ? DISC_COLORS[primary] : "#5b8aff";
+
+  // Disparar el "reveal" (barras crecen, cards entran) una vez montado.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
 
   return (
     <div className="space-y-6">
       {/* Encabezado del perfil */}
-      <div className="text-center">
+      <div className="text-center tbm-rise" style={{ animationDelay: "0ms" }}>
         {firstName && (
           <p className="text-sm text-tbm-text-secondary mb-1">Hola {firstName}, este es tu perfil:</p>
         )}
-        <div className="text-5xl mb-2">{profile?.icon ?? "🧭"}</div>
+        <div className="flex justify-center mb-2">
+          <ProfileIcon profileKey={profileKey} emoji={profile?.icon ?? "🧭"} color={iconColor} />
+        </div>
         <h1 className="text-2xl font-bold text-tbm-text-primary">{profile?.name ?? profileKey}</h1>
         {letters && (
           <div className="mt-1 inline-flex gap-1">
@@ -61,14 +73,14 @@ export function DiscResult({
       </div>
 
       {/* Recordatorio: no hay perfiles buenos ni malos */}
-      <p className="text-center text-sm text-tbm-text-secondary leading-relaxed">
+      <p className="text-center text-sm text-tbm-text-secondary leading-relaxed tbm-rise" style={{ animationDelay: "70ms" }}>
         Este es tu <span className="text-tbm-text-primary">perfil natural de comportamiento</span>. No
         hay perfiles buenos ni malos: cada uno aporta algo distinto.
       </p>
 
       {/* Síntesis personalizada (IA) */}
       {narrative && (
-        <div className="tbm-card p-4 border border-tbm-blue/30">
+        <div className="tbm-card p-4 border border-tbm-blue/30 tbm-rise" style={{ animationDelay: "140ms" }}>
           <div className="flex items-center gap-2 mb-2">
             <Sparkles size={15} className="text-tbm-blue-light" />
             <h2 className="text-sm font-semibold text-tbm-text-primary">Síntesis personalizada</h2>
@@ -84,8 +96,8 @@ export function DiscResult({
       )}
 
       {/* Barras por dimensión */}
-      <div className="tbm-card p-4 space-y-3">
-        {DIM_ORDER.map((letter) => {
+      <div className="tbm-card p-4 space-y-3 tbm-rise" style={{ animationDelay: "210ms" }}>
+        {DIM_ORDER.map((letter, i) => {
           const seg = segments[letter] ?? 4;
           const pct = Math.round((seg / 7) * 100);
           return (
@@ -103,8 +115,12 @@ export function DiscResult({
               </div>
               <div className="h-2 rounded-full bg-tbm-elevated overflow-hidden">
                 <div
-                  className="h-full rounded-full transition-all"
-                  style={{ width: `${pct}%`, background: DISC_COLORS[letter] }}
+                  className="h-full rounded-full tbm-bar"
+                  style={{
+                    width: mounted ? `${pct}%` : "0%",
+                    transitionDelay: `${i * 90}ms`,
+                    background: DISC_COLORS[letter],
+                  }}
                 />
               </div>
             </div>
@@ -118,7 +134,7 @@ export function DiscResult({
 
       {/* Luz y Sombra */}
       {factor && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 tbm-rise" style={{ animationDelay: "280ms" }}>
           <TraitList
             title="Tu luz"
             Icon={Sun}
@@ -136,7 +152,7 @@ export function DiscResult({
 
       {/* Perfil en detalle */}
       {profile && (
-        <div className="tbm-card p-4 space-y-4">
+        <div className="tbm-card p-4 space-y-4 tbm-rise" style={{ animationDelay: "350ms" }}>
           <h2 className="text-sm font-semibold text-tbm-text-primary">Tu perfil en detalle</h2>
           <p className="text-sm text-tbm-text-secondary leading-relaxed">{profile.desc}</p>
 
@@ -163,7 +179,7 @@ export function DiscResult({
       )}
 
       {/* Glosario: qué mide cada letra */}
-      <div className="tbm-card p-4">
+      <div className="tbm-card p-4 tbm-rise" style={{ animationDelay: "420ms" }}>
         <h2 className="text-sm font-semibold text-tbm-text-primary mb-3">¿Qué significa cada letra?</h2>
         <div className="space-y-2.5">
           {DIM_ORDER.map((letter) => {
@@ -188,7 +204,7 @@ export function DiscResult({
       </div>
 
       {/* Referencia: sobre el modelo */}
-      <p className="text-xs text-tbm-text-muted leading-relaxed text-center px-2">
+      <p className="text-xs text-tbm-text-muted leading-relaxed text-center px-2 tbm-rise" style={{ animationDelay: "490ms" }}>
         El modelo DISC describe 4 estilos de comportamiento (Dominancia, Influencia, Estabilidad y
         Cumplimiento). Es una herramienta de autoconocimiento para trabajar mejor en equipo, no un
         diagnóstico ni una medida de capacidad.

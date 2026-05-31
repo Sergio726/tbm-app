@@ -243,6 +243,73 @@ input.tbm-range:focus {
 .tbm-pulse-dot { animation: tbm-pulse 1.6s ease-in-out infinite; }
 .tbm-live-strip { animation: tbm-live 2s ease-in-out infinite; }
 
+/* ── DISC — movimiento / "dopamina" ───────────────────────── */
+/* Pop de entrada (ícono del perfil) */
+@keyframes tbm-pop {
+  0%   { opacity: 0; transform: scale(.6); }
+  60%  { opacity: 1; transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.tbm-pop { animation: tbm-pop .5s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* Tap (botones MÁS/MENOS al seleccionar) */
+@keyframes tbm-tap {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+.tbm-tap { animation: tbm-tap .28s ease-out; }
+
+/* Reveal escalonado de cards (fade + subir) */
+@keyframes tbm-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.tbm-rise { animation: tbm-rise .5s cubic-bezier(.4,0,.2,1) both; }
+
+/* Flicker de la llama (emoji fallback animado) */
+@keyframes tbm-flicker {
+  0%, 100% { transform: scale(1) rotate(-1deg); opacity: 1; }
+  25%      { transform: scale(1.06) rotate(1.5deg); opacity: .9; }
+  50%      { transform: scale(.97) rotate(-1.5deg); opacity: 1; }
+  75%      { transform: scale(1.04) rotate(1deg); opacity: .94; }
+}
+.tbm-flicker { animation: tbm-flicker 1.5s ease-in-out infinite; transform-origin: 50% 80%; }
+
+/* Flotar suave (emoji fallback genérico) */
+@keyframes tbm-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.tbm-float { animation: tbm-float 3s ease-in-out infinite; }
+
+/* Pulso del halo de glow detrás del ícono */
+@keyframes tbm-glow-pulse {
+  0%, 100% { opacity: .4; transform: scale(1); }
+  50%      { opacity: .75; transform: scale(1.1); }
+}
+.tbm-glow-pulse { animation: tbm-glow-pulse 2.6s ease-in-out infinite; }
+
+/* Pulso de la barra de progreso al avanzar de grupo */
+@keyframes tbm-progress-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(37,99,235,.55); }
+  100% { box-shadow: 0 0 0 7px rgba(37,99,235,0); }
+}
+.tbm-progress-pulse { animation: tbm-progress-pulse .55s ease-out; }
+
+/* Barras del resultado: transición suave del ancho */
+.tbm-bar { transition: width .8s cubic-bezier(.4,0,.2,1); }
+
+/* Accesibilidad: respetar "reducir movimiento" */
+@media (prefers-reduced-motion: reduce) {
+  .tbm-slide-right, .tbm-slide-left, .tbm-pulse-dot, .tbm-live-strip,
+  .tbm-pop, .tbm-tap, .tbm-rise, .tbm-flicker, .tbm-float,
+  .tbm-glow-pulse, .tbm-progress-pulse, .tbm-bar, .animate-fade-in {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* ── Login split-screen — responsive ──────────────────────── */
 @media (max-width: 900px) {
   .login-split {
