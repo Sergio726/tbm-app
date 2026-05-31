@@ -84,13 +84,13 @@ Configurar en Vercel → Project → Settings → Environment Variables:
 - [x] Micro-referencias por sección en `/equipo`.
 - [x] **Movimiento / "dopamina"**: `ProfileIcon` con emoji animado de Google (Noto WebP por CDN) + halo de color y fallback CSS (`src/components/disc/profile-icon.tsx`); reveal del resultado (barras que crecen + cards en cascada); micro-interacciones del test (pop en MÁS/MENOS, realce de palabra, pulso de progreso); `prefers-reduced-motion` respetado. Keyframes en `globals.css`.
 - [x] `tsc --noEmit` y `next build` limpios.
+- [x] **KPI obligatorio**: no se puede guardar un rol sin su KPI principal (botón bloqueado + aviso + guard en `handleSave`).
 
 ---
 
 ## 6. Estado — Pendiente ⏳
 
 ### 6.1 Otras mejoras detectadas
-- Validación opcional: no permitir guardar un rol sin KPI (hoy solo avisa).
 - Compartir/descargar el informe del resultado (PDF propio de la app).
 - Afinar tono/largo del prompt de la síntesis IA sobre casos reales.
 - Quitar el warning de Turbopack por doble lockfile (raíz + tbm-app) seteando `turbopack.root`.
