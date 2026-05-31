@@ -82,23 +82,14 @@ Configurar en Vercel → Project → Settings → Environment Variables:
 - [x] **Síntesis con IA** (híbrida, cacheada, gateada por env).
 - [x] **Aviso Realtime** en `/equipo` (toast + "Actualizar").
 - [x] Micro-referencias por sección en `/equipo`.
+- [x] **Movimiento / "dopamina"**: `ProfileIcon` con emoji animado de Google (Noto WebP por CDN) + halo de color y fallback CSS (`src/components/disc/profile-icon.tsx`); reveal del resultado (barras que crecen + cards en cascada); micro-interacciones del test (pop en MÁS/MENOS, realce de palabra, pulso de progreso); `prefers-reduced-motion` respetado. Keyframes en `globals.css`.
 - [x] `tsc --noEmit` y `next build` limpios.
 
 ---
 
 ## 6. Estado — Pendiente ⏳
 
-### 6.1 Movimiento / "dopamina" en el test y el resultado (PRIORIDAD del próximo sprint)
-Objetivo: que el test se sienta vivo y gratificante, y que el resultado tenga un "momento wow".
-- **Ícono del perfil animado en el resultado.** Hoy es un emoji estático (ej. Resolutivo = 🔥). Reemplazar/animar:
-  - Animación del propio ícono (ej. la llama "ardiendo" con keyframes), o
-  - Micro-animación de entrada (scale/pop + glow) al revelar el perfil, o
-  - Ícono Lottie/SVG animado por perfil (16 variantes) — la opción más rica.
-- **Micro-interacciones en el test**: feedback háptico/visual al elegir MÁS/MENOS (pop del botón, check animado), barra de progreso con "pulso", confeti/celebración sutil al terminar.
-- **Reveal del resultado**: animación de las barras D/I/S/C "creciendo" al entrar, aparición escalonada de las cards.
-- Definir si se usa una librería (ej. `framer-motion`, `lottie-react`) o solo CSS keyframes (`globals.css` ya tiene `tbm-slide-*`, `tbm-pulse-dot`).
-
-### 6.2 Otras mejoras detectadas
+### 6.1 Otras mejoras detectadas
 - Validación opcional: no permitir guardar un rol sin KPI (hoy solo avisa).
 - Compartir/descargar el informe del resultado (PDF propio de la app).
 - Afinar tono/largo del prompt de la síntesis IA sobre casos reales.
