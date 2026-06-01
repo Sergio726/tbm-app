@@ -1,14 +1,26 @@
 "use client";
 
-import { Users, Sun, Moon, Sparkles } from "lucide-react";
+import { User, Sun, Moon, Compass } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { Profile } from "@/types/database";
-import { DISC_COLORS, DISC_FACTORS, primaryLetter, normalizeLetters } from "@/lib/disc";
-import { Card, SectionTitle, Field, ToggleBtn, inputStyle } from "./primitives";
-import { LettersHint } from "./letters-hint";
+import { DISC_COLORS, DISC_FACTORS, normalizeLetters } from "@/lib/disc";
+import {
+  Panel,
+  FieldLabel,
+  TextInput,
+  TextAreaInput,
+} from "./primitives";
+import { LettersHintBox } from "./letters-hint";
 import { TestLinkBox } from "./test-link-box";
-import { DiscBars } from "./disc-bars";
 import { DiscRadar } from "./disc-radar";
-import type { Draft, DiscScoresShape } from "./types";
+import { DiscBars } from "./disc-bars";
+import {
+  archetypeFor,
+  effectiveScores,
+  MONO,
+  type DiscScoresShape,
+  type Draft,
+} from "./types";
 
 export function DiscSection({
   member,
@@ -31,41 +43,49 @@ export function DiscSection({
   onGenerateLink: () => void;
   generating: boolean;
 }) {
-  const primary = primaryLetter(draft.disc_letters);
-  const factor = primary ? DISC_FACTORS[primary] : null;
-  const color = primary ? DISC_COLORS[primary] : "#64748b";
+  const code = normalizeLetters(draft.disc_letters);
+  const arch = archetypeFor(code);
+  const primary = arch.primary;
+  const accent = DISC_COLORS[primary] ?? "#f87171";
+  const factor = DISC_FACTORS[primary];
   const isSombra = draft.disc_state === "sombra";
-  const normalized = normalizeLetters(draft.disc_letters);
+  const pctScores = effectiveScores(scores, code);
 
   return (
-    <Card>
-      <SectionTitle
-        Icon={Users}
-        label="Perfil DISC"
-        color={color}
-        hint="Cómo se comporta naturalmente y cómo liderarlo. Generá el link del test o cargá las letras del informe."
-      />
+    <Panel
+      icon={<User size={18} strokeWidth={1.9} />}
+      iconColor={accent}
+      accent={accent}
+      title="Perfil DISC"
+      sub="Cómo se comporta naturalmente y cómo liderarlo. Generá el link del test o cargá las letras del informe."
+    >
+      {/* letters input + interpretation */}
+      <div className="mb-[18px] grid items-start gap-4 md:grid-cols-[180px_minmax(0,1fr)]">
+        <div>
+          <FieldLabel hint="ej. SC, DI">Letras DISC</FieldLabel>
+          <TextInput
+            value={draft.disc_letters}
+            disabled={!editable}
+            maxLength={2}
+            onChange={(e) =>
+              patch({
+                disc_letters: e.target.value.toUpperCase().replace(/[^DISC]/g, ""),
+              })
+            }
+            className="text-center"
+            style={{
+              fontFamily: MONO,
+              fontSize: 22,
+              fontWeight: 700,
+              letterSpacing: 4,
+              padding: 12,
+            }}
+          />
+        </div>
+        <LettersHintBox raw={draft.disc_letters} />
+      </div>
 
-      <Field label="Letras DISC" hint="ej. SC, DI">
-        <input
-          value={draft.disc_letters}
-          disabled={!editable}
-          onChange={(e) => patch({ disc_letters: e.target.value })}
-          placeholder="—"
-          maxLength={4}
-          style={{
-            ...inputStyle,
-            textAlign: "center",
-            fontSize: 18,
-            fontWeight: 700,
-            letterSpacing: 8,
-            padding: "12px",
-          }}
-        />
-      </Field>
-
-      <LettersHint raw={draft.disc_letters} />
-
+      {/* Test DISC callout */}
       {editable && (
         <TestLinkBox
           token={testToken}
@@ -75,200 +95,180 @@ export function DiscSection({
         />
       )}
 
-      {factor ? (
+      {code ? (
         <>
-          {/* Atributos: radar + barras */}
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: "150px 1fr",
-              gap: 18,
-              marginTop: 18,
-              alignItems: "center",
-            }}
-          >
-            <DiscRadar letters={normalized} scores={scores} />
-            <DiscBars letters={normalized} scores={scores} />
+          {/* radar + stat bars */}
+          <div className="mb-[22px] grid items-center gap-5 md:grid-cols-[230px_minmax(0,1fr)]">
+            <div
+              className="rounded-[14px] border border-white/[0.05] p-3"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 45%, rgba(91,138,255,0.07), transparent 70%)",
+              }}
+            >
+              <div className="mb-1 text-center text-[10px] font-bold uppercase tracking-[1.2px] text-white/40">
+                Atributos base
+              </div>
+              <DiscRadar scores={pctScores} primary={primary} />
+            </div>
+            <DiscBars scores={pctScores} primary={primary} />
           </div>
 
-          <StateToggle draft={draft} patch={patch} editable={editable} />
+          {/* Luz / Sombra toggle */}
+          <FieldLabel>Estado actual (evaluación del Arquitecto)</FieldLabel>
+          <div className="grid grid-cols-2 gap-2.5">
+            <LuzSombraButton
+              active={!isSombra}
+              disabled={!editable}
+              onClick={() => patch({ disc_state: "luz" })}
+              Icon={Sun}
+              label="Luz"
+              color="#fbbf24"
+            />
+            <LuzSombraButton
+              active={isSombra}
+              disabled={!editable}
+              onClick={() => patch({ disc_state: "sombra" })}
+              Icon={Moon}
+              label="Sombra"
+              color="#a78bfa"
+            />
+          </div>
 
-          {/* Luz / Sombra side by side */}
-          <div
-            className="grid"
-            style={{ gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 16 }}
-          >
-            <DescList
+          <div className="mt-3.5 flex gap-3">
+            <SideList
               title="Luz"
               Icon={Sun}
+              color="#fbbf24"
               items={factor.luz}
-              tone="#34d399"
               dim={isSombra}
             />
-            <DescList
+            <SideList
               title="Sombra"
               Icon={Moon}
+              color="#a78bfa"
               items={factor.sombra}
-              tone="#a78bfa"
               dim={!isSombra}
             />
           </div>
 
           {/* Cómo liderar */}
           <div
+            className="mt-[18px] rounded-[14px] border px-4.5 py-4"
             style={{
-              marginTop: 16,
-              padding: "12px 14px",
-              borderRadius: 10,
-              background: `${color}12`,
-              border: `1px solid ${color}30`,
+              background: `${accent}0e`,
+              borderColor: `${accent}30`,
+              padding: "16px 18px",
             }}
           >
-            <div
-              className="flex items-center"
-              style={{ gap: 7, marginBottom: 6 }}
-            >
-              <Sparkles size={13} style={{ color }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color }}>
-                Cómo liderar a{" "}
-                {member.full_name?.split(" ")[0] ?? "esta persona"} · estrategia
-              </span>
+            <div className="mb-2 flex items-center gap-2 text-[13px] font-bold" style={{ color: accent }}>
+              <Compass size={16} strokeWidth={1.9} />
+              Cómo liderar a {member.full_name?.split(" ")[0] ?? "esta persona"} · estrategia
             </div>
-            <p
-              style={{
-                fontSize: 12.5,
-                color: "rgba(255,255,255,0.85)",
-                lineHeight: 1.5,
-                margin: 0,
-              }}
-            >
+            <div className="mb-1.5 text-[13.5px] font-semibold leading-snug text-white">
               {factor.howToManage}
-            </p>
-            <p
-              style={{
-                fontSize: 11.5,
-                color: "rgba(255,255,255,0.5)",
-                marginTop: 6,
-              }}
-            >
+            </div>
+            <div className="text-[12.5px] leading-snug text-white/60">
               Bajo presión: {factor.underPressure}
-            </p>
+            </div>
           </div>
 
-          <Field label="Temor dominante" hint="sugerido por perfil — editable">
-            <textarea
-              value={draft.disc_temor}
+          {/* Temor */}
+          <div className="mt-[18px]">
+            <FieldLabel hint="sugerido por perfil — editable">Temor dominante</FieldLabel>
+            <TextAreaInput
+              value={draft.disc_temor || factor.temor}
               disabled={!editable}
               onChange={(e) => patch({ disc_temor: e.target.value })}
-              placeholder={factor.temor}
               rows={2}
-              style={{ ...inputStyle, resize: "vertical" }}
             />
-          </Field>
+          </div>
         </>
       ) : (
-        <p
-          style={{
-            fontSize: 12.5,
-            color: "rgba(255,255,255,0.45)",
-            marginTop: 12,
-          }}
-        >
+        <p className="mt-3 text-[12.5px] text-white/45">
           Ingresá las letras DISC (del informe) para ver Luz/Sombra, temores y guía de
           liderazgo.
         </p>
       )}
-    </Card>
+    </Panel>
   );
 }
 
-function StateToggle({
-  draft,
-  patch,
-  editable,
+function LuzSombraButton({
+  active,
+  disabled,
+  onClick,
+  Icon,
+  label,
+  color,
 }: {
-  draft: Draft;
-  patch: (p: Partial<Draft>) => void;
-  editable: boolean;
+  active: boolean;
+  disabled: boolean;
+  onClick: () => void;
+  Icon: LucideIcon;
+  label: string;
+  color: string;
 }) {
-  const isSombra = draft.disc_state === "sombra";
   return (
-    <div style={{ marginTop: 18 }}>
-      <div
-        style={{ fontSize: 11.5, color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
-      >
-        Estado actual (evaluación del Arquitecto)
-      </div>
-      <div className="flex" style={{ gap: 8, marginTop: 6 }}>
-        <ToggleBtn
-          active={!isSombra}
-          disabled={!editable}
-          onClick={() => patch({ disc_state: "luz" })}
-          Icon={Sun}
-          label="Luz"
-          color="#fbbf24"
-        />
-        <ToggleBtn
-          active={isSombra}
-          disabled={!editable}
-          onClick={() => patch({ disc_state: "sombra" })}
-          Icon={Moon}
-          label="Sombra"
-          color="#a78bfa"
-        />
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="flex items-center justify-center gap-2.5 rounded-xl border px-3 py-3.5 text-[14px] font-semibold transition disabled:cursor-default"
+      style={{
+        background: active ? `${color}1c` : "rgba(255,255,255,0.03)",
+        borderColor: active ? `${color}66` : "rgba(255,255,255,0.08)",
+        color: active ? color : "rgba(255,255,255,0.55)",
+        boxShadow: active ? `0 0 18px ${color}26` : "none",
+      }}
+    >
+      <Icon size={17} strokeWidth={1.9} />
+      {label}
+    </button>
   );
 }
 
-function DescList({
+function SideList({
   title,
   Icon,
+  color,
   items,
-  tone,
   dim,
 }: {
   title: string;
-  Icon: typeof Sun;
+  Icon: LucideIcon;
+  color: string;
   items: string[];
-  tone: string;
   dim: boolean;
 }) {
   return (
     <div
+      className="flex-1 rounded-[14px] border px-4 py-4 transition"
       style={{
-        padding: "12px 14px",
-        borderRadius: 10,
-        background: dim ? "rgba(255,255,255,0.015)" : `${tone}0d`,
-        border: `1px solid ${dim ? "rgba(255,255,255,0.05)" : `${tone}28`}`,
+        background: dim ? "rgba(255,255,255,0.015)" : `${color}0e`,
+        borderColor: dim ? "rgba(255,255,255,0.05)" : `${color}30`,
         opacity: dim ? 0.5 : 1,
       }}
     >
-      <div
-        className="flex items-center"
-        style={{ gap: 6, marginBottom: 8, fontSize: 12, fontWeight: 600, color: tone }}
-      >
-        <Icon size={12} />
+      <div className="mb-3 flex items-center gap-2 text-[12.5px] font-bold tracking-wide" style={{ color }}>
+        <Icon size={15} strokeWidth={2} />
         {title}
       </div>
-      <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-        {items.map((it, i) => (
-          <li
+      <div className="flex flex-col gap-2.5">
+        {items.map((t, i) => (
+          <div
             key={i}
-            className="flex"
-            style={{
-              gap: 7,
-              fontSize: 12,
-              color: "rgba(255,255,255,0.75)",
-              lineHeight: 1.45,
-              marginBottom: 4,
-            }}
+            className="flex gap-2.5 text-[12.5px] leading-snug text-white/70"
           >
-            <span style={{ color: tone }}>·</span>
-            {it}
-          </li>
+            <span className="mt-1 flex-shrink-0" style={{ color }}>
+              <svg width="6" height="6" viewBox="0 0 6 6">
+                <circle cx="3" cy="3" r="3" fill={color} />
+              </svg>
+            </span>
+            {t}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

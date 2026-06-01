@@ -6,6 +6,7 @@ import { DiscSection } from "./disc-section";
 import { LosSection } from "./los-section";
 import { AlignmentSection } from "./alignment-section";
 import { PrimeSection } from "./prime-section";
+import { CompletionBar } from "./completion-bar";
 import type { ChecklistItem, DiscScoresShape, Draft } from "./types";
 
 export function MemberDetail({
@@ -21,6 +22,10 @@ export function MemberDetail({
   generating,
   onUploadPdf,
   uploadingPdf,
+  dirty,
+  saving,
+  savedFlash,
+  onSave,
 }: {
   member: Profile;
   draft: Draft;
@@ -34,11 +39,14 @@ export function MemberDetail({
   generating: boolean;
   onUploadPdf: (file: File) => void;
   uploadingPdf: boolean;
+  dirty: boolean;
+  saving: boolean;
+  savedFlash: boolean;
+  onSave: () => void;
 }) {
   return (
-    <div className="flex flex-col" style={{ gap: 16 }}>
+    <div className="flex min-w-0 flex-col gap-[18px]">
       <MemberHero member={member} draft={draft} checklist={checklist} />
-
       <DiscSection
         member={member}
         draft={draft}
@@ -50,11 +58,8 @@ export function MemberDetail({
         onGenerateLink={onGenerateLink}
         generating={generating}
       />
-
       <LosSection draft={draft} patch={patch} editable={editable} />
-
       <AlignmentSection draft={draft} patch={patch} editable={editable} />
-
       <PrimeSection
         draft={draft}
         patch={patch}
@@ -62,6 +67,14 @@ export function MemberDetail({
         pdfPath={member.disc_pdf_url}
         uploading={uploadingPdf}
         onUploadPdf={onUploadPdf}
+      />
+      <CompletionBar
+        checklist={checklist}
+        dirty={dirty}
+        saving={saving}
+        savedFlash={savedFlash}
+        editable={editable}
+        onSave={onSave}
       />
     </div>
   );

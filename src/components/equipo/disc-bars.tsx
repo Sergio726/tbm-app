@@ -1,121 +1,109 @@
 "use client";
 
 import { DISC_COLORS, DISC_FACTORS, type DiscLetter } from "@/lib/disc";
-import type { DiscScoresShape } from "./types";
-import { scoresToPct } from "./types";
+import { MONO } from "./types";
 
-const ORDER: DiscLetter[] = ["D", "I", "S", "C"];
+const ATTRS: { key: DiscLetter; name: string }[] = [
+  { key: "D", name: "Dominancia" },
+  { key: "I", name: "Influencia" },
+  { key: "S", name: "Estabilidad" },
+  { key: "C", name: "Cumplimiento" },
+];
 
 export function DiscBars({
-  letters,
   scores,
+  primary,
 }: {
-  letters: string;
-  scores: DiscScoresShape;
+  scores: { D: number; I: number; S: number; C: number };
+  primary: DiscLetter;
 }) {
-  const primary = letters[0] as DiscLetter | undefined;
-  const secondary = letters[1] as DiscLetter | undefined;
-  const real = scoresToPct(scores);
-
   return (
-    <div className="flex flex-col" style={{ gap: 10, marginTop: 14 }}>
-      {ORDER.map((l) => {
-        // Si tenemos scores reales del test, los usamos. Si no, fallback a
-        // énfasis sintético según primario/secundario.
-        const pct = real
-          ? real[l]
-          : l === primary
-            ? 100
-            : l === secondary
-              ? 62
-              : 22;
-        const f = DISC_FACTORS[l];
-        const c = DISC_COLORS[l];
-        const isPrimary = l === primary;
-        const dim = !real && l !== primary && l !== secondary;
-
-        return (
-          <div
-            key={l}
-            className="flex items-center"
-            style={{ gap: 12, opacity: dim ? 0.45 : 1 }}
-          >
-            <div
-              className="flex items-center justify-center flex-shrink-0"
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 6,
-                background: `${c}22`,
-                border: `1px solid ${c}45`,
-                color: c,
-                fontSize: 11,
-                fontWeight: 700,
-              }}
-            >
-              {l}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div
-                className="flex items-center justify-between"
-                style={{ marginBottom: 4 }}
-              >
-                <span
-                  className="flex items-center"
-                  style={{ gap: 6, fontSize: 12.5, color: "#fff", fontWeight: 500 }}
-                >
-                  {f.shortName.replace(/^El\s/, "")}
-                  {isPrimary && (
-                    <span
-                      style={{
-                        fontSize: 9,
-                        fontWeight: 700,
-                        letterSpacing: 0.4,
-                        padding: "1px 6px",
-                        borderRadius: 4,
-                        background: `${c}28`,
-                        border: `1px solid ${c}50`,
-                        color: c,
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      Principal
-                    </span>
-                  )}
-                </span>
-                <span
-                  style={{
-                    fontSize: 11.5,
-                    fontWeight: 600,
-                    color: c,
-                    fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
-                  }}
-                >
-                  {pct}
-                </span>
-              </div>
-              <div
-                style={{
-                  height: 6,
-                  borderRadius: 99,
-                  background: "rgba(255,255,255,0.06)",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${pct}%`,
-                    height: "100%",
-                    borderRadius: 99,
-                    background: c,
-                    transition: "width 0.4s ease",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        );
-      })}
+    <div className="flex flex-col gap-1">
+      {ATTRS.map((a) => (
+        <StatBar
+          key={a.key}
+          letter={a.key}
+          name={a.name}
+          value={scores[a.key]}
+          isPrimary={a.key === primary}
+        />
+      ))}
     </div>
   );
+}
+
+function StatBar({
+  letter,
+  name,
+  value,
+  isPrimary,
+}: {
+  letter: DiscLetter;
+  name: string;
+  value: number;
+  isPrimary: boolean;
+}) {
+  const color = DISC_COLORS[letter];
+  return (
+    <div
+      className="flex items-center gap-3 rounded-xl border px-3 py-2"
+      style={{
+        background: isPrimary ? `${color}12` : "transparent",
+        borderColor: isPrimary ? `${color}33` : "transparent",
+      }}
+    >
+      <div
+        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[9px] border-[1.5px] text-[15px] font-bold"
+        style={{
+          background: `${color}22`,
+          borderColor: color,
+          color,
+          fontFamily: MONO,
+          boxShadow: isPrimary ? `0 0 14px ${color}55` : "none",
+        }}
+      >
+        {letter}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="mb-1.5 flex items-center gap-2">
+          <span className="text-[13px] font-semibold text-white">{name}</span>
+          {isPrimary && (
+            <span
+              className="rounded-[4px] border px-1.5 py-px text-[8.5px] font-extrabold uppercase tracking-wider"
+              style={{
+                background: `${color}24`,
+                borderColor: `${color}55`,
+                color,
+              }}
+            >
+              Principal
+            </span>
+          )}
+          <span
+            className="ml-auto text-[12.5px] font-bold"
+            style={{ color, fontFamily: MONO }}
+          >
+            {value}
+          </span>
+        </div>
+        <div className="h-[7px] overflow-hidden rounded-full bg-white/[0.06]">
+          <div
+            className="h-full rounded-full"
+            style={{
+              width: `${value}%`,
+              background: `linear-gradient(90deg, ${color}99, ${color})`,
+              boxShadow: `0 0 10px ${color}66`,
+              transformOrigin: "left",
+              transition: "width .7s cubic-bezier(.2,.8,.2,1)",
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Detalle Luz/Sombra del primary letter (re-export para disc-section)
+export function discFactorDetail(primary: DiscLetter) {
+  return DISC_FACTORS[primary];
 }

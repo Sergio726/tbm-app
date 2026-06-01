@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Send, Bell, X } from "lucide-react";
+import { Send, Trophy, Bell, X } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
 import { normalizeLetters } from "@/lib/disc";
@@ -12,12 +12,10 @@ import {
   type DiscAssessmentLite,
   type DiscScoresShape,
   type Draft,
-  FONT,
 } from "./types";
 import { TeamSidebar } from "./team-sidebar";
 import { MemberDetail } from "./member-detail";
 import { EmptyDetail } from "./empty-detail";
-import { CompletionBar } from "./completion-bar";
 import { InviteModal } from "./invite-modal";
 
 export type { DiscAssessmentLite } from "./types";
@@ -44,14 +42,14 @@ export function EquipoClient({
   const [baseId, setBaseId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
+  const [toast, setToast] = useState<{ name: string } | null>(null);
 
   const [freshToken, setFreshToken] = useState<Record<string, string>>({});
   const [generating, setGenerating] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
-  const [toast, setToast] = useState<{ name: string } | null>(null);
 
-  // Realtime: aviso cuando un miembro completa su test DISC.
+  // Realtime: aviso cuando un miembro completa su test DISC
   const teamRef = useRef(team);
   teamRef.current = team;
   useEffect(() => {
@@ -62,10 +60,7 @@ export function EquipoClient({
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "disc_assessments" },
         (payload) => {
-          const row = payload.new as {
-            profile_id?: string | null;
-            status?: string;
-          };
+          const row = payload.new as { profile_id?: string | null; status?: string };
           if (row?.status === "completado") {
             const m = teamRef.current.find((x) => x.id === row.profile_id);
             setToast({ name: m?.full_name ?? "Un colaborador" });
@@ -101,10 +96,7 @@ export function EquipoClient({
     return JSON.stringify(draftFrom(selected)) !== JSON.stringify(draft);
   }, [selected, draft]);
 
-  const checklist = useMemo(
-    () => (draft ? buildChecklist(draft) : []),
-    [draft]
-  );
+  const checklist = useMemo(() => (draft ? buildChecklist(draft) : []), [draft]);
 
   function patch(p: Partial<Draft>) {
     setDraft((d) => (d ? { ...d, ...p } : d));
@@ -132,7 +124,7 @@ export function EquipoClient({
         .eq("id", selected.id);
       if (error) throw error;
       setSavedFlash(true);
-      setTimeout(() => setSavedFlash(false), 2000);
+      setTimeout(() => setSavedFlash(false), 2400);
       router.refresh();
     } catch (e) {
       console.error("Error guardando perfil:", e);
@@ -186,10 +178,7 @@ export function EquipoClient({
       const path = `${companyId}/${selected.id}.pdf`;
       const { error: upErr } = await supabase.storage
         .from("disc-reports")
-        .upload(path, file, {
-          upsert: true,
-          contentType: "application/pdf",
-        });
+        .upload(path, file, { upsert: true, contentType: "application/pdf" });
       if (upErr) throw upErr;
       const { error } = await supabase
         .from("profiles")
@@ -210,51 +199,27 @@ export function EquipoClient({
   const scores = (selected?.disc_scores ?? null) as DiscScoresShape;
 
   return (
-    <div
-      className="text-white"
-      style={{
-        padding: "32px 40px 110px", // bottom padding por la sticky bar
-        maxWidth: 1600,
-        margin: "0 auto",
-        width: "100%",
-        fontFamily: FONT,
-      }}
+    <main
+      className="mx-auto w-full max-w-[1500px] px-10 py-[30px] pb-10 text-white"
+      style={{ fontFamily: "Inter, system-ui, sans-serif" }}
     >
-      {/* Header */}
-      <div
-        className="flex items-start justify-between"
-        style={{ marginBottom: 28, gap: 16 }}
-      >
+      {/* page header */}
+      <div className="mb-[26px] flex flex-wrap items-start justify-between gap-6">
         <div>
-          <div
-            className="uppercase"
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: "rgba(91,138,255,0.9)",
-              letterSpacing: 1.4,
-              marginBottom: 6,
-            }}
-          >
-            ● Mi Equipo
+          <div className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[1.6px] text-[#9fb9ff]">
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: "#5b8aff", boxShadow: "0 0 6px #5b8aff" }}
+            />
+            Mi Equipo
           </div>
           <h1
-            style={{
-              fontSize: 30,
-              fontWeight: 700,
-              letterSpacing: -0.6,
-              margin: 0,
-            }}
+            className="m-0 text-[34px] font-extrabold text-white"
+            style={{ letterSpacing: -0.8 }}
           >
             Mapa DISC + LOS del equipo
           </h1>
-          <p
-            style={{
-              fontSize: 14,
-              color: "rgba(255,255,255,0.55)",
-              marginTop: 6,
-            }}
-          >
+          <p className="mt-2 text-sm text-white/55">
             {team.length} {team.length === 1 ? "persona" : "personas"} · perfil de
             comportamiento, nivel de autonomía y alineación de cada rol.
           </p>
@@ -263,33 +228,23 @@ export function EquipoClient({
           <button
             type="button"
             onClick={() => setInviteOpen(true)}
-            className="flex items-center transition-opacity hover:opacity-90"
+            className="inline-flex items-center gap-2.5 rounded-xl border-0 px-4.5 py-3 text-[13.5px] font-semibold text-white transition hover:-translate-y-px"
             style={{
-              gap: 8,
-              padding: "10px 18px",
-              borderRadius: 10,
-              border: "none",
-              background: "linear-gradient(180deg, #4f86ff, #2c5fe6)",
-              color: "#fff",
-              fontSize: 13.5,
-              fontWeight: 600,
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              boxShadow: "0 6px 18px rgba(54,114,255,0.3)",
+              background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
+              boxShadow:
+                "0 8px 22px rgba(91,138,255,0.34), inset 0 1px 0 rgba(255,255,255,0.2)",
+              padding: "11px 18px",
             }}
           >
-            <Send size={15} /> Invitar colaborador
+            <Send size={15} strokeWidth={1.9} />
+            Invitar colaborador
           </button>
         )}
       </div>
 
       <div
-        className="grid"
-        style={{
-          gridTemplateColumns: "320px 1fr",
-          gap: 18,
-          alignItems: "start",
-        }}
+        className="grid items-start gap-[22px]"
+        style={{ gridTemplateColumns: "300px minmax(0, 1fr)" }}
       >
         <TeamSidebar
           team={team}
@@ -313,22 +268,30 @@ export function EquipoClient({
             generating={generating}
             onUploadPdf={handleUploadPdf}
             uploadingPdf={uploadingPdf}
+            dirty={dirty}
+            saving={saving}
+            savedFlash={savedFlash}
+            onSave={handleSave}
           />
         ) : (
           <EmptyDetail />
         )}
       </div>
 
-      {/* Sticky bar — solo si hay un miembro seleccionado con borrador */}
-      {selected && draft && (
-        <CompletionBar
-          checklist={checklist}
-          dirty={dirty}
-          saving={saving}
-          savedFlash={savedFlash}
-          editable={isArquitecto}
-          onSave={handleSave}
-        />
+      {/* Toast (savedFlash) — abajo central, RPG-style */}
+      {savedFlash && (
+        <div
+          className="pointer-events-none fixed bottom-6 left-1/2 z-[50] inline-flex -translate-x-1/2 items-center gap-2.5 rounded-xl px-5 py-3 text-[13.5px] font-bold"
+          style={{
+            background: "linear-gradient(135deg, #34d399, #10b981)",
+            color: "#04241a",
+            boxShadow: "0 12px 34px rgba(52,211,153,0.4)",
+            animation: "tbm-rise .25s ease",
+          }}
+        >
+          <Trophy size={16} strokeWidth={2} />
+          ¡Ficha guardada! +1 jugador alineado
+        </div>
       )}
 
       {inviteOpen && (
@@ -343,80 +306,43 @@ export function EquipoClient({
         />
       )}
 
+      {/* Toast realtime — esquina inferior derecha */}
       {toast && (
         <div
-          className="fixed tbm-slide-right"
-          style={{ bottom: 90, right: 20, zIndex: 60, maxWidth: 340 }}
+          className="fixed bottom-[90px] right-5 z-[60] max-w-[340px] tbm-slide-right"
         >
-          <div
-            className="flex items-start"
-            style={{
-              gap: 12,
-              padding: "14px 16px",
-              borderRadius: 12,
-              background: "#0F1B2D",
-              border: "1px solid rgba(52,211,153,0.4)",
-              boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
-            }}
-          >
-            <div
-              className="flex items-center justify-center shrink-0"
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 8,
-                background: "rgba(52,211,153,0.15)",
-                color: "#34d399",
-              }}
-            >
+          <div className="flex items-start gap-3 rounded-xl border border-[#34d399]/40 bg-[#0F1B2D] p-4 shadow-2xl">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#34d399]/[0.15] text-[#34d399]">
               <Bell size={16} />
             </div>
             <div className="flex-1">
-              <div style={{ fontSize: 13.5, fontWeight: 600, color: "#fff" }}>
+              <div className="text-[13.5px] font-semibold text-white">
                 {toast.name} completó su test DISC
               </div>
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "rgba(255,255,255,0.55)",
-                  marginTop: 2,
-                }}
-              >
+              <div className="mt-0.5 text-xs text-white/55">
                 Actualizá para ver su perfil cargado.
               </div>
               <button
+                type="button"
                 onClick={() => {
                   setToast(null);
                   router.refresh();
                 }}
-                style={{
-                  marginTop: 8,
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  color: "#9fb9ff",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                }}
+                className="mt-2 text-[12.5px] font-semibold text-[#9fb9ff]"
               >
                 Actualizar ahora ↻
               </button>
             </div>
             <button
+              type="button"
               onClick={() => setToast(null)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "rgba(255,255,255,0.4)",
-                cursor: "pointer",
-              }}
+              className="text-white/40"
             >
               <X size={16} />
             </button>
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

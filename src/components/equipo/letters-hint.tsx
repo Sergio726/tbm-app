@@ -1,27 +1,21 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
-import {
-  DISC_COLORS,
-  DISC_DIMENSIONS,
-  normalizeLetters,
-  primaryLetter,
-  systemProfile,
-} from "@/lib/disc";
+import { DISC_COLORS, normalizeLetters } from "@/lib/disc";
+import { archetypeFor, MONO } from "./types";
 
-export function LettersHint({ raw }: { raw: string }) {
+/**
+ * Caja "Se interpreta como…" con la lectura semántica del input.
+ * Mostrada al lado del input de letras (no debajo).
+ */
+export function LettersHintBox({ raw }: { raw: string }) {
   const trimmed = raw.trim();
-  if (!trimmed) return null;
-
   const norm = normalizeLetters(raw);
 
-  if (!norm) {
+  if (trimmed && !norm) {
     return (
-      <div
-        className="flex items-start"
-        style={{ gap: 7, marginTop: 8, fontSize: 11.5, color: "#f87171", lineHeight: 1.4 }}
-      >
-        <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }} />
+      <div className="flex h-full items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/[0.06] p-3 text-[12px] leading-snug text-red-300">
+        <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
         <span>
           No reconocí letras DISC. Usá solo <strong>D</strong>, <strong>I</strong>,{" "}
           <strong>S</strong> o <strong>C</strong> — por ejemplo <strong>SC</strong> o{" "}
@@ -31,45 +25,29 @@ export function LettersHint({ raw }: { raw: string }) {
     );
   }
 
-  const primary = primaryLetter(norm);
-  const sys = systemProfile(norm);
-  const dim = primary ? DISC_DIMENSIONS[primary] : null;
-  const color = primary ? DISC_COLORS[primary] : "#64748b";
-  const dropped = norm !== trimmed.toUpperCase().replace(/\s/g, "");
+  const arch = archetypeFor(norm);
+  const color = DISC_COLORS[arch.primary] ?? "#f87171";
 
   return (
-    <div style={{ marginTop: 8, fontSize: 11.5, lineHeight: 1.5 }}>
-      <div className="flex items-center" style={{ gap: 7, flexWrap: "wrap" }}>
-        <span style={{ color: "rgba(255,255,255,0.5)" }}>Se interpreta como</span>
+    <div className="flex h-full flex-col justify-center rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+      <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
+        <span className="text-[12px] text-white/50">Se interpreta como</span>
         <span
+          className="rounded-md border px-1.5 py-0.5 text-[12px] font-bold"
           style={{
-            fontWeight: 700,
-            letterSpacing: 0.6,
-            padding: "1px 7px",
-            borderRadius: 6,
-            background: `${color}22`,
-            border: `1px solid ${color}40`,
+            background: `${color}1c`,
+            borderColor: `${color}3a`,
             color,
+            fontFamily: MONO,
           }}
         >
-          {norm}
+          {norm || "—"}
         </span>
-        {sys && (
-          <span style={{ color: "rgba(255,255,255,0.7)" }}>
-            {sys.icon} {sys.name}
-          </span>
-        )}
+        <span className="text-[13.5px] font-bold text-white">
+          {arch.emoji} {arch.name}
+        </span>
       </div>
-      {dim && (
-        <div style={{ color: "rgba(255,255,255,0.45)", marginTop: 3 }}>
-          Dominante: <span style={{ color }}>{dim.name}</span> — {dim.plain}
-        </div>
-      )}
-      {dropped && (
-        <div style={{ color: "#fbbf24", marginTop: 3 }}>
-          Se usan solo las 2 primeras letras DISC válidas; el resto se ignora.
-        </div>
-      )}
+      <div className="text-[12.5px] leading-snug text-white/60">{arch.desc}</div>
     </div>
   );
 }

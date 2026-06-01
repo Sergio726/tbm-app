@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Send, X, Check } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { inputStyle } from "./primitives";
+import { TextInput } from "./primitives";
 
 export function InviteModal({
   companyId,
@@ -58,98 +58,56 @@ export function InviteModal({
 
   return (
     <div
-      className="flex items-center justify-center"
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(5,10,20,0.7)",
-        zIndex: 50,
-        padding: 20,
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-5"
+      style={{ background: "rgba(5,10,20,0.7)" }}
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "100%",
-          maxWidth: 420,
-          padding: "24px 24px 22px",
-          borderRadius: 16,
-          background: "#0F1B2D",
-          border: "1px solid rgba(255,255,255,0.1)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-        }}
+        className="w-full max-w-[420px] rounded-2xl border border-white/10 bg-[#0F1B2D] p-6 shadow-2xl"
       >
-        <div className="flex items-start justify-between" style={{ marginBottom: 14 }}>
+        <div className="mb-3.5 flex items-start justify-between">
           <div>
-            <h3 style={{ fontSize: 17, fontWeight: 700, margin: 0, color: "#fff" }}>
+            <h3 className="m-0 text-[17px] font-bold text-white">
               Invitar colaborador
             </h3>
-            <p
-              style={{ fontSize: 12.5, color: "rgba(255,255,255,0.5)", marginTop: 4 }}
-            >
+            <p className="mt-1 text-[12.5px] text-white/50">
               Le llega un email con un link mágico para unirse a tu equipo.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            style={{
-              background: "none",
-              border: "none",
-              color: "rgba(255,255,255,0.5)",
-              cursor: "pointer",
-            }}
+            className="text-white/50 hover:text-white"
           >
             <X size={18} />
           </button>
         </div>
 
         {sent ? (
-          <div
-            className="flex items-center"
-            style={{
-              gap: 8,
-              fontSize: 13.5,
-              color: "#34d399",
-              padding: "8px 0",
-            }}
-          >
+          <div className="flex items-center gap-2 py-2 text-[13.5px] text-[#34d399]">
             <Check size={16} /> Invitación enviada a {email.trim()}.
           </div>
         ) : (
           <>
-            <input
+            <TextInput
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="colaborador@empresa.com"
-              style={inputStyle}
               onKeyDown={(e) => e.key === "Enter" && send()}
               autoFocus
             />
             {error && (
-              <div style={{ marginTop: 8, fontSize: 12, color: "#f87171" }}>
-                {error}
-              </div>
+              <div className="mt-2 text-xs text-red-400">{error}</div>
             )}
             <button
               type="button"
               onClick={send}
               disabled={sending}
-              className="flex items-center justify-center"
+              className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-[10px] border-0 px-3 py-3 text-[13.5px] font-semibold text-white transition disabled:cursor-default"
               style={{
-                width: "100%",
-                marginTop: 14,
-                gap: 8,
-                padding: "11px",
-                borderRadius: 10,
-                border: "none",
                 background: "linear-gradient(180deg, #4f86ff, #2c5fe6)",
-                color: "#fff",
-                fontSize: 13.5,
-                fontWeight: 600,
-                cursor: sending ? "default" : "pointer",
               }}
             >
               <Send size={15} /> {sending ? "Enviando…" : "Enviar invitación"}

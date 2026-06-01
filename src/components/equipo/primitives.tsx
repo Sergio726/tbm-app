@@ -1,208 +1,129 @@
 "use client";
 
-import type { CSSProperties } from "react";
-import type { LucideIcon } from "lucide-react";
-import { DISC_STATUS_LABEL } from "@/lib/disc";
-import { FONT } from "./types";
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
-export function Card({ children }: { children: React.ReactNode }) {
+/**
+ * Panel — contenedor con hairline de acento arriba.
+ * Reemplaza la antigua Card; replica el "Panel" del diseño.
+ */
+export function Panel({
+  icon,
+  iconColor = "#9fb9ff",
+  title,
+  sub,
+  accent = "#5b8aff",
+  badge,
+  children,
+}: {
+  icon: ReactNode;
+  iconColor?: string;
+  title: string;
+  sub?: string;
+  accent?: string;
+  badge?: ReactNode;
+  children: ReactNode;
+}) {
   return (
-    <div
+    <section
+      className="relative overflow-hidden rounded-2xl border border-white/[0.07] px-6 pb-6 pt-[22px]"
       style={{
-        padding: "20px 22px",
-        borderRadius: 16,
         background:
-          "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.008))",
-        border: "1px solid rgba(255,255,255,0.07)",
+          "linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.006))",
       }}
     >
+      {/* hairline de acento arriba */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-0.5 opacity-70"
+        style={{
+          background: `linear-gradient(90deg, ${accent}, transparent 60%)`,
+        }}
+      />
+      <div className="mb-[18px] flex items-start gap-3">
+        <div
+          className="flex h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-[11px] border"
+          style={{
+            background: `${iconColor}1c`,
+            borderColor: `${iconColor}38`,
+            color: iconColor,
+          }}
+        >
+          {icon}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2.5">
+            <h3
+              className="m-0 text-[17px] font-bold tracking-tight text-white"
+              style={{ letterSpacing: -0.2 }}
+            >
+              {title}
+            </h3>
+            {badge}
+          </div>
+          {sub && (
+            <p className="mt-1 text-[12.5px] leading-[1.5] text-white/50">
+              {sub}
+            </p>
+          )}
+        </div>
+      </div>
       {children}
-    </div>
+    </section>
   );
 }
 
-export function SectionTitle({
-  Icon,
-  label,
-  color,
+/** Label de campo con hint opcional a la derecha. */
+export function FieldLabel({
+  children,
   hint,
 }: {
-  Icon: LucideIcon;
-  label: string;
-  color: string;
+  children: ReactNode;
   hint?: string;
 }) {
   return (
-    <div style={{ marginBottom: 14 }}>
-      <div className="flex items-center" style={{ gap: 9 }}>
-        <div
-          className="flex items-center justify-center"
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 8,
-            background: `${color}1c`,
-            border: `1px solid ${color}33`,
-            color,
-          }}
-        >
-          <Icon size={14} strokeWidth={2} />
-        </div>
-        <span style={{ fontSize: 14, fontWeight: 600 }}>{label}</span>
-      </div>
+    <div className="mb-[7px] flex items-baseline justify-between">
+      <label className="text-[11.5px] font-semibold tracking-[0.2px] text-white/60">
+        {children}
+      </label>
       {hint && (
-        <p
-          style={{
-            fontSize: 11.5,
-            color: "rgba(255,255,255,0.45)",
-            marginTop: 6,
-            marginLeft: 37,
-            lineHeight: 1.4,
-          }}
-        >
-          {hint}
-        </p>
+        <span className="text-[11px] text-white/35">{hint}</span>
       )}
     </div>
   );
 }
 
-export function Label({ children }: { children: React.ReactNode }) {
+/** Input con focus ring (acento azul). */
+export function TextInput({
+  className,
+  style,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.5)", fontWeight: 500 }}>
-      {children}
-    </div>
+    <input
+      {...props}
+      className={cn(
+        "w-full rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm text-white outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:opacity-60",
+        className
+      )}
+      style={style}
+    />
   );
 }
 
-export function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
+/** Textarea con mismo styling que TextInput. */
+export function TextAreaInput({
+  className,
+  style,
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <div style={{ marginTop: 14 }}>
-      <div
-        className="flex items-center justify-between"
-        style={{ gap: 8 }}
-      >
-        <Label>{label}</Label>
-        {hint && (
-          <span style={{ fontSize: 10.5, color: "rgba(255,255,255,0.35)" }}>
-            {hint}
-          </span>
-        )}
-      </div>
-      <div style={{ marginTop: 6 }}>{children}</div>
-    </div>
+    <textarea
+      {...props}
+      className={cn(
+        "min-h-[76px] w-full resize-y rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm leading-relaxed text-white outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:opacity-60",
+        className
+      )}
+      style={style}
+    />
   );
 }
-
-export function ToggleBtn({
-  active,
-  disabled,
-  onClick,
-  Icon,
-  label,
-  color,
-}: {
-  active: boolean;
-  disabled: boolean;
-  onClick: () => void;
-  Icon: LucideIcon;
-  label: string;
-  color: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="flex items-center justify-center transition-colors"
-      style={{
-        flex: 1,
-        gap: 8,
-        padding: "9px 14px",
-        borderRadius: 10,
-        cursor: disabled ? "default" : "pointer",
-        background: active ? `${color}1f` : "rgba(255,255,255,0.03)",
-        border: `1px solid ${active ? `${color}55` : "rgba(255,255,255,0.07)"}`,
-        color: active ? color : "rgba(255,255,255,0.6)",
-        fontSize: 13,
-        fontWeight: 600,
-      }}
-    >
-      <Icon size={15} /> {label}
-    </button>
-  );
-}
-
-export function StatusPill({ status }: { status: string | null }) {
-  const key = status ?? "pendiente";
-  const done = key === "completado";
-  const color = done ? "#34d399" : key === "enviado" ? "#fbbf24" : "#64748b";
-  return (
-    <span
-      style={{
-        fontSize: 10.5,
-        fontWeight: 600,
-        letterSpacing: 0.4,
-        padding: "5px 11px",
-        borderRadius: 99,
-        background: `${color}1c`,
-        border: `1px solid ${color}40`,
-        color,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {DISC_STATUS_LABEL[key] ?? key}
-    </span>
-  );
-}
-
-export function MiniBtn({
-  active,
-  onClick,
-  label,
-  color = "#bcd0ff",
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-  color?: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{
-        fontSize: 10,
-        fontWeight: 600,
-        padding: "4px 10px",
-        borderRadius: 6,
-        cursor: "pointer",
-        background: active ? `${color}28` : "rgba(255,255,255,0.04)",
-        border: `1px solid ${active ? `${color}55` : "rgba(255,255,255,0.08)"}`,
-        color: active ? color : "rgba(255,255,255,0.5)",
-      }}
-    >
-      {label}
-    </button>
-  );
-}
-
-export const inputStyle: CSSProperties = {
-  width: "100%",
-  padding: "9px 12px",
-  borderRadius: 9,
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.09)",
-  color: "#fff",
-  fontSize: 13,
-  fontFamily: FONT,
-  outline: "none",
-};

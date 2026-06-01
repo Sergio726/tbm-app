@@ -1,7 +1,7 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
-import { Card, SectionTitle, Field, inputStyle } from "./primitives";
+import { ScrollText } from "lucide-react";
+import { Panel, FieldLabel, TextAreaInput } from "./primitives";
 import { PdfReportBox } from "./pdf-report-box";
 import type { Draft } from "./types";
 
@@ -21,32 +21,28 @@ export function PrimeSection({
   onUploadPdf: (file: File) => void;
 }) {
   return (
-    <Card>
-      <SectionTitle
-        Icon={Sparkles}
-        label="Plan PRIME & informe"
-        color="#a78bfa"
-        hint="El salto de crecimiento de esta persona y el informe DISC profesional en PDF."
+    <Panel
+      icon={<ScrollText size={18} strokeWidth={1.9} />}
+      iconColor="#a78bfa"
+      accent="#a78bfa"
+      title="Plan PRIME & informe"
+      sub="El salto de crecimiento de esta persona y el informe DISC profesional en PDF."
+    >
+      <FieldLabel hint="el salto de crecimiento de esta persona">Plan PRIME</FieldLabel>
+      <TextAreaInput
+        value={draft.disc_prime_plan}
+        disabled={!editable}
+        onChange={(e) => patch({ disc_prime_plan: e.target.value })}
+        placeholder="Del informe DISC: qué necesita para llegar a su PRIME."
+        rows={3}
+        className="min-h-[96px]"
       />
-      <Field
-        label="Plan PRIME"
-        hint="el salto de crecimiento de esta persona"
-      >
-        <textarea
-          value={draft.disc_prime_plan}
-          disabled={!editable}
-          onChange={(e) => patch({ disc_prime_plan: e.target.value })}
-          placeholder="Del informe DISC: qué necesita para llegar a su PRIME."
-          rows={3}
-          style={{ ...inputStyle, resize: "vertical" }}
-        />
-      </Field>
       <PdfReportBox
         pdfPath={pdfPath}
         editable={editable}
         uploading={uploading}
         onUpload={onUploadPdf}
       />
-    </Card>
+    </Panel>
   );
 }

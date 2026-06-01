@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { FileText, Upload } from "lucide-react";
+import { ScrollText, Upload } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
 
 export function PdfReportBox({
@@ -41,64 +41,29 @@ export function PdfReportBox({
   }
 
   return (
-    <div
-      className="flex items-center justify-between"
-      style={{
-        gap: 12,
-        marginTop: 12,
-        padding: "12px 14px",
-        borderRadius: 10,
-        background: "rgba(167,139,250,0.06)",
-        border: "1px solid rgba(167,139,250,0.20)",
-        flexWrap: "wrap",
-      }}
-    >
-      <div className="flex items-center" style={{ gap: 11 }}>
-        <div
-          className="flex items-center justify-center"
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: 8,
-            background: "rgba(167,139,250,0.14)",
-            border: "1px solid rgba(167,139,250,0.30)",
-            color: "#a78bfa",
-          }}
-        >
-          <FileText size={14} />
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3.5 rounded-xl border border-dashed border-white/[0.12] bg-white/[0.02] px-4 py-3.5">
+      <div className="flex items-center gap-3">
+        <div className="flex h-[34px] w-[34px] items-center justify-center rounded-[9px] border border-[#a78bfa]/30 bg-[#a78bfa]/[0.14] text-[#a78bfa]">
+          <ScrollText size={16} strokeWidth={1.9} />
         </div>
         <div>
-          <div style={{ fontSize: 12.5, fontWeight: 600, color: "#fff" }}>
+          <div className="text-[13px] font-semibold text-white/85">
             Informe DISC profesional
           </div>
-          {pdfPath ? (
-            <button
-              type="button"
-              onClick={view}
-              disabled={opening}
-              style={{
-                fontSize: 11.5,
-                color: "#bcd0ff",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                marginTop: 2,
-              }}
-            >
-              {opening ? "Abriendo…" : "Ver PDF →"}
-            </button>
-          ) : (
-            <div
-              style={{
-                fontSize: 11.5,
-                color: "rgba(255,255,255,0.5)",
-                marginTop: 2,
-              }}
-            >
-              Sin informe PDF cargado.
-            </div>
-          )}
+          <div className="text-[11.5px] text-white/45">
+            {pdfPath ? (
+              <button
+                type="button"
+                onClick={view}
+                disabled={opening}
+                className="text-[#bcd0ff] hover:underline"
+              >
+                {opening ? "Abriendo…" : "Ver PDF →"}
+              </button>
+            ) : (
+              "Sin informe PDF cargado."
+            )}
+          </div>
         </div>
       </div>
 
@@ -108,7 +73,7 @@ export function PdfReportBox({
             ref={inputRef}
             type="file"
             accept="application/pdf"
-            style={{ display: "none" }}
+            className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
               if (f) onUpload(f);
@@ -119,20 +84,9 @@ export function PdfReportBox({
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            className="flex items-center"
-            style={{
-              gap: 6,
-              fontSize: 12,
-              padding: "8px 14px",
-              borderRadius: 8,
-              cursor: uploading ? "default" : "pointer",
-              background: "rgba(167,139,250,0.14)",
-              border: "1px solid rgba(167,139,250,0.30)",
-              color: "#c4b5fd",
-              fontWeight: 600,
-            }}
+            className="inline-flex items-center gap-2 rounded-[10px] border border-[#a78bfa]/35 bg-[#a78bfa]/[0.14] px-3.5 py-2 text-[12.5px] font-semibold text-[#c4b5fd] transition hover:bg-[#a78bfa]/[0.22] disabled:cursor-default"
           >
-            <Upload size={13} />{" "}
+            <Upload size={14} strokeWidth={2} />
             {uploading
               ? "Subiendo…"
               : pdfPath

@@ -1,11 +1,15 @@
 "use client";
 
-import { Award, Target, ShieldCheck } from "lucide-react";
+import { Mail, Compass, Target, Shield, Trophy } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { Profile } from "@/types/database";
-import { DISC_COLORS, LOS_LEVELS, primaryLetter, systemProfile } from "@/lib/disc";
-import { StatusPill } from "./primitives";
-import { initials, type Draft, type ChecklistItem } from "./types";
+import { DISC_COLORS, LOS_LEVELS, normalizeLetters } from "@/lib/disc";
+import { archetypeFor, initials, MONO, type ChecklistItem, type Draft } from "./types";
 
+/**
+ * CharacterCard — Hero gamificado: avatar XL con halo,
+ * badge "NV X", chips Rango/Meta/Rol, barra Perfil %.
+ */
 export function MemberHero({
   member,
   draft,
@@ -15,256 +19,181 @@ export function MemberHero({
   draft: Draft;
   checklist: ChecklistItem[];
 }) {
-  const primary = primaryLetter(draft.disc_letters);
-  const color = primary ? DISC_COLORS[primary] : "#64748b";
-  const sys = systemProfile(draft.disc_letters);
-
-  const losCurrent = LOS_LEVELS.find((l) => l.level === draft.los_level);
-  const losTarget = draft.los_target
+  const code = normalizeLetters(draft.disc_letters);
+  const arch = archetypeFor(code);
+  const rarity = DISC_COLORS[arch.primary] ?? "#5b8aff";
+  const ring = rarity;
+  const losActual = LOS_LEVELS.find((l) => l.level === draft.los_level) ?? LOS_LEVELS[0];
+  const losMeta = draft.los_target
     ? LOS_LEVELS.find((l) => l.level === draft.los_target)
     : null;
 
+  const complete = member.disc_status === "completado";
   const completedCount = checklist.filter((c) => c.done).length;
-  const pct = Math.round((completedCount / checklist.length) * 100);
+  const pct = Math.round((completedCount / Math.max(1, checklist.length)) * 100);
 
   return (
     <div
+      className="relative overflow-hidden rounded-2xl px-6 py-[22px]"
       style={{
-        padding: "20px 22px",
-        borderRadius: 16,
-        background:
-          "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: `linear-gradient(135deg, ${rarity}1f 0%, rgba(255,255,255,0.02) 42%, rgba(255,255,255,0.01) 100%)`,
+        border: `1px solid ${rarity}3a`,
+        boxShadow: `0 16px 40px ${rarity}18`,
       }}
     >
-      <div className="flex items-start justify-between" style={{ gap: 16 }}>
-        <div className="flex items-center" style={{ gap: 16, minWidth: 0, flex: 1 }}>
-          {/* Avatar + nivel */}
+      {/* corner glow */}
+      <div
+        className="pointer-events-none absolute -left-10 -top-[70px] h-[240px] w-[240px] rounded-full"
+        style={{
+          background: `radial-gradient(circle, ${rarity}33, transparent 70%)`,
+        }}
+      />
+      {/* shine sweep */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.05) 48%, transparent 60%)",
+          backgroundSize: "200% 100%",
+          animation: "tbm-shine 6s linear infinite",
+        }}
+      />
+
+      <div className="relative flex flex-wrap items-center gap-5">
+        {/* avatar + level badge */}
+        <div className="relative flex-shrink-0">
           <div
-            className="flex flex-col items-center flex-shrink-0"
-            style={{ gap: 6 }}
+            className="flex h-[76px] w-[76px] items-center justify-center rounded-full text-[30px] font-extrabold text-white"
+            style={{
+              background: `linear-gradient(135deg, ${ring}, ${ring}99)`,
+              boxShadow: `0 0 0 3px #0a0e1a, 0 0 0 5px ${ring}77, 0 0 26px ${ring}55, inset 0 2px 0 rgba(255,255,255,0.25)`,
+            }}
           >
-            <div
-              className="flex items-center justify-center"
-              style={{
-                width: 62,
-                height: 62,
-                borderRadius: "50%",
-                background: color,
-                fontSize: 22,
-                fontWeight: 700,
-                color: "#fff",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)",
-              }}
+            {initials(member.full_name)}
+          </div>
+          <div
+            className="absolute -bottom-1.5 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border-2 px-2 py-0.5 text-[11px] font-bold tracking-wide text-white"
+            style={{
+              background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
+              borderColor: "#0a0e1a",
+              boxShadow: "0 4px 12px rgba(91,138,255,0.4)",
+              fontFamily: MONO,
+            }}
+          >
+            NV {draft.los_level}
+          </div>
+        </div>
+
+        {/* name block */}
+        <div className="min-w-[200px] flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2
+              className="m-0 text-[26px] font-extrabold text-white"
+              style={{ letterSpacing: -0.5 }}
             >
-              {initials(member.full_name)}
-            </div>
+              {member.full_name ?? "Sin nombre"}
+            </h2>
             <span
+              className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[13px] font-bold"
               style={{
-                fontSize: 9.5,
-                fontWeight: 700,
-                letterSpacing: 0.6,
-                padding: "2px 8px",
-                borderRadius: 6,
-                background: "rgba(91,138,255,0.18)",
-                border: "1px solid rgba(91,138,255,0.35)",
-                color: "#bcd0ff",
+                background: `${rarity}1f`,
+                borderColor: `${rarity}55`,
+                color: rarity,
               }}
             >
-              NV {draft.los_level}
+              <span className="text-[14px]">{arch.emoji}</span>
+              {member.disc_name || arch.name}
             </span>
           </div>
-
-          {/* Nombre + perfil + email + chips */}
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center" style={{ gap: 10, flexWrap: "wrap" }}>
-              <h2
-                className="truncate"
-                style={{
-                  fontSize: 22,
-                  fontWeight: 700,
-                  letterSpacing: -0.4,
-                  margin: 0,
-                }}
-              >
-                {member.full_name ?? "Sin nombre"}
-              </h2>
-              {sys && (
-                <span
-                  className="flex items-center"
-                  style={{
-                    gap: 5,
-                    fontSize: 11.5,
-                    fontWeight: 600,
-                    padding: "3px 9px",
-                    borderRadius: 99,
-                    background: `${color}1f`,
-                    border: `1px solid ${color}40`,
-                    color,
-                  }}
-                >
-                  <span>{sys.icon}</span>
-                  {member.disc_name || sys.name}
-                </span>
-              )}
+          {member.email && (
+            <div className="mt-2 flex items-center gap-2 text-[13px] text-white/55">
+              <Mail size={14} strokeWidth={1.7} className="text-white/40" />
+              {member.email}
             </div>
-
-            {member.email && (
-              <div
-                style={{
-                  fontSize: 12.5,
-                  color: "rgba(255,255,255,0.5)",
-                  marginTop: 6,
-                }}
-              >
-                ✉ {member.email}
-              </div>
-            )}
-
-            <div
-              className="flex"
-              style={{ gap: 8, marginTop: 14, flexWrap: "wrap" }}
-            >
-              <HeroChip
-                Icon={Award}
-                label="Rango"
-                value={losCurrent?.name ?? "—"}
-                color="#fbbf24"
-              />
-              <HeroChip
-                Icon={Target}
-                label="Meta"
-                value={losTarget?.name ?? "Sin meta"}
-                color="#34d399"
-                dim={!losTarget}
-              />
-              <HeroChip
-                Icon={ShieldCheck}
-                label="Rol"
-                value={draft.cargo || "Sin asignar"}
-                color="#a78bfa"
-                dim={!draft.cargo}
-              />
-            </div>
+          )}
+          <div className="mt-[14px] flex flex-wrap gap-[9px]">
+            <StatChip
+              Icon={Compass}
+              label="Rango"
+              value={losActual.name}
+              color={rarity}
+            />
+            <StatChip
+              Icon={Target}
+              label="Meta"
+              value={losMeta?.name ?? "—"}
+              color="#9fb9ff"
+            />
+            <StatChip
+              Icon={Shield}
+              label="Rol"
+              value={draft.cargo || "—"}
+              color="#a78bfa"
+            />
           </div>
         </div>
 
-        <StatusPill status={member.disc_status} />
-      </div>
-
-      {/* Barra de PERFIL — progreso de los 3 objetivos de la sticky bar */}
-      <div style={{ marginTop: 18 }}>
-        <div
-          className="flex items-center justify-between"
-          style={{ marginBottom: 6 }}
-        >
-          <span
-            className="uppercase"
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: "rgba(255,255,255,0.45)",
-              letterSpacing: 1.4,
-            }}
-          >
-            Perfil
-          </span>
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: pct === 100 ? "#34d399" : "rgba(255,255,255,0.7)",
-              fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
-            }}
-          >
-            {pct}%
-          </span>
-        </div>
-        <div
-          style={{
-            height: 6,
-            borderRadius: 99,
-            background: "rgba(255,255,255,0.06)",
-            overflow: "hidden",
-          }}
-        >
+        {/* report completeness — XP gauge */}
+        <div className="flex min-w-[190px] flex-shrink-0 flex-col justify-center gap-2.5 self-stretch">
           <div
+            className="inline-flex items-center gap-1.5 self-end rounded-full border px-3 py-1.5 text-[12.5px] font-bold"
             style={{
-              width: `${pct}%`,
-              height: "100%",
-              borderRadius: 99,
-              background:
-                pct === 100
-                  ? "linear-gradient(90deg, #34d399, #10b981)"
-                  : "linear-gradient(90deg, #5b8aff, #34d399)",
-              transition: "width 0.3s ease",
+              background: complete ? "rgba(52,211,153,0.12)" : "rgba(255,255,255,0.04)",
+              borderColor: complete ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.1)",
+              color: complete ? "#34d399" : "rgba(255,255,255,0.6)",
             }}
-          />
+          >
+            <Trophy size={15} strokeWidth={1.9} />
+            {complete ? "Informe completo" : "Informe pendiente"}
+          </div>
+          <div>
+            <div
+              className="mb-1.5 flex justify-between text-[10.5px] text-white/50"
+              style={{ fontFamily: MONO }}
+            >
+              <span>PERFIL</span>
+              <span>{pct}%</span>
+            </div>
+            <div className="h-[7px] overflow-hidden rounded-full bg-white/[0.07]">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${pct}%`,
+                  background: "linear-gradient(90deg, #34d399, #5b8aff)",
+                  boxShadow: "0 0 12px rgba(52,211,153,0.5)",
+                  transformOrigin: "left",
+                  transition: "width .8s cubic-bezier(.2,.8,.2,1)",
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function HeroChip({
+function StatChip({
   Icon,
   label,
   value,
   color,
-  dim,
 }: {
-  Icon: typeof Award;
+  Icon: LucideIcon;
   label: string;
   value: string;
   color: string;
-  dim?: boolean;
 }) {
   return (
-    <div
-      className="flex items-center"
-      style={{
-        gap: 9,
-        padding: "8px 12px",
-        borderRadius: 10,
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        opacity: dim ? 0.55 : 1,
-      }}
-    >
-      <div
-        className="flex items-center justify-center"
-        style={{
-          width: 26,
-          height: 26,
-          borderRadius: 7,
-          background: `${color}1f`,
-          color,
-        }}
-      >
-        <Icon size={13} strokeWidth={2} />
-      </div>
-      <div>
-        <div
-          className="uppercase"
-          style={{
-            fontSize: 9,
-            fontWeight: 700,
-            color: "rgba(255,255,255,0.45)",
-            letterSpacing: 1,
-          }}
-        >
+    <div className="flex items-center gap-2 rounded-[10px] border border-white/[0.07] bg-white/[0.03] px-3 py-1.5">
+      <span style={{ color }}>
+        <Icon size={15} strokeWidth={1.9} />
+      </span>
+      <div className="leading-[1.15]">
+        <div className="text-[9.5px] font-bold uppercase tracking-[0.8px] text-white/40">
           {label}
         </div>
-        <div
-          style={{
-            fontSize: 12.5,
-            fontWeight: 600,
-            color: "#fff",
-            marginTop: 1,
-          }}
-        >
-          {value}
-        </div>
+        <div className="text-[13px] font-semibold text-white">{value}</div>
       </div>
     </div>
   );

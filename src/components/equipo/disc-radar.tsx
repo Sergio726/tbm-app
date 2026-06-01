@@ -1,144 +1,130 @@
 "use client";
 
 import { DISC_COLORS, type DiscLetter } from "@/lib/disc";
-import type { DiscScoresShape } from "./types";
-import { scoresToPct } from "./types";
 
-// Diamante simple D-I-S-C que sirve como "atributos base".
-// Usa scores reales si existen; si no, dibuja el shape sintético del primario.
 export function DiscRadar({
-  letters,
   scores,
-  size = 130,
+  primary,
+  size = 188,
 }: {
-  letters: string;
-  scores: DiscScoresShape;
+  scores: { D: number; I: number; S: number; C: number };
+  primary: DiscLetter;
   size?: number;
 }) {
-  const real = scoresToPct(scores);
-  const primary = letters[0] as DiscLetter | undefined;
-  const secondary = letters[1] as DiscLetter | undefined;
-
-  const value = (l: DiscLetter) => {
-    if (real) return real[l] / 100;
-    if (l === primary) return 1;
-    if (l === secondary) return 0.62;
-    return 0.22;
+  const c = size / 2;
+  const R = 70;
+  const order: DiscLetter[] = ["D", "I", "S", "C"];
+  // D arriba (-90°), I derecha (0°), S abajo (90°), C izquierda (180°)
+  const ang: Record<DiscLetter, number> = { D: -90, I: 0, S: 90, C: 180 };
+  const pt = (k: DiscLetter, frac: number): [number, number] => {
+    const a = (ang[k] * Math.PI) / 180;
+    return [c + Math.cos(a) * R * frac, c + Math.sin(a) * R * frac];
   };
-
-  const cx = size / 2;
-  const cy = size / 2;
-  const r = size / 2 - 14;
-
-  // D arriba, I derecha, S abajo, C izquierda.
-  const point = (l: DiscLetter): [number, number] => {
-    const v = value(l);
-    if (l === "D") return [cx, cy - r * v];
-    if (l === "I") return [cx + r * v, cy];
-    if (l === "S") return [cx, cy + r * v];
-    return [cx - r * v, cy]; // C
-  };
-
-  const labelPoint = (l: DiscLetter): [number, number] => {
-    if (l === "D") return [cx, cy - r - 4];
-    if (l === "I") return [cx + r + 8, cy + 3];
-    if (l === "S") return [cx, cy + r + 12];
-    return [cx - r - 8, cy + 3];
-  };
-
-  const polyPoints = (["D", "I", "S", "C"] as DiscLetter[])
-    .map((l) => point(l).join(","))
+  const poly = order
+    .map((k) => pt(k, scores[k] / 100))
+    .map((p) => p.join(","))
     .join(" ");
-
-  const axisPoints = (["D", "I", "S", "C"] as DiscLetter[]).map((l) => {
-    if (l === "D") return [cx, cy - r];
-    if (l === "I") return [cx + r, cy];
-    if (l === "S") return [cx, cy + r];
-    return [cx - r, cy];
-  });
+  const rings = [0.25, 0.5, 0.75, 1];
 
   return (
-    <div className="flex flex-col items-center" style={{ gap: 8 }}>
-      <div
-        className="uppercase"
-        style={{
-          fontSize: 9.5,
-          fontWeight: 700,
-          color: "rgba(255,255,255,0.45)",
-          letterSpacing: 1.4,
-        }}
-      >
-        Atributos base
-      </div>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {/* Grilla externa */}
+    <svg
+      width={size}
+      height={size}
+      style={{ display: "block", margin: "0 auto", overflow: "visible" }}
+    >
+      <defs>
+        <radialGradient id="radar-fill" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#5b8aff" stopOpacity="0.34" />
+          <stop offset="100%" stopColor="#5b8aff" stopOpacity="0.08" />
+        </radialGradient>
+      </defs>
+      {/* grid rings (diamonds) */}
+      {rings.map((r, i) => (
         <polygon
-          points={axisPoints.map((p) => p.join(",")).join(" ")}
+          key={i}
+          points={order.map((k) => pt(k, r).join(",")).join(" ")}
           fill="none"
           stroke="rgba(255,255,255,0.08)"
           strokeWidth={1}
         />
-        {/* Grilla 50% */}
-        <polygon
-          points={axisPoints
-            .map(([x, y]) => [cx + (x - cx) * 0.5, cy + (y - cy) * 0.5].join(","))
-            .join(" ")}
-          fill="none"
-          stroke="rgba(255,255,255,0.05)"
-          strokeWidth={1}
-        />
-        {/* Ejes */}
-        {axisPoints.map(([x, y], i) => (
+      ))}
+      {/* axes */}
+      {order.map((k) => {
+        const [x, y] = pt(k, 1);
+        return (
           <line
-            key={i}
-            x1={cx}
-            y1={cy}
+            key={k}
+            x1={c}
+            y1={c}
             x2={x}
             y2={y}
-            stroke="rgba(255,255,255,0.08)"
+            stroke="rgba(255,255,255,0.07)"
             strokeWidth={1}
           />
-        ))}
-        {/* Forma */}
-        <polygon
-          points={polyPoints}
-          fill="rgba(91,138,255,0.18)"
-          stroke="rgba(91,138,255,0.7)"
-          strokeWidth={1.5}
-        />
-        {/* Puntos por letra */}
-        {(["D", "I", "S", "C"] as DiscLetter[]).map((l) => {
-          const [x, y] = point(l);
-          return (
+        );
+      })}
+      {/* data polygon */}
+      <polygon
+        points={poly}
+        fill="url(#radar-fill)"
+        stroke="#5b8aff"
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
+      {/* vertices */}
+      {order.map((k) => {
+        const [x, y] = pt(k, scores[k] / 100);
+        const col = DISC_COLORS[k];
+        const isP = k === primary;
+        return (
+          <g key={k}>
             <circle
-              key={l}
               cx={x}
               cy={y}
-              r={3.5}
-              fill={DISC_COLORS[l]}
-              stroke="rgba(0,0,0,0.5)"
-              strokeWidth={0.5}
+              r={isP ? 5.5 : 4}
+              fill={col}
+              stroke="#0a0e1a"
+              strokeWidth={1.5}
             />
-          );
-        })}
-        {/* Etiquetas */}
-        {(["D", "I", "S", "C"] as DiscLetter[]).map((l) => {
-          const [x, y] = labelPoint(l);
-          return (
-            <text
-              key={l}
-              x={x}
-              y={y}
-              textAnchor="middle"
-              fontSize={11}
-              fontWeight={700}
-              fill={DISC_COLORS[l]}
-            >
-              {l}
-            </text>
-          );
-        })}
-      </svg>
-    </div>
+            {isP && (
+              <circle
+                cx={x}
+                cy={y}
+                r={9}
+                fill="none"
+                stroke={col}
+                strokeWidth={1.5}
+                opacity={0.5}
+              >
+                <animate
+                  attributeName="opacity"
+                  values="0.5;1;0.5"
+                  dur="2s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+            )}
+          </g>
+        );
+      })}
+      {/* axis labels */}
+      {order.map((k) => {
+        const [x, y] = pt(k, 1.28);
+        return (
+          <text
+            key={k}
+            x={x}
+            y={y + 4}
+            textAnchor="middle"
+            fontFamily="JetBrains Mono, monospace"
+            fontSize={13}
+            fontWeight={700}
+            fill={DISC_COLORS[k]}
+          >
+            {k}
+          </text>
+        );
+      })}
+    </svg>
   );
 }

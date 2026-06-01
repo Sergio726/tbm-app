@@ -1,9 +1,19 @@
 "use client";
 
-import { Target, Sparkles, AlertTriangle } from "lucide-react";
-import { ALIGNMENT_ACTION, computeAlignment, type AlignmentValue } from "@/lib/disc";
-import { Card, SectionTitle, Field, Label, inputStyle } from "./primitives";
-import type { Draft } from "./types";
+import { Target, CheckCircle2, Swords, Sparkles, Info } from "lucide-react";
+import {
+  ALIGNMENT_ACTION,
+  computeAlignment,
+  type AlignmentValue,
+} from "@/lib/disc";
+import { Panel, FieldLabel, TextInput } from "./primitives";
+import { MONO, type Draft } from "./types";
+
+const OPTS: { key: AlignmentValue; bars: number }[] = [
+  { key: "alta", bars: 3 },
+  { key: "media", bars: 2 },
+  { key: "baja", bars: 1 },
+];
 
 export function AlignmentSection({
   draft,
@@ -16,83 +26,55 @@ export function AlignmentSection({
 }) {
   const align = draft.alignment as AlignmentValue | null;
   const suggested = computeAlignment(draft.cargo, draft.disc_letters);
-  const kpiMissing = draft.kpi_name.trim() === "";
+  const hasKpi = draft.kpi_name.trim().length > 0;
 
   return (
-    <Card>
-      <SectionTitle
-        Icon={Target}
-        label="Alineación rol ↔ perfil & KPI"
-        color="#34d399"
-        hint="Si su perfil natural encaja con el rol (Mantener / Desarrollar / Reubicar) y su número clave a medir."
+    <Panel
+      icon={<Target size={18} strokeWidth={1.9} />}
+      iconColor="#34d399"
+      accent="#34d399"
+      title="Alineación rol ↔ perfil & KPI"
+      sub="Si su perfil natural encaja con el rol (Mantener / Desarrollar / Reubicar) y su número clave a medir."
+    >
+      <FieldLabel hint="alimenta la alineación">Área / función del rol</FieldLabel>
+      <TextInput
+        value={draft.cargo}
+        disabled={!editable}
+        onChange={(e) => patch({ cargo: e.target.value })}
+        placeholder="Ej. Operaciones, Ventas, Finanzas"
+        className="mb-[18px]"
       />
 
-      <Field
-        label="Área / función del rol"
-        hint="alimenta la alineación"
-      >
-        <input
-          value={draft.cargo}
-          disabled={!editable}
-          onChange={(e) => patch({ cargo: e.target.value })}
-          placeholder="Ej. Operaciones, Ventas, Finanzas"
-          style={inputStyle}
-        />
-      </Field>
-
-      <div style={{ marginTop: 16 }}>
-        <Label>Alineación · ¿el perfil natural calza con el rol?</Label>
-      </div>
-      <div className="flex" style={{ gap: 8, marginTop: 8 }}>
-        {(Object.keys(ALIGNMENT_ACTION) as AlignmentValue[]).map((key) => (
-          <AlignmentOption
-            key={key}
-            value={key}
-            active={align === key}
+      <FieldLabel>Alineación · ¿el perfil natural calza con el rol?</FieldLabel>
+      <div className="grid grid-cols-3 gap-2.5">
+        {OPTS.map((o) => (
+          <AlignGaugeButton
+            key={o.key}
+            value={o.key}
+            bars={o.bars}
+            active={align === o.key}
             disabled={!editable}
-            onSelect={() => patch({ alignment: align === key ? null : key })}
+            onSelect={() =>
+              patch({ alignment: align === o.key ? null : o.key })
+            }
           />
         ))}
       </div>
 
       {suggested && (
-        <div
-          className="flex items-center"
-          style={{
-            gap: 8,
-            marginTop: 12,
-            fontSize: 11.5,
-            color: "rgba(255,255,255,0.6)",
-            flexWrap: "wrap",
-          }}
-        >
-          <Sparkles size={13} style={{ color: ALIGNMENT_ACTION[suggested].color }} />
-          <span>
+        <div className="mt-3 flex items-center gap-1.5 text-[12px]" style={{ color: "#fbbf24" }}>
+          <Sparkles size={14} strokeWidth={1.9} />
+          <span className="text-white/85">
             Sugerido por perfil + área:{" "}
-            <span
-              style={{
-                color: ALIGNMENT_ACTION[suggested].color,
-                fontWeight: 600,
-              }}
-            >
-              {ALIGNMENT_ACTION[suggested].label} →{" "}
-              {ALIGNMENT_ACTION[suggested].action}
-            </span>
+            <b style={{ color: ALIGNMENT_ACTION[suggested].color }}>
+              {ALIGNMENT_ACTION[suggested].label} → {ALIGNMENT_ACTION[suggested].action}
+            </b>
           </span>
           {editable && align !== suggested && (
             <button
               type="button"
               onClick={() => patch({ alignment: suggested })}
-              style={{
-                fontSize: 10.5,
-                fontWeight: 600,
-                padding: "2px 8px",
-                borderRadius: 5,
-                cursor: "pointer",
-                background: "rgba(91,138,255,0.18)",
-                border: "1px solid rgba(91,138,255,0.35)",
-                color: "#bcd0ff",
-              }}
+              className="ml-1 rounded border border-[#5b8aff]/35 bg-[#5b8aff]/[0.18] px-2 py-0.5 text-[10.5px] font-bold text-[#bcd0ff]"
             >
               Aplicar
             </button>
@@ -100,50 +82,39 @@ export function AlignmentSection({
         </div>
       )}
 
-      {/* KPI box destacado */}
+      {/* KPI — Boss objective */}
       <div
+        className="mt-[22px] rounded-[14px] border p-[18px] transition"
         style={{
-          marginTop: 18,
-          padding: "14px 16px",
-          borderRadius: 12,
-          background: kpiMissing
-            ? "linear-gradient(135deg, rgba(251,191,36,0.10), rgba(251,191,36,0.02))"
-            : "rgba(255,255,255,0.025)",
-          border: kpiMissing
-            ? "1px solid rgba(251,191,36,0.35)"
-            : "1px solid rgba(255,255,255,0.06)",
+          background: hasKpi ? "rgba(52,211,153,0.06)" : "rgba(251,191,36,0.05)",
+          borderColor: hasKpi ? "rgba(52,211,153,0.25)" : "rgba(251,191,36,0.28)",
         }}
       >
         <div
-          className="flex items-center"
-          style={{ gap: 7, marginBottom: 10 }}
+          className="mb-3.5 flex items-center gap-2 text-[13px] font-bold"
+          style={{ color: hasKpi ? "#34d399" : "#fbbf24" }}
         >
-          <Target size={13} style={{ color: kpiMissing ? "#fbbf24" : "#34d399" }} />
-          <span
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: kpiMissing ? "#fbbf24" : "#34d399",
-            }}
-          >
-            Objetivo clave del rol
-          </span>
+          {hasKpi ? (
+            <CheckCircle2 size={16} strokeWidth={1.9} />
+          ) : (
+            <Swords size={16} strokeWidth={1.9} />
+          )}
+          {hasKpi ? "Objetivo definido" : "Objetivo clave del rol"}
         </div>
-        <div
-          className="grid"
-          style={{ gridTemplateColumns: "1fr 130px", gap: 12 }}
-        >
-          <Field label="KPI principal del rol (número único)">
-            <input
+
+        <div className="grid grid-cols-[minmax(0,1fr)_130px] gap-3">
+          <div>
+            <FieldLabel>KPI principal del rol (número único)</FieldLabel>
+            <TextInput
               value={draft.kpi_name}
               disabled={!editable}
               onChange={(e) => patch({ kpi_name: e.target.value })}
               placeholder="Ej. Propuestas enviadas"
-              style={inputStyle}
             />
-          </Field>
-          <Field label="Meta semanal">
-            <input
+          </div>
+          <div>
+            <FieldLabel>Meta semanal</FieldLabel>
+            <TextInput
               type="number"
               value={draft.kpi_weekly_target ?? ""}
               disabled={!editable}
@@ -154,82 +125,88 @@ export function AlignmentSection({
                 })
               }
               placeholder="10"
-              style={{ ...inputStyle, textAlign: "right" }}
+              className="text-center font-bold"
+              style={{ fontFamily: MONO, fontSize: 16 }}
             />
-          </Field>
+          </div>
         </div>
-        {kpiMissing && (
-          <div
-            className="flex items-start"
-            style={{ gap: 7, marginTop: 10, fontSize: 11.5, color: "#fbbf24" }}
-          >
-            <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }} />
+
+        {!hasKpi && (
+          <div className="mt-3 flex gap-2 text-[12px] leading-snug text-white/60">
+            <Info
+              size={14}
+              strokeWidth={1.9}
+              className="mt-[1px] flex-shrink-0 text-[#fbbf24]"
+            />
             <span>
-              <strong>Requerido para guardar:</strong> definí el KPI principal. Si no se
-              puede medir, el cargo es ambiguo (Ley de Pearson, S7).
+              <b className="text-[#fbbf24]">Requerido para guardar:</b> definí el KPI
+              principal. Si no se puede medir, el cargo es ambiguo (Ley de Pearson, S7).
             </span>
           </div>
         )}
       </div>
-    </Card>
+    </Panel>
   );
 }
 
-function AlignmentOption({
+function AlignGaugeButton({
   value,
+  bars,
   active,
   disabled,
   onSelect,
 }: {
   value: AlignmentValue;
+  bars: number;
   active: boolean;
   disabled: boolean;
   onSelect: () => void;
 }) {
   const a = ALIGNMENT_ACTION[value];
-  // Cuántas barras "encendidas" muestra la card según el nivel.
-  const bars = value === "alta" ? 3 : value === "media" ? 2 : 1;
 
   return (
     <button
       type="button"
-      disabled={disabled}
       onClick={onSelect}
-      className="flex-1 text-center transition-colors"
+      disabled={disabled}
+      className="relative overflow-hidden rounded-[14px] border px-3 py-4 text-center transition disabled:cursor-default"
       style={{
-        padding: "12px 8px",
-        borderRadius: 10,
-        cursor: disabled ? "default" : "pointer",
         background: active
-          ? `linear-gradient(180deg, ${a.color}24, ${a.color}08)`
-          : "rgba(255,255,255,0.03)",
-        border: `1px solid ${active ? `${a.color}66` : "rgba(255,255,255,0.07)"}`,
-        color: active ? a.color : "rgba(255,255,255,0.65)",
+          ? `linear-gradient(180deg, ${a.color}22, ${a.color}08)`
+          : "rgba(255,255,255,0.025)",
+        borderColor: active ? `${a.color}77` : "rgba(255,255,255,0.08)",
+        boxShadow: active ? `0 0 22px ${a.color}26` : "none",
       }}
     >
-      <div
-        className="flex items-center justify-center"
-        style={{ gap: 4, marginBottom: 8 }}
-      >
-        {[1, 2, 3].map((i) => (
-          <span
-            key={i}
-            style={{
-              width: 14,
-              height: 3,
-              borderRadius: 2,
-              background:
-                i <= bars
+      {/* segmented meter dots */}
+      <div className="mb-2.5 flex justify-center gap-1">
+        {[0, 1, 2].map((i) => {
+          const lit = i < bars;
+          return (
+            <div
+              key={i}
+              className="h-[5px] w-[18px] rounded-full"
+              style={{
+                background: active && lit
                   ? a.color
-                  : active
-                    ? `${a.color}33`
-                    : "rgba(255,255,255,0.10)",
-            }}
-          />
-        ))}
+                  : lit
+                    ? `${a.color}55`
+                    : "rgba(255,255,255,0.1)",
+              }}
+            />
+          );
+        })}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 700 }}>{a.label}</div>
-      <div style={{ fontSize: 10.5, opacity: 0.85, marginTop: 2 }}>
+      <div
+        className="text-[15px] font-bold"
+        style={{ color: active ? a.color : "rgba(255,255,255,0.7)" }}
+      >
+        {a.label}
+      </div>
+      <div
+        className="mt-0.5 text-[12px]"
+        style={{ color: active ? a.color : "rgba(255,255,255,0.45)" }}
+      >
         → {a.action}
       </div>
     </button>

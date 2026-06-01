@@ -300,6 +300,12 @@ input.tbm-range:focus {
 /* Barras del resultado: transición suave del ancho */
 .tbm-bar { transition: width .8s cubic-bezier(.4,0,.2,1); }
 
+/* Shine sweep — usado en el Character Card del módulo Mi Equipo */
+@keyframes tbm-shine {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 /* Accesibilidad: respetar "reducir movimiento" */
 @media (prefers-reduced-motion: reduce) {
   .tbm-slide-right, .tbm-slide-left, .tbm-pulse-dot, .tbm-live-strip,
