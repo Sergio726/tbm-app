@@ -1161,7 +1161,8 @@ export default function OnboardingPage() {
         await supabase.auth.signInWithOtp({
           email,
           options: {
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/accept-invite?company=${companyId}`,
+            // Dominio actual (automático): funciona en local, preview y prod sin tocar env vars.
+            emailRedirectTo: `${window.location.origin}/accept-invite?company=${companyId}`,
           },
         });
       }

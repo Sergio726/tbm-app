@@ -60,12 +60,12 @@ Configurar en Vercel → Project → Settings → Environment Variables:
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | URL del proyecto Supabase |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | ✅ | anon key |
-| `NEXT_PUBLIC_APP_URL` | ✅ | URL pública (links de invitación y de test). En prod = dominio Vercel |
+| ~~`NEXT_PUBLIC_APP_URL`~~ | ❌ ya no se usa | La app deriva el dominio con `window.location.origin` (automático en cualquier dominio). Al migrar de dominio solo se actualiza la allow-list de Supabase Auth |
 | `ANTHROPIC_API_KEY` | ⬜ opcional | Habilita la síntesis IA del informe. Sin ella, informe estático |
 | `DISC_AI_MODEL` | ⬜ opcional | Modelo (default `claude-haiku-4-5`) |
 | `DISC_AI_TEMPERATURE` | ⬜ opcional | Temperatura 0–1 de la síntesis IA (default `0.6`) |
 
-> `NEXT_PUBLIC_APP_URL` debe apuntar al dominio de producción para que los links de invitación/test funcionen en el deploy.
+> Los links de invitación y de test se construyen con `window.location.origin` (el dominio actual), así que **no hay que configurar ninguna URL** al migrar de dominio. Lo único a actualizar en ese caso es la allow-list de **Supabase → Authentication → URL Configuration** (Site URL + Redirect URLs, ej. `https://tu-dominio/**`).
 
 ---
 
