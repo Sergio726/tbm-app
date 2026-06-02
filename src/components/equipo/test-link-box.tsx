@@ -40,22 +40,36 @@ export function TestLinkBox({
 
   if (completed) {
     return (
-      <div className="mb-5 flex items-center gap-3 rounded-xl border border-[#5b8aff]/[0.28] bg-[#5b8aff]/[0.08] px-4 py-3.5">
-        <div className="flex h-[30px] w-[30px] flex-shrink-0 items-center justify-center rounded-lg bg-[#5b8aff]/20 text-[#9fb9ff]">
-          <CheckCircle2 size={17} strokeWidth={1.9} />
-        </div>
-        <div>
-          <div className="mb-0.5 text-[13px] font-bold text-[#9fb9ff]">
-            Test DISC completado
+      <div className="mb-5 rounded-xl border border-[#5b8aff]/[0.28] bg-[#5b8aff]/[0.08] px-4 py-3.5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-[30px] w-[30px] flex-shrink-0 items-center justify-center rounded-lg bg-[#5b8aff]/20 text-[#9fb9ff]">
+            <CheckCircle2 size={17} strokeWidth={1.9} />
           </div>
-          <div className="text-[12px] text-white/60">
-            La persona ya completó el test; su perfil se calculó y cargó automáticamente.
+          <div>
+            <div className="mb-0.5 text-[13px] font-bold text-[#9fb9ff]">
+              Test DISC completado
+            </div>
+            <div className="text-[12px] text-white/60">
+              La persona ya completó el test; su perfil se calculó y cargó automáticamente.
+            </div>
           </div>
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-[#34d399]/35 bg-[#34d399]/[0.14] px-2.5 py-1 text-[11px] font-bold text-[#34d399]">
+            <Trophy size={12} strokeWidth={2} />
+            +1 logro
+          </span>
         </div>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-[#34d399]/35 bg-[#34d399]/[0.14] px-2.5 py-1 text-[11px] font-bold text-[#34d399]">
-          <Trophy size={12} strokeWidth={2} />
-          +1 logro
-        </span>
+        <button
+          type="button"
+          onClick={onGenerate}
+          disabled={generating}
+          className="mt-3 inline-flex items-center gap-1.5 rounded-[9px] border border-white/10 bg-white/[0.04] px-3 py-2 text-[12px] font-semibold text-white/70 transition hover:bg-white/[0.08] hover:text-white disabled:cursor-default disabled:opacity-60"
+        >
+          <RotateCcw size={13} />
+          {generating ? "Generando…" : "Generar nuevo link · re-hacer test"}
+        </button>
+        <p className="mt-1.5 text-[11px] text-white/40">
+          Genera un link nuevo y deja el perfil en blanco para volver a evaluarlo.
+        </p>
       </div>
     );
   }

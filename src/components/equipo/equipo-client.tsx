@@ -154,13 +154,22 @@ export function EquipoClient({
         status: "pendiente",
       });
       if (error) throw error;
-      if ((selected.disc_status ?? "pendiente") === "pendiente") {
-        await supabase
-          .from("profiles")
-          .update({ disc_status: "enviado" })
-          .eq("id", selected.id);
-      }
+      // Re-hacer test: dejar el perfil en blanco y en estado "enviado" para
+      // que el nuevo test arranque limpio (decisión: "limpiar de una").
+      const { error: profErr } = await supabase
+        .from("profiles")
+        .update({
+          disc_status: "enviado",
+          disc_letters: null,
+          disc_name: null,
+          disc_icon: null,
+          disc_profile_key: null,
+          disc_scores: null,
+        })
+        .eq("id", selected.id);
+      if (profErr) throw profErr;
       setFreshToken((m) => ({ ...m, [selected.id]: token }));
+      patch({ disc_letters: "" }); // limpia barras/Luz-Sombra al instante
       router.refresh();
     } catch (e) {
       console.error("Error generando link DISC:", e);
