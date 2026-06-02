@@ -15,7 +15,7 @@ export default async function DashboardLayout({
   // Datos del perfil y empresa para el sidebar
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, company_id, companies(name)")
+    .select("full_name, role, avatar_url, company_id, companies(name)")
     .eq("id", user.id)
     .single();
 
@@ -27,12 +27,21 @@ export default async function DashboardLayout({
     .join("")
     .toUpperCase() ?? "A";
 
+  const ROLE_LABEL: Record<string, string> = {
+    arquitecto: "Arquitecto",
+    colaborador: "Colaborador",
+    observador: "Observador",
+  };
+
   return (
     <div className="min-h-screen bg-tbm-bg">
       {/* Sidebar fijo */}
       <Sidebar
         companyName={companyName}
         userInitials={initials}
+        userName={profile?.full_name ?? undefined}
+        userRole={ROLE_LABEL[profile?.role ?? ""] ?? profile?.role ?? undefined}
+        avatarUrl={profile?.avatar_url ?? undefined}
       />
 
       {/* Contenido principal */}

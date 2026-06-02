@@ -193,6 +193,9 @@ export type Database = {
         Row: {
           alignment: string | null
           avatar_url: string | null
+          phone: string | null
+          timezone: string | null
+          bio: string | null
           company_id: string | null
           created_at: string | null
           disc_icon: string | null
@@ -221,6 +224,9 @@ export type Database = {
         Insert: {
           alignment?: string | null
           avatar_url?: string | null
+          phone?: string | null
+          timezone?: string | null
+          bio?: string | null
           company_id?: string | null
           created_at?: string | null
           disc_icon?: string | null
@@ -249,6 +255,9 @@ export type Database = {
         Update: {
           alignment?: string | null
           avatar_url?: string | null
+          phone?: string | null
+          timezone?: string | null
+          bio?: string | null
           company_id?: string | null
           created_at?: string | null
           disc_icon?: string | null

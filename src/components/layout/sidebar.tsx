@@ -42,6 +42,9 @@ interface SidebarProps {
   companyName?: string;
   userInitials?: string;
   userStatusLabel?: string;
+  userName?: string;
+  userRole?: string;
+  avatarUrl?: string;
 }
 
 /**
@@ -54,6 +57,9 @@ export function Sidebar({
   companyName,
   userInitials,
   userStatusLabel,
+  userName,
+  userRole,
+  avatarUrl,
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -203,37 +209,54 @@ export function Sidebar({
               WebkitBackdropFilter: "blur(12px)",
             }}
           >
-            <div className="relative">
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-full text-white"
-                style={{
-                  background: "linear-gradient(135deg, #f87171, #b91c1c)",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  boxShadow:
-                    "inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 12px rgba(248,113,113,0.25)",
-                }}
-              >
-                {userInitials ?? "A"}
+            <Link
+              href="/cuenta"
+              title="Mi cuenta"
+              className="flex min-w-0 flex-1 items-center gap-[11px] rounded-lg transition-opacity hover:opacity-90"
+            >
+              <div className="relative">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt={userName ?? "Avatar"}
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-white"
+                    style={{
+                      background: "linear-gradient(135deg, #f87171, #b91c1c)",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      boxShadow:
+                        "inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 12px rgba(248,113,113,0.25)",
+                    }}
+                  >
+                    {userInitials ?? "A"}
+                  </div>
+                )}
+                {/* Dot de sesión */}
+                <div
+                  className="absolute bottom-0 right-0"
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: "#10b981",
+                    border: "2px solid #0a0e18",
+                  }}
+                />
               </div>
-              {/* Dot de sesión */}
-              <div
-                className="absolute bottom-0 right-0"
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: "50%",
-                  background: "#10b981",
-                  border: "2px solid #0a0e18",
-                }}
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p style={{ fontSize: 13, fontWeight: 500 }}>Arquitecto</p>
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
-                {userStatusLabel ?? "En sesión"}
-              </p>
-            </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate" style={{ fontSize: 13, fontWeight: 500 }}>
+                  {userName ?? "Mi cuenta"}
+                </p>
+                <p className="truncate" style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                  {userRole ?? userStatusLabel ?? "En sesión"}
+                </p>
+              </div>
+            </Link>
             <div className="flex items-center" style={{ gap: 6 }}>
               <button
                 type="button"
