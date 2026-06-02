@@ -31,6 +31,12 @@ function AcceptInviteContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [signOutNeeded, setSignOutNeeded] = useState(false);
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
 
   useEffect(() => {
     if (companyId) {
@@ -52,8 +58,14 @@ function AcceptInviteContent() {
       return;
     }
 
+    if (!companyId) {
+      setError("Link de invitación inválido (falta la empresa).");
+      return;
+    }
+
     setLoading(true);
     setError("");
+    setSignOutNeeded(false);
 
     try {
       const {
@@ -62,22 +74,60 @@ function AcceptInviteContent() {
 
       if (!user) throw new Error("No hay sesión activa. Revisá el link del email.");
 
-      // Actualizar perfil con datos personales + vincular empresa
-      await supabase
+      // 1. No degradar a un Arquitecto / dueño de empresa que abrió el link
+      //    en su propia sesión (caso clásico: el invitante clickea el link).
+      const { data: me } = await supabase
+        .from("profiles")
+        .select("role, company_id")
+        .eq("id", user.id)
+        .single();
+
+      const { data: ownedCompany } = await supabase
+        .from("companies")
+        .select("id")
+        .eq("owner_id", user.id)
+        .maybeSingle();
+
+      if (me?.role === "arquitecto" || ownedCompany) {
+        setSignOutNeeded(true);
+        throw new Error(
+          "Esta sesión es de una cuenta de Arquitecto. Cerrá sesión y abrí la invitación con el email al que te invitaron."
+        );
+      }
+
+      // 2. Verificar que exista una invitación pendiente para ESTE email + empresa.
+      const { data: invite } = await supabase
+        .from("invitations")
+        .select("id, status")
+        .eq("company_id", companyId)
+        .eq("email", user.email!)
+        .maybeSingle();
+
+      if (!invite) {
+        throw new Error(
+          "No encontramos una invitación para tu email en esta empresa. Pedile al Arquitecto que te reinvite."
+        );
+      }
+
+      // 3. Vincular perfil → empresa como colaborador (chequeando el error).
+      const { error: profErr } = await supabase
         .from("profiles")
         .update({
           full_name: fullName.trim(),
-          company_id: companyId!,
+          cargo: cargo.trim() || null,
+          company_id: companyId,
           role: "colaborador",
           onboarding_completed: true,
         })
         .eq("id", user.id);
 
-      // Marcar la invitación como aceptada
+      if (profErr) throw profErr;
+
+      // 4. Marcar la invitación como aceptada.
       await supabase
         .from("invitations")
         .update({ status: "accepted", accepted_at: new Date().toISOString() })
-        .eq("company_id", companyId!)
+        .eq("company_id", companyId)
         .eq("email", user.email!);
 
       router.push("/dashboard");
@@ -140,9 +190,19 @@ function AcceptInviteContent() {
           </div>
         )}
 
+        {signOutNeeded && (
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="w-full rounded-lg border border-tbm-border px-4 py-2 text-sm font-medium text-tbm-text-secondary transition-colors hover:bg-tbm-elevated hover:text-white"
+          >
+            Cerrar sesión y volver a /login
+          </button>
+        )}
+
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || signOutNeeded}
           className="tbm-btn-primary w-full"
         >
           {loading ? (

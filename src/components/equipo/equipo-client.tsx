@@ -240,6 +240,18 @@ export function EquipoClient({
             Invitar colaborador
           </button>
         )}
+        {!isArquitecto && (
+          <div
+            className="max-w-[320px] rounded-xl px-4 py-3 text-[12px] leading-relaxed text-white/55"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            Tu rol es <span className="font-semibold text-white/80">colaborador</span>. Solo el
+            Arquitecto puede editar el equipo, generar links de test e invitar.
+          </div>
+        )}
       </div>
 
       <div
