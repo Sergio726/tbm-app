@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles, Sun, Moon, Download } from "lucide-react";
+import { Sparkles, Sun, Moon, Download, Target, Rocket } from "lucide-react";
 import {
   DISC_COLORS,
   DISC_DIMENSIONS,
   DISC_FACTORS,
+  DISC_ACTION_STEPS,
   primaryLetter,
   profileByKey,
   type DiscLetter,
@@ -40,13 +41,27 @@ export function DiscResult({
 
   // Disparar el "reveal" (barras crecen, cards entran) una vez montado.
   const [mounted, setMounted] = useState(false);
+  const [today, setToday] = useState("");
   useEffect(() => {
     const t = requestAnimationFrame(() => setMounted(true));
+    setToday(
+      new Date().toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })
+    );
     return () => cancelAnimationFrame(t);
   }, []);
 
   return (
     <div className="space-y-6 disc-report">
+      {/* Encabezado branded solo en el PDF */}
+      <div className="print-only disc-print-header">
+        <div className="brand text-sm">THE BUSINESS MULTIPLIER · Informe DISC</div>
+        <div className="meta text-xs">
+          {fullName ?? ""}
+          {cargo ? ` · ${cargo}` : ""}
+          {today ? ` · ${today}` : ""}
+        </div>
+      </div>
+
       {/* Acción: descargar como PDF (oculto en la impresión) */}
       <div className="flex justify-end no-print">
         <button
@@ -189,8 +204,52 @@ export function DiscResult({
         </div>
       )}
 
+      {/* Dónde brillás (roles ideales) */}
+      {factor && factor.idealRoles.length > 0 && (
+        <div className="tbm-card p-4 tbm-rise" style={{ animationDelay: "390ms" }}>
+          <div className="flex items-center gap-2 mb-2.5">
+            <Target size={15} style={{ color: iconColor }} />
+            <h2 className="text-sm font-semibold text-tbm-text-primary">Dónde brillás</h2>
+          </div>
+          <p className="text-sm text-tbm-text-secondary mb-2.5">
+            Tu estilo natural rinde mejor en roles de:
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {factor.idealRoles.map((r) => (
+              <span
+                key={r}
+                className="px-2.5 py-1 rounded-full text-xs font-semibold"
+                style={{ background: `${iconColor}1c`, border: `1px solid ${iconColor}40`, color: iconColor }}
+              >
+                {r}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tus próximos pasos */}
+      {primary && (
+        <div className="tbm-card p-4 tbm-rise" style={{ animationDelay: "430ms" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Rocket size={15} className="text-tbm-blue-light" />
+            <h2 className="text-sm font-semibold text-tbm-text-primary">Tus próximos pasos</h2>
+          </div>
+          <ol className="space-y-2.5">
+            {DISC_ACTION_STEPS[primary].map((s, i) => (
+              <li key={i} className="flex gap-3 text-sm text-tbm-text-secondary leading-snug">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tbm-blue/20 text-tbm-blue-light text-[11px] font-bold">
+                  {i + 1}
+                </span>
+                {s}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
       {/* Glosario: qué mide cada letra */}
-      <div className="tbm-card p-4 tbm-rise" style={{ animationDelay: "420ms" }}>
+      <div className="tbm-card p-4 tbm-rise" style={{ animationDelay: "500ms" }}>
         <h2 className="text-sm font-semibold text-tbm-text-primary mb-3">¿Qué significa cada letra?</h2>
         <div className="space-y-2.5">
           {DIM_ORDER.map((letter) => {

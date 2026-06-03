@@ -209,6 +209,65 @@ export const DISC_STATUS_LABEL: Record<string, string> = {
   completado: "Informe completo",
 };
 
+// ── Próximos pasos por factor (acciones para la propia persona) ──
+// Derivados del "cómo gestionarlo" / "más eficaz si" de cada perfil.
+export const DISC_ACTION_STEPS: Record<DiscLetter, string[]> = {
+  D: [
+    "Antes de acelerar, escuchá una opinión distinta a la tuya.",
+    "Comunicá el “por qué” de tus decisiones, no solo el “qué”.",
+    "Bajá un cambio el ritmo para que el equipo pueda seguirte.",
+  ],
+  I: [
+    "Aterrizá tus ideas en compromisos concretos y con fecha.",
+    "Hacé seguimiento de lo que arrancás hasta cerrarlo.",
+    "Cuidá el detalle: revisá antes de dar algo por hecho.",
+  ],
+  S: [
+    "Animate a proponer mejoras, no solo a sostener lo que ya hay.",
+    "Practicá adaptarte a un cambio chico por semana.",
+    "Compartí más tu conocimiento con el resto del equipo.",
+  ],
+  C: [
+    "Poné un límite de tiempo al análisis y decidí con lo que tenés.",
+    "Dá una recomendación clara, no solo datos.",
+    "Confiá más en tu criterio y expresá tu postura.",
+  ],
+};
+
+// ── Recomendaciones de liderazgo (para quien lidera a esta persona) ──
+export type LeadershipTips = {
+  delegar: string;
+  motivar: string;
+  feedback: string;
+  friccion: string;
+};
+export const DISC_LEADERSHIP_TIPS: Record<DiscLetter, LeadershipTips> = {
+  D: {
+    delegar: "Dale objetivos y autonomía sobre el “cómo”; no microgestiones.",
+    motivar: "Reconocé resultados y dale retos con impacto visible.",
+    feedback: "Directo y al punto; enfocá en el resultado, no en la persona.",
+    friccion: "No lo confrontes de frente; mostrale el costo de su conducta en la meta.",
+  },
+  I: {
+    delegar: "Dale visibilidad y gente; cerrá vos los detalles y plazos.",
+    motivar: "Reconocé en público; sumalo a iniciativas con exposición.",
+    feedback: "Empezá por lo positivo; convertí sus ideas en compromisos medibles.",
+    friccion: "Evitá el reproche público; reencauzá con entusiasmo hacia el foco.",
+  },
+  S: {
+    delegar: "Dale procesos estables y tiempo para adaptarse.",
+    motivar: "Valorá su constancia; dale seguridad y previsibilidad.",
+    feedback: "Tranquilo y en privado; anticipá los cambios con claridad.",
+    friccion: "No impongas cambios bruscos; explicá el porqué y acompañá la transición.",
+  },
+  C: {
+    delegar: "Dale criterios y estándares claros; evitá la ambigüedad.",
+    motivar: "Valorá su precisión; dale problemas que exijan calidad.",
+    feedback: "Con datos y argumentos; pedile una recomendación concreta con plazo.",
+    friccion: "No lo apures sin contexto; dale información y un tiempo razonable.",
+  },
+};
+
 // ── Perfiles canónicos del evaluador (fuente de verdad) ──────
 // Re-exportados para que la UI consuma el contenido rico (luz/sombra/temor,
 // tags, etc.) a partir del `disc_profile_key` calculado por el test.
