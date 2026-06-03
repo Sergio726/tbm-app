@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Info, Clock } from "lucide-react";
+import { Info, Clock, Sparkles, Layers, CheckCircle2 } from "lucide-react";
 import { WORD_GROUPS, TOTAL_GROUPS, type DiscAnswer, type DiscDim } from "@/lib/disc-evaluator";
 import { DISC_DIMENSIONS, DISC_COLORS } from "@/lib/disc";
 import { wordDefinition } from "@/lib/disc-words";
@@ -185,19 +185,47 @@ export function DiscTest({
 
   // ── Datos iniciales + intro educativa ──────────────────────
   if (phase === "datos") {
+    const firstName = (name || "").trim().split(" ")[0];
     return (
       <div className="max-w-lg mx-auto px-4 py-10">
-        <div className="text-center mb-6">
-          <div className="text-4xl mb-2">🧭</div>
-          <h1 className="text-2xl font-bold text-tbm-text-primary">Tu perfil DISC</h1>
+        <div className="text-center mb-7 tbm-rise" style={{ animationDelay: "0ms" }}>
+          <HeroCompass />
           {companyName && (
-            <p className="text-sm text-tbm-text-muted mt-1">Invitación de {companyName}</p>
+            <span className="mb-2.5 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-tbm-text-muted">
+              Invitación de {companyName}
+            </span>
+          )}
+          {hasProfile && firstName ? (
+            <>
+              <h1 className="text-[26px] font-bold leading-tight text-tbm-text-primary">
+                ¡Hola, {firstName}! <span className="align-middle">👋</span>
+              </h1>
+              <p className="mt-1 text-sm text-tbm-text-secondary">
+                Te invitaron a descubrir tu{" "}
+                <span className="text-gradient-blue font-semibold">perfil DISC</span>.
+              </p>
+            </>
+          ) : (
+            <h1 className="text-[26px] font-bold leading-tight text-tbm-text-primary">
+              Tu <span className="text-gradient-blue">perfil DISC</span>
+            </h1>
           )}
         </div>
 
         {/* ¿Qué es el DISC? */}
-        <div className="tbm-card p-4 mb-4">
-          <h2 className="text-sm font-semibold text-tbm-text-primary mb-1.5">¿Qué es el DISC?</h2>
+        <div
+          className="tbm-card p-5 mb-4 tbm-rise"
+          style={{ animationDelay: "90ms", borderColor: "rgba(91,138,255,0.22)" }}
+        >
+          <div className="mb-2 flex items-center gap-2">
+            <span
+              className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ background: "rgba(91,138,255,0.14)", color: "#9fb9ff" }}
+            >
+              <Sparkles size={15} strokeWidth={2} />
+            </span>
+            <h2 className="text-sm font-semibold text-tbm-text-primary">¿Qué es el DISC?</h2>
+          </div>
           <p className="text-sm text-tbm-text-secondary leading-relaxed">
             Es un mapa de tu <span className="text-tbm-text-primary">forma natural de comportarte</span>: cómo
             tomás decisiones, te comunicás y trabajás. No mide inteligencia ni si sos &quot;bueno&quot; o
@@ -208,68 +236,89 @@ export function DiscTest({
         </div>
 
         {/* Las 4 energías */}
-        <div className="tbm-card p-4 mb-4">
-          <h2 className="text-sm font-semibold text-tbm-text-primary mb-3">Las 4 energías que mide</h2>
-          <div className="space-y-2.5">
-            {DIM_ORDER.map((d) => {
-              const dim = DISC_DIMENSIONS[d];
-              return (
-                <div key={d} className="flex items-start gap-3">
-                  <span
-                    className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold text-white shrink-0"
-                    style={{ background: DISC_COLORS[d] }}
-                  >
-                    {d}
-                  </span>
-                  <div>
-                    <span className="text-sm font-medium text-tbm-text-primary">{dim.name}</span>
-                    <span className="text-sm text-tbm-text-secondary"> — {dim.plain}</span>
-                  </div>
-                </div>
-              );
-            })}
+        <div className="mb-4 tbm-rise" style={{ animationDelay: "170ms" }}>
+          <h2 className="mb-2.5 px-0.5 text-sm font-semibold text-tbm-text-primary">
+            Las 4 energías que mide
+          </h2>
+          <div className="grid grid-cols-2 gap-2.5">
+            {DIM_ORDER.map((d, i) => (
+              <EnergyCard key={d} d={d} delay={210 + i * 70} />
+            ))}
           </div>
         </div>
 
         {/* Cómo funciona */}
-        <div className="tbm-card p-4 mb-6">
-          <h2 className="text-sm font-semibold text-tbm-text-primary mb-2">Cómo funciona</h2>
-          <ul className="text-sm text-tbm-text-secondary space-y-1.5">
-            <li>• Son <span className="text-tbm-text-primary">{TOTAL_GROUPS} grupos</span> de 4 palabras (~5 min).</li>
-            <li>
-              • En cada grupo marcás la que <span className="text-tbm-green font-medium">MÁS (+)</span> y la que{" "}
-              <span className="text-tbm-red font-medium">MENOS (−)</span> te describe.
-            </li>
-            <li>
-              • ¿No conocés una palabra? Tocá el ícono{" "}
-              <Info size={12} className="inline align-middle text-tbm-text-muted" /> para ver qué significa.
-            </li>
-            <li>• No hay respuestas correctas: respondé con tu <span className="text-tbm-text-primary">primera reacción</span>, pensando en cómo sos realmente (no en cómo te gustaría ser).</li>
-          </ul>
+        <div className="tbm-card p-5 mb-6 tbm-rise" style={{ animationDelay: "430ms" }}>
+          <h2 className="mb-3 text-sm font-semibold text-tbm-text-primary">Cómo funciona</h2>
+          <div className="mb-3.5 grid grid-cols-3 gap-2.5">
+            <StatTile Icon={Layers} text={`${TOTAL_GROUPS} grupos`} color="#5b8aff" />
+            <StatTile Icon={Clock} text="~5 minutos" color="#fbbf24" />
+            <StatTile Icon={CheckCircle2} text="Sin respuestas malas" color="#34d399" />
+          </div>
+          <div className="flex items-center gap-2 text-[12.5px] leading-snug text-tbm-text-secondary">
+            <span>En cada grupo elegís la que te describe</span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-tbm-green/40 bg-tbm-green/10 px-2 py-0.5 text-[11px] font-bold text-tbm-green">
+              + MÁS
+            </span>
+            <span>y la</span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-tbm-red/40 bg-tbm-red/10 px-2 py-0.5 text-[11px] font-bold text-tbm-red">
+              − MENOS
+            </span>
+          </div>
+          <p className="mt-2.5 text-[12px] leading-relaxed text-tbm-text-muted">
+            ¿No conocés una palabra? Tocá{" "}
+            <Info size={12} className="inline align-middle text-tbm-text-muted" /> para ver qué significa.
+            No hay respuestas correctas: respondé con tu{" "}
+            <span className="text-tbm-text-secondary">primera reacción</span>.
+          </p>
         </div>
 
         {hasProfile ? (
           // Identidad fija: el link ya pertenece a un miembro. No se piden datos.
-          <div className="space-y-4">
-            <div className="tbm-card p-4 text-center">
-              <p className="text-sm text-tbm-text-secondary">Vas a hacer el test como</p>
-              <p className="text-lg font-bold text-tbm-text-primary mt-0.5">{name || "este colaborador"}</p>
-              {cargo && <p className="text-sm text-tbm-text-muted mt-0.5">{cargo}</p>}
+          <div className="space-y-3.5 tbm-rise" style={{ animationDelay: "520ms" }}>
+            <div
+              className="tbm-card flex items-center gap-3.5 p-4"
+              style={{ borderColor: "rgba(91,138,255,0.28)" }}
+            >
+              <span
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-bold text-white"
+                style={{ background: "linear-gradient(135deg, #5b8aff, #2c5fe6)" }}
+              >
+                {(name || "?")
+                  .trim()
+                  .split(" ")
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join("")
+                  .toUpperCase()}
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10.5px] font-semibold uppercase tracking-wide text-tbm-text-muted">
+                  Vas a hacer el test como
+                </p>
+                <p className="truncate text-[17px] font-bold text-tbm-text-primary">
+                  {name || "este colaborador"}
+                </p>
+                {cargo && <p className="truncate text-xs text-tbm-text-muted">{cargo}</p>}
+              </div>
             </div>
-            <button className="tbm-btn-primary w-full" onClick={() => setPhase("test")}>
-              Empezar test →
+            <button
+              className="tbm-btn-primary tbm-cta-glow w-full py-3.5 text-[15px]"
+              onClick={() => setPhase("test")}
+            >
+              Empezar mi test →
             </button>
             <p className="text-center text-xs text-tbm-text-muted">
               ¿No sos vos? Pedile al Arquitecto el link correcto.
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 tbm-rise" style={{ animationDelay: "520ms" }}>
             <Input label="Tu nombre completo" value={name} onChange={setName} placeholder="Juan García" />
             <Input label="Tu cargo o área" value={cargo} onChange={setCargo} placeholder="Operaciones" />
             <Input label="Email (opcional)" value={email} onChange={setEmail} placeholder="juan@empresa.com" type="email" />
             <button
-              className="tbm-btn-primary w-full"
+              className="tbm-btn-primary tbm-cta-glow w-full py-3.5 text-[15px]"
               disabled={!name.trim()}
               onClick={() => setPhase("test")}
             >
@@ -475,6 +524,91 @@ export function DiscTest({
           </button>
         )}
       </div>
+    </div>
+  );
+}
+
+// Ícono héroe: compás animado (Noto WebP) con halo de glow; fallback a emoji.
+function HeroCompass() {
+  const [failed, setFailed] = useState(false);
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+  }, []);
+  const color = "#5b8aff";
+  return (
+    <div className="relative mx-auto mb-3 flex h-[92px] w-[92px] items-center justify-center">
+      {!reduced && (
+        <span
+          aria-hidden
+          className="tbm-glow-pulse absolute rounded-full"
+          style={{
+            width: 122,
+            height: 122,
+            background: `radial-gradient(circle, ${color}55 0%, ${color}00 68%)`,
+          }}
+        />
+      )}
+      {!failed && !reduced ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f9ed/512.webp"
+          alt=""
+          width={84}
+          height={84}
+          className="relative tbm-pop"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <span className="relative text-[56px] leading-none">🧭</span>
+      )}
+    </div>
+  );
+}
+
+// Mini-card de una de las 4 energías DISC.
+function EnergyCard({ d, delay }: { d: DiscDim; delay: number }) {
+  const dim = DISC_DIMENSIONS[d];
+  const c = DISC_COLORS[d];
+  return (
+    <div
+      className="tbm-rise rounded-xl border p-3"
+      style={{ animationDelay: `${delay}ms`, background: `${c}10`, borderColor: `${c}33` }}
+    >
+      <div className="mb-1 flex items-center gap-2">
+        <span
+          className="flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold text-white"
+          style={{ background: c }}
+        >
+          {d}
+        </span>
+        <span className="text-[13px] font-semibold text-tbm-text-primary">{dim.name}</span>
+      </div>
+      <p className="text-[12px] leading-snug text-tbm-text-secondary">{dim.plain}</p>
+    </div>
+  );
+}
+
+// Tile de estadística (ícono + texto) para "Cómo funciona".
+function StatTile({
+  Icon,
+  text,
+  color,
+}: {
+  Icon: typeof Clock;
+  text: string;
+  color: string;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-1.5 rounded-xl border border-white/[0.07] bg-white/[0.03] p-3 text-center">
+      <span
+        className="flex h-8 w-8 items-center justify-center rounded-lg"
+        style={{ background: `${color}1c`, color }}
+      >
+        <Icon size={16} strokeWidth={2} />
+      </span>
+      <span className="text-[12px] font-semibold leading-tight text-tbm-text-primary">{text}</span>
     </div>
   );
 }
