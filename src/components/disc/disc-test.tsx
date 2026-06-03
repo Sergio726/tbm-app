@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Info } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Info, Clock } from "lucide-react";
 import { WORD_GROUPS, TOTAL_GROUPS, type DiscAnswer, type DiscDim } from "@/lib/disc-evaluator";
 import { DISC_DIMENSIONS, DISC_COLORS } from "@/lib/disc";
 import { wordDefinition } from "@/lib/disc-words";
@@ -9,6 +9,13 @@ import { submitDisc, type SubmitDiscResult } from "@/app/disc/[token]/actions";
 import { DiscResult } from "./disc-result";
 
 const DIM_ORDER: DiscDim[] = ["D", "I", "S", "C"];
+const CONFETTI_COLORS = ["#2563EB", "#10B981", "#F59E0B", "#EF4444"];
+const CHECKPOINT_MSGS: [number, string][] = [
+  [25, "¡Buen arranque!"],
+  [50, "¡Mitad de camino!"],
+  [75, "¡Recta final!"],
+  [90, "¡Casi listo!"],
+];
 
 type Phase = "datos" | "test" | "done";
 
@@ -25,6 +32,12 @@ function momentum(idx: number, total: number): string {
   if (idx >= Math.floor(total * 0.75)) return `¡Ya casi! Faltan ${left}`;
   if (idx >= Math.floor(total / 2)) return "¡Mitad de camino! 💪";
   return "Vas tomando ritmo 👌";
+}
+
+function clockTone(s: number): { color: string; cls: string } {
+  if (s < 180) return { color: "#64748B", cls: "" };
+  if (s < 300) return { color: "#F59E0B", cls: "tbm-heartbeat" };
+  return              { color: "#EF4444", cls: "tbm-heartbeat-strong" };
 }
 
 export function DiscTest({
@@ -54,13 +67,17 @@ export function DiscTest({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState<Extract<SubmitDiscResult, { ok: true }> | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   const advancedRef = useRef<Set<number>>(new Set());
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const crossedRef = useRef<Set<number>>(new Set());
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const current = answers[idx];
   const complete = !!current && current.m >= 0 && current.l >= 0;
   const isLast = idx === TOTAL_GROUPS - 1;
+  const pct = Math.round(((idx + (complete ? 1 : 0)) / TOTAL_GROUPS) * 100);
 
   // Cronómetro: corre durante la fase de test.
   useEffect(() => {
@@ -68,6 +85,24 @@ export function DiscTest({
     const t = setInterval(() => setElapsed((e) => e + 1), 1000);
     return () => clearInterval(t);
   }, [phase]);
+
+  // Checkpoints de progreso: dispara microtoast la primera vez que pct cruza 25/50/75/90/100.
+  useEffect(() => {
+    if (phase !== "test") return;
+    const targets = pct === 100
+      ? [[100, "¡Completaste el test! 🎉"] as [number, string]]
+      : CHECKPOINT_MSGS;
+    for (const [m, msg] of targets) {
+      if (pct >= m && !crossedRef.current.has(m)) {
+        crossedRef.current.add(m);
+        if (toastTimer.current) clearTimeout(toastTimer.current);
+        setToast(msg);
+        toastTimer.current = setTimeout(() => setToast(null), 1500);
+        return;
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pct, phase]);
 
   // Auto-avance: al completar un grupo por primera vez, pasa solo al siguiente.
   useEffect(() => {
@@ -229,23 +264,80 @@ export function DiscTest({
 
   // ── Cuestionario ───────────────────────────────────────────
   const group = WORD_GROUPS[idx];
-  const pct = Math.round(((idx + (complete ? 1 : 0)) / TOTAL_GROUPS) * 100);
+
+  const tone = clockTone(elapsed);
 
   return (
     <div className="max-w-md mx-auto px-4 py-8">
       {/* Header: momentum + cronómetro + progreso */}
       <div className="mb-4">
-        <div className="flex justify-between items-center mb-1.5">
-          <span className="text-sm font-semibold text-tbm-text-primary">{momentum(idx, TOTAL_GROUPS)}</span>
-          <span className="text-xs text-tbm-text-muted tabular-nums" title="Tiempo (objetivo ~5 min)">
-            ⏱ {fmtTime(elapsed)}
-          </span>
-        </div>
-        <div key={idx} className="tbm-progress-pulse rounded-full">
-          <div className="h-1.5 rounded-full bg-tbm-elevated overflow-hidden">
-            <div className="h-full bg-tbm-blue transition-all duration-300" style={{ width: `${pct}%` }} />
+
+        {/* Fila superior: texto de momentum / toast + reloj */}
+        <div className="flex justify-between items-center mb-1.5 min-h-[22px]">
+          <div className="relative flex-1 mr-2 overflow-hidden">
+            {toast ? (
+              <span
+                key={toast}
+                className="tbm-toast absolute inset-0 text-sm font-bold text-tbm-text-primary whitespace-nowrap"
+              >
+                {toast}
+              </span>
+            ) : (
+              <span className="text-sm font-semibold text-tbm-text-primary">{momentum(idx, TOTAL_GROUPS)}</span>
+            )}
+          </div>
+
+          {/* Pill del reloj */}
+          <div
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-full border tabular-nums text-xs font-medium ${tone.cls}`}
+            style={{
+              color: tone.color,
+              borderColor: tone.color + "40",
+              background: tone.color + "14",
+            }}
+            title="Tiempo (objetivo ~5 min)"
+          >
+            <Clock size={11} strokeWidth={2} />
+            {fmtTime(elapsed)}
           </div>
         </div>
+
+        {/* Barra de progreso con shimmer + notches */}
+        <div key={idx} className="tbm-progress-pulse">
+          <div className="relative h-2 rounded-full bg-tbm-elevated overflow-visible">
+            <div className="absolute inset-0 rounded-full overflow-hidden">
+              <div className="tbm-bar-shimmer" style={{ width: `${pct}%` }} />
+              {pct === 100 && <div className="tbm-bar-flash" />}
+            </div>
+            {[25, 50, 75, 90].map((m) => (
+              <span
+                key={m}
+                className="tbm-notch"
+                data-on={pct >= m ? "1" : "0"}
+                style={{ left: `${m}%` }}
+              />
+            ))}
+            {/* Confetti al 100% */}
+            {pct === 100 && (
+              <div className="tbm-confetti-wrap" aria-hidden>
+                {Array.from({ length: 22 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className="tbm-confetti"
+                    style={{
+                      ["--x" as string]: `${(Math.random() - 0.5) * 220}px`,
+                      ["--r" as string]: `${Math.random() * 540}deg`,
+                      ["--d" as string]: `${Math.random() * 0.4}s`,
+                      ["--c" as string]: CONFETTI_COLORS[i % 4],
+                      left: `${Math.random() * 100}%`,
+                    } as React.CSSProperties}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="text-right text-[11px] text-tbm-text-muted mt-1">
           {idx + 1}/{TOTAL_GROUPS}
         </div>
@@ -356,7 +448,7 @@ export function DiscTest({
           </button>
         ) : (
           <button
-            className="tbm-btn-primary flex-1"
+            className={`tbm-btn-primary flex-1${pct === 100 ? " tbm-cta-glow" : ""}`}
             disabled={!complete || submitting}
             onClick={handleFinish}
           >

@@ -3,33 +3,32 @@
 -- Un perfil ("Sebastian") quedó renombrado a "Theo" y/o con un DISC
 -- que no le corresponde, porque accept-invite escribía sobre el usuario
 -- logueado. El bug de fondo ya está corregido (accept-invite endurecido).
--- Esto repara los datos que quedaron mal. CORRER en el SQL Editor.
+-- CORRER en el SQL Editor. Filtramos por EMAIL (no hace falta copiar UUID).
 -- ============================================================
 
 -- 0) PRE-REQUISITO: aplicar antes migration_sprint5_roles.sql (arregla roles).
 
--- 1) Identificar el/los perfiles corruptos (ajustá el filtro)
+-- 1) VER el perfil corrupto y su email real (confirmá que es la cuenta de Sebastian)
 select id, email, full_name, role, company_id, disc_status, disc_letters, disc_profile_key
 from public.profiles
 where full_name ilike '%theo%';
--- (anotá el id del perfil a corregir para el paso 2)
 
--- 2) Corregir nombre + LIMPIAR el DISC mal asignado.
---    Reemplazá <ID_DEL_PERFIL> y el nombre correcto.
+-- 2) CORREGIR: poné el EMAIL real (de la fila de arriba) y el nombre correcto.
+--    Esto renombra y limpia el DISC mal asignado.
 update public.profiles set
-  full_name        = 'Sebastian',            -- <-- nombre correcto
+  full_name        = 'Sebastian',                 -- <-- nombre correcto
   disc_status      = 'pendiente',
   disc_letters     = null,
   disc_name        = null,
   disc_icon        = null,
   disc_profile_key = null,
   disc_scores      = null
-where id = '<ID_DEL_PERFIL>';
+where email = 'EMAIL_DE_SEBASTIAN@ejemplo.com';   -- <-- email real (de la fila del paso 1)
 
--- 3) (Opcional) borrar los tests DISC que escribieron sobre ese perfil,
---    para que no quede historial cruzado.
--- delete from public.disc_assessments where profile_id = '<ID_DEL_PERFIL>';
+-- 3) (Opcional) borrar los tests DISC cruzados sobre ese perfil
+-- delete from public.disc_assessments
+-- where profile_id = (select id from public.profiles where email = 'EMAIL_DE_SEBASTIAN@ejemplo.com');
 
 -- 4) Verificar
 -- select id, email, full_name, role, disc_status, disc_letters
--- from public.profiles where id = '<ID_DEL_PERFIL>';
+-- from public.profiles where email = 'EMAIL_DE_SEBASTIAN@ejemplo.com';
