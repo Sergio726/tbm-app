@@ -64,6 +64,8 @@ Configurar en Vercel → Project → Settings → Environment Variables:
 | `ANTHROPIC_API_KEY` | ⬜ opcional | Habilita la síntesis IA del informe. Sin ella, informe estático |
 | `DISC_AI_MODEL` | ⬜ opcional | Modelo (default `claude-haiku-4-5`) |
 | `DISC_AI_TEMPERATURE` | ⬜ opcional | Temperatura 0–1 de la síntesis IA (default `0.6`) |
+| `RESEND_API_KEY` | ⬜ opcional | Habilita "Enviar link de test por email" (Resend). Sin ella, solo copiar |
+| `RESEND_FROM` | ⬜ opcional | Remitente verificado en Resend (ej. `TBM <noreply@dominio.com>`) |
 
 > Los links de invitación y de test se construyen con `window.location.origin` (el dominio actual), así que **no hay que configurar ninguna URL** al migrar de dominio. Lo único a actualizar en ese caso es la allow-list de **Supabase → Authentication → URL Configuration** (Site URL + Redirect URLs, ej. `https://tu-dominio/**`).
 

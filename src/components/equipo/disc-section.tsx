@@ -92,6 +92,8 @@ export function DiscSection({
           status={testStatus}
           generating={generating}
           onGenerate={onGenerateLink}
+          defaultEmail={member.email ?? ""}
+          memberName={member.full_name ?? ""}
         />
       )}
 

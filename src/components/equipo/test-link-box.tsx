@@ -1,25 +1,51 @@
 "use client";
 
-import { useState } from "react";
-import { CheckCircle2, Trophy, Link2, Copy, Check, RotateCcw } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  CheckCircle2,
+  Trophy,
+  Link2,
+  Copy,
+  Check,
+  RotateCcw,
+  Mail,
+  Send,
+} from "lucide-react";
 import { TextInput } from "./primitives";
+import { sendDiscLinkEmail } from "@/app/(dashboard)/equipo/actions";
 
 /**
- * Test DISC: callout cuando está completado y generador/cópia de link cuando no.
+ * Test DISC: callout cuando está completado y generador/copia/envío de link cuando no.
  */
 export function TestLinkBox({
   token,
   status,
   generating,
   onGenerate,
+  defaultEmail,
+  memberName,
 }: {
   token: string | null;
   status: string | null;
   generating: boolean;
   onGenerate: () => void;
+  defaultEmail?: string;
+  memberName?: string;
 }) {
   const completed = status === "completado";
   const [copied, setCopied] = useState(false);
+  const [email, setEmail] = useState(defaultEmail ?? "");
+  const [sending, setSending] = useState(false);
+  const [sendMsg, setSendMsg] = useState("");
+  const [sendErr, setSendErr] = useState("");
+
+  // Mantener el email precargado en sync al cambiar de miembro.
+  useEffect(() => {
+    setEmail(defaultEmail ?? "");
+    setSendMsg("");
+    setSendErr("");
+  }, [defaultEmail, token]);
+
   const url =
     token && typeof window !== "undefined"
       ? `${window.location.origin}/disc/${token}`
@@ -35,6 +61,24 @@ export function TestLinkBox({
       setTimeout(() => setCopied(false), 1500);
     } catch {
       /* ignore */
+    }
+  }
+
+  async function sendByEmail() {
+    if (!url || sending) return;
+    setSending(true);
+    setSendErr("");
+    setSendMsg("");
+    const res = await sendDiscLinkEmail({
+      link: url,
+      to: email.trim(),
+      memberName: memberName ?? "",
+    });
+    setSending(false);
+    if (res.ok) {
+      setSendMsg(`Enviado a ${email.trim()} ✓`);
+    } else {
+      setSendErr(res.error);
     }
   }
 
@@ -99,11 +143,38 @@ export function TestLinkBox({
               {copied ? "Copiado" : "Copiar"}
             </button>
           </div>
+
+          {/* Enviar por email */}
+          <div className="mt-3 border-t border-white/[0.07] pt-3">
+            <div className="mb-1.5 flex items-center gap-1.5 text-[11.5px] font-semibold text-white/70">
+              <Mail size={12.5} /> Enviar por email
+            </div>
+            <div className="flex items-center gap-2">
+              <TextInput
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@empresa.com"
+                className="text-[12px]"
+              />
+              <button
+                type="button"
+                onClick={sendByEmail}
+                disabled={sending || !email.trim()}
+                className="inline-flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[9px] border border-[#34d399]/40 bg-[#34d399]/15 px-3 py-2.5 text-[12px] font-bold text-[#6ee7b7] transition hover:bg-[#34d399]/25 disabled:cursor-default disabled:opacity-50"
+              >
+                <Send size={13} /> {sending ? "Enviando…" : "Enviar"}
+              </button>
+            </div>
+            {sendMsg && <p className="mt-1.5 text-[11.5px] text-[#34d399]">{sendMsg}</p>}
+            {sendErr && <p className="mt-1.5 text-[11.5px] text-[#f87171]">{sendErr}</p>}
+          </div>
+
           <button
             type="button"
             onClick={onGenerate}
             disabled={generating}
-            className="mt-2 inline-flex items-center gap-1 text-[11px] text-white/50 hover:text-white/70"
+            className="mt-2.5 inline-flex items-center gap-1 text-[11px] text-white/50 hover:text-white/70"
           >
             <RotateCcw size={11} />
             {generating ? "Generando…" : "Regenerar link (invalida el anterior)"}
