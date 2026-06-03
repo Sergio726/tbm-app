@@ -528,13 +528,11 @@ export function DiscTest({
   );
 }
 
-// Ícono héroe: compás animado (Noto WebP) con halo de glow; fallback a emoji.
+// Ícono héroe: emoji compás con flotación suave + halo de glow (CSS, sin assets).
 function HeroCompass() {
-  const [failed, setFailed] = useState(false);
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mq.matches);
+    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }, []);
   const color = "#5b8aff";
   return (
@@ -550,19 +548,11 @@ function HeroCompass() {
           }}
         />
       )}
-      {!failed && !reduced ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f9ed/512.webp"
-          alt=""
-          width={84}
-          height={84}
-          className="relative tbm-pop"
-          onError={() => setFailed(true)}
-        />
-      ) : (
-        <span className="relative text-[56px] leading-none">🧭</span>
-      )}
+      <span
+        className={`relative text-[56px] leading-none ${reduced ? "" : "tbm-float"}`}
+      >
+        🧭
+      </span>
     </div>
   );
 }
