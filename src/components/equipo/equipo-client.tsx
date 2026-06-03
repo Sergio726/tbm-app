@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Send, Trophy, Bell, X } from "lucide-react";
+import { Send, Trophy, Bell, X, FileText } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
 import { normalizeLetters } from "@/lib/disc";
@@ -17,6 +17,7 @@ import { TeamSidebar } from "./team-sidebar";
 import { MemberDetail } from "./member-detail";
 import { EmptyDetail } from "./empty-detail";
 import { InviteModal } from "./invite-modal";
+import { MemberReportModal } from "./member-report-modal";
 
 export type { DiscAssessmentLite } from "./types";
 
@@ -48,6 +49,7 @@ export function EquipoClient({
   const [generating, setGenerating] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   // Realtime: aviso cuando un miembro completa su test DISC
   const teamRef = useRef(team);
@@ -276,28 +278,45 @@ export function EquipoClient({
         />
 
         {selected && draft ? (
-          <MemberDetail
-            member={selected}
-            draft={draft}
-            patch={patch}
-            editable={isArquitecto}
-            checklist={checklist}
-            scores={scores}
-            testToken={selectedToken}
-            testStatus={selectedAssessment?.status ?? null}
-            onGenerateLink={handleGenerateLink}
-            generating={generating}
-            onUploadPdf={handleUploadPdf}
-            uploadingPdf={uploadingPdf}
-            dirty={dirty}
-            saving={saving}
-            savedFlash={savedFlash}
-            onSave={handleSave}
-          />
+          <div className="min-w-0">
+            {isArquitecto && selected.disc_letters && (
+              <div className="mb-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setReportOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-[10px] border border-[#5b8aff]/40 bg-[#5b8aff]/15 px-3.5 py-2 text-[12.5px] font-semibold text-[#bcd0ff] transition hover:bg-[#5b8aff]/25"
+                >
+                  <FileText size={14} /> Ver informe completo
+                </button>
+              </div>
+            )}
+            <MemberDetail
+              member={selected}
+              draft={draft}
+              patch={patch}
+              editable={isArquitecto}
+              checklist={checklist}
+              scores={scores}
+              testToken={selectedToken}
+              testStatus={selectedAssessment?.status ?? null}
+              onGenerateLink={handleGenerateLink}
+              generating={generating}
+              onUploadPdf={handleUploadPdf}
+              uploadingPdf={uploadingPdf}
+              dirty={dirty}
+              saving={saving}
+              savedFlash={savedFlash}
+              onSave={handleSave}
+            />
+          </div>
         ) : (
           <EmptyDetail />
         )}
       </div>
+
+      {reportOpen && selected && (
+        <MemberReportModal member={selected} team={team} onClose={() => setReportOpen(false)} />
+      )}
 
       {/* Toast (savedFlash) — abajo central, RPG-style */}
       {savedFlash && (
