@@ -1,9 +1,12 @@
 "use client";
 
-import { User, Plus, Check } from "lucide-react";
+import { useState } from "react";
+import { User, Plus, Check, Clock } from "lucide-react";
 import type { Profile } from "@/types/database";
 import { DISC_COLORS, normalizeLetters } from "@/lib/disc";
 import { archetypeFor, initials, MONO } from "./types";
+
+type DiscFilter = "todos" | "sin" | "ok";
 
 export function TeamSidebar({
   team,
@@ -18,6 +21,21 @@ export function TeamSidebar({
   onSelect: (id: string) => void;
   isArquitecto: boolean;
 }) {
+  const [filter, setFilter] = useState<DiscFilter>("todos");
+
+  const ok = team.filter((m) => m.disc_status === "completado").length;
+  const sent = team.filter((m) => m.disc_status === "enviado").length;
+  const pending = team.length - ok - sent;
+  const pct = team.length ? Math.round((ok / team.length) * 100) : 0;
+
+  const shown = team.filter((m) =>
+    filter === "ok"
+      ? m.disc_status === "completado"
+      : filter === "sin"
+        ? m.disc_status !== "completado"
+        : true
+  );
+
   return (
     <div className="sticky top-6 flex flex-col gap-2.5">
       {/* squad summary */}
@@ -34,7 +52,60 @@ export function TeamSidebar({
         </span>
       </div>
 
-      {team.map((m) => (
+      {/* Estado DISC del equipo */}
+      {isArquitecto && team.length > 0 && (
+        <div className="rounded-[14px] border border-white/[0.07] bg-white/[0.02] p-3.5">
+          <div className="mb-1.5 flex items-center justify-between text-[11.5px]">
+            <span className="font-semibold text-white/70">Estado DISC del equipo</span>
+            <span className="font-bold text-[#34d399]">{pct}%</span>
+          </div>
+          <div className="mb-2 h-2 overflow-hidden rounded-full bg-white/[0.06]">
+            <div
+              className="h-full rounded-full transition-all"
+              style={{ width: `${pct}%`, background: "linear-gradient(90deg,#34d399,#10b981)" }}
+            />
+          </div>
+          <div className="flex items-center gap-3 text-[11px] text-white/55">
+            <span className="inline-flex items-center gap-1">
+              <span className="h-2 w-2 rounded-full bg-[#34d399]" /> {ok} listos
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="h-2 w-2 rounded-full bg-[#fbbf24]" /> {sent} enviados
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="h-2 w-2 rounded-full bg-white/30" /> {pending} sin test
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Filtro */}
+      {isArquitecto && team.length > 1 && (
+        <div className="flex gap-1.5 rounded-[12px] border border-white/[0.06] bg-white/[0.02] p-1">
+          {(
+            [
+              ["todos", "Todos"],
+              ["sin", "Sin DISC"],
+              ["ok", "Completados"],
+            ] as [DiscFilter, string][]
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setFilter(key)}
+              className="flex-1 rounded-[9px] px-2 py-1.5 text-[11.5px] font-semibold transition-colors"
+              style={{
+                background: filter === key ? "rgba(91,138,255,0.22)" : "transparent",
+                color: filter === key ? "#bcd0ff" : "rgba(255,255,255,0.5)",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {shown.map((m) => (
         <RosterCard
           key={m.id}
           member={m}
@@ -43,6 +114,12 @@ export function TeamSidebar({
           onClick={() => onSelect(m.id)}
         />
       ))}
+
+      {shown.length === 0 && (
+        <div className="rounded-[14px] border border-dashed border-white/10 p-4 text-center text-[12px] text-white/45">
+          {filter === "ok" ? "Nadie completó el test todavía." : "Todos completaron su DISC 🎉"}
+        </div>
+      )}
 
       {/* empty slot — recruit */}
       <div className="flex items-center gap-3 rounded-[14px] border border-dashed border-white/10 p-4 text-white/50">
@@ -80,6 +157,7 @@ function RosterCard({
   const arch = archetypeFor(code);
   const ring = DISC_COLORS[arch.primary] ?? "#5b8aff";
   const complete = member.disc_status === "completado";
+  const sent = member.disc_status === "enviado";
 
   return (
     <button
@@ -105,14 +183,22 @@ function RosterCard({
         >
           {initials(member.full_name)}
         </div>
-        {complete && (
+        {complete ? (
           <div
             className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2"
             style={{ background: "#34d399", borderColor: "#0a0e1a", color: "#06281c" }}
           >
             <Check size={9} strokeWidth={3.2} />
           </div>
-        )}
+        ) : sent ? (
+          <div
+            className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2"
+            style={{ background: "#fbbf24", borderColor: "#0a0e1a", color: "#3a2a05" }}
+            title="Test enviado, pendiente de completar"
+          >
+            <Clock size={9} strokeWidth={3} />
+          </div>
+        ) : null}
       </div>
 
       <div className="min-w-0 flex-1">
