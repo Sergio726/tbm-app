@@ -17,7 +17,8 @@ del dashboard (el MCP/CLI no llega a este proyecto). Correr **en orden**.
 | 5 | `migration_sprint3_disc.sql` | Módulo DISC: tabla `disc_assessments`, RLS, RPCs `submit_disc`/`get_disc_assessment`, bucket `disc-reports`, columnas DISC en profiles | aplicado |
 | 6 | `migration_sprint4_disc_ux.sql` | DISC UX: columna `ai_narrative`, `submit_disc` con `p_narrative`, realtime en `disc_assessments` | aplicado |
 | 7 | `migration_sprint5_roles.sql` | **Fix de roles**: default `colaborador`, `handle_new_user` explícito, fix de datos por `owner_id` | ⏳ pendiente |
-| 8 | `migration_sprint6_account.sql` | **Mi cuenta**: columnas `phone/timezone/bio` + bucket `avatars` con policies | ⏳ pendiente |
+| 8 | `migration_sprint6_account.sql` | **Mi cuenta**: columnas `phone/timezone/bio` + bucket `avatars` con policies | aplicado |
+| 9 | `migration_sprint7_equipo.sql` | **Cierre S3**: tabla `authority_matrix` (Matriz de Autoridad) + RLS | ⏳ pendiente |
 
 ## Limpieza puntual (no es migración de esquema)
 
