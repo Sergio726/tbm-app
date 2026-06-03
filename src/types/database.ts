@@ -721,6 +721,44 @@ export type Database = {
         }
         Relationships: []
       }
+      authority_matrix: {
+        Row: {
+          company_id: string
+          n1_amount: number | null
+          n2_min: number | null
+          n2_max: number | null
+          n3_threshold: number | null
+          currency: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          n1_amount?: number | null
+          n2_min?: number | null
+          n2_max?: number | null
+          n3_threshold?: number | null
+          currency?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          n1_amount?: number | null
+          n2_min?: number | null
+          n2_max?: number | null
+          n3_threshold?: number | null
+          currency?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "authority_matrix_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       disc_assessments: {
         Row: {
           id: string

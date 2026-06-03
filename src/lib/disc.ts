@@ -268,6 +268,66 @@ export const DISC_LEADERSHIP_TIPS: Record<DiscLetter, LeadershipTips> = {
   },
 };
 
+// ── Detector de Cruces Peligrosos (combinaciones DISC del equipo) ──
+export type Crossing = {
+  titulo: string;
+  detalle: string;
+  sugerencia: string;
+  severity: "alta" | "media";
+};
+
+// Recibe los miembros (con sus letras DISC) y devuelve alertas de equipo.
+export function detectDangerousCrossings(
+  members: { disc_letters: string | null }[]
+): Crossing[] {
+  const withDisc = members.filter((m) => primaryLetter(m.disc_letters));
+  const total = withDisc.length;
+  const count: Record<DiscLetter, number> = { D: 0, I: 0, S: 0, C: 0 };
+  withDisc.forEach((m) => {
+    const p = primaryLetter(m.disc_letters);
+    if (p) count[p] += 1;
+  });
+
+  const out: Crossing[] = [];
+  if (total < 2) return out;
+
+  if (count.D >= 2 && count.S === 0) {
+    out.push({
+      titulo: "Dominancia sin Estabilidad",
+      detalle: `Hay ${count.D} perfiles D y ningún S. El equipo acelera, pero nadie sostiene los procesos ni cuida el ritmo.`,
+      sugerencia: "Sumá o desarrollá un perfil S, o asigná a un D el rol explícito de cuidar el ritmo y el clima.",
+      severity: "alta",
+    });
+  }
+  if (count.I >= 2 && count.C === 0) {
+    out.push({
+      titulo: "Influencia sin Cumplimiento",
+      detalle: `Hay ${count.I} perfiles I y ningún C. Mucha energía e ideas, poco detalle, control de calidad y seguimiento.`,
+      sugerencia: "Asigná la revisión de detalle/calidad a alguien, o sumá un perfil C que aterrice y controle.",
+      severity: "alta",
+    });
+  }
+  if (count.D === 0 && count.I === 0 && count.S + count.C >= 2) {
+    out.push({
+      titulo: "Sin Motor ni Combustible",
+      detalle: "El equipo es todo Estabilidad/Cumplimiento, sin Dominancia (empuje) ni Influencia (impulso). Riesgo de parálisis o de evitar decisiones.",
+      sugerencia: "Definí quién toma decisiones rápidas y quién impulsa, o sumá un perfil D/I.",
+      severity: "media",
+    });
+  }
+  (Object.keys(count) as DiscLetter[]).forEach((l) => {
+    if (count[l] >= 3 && count[l] === total) {
+      out.push({
+        titulo: `Equipo homogéneo (todos ${l})`,
+        detalle: `Las ${total} personas con DISC comparten el estilo ${l} · ${DISC_DIMENSIONS[l].name}. Poca diversidad = puntos ciegos comunes.`,
+        sugerencia: "Buscá complementariedad al sumar gente y cuidá los puntos ciegos típicos de ese estilo.",
+        severity: "media",
+      });
+    }
+  });
+  return out;
+}
+
 // ── Perfiles canónicos del evaluador (fuente de verdad) ──────
 // Re-exportados para que la UI consuma el contenido rico (luz/sombra/temor,
 // tags, etc.) a partir del `disc_profile_key` calculado por el test.

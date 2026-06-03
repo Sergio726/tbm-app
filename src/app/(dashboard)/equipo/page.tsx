@@ -36,6 +36,13 @@ export default async function EquipoPage() {
     .eq("company_id", profile.company_id!)
     .order("created_at", { ascending: false });
 
+  // Matriz de Autoridad de la empresa
+  const { data: authorityMatrix } = await supabase
+    .from("authority_matrix")
+    .select("*")
+    .eq("company_id", profile.company_id!)
+    .maybeSingle();
+
   const isArquitecto = profile.role === "arquitecto";
 
   return (
@@ -45,6 +52,7 @@ export default async function EquipoPage() {
       companyId={profile.company_id!}
       isArquitecto={isArquitecto}
       assessments={assessments ?? []}
+      authorityMatrix={authorityMatrix ?? null}
     />
   );
 }

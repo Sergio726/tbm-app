@@ -91,15 +91,25 @@ Configurar en Vercel → Project → Settings → Environment Variables:
 - [x] **Descargar informe (PDF)**: botón "Descargar informe" en el resultado → Imprimir→PDF con vista en tema claro (`@media print` en `globals.css`).
 - [x] **Síntesis IA afinada**: prompt reescrito (estructura, ~180 palabras, tono cálido, anti-invención) + `DISC_AI_TEMPERATURE` configurable.
 - [x] **Warning de Turbopack** resuelto (`turbopack.root` en `next.config.mjs`).
-- [x] `tsc --noEmit` y `next build` limpios.
+
+### 5.1 Tanda jun-2026 (en rama `dev`, sin desplegar)
+- [x] **Fix de roles**: invitados nacen `colaborador`; `accept-invite` no degrada arquitectos; migración `sprint5_roles` + `fix_perfil_corrupto`.
+- [x] **Re-hacer test DISC**: botón cuando está completado + "limpiar de una".
+- [x] **Identidad fija**: si el link es de un miembro, el test no pide datos (saluda y arranca).
+- [x] **Rediseño de la intro** del test (premium oscuro: compás animado, 4 energías en grid, tiles, CTA glow).
+- [x] **Informe enriquecido — público**: "Dónde brillás" (roles ideales) + "Tus próximos pasos" + **mejor PDF** (encabezado branded).
+- [x] **Informe del Arquitecto** (`/equipo` → "Ver informe completo"): comparación con el equipo + recomendaciones de liderazgo (`DISC_LEADERSHIP_TIPS`).
+- [x] **Enviar link de test por email** (Resend) con destinatario precargado.
+- [x] **Gestión en Equipo**: panel de estado DISC del equipo (% + conteos) + filtro Todos/Sin DISC/Completados.
+- [x] **Módulo "Mi cuenta"** (`/cuenta`): nombre, cargo, teléfono, zona horaria, bio, avatar, email, contraseña.
 
 ---
 
 ## 6. Estado — Pendiente ⏳
 
-Sin pendientes abiertos del módulo DISC. Próximos pasos posibles (no comprometidos):
-- Iterar el prompt de la síntesis IA sobre casos reales (requiere `ANTHROPIC_API_KEY`).
-- Permitir al Arquitecto descargar el informe de un miembro desde `/equipo` (hoy se hace abriendo su link completado).
+Del módulo DISC propiamente: cerrar **S3** con **Matriz de Autoridad** y **Detector de Cruces Peligrosos** (Mi Equipo). Para el estado global del sistema (todos los sprints) ver **`docs/BACKLOG.md`**.
+
+Pendiente de despliegue: promover `dev → main`, env vars en Vercel, Supabase Auth URLs, y (opcional) `RESEND_API_KEY` para el email.
 
 ---
 

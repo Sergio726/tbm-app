@@ -18,6 +18,8 @@ import { MemberDetail } from "./member-detail";
 import { EmptyDetail } from "./empty-detail";
 import { InviteModal } from "./invite-modal";
 import { MemberReportModal } from "./member-report-modal";
+import { AuthorityMatrixPanel, type AuthorityMatrixRow } from "./authority-matrix-panel";
+import { DangerousCrossings } from "./dangerous-crossings";
 
 export type { DiscAssessmentLite } from "./types";
 
@@ -27,12 +29,14 @@ export function EquipoClient({
   companyId,
   isArquitecto,
   assessments,
+  authorityMatrix,
 }: {
   team: Profile[];
   currentUserId: string;
   companyId: string;
   isArquitecto: boolean;
   assessments: DiscAssessmentLite[];
+  authorityMatrix: AuthorityMatrixRow | null;
 }) {
   const router = useRouter();
 
@@ -264,6 +268,13 @@ export function EquipoClient({
           </div>
         )}
       </div>
+
+      {isArquitecto && (
+        <div className="mb-[22px] grid gap-4 md:grid-cols-2">
+          <AuthorityMatrixPanel companyId={companyId} initial={authorityMatrix} editable={isArquitecto} />
+          <DangerousCrossings team={team} />
+        </div>
+      )}
 
       <div
         className="grid items-start gap-[22px]"
