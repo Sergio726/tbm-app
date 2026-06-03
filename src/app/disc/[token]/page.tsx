@@ -54,6 +54,7 @@ export default async function DiscTokenPage({
           defaultName={a.full_name}
           defaultCargo={a.cargo}
           companyName={a.company_name}
+          hasProfile={a.has_profile}
         />
       )}
     </main>

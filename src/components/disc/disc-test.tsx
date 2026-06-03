@@ -45,11 +45,13 @@ export function DiscTest({
   defaultName,
   defaultCargo,
   companyName,
+  hasProfile,
 }: {
   token: string;
   defaultName?: string | null;
   defaultCargo?: string | null;
   companyName?: string | null;
+  hasProfile?: boolean;
 }) {
   const [phase, setPhase] = useState<Phase>("datos");
   const [name, setName] = useState(defaultName ?? "");
@@ -246,18 +248,35 @@ export function DiscTest({
           </ul>
         </div>
 
-        <div className="space-y-4">
-          <Input label="Tu nombre completo" value={name} onChange={setName} placeholder="Juan García" />
-          <Input label="Tu cargo o área" value={cargo} onChange={setCargo} placeholder="Operaciones" />
-          <Input label="Email (opcional)" value={email} onChange={setEmail} placeholder="juan@empresa.com" type="email" />
-          <button
-            className="tbm-btn-primary w-full"
-            disabled={!name.trim()}
-            onClick={() => setPhase("test")}
-          >
-            Empezar test →
-          </button>
-        </div>
+        {hasProfile ? (
+          // Identidad fija: el link ya pertenece a un miembro. No se piden datos.
+          <div className="space-y-4">
+            <div className="tbm-card p-4 text-center">
+              <p className="text-sm text-tbm-text-secondary">Vas a hacer el test como</p>
+              <p className="text-lg font-bold text-tbm-text-primary mt-0.5">{name || "este colaborador"}</p>
+              {cargo && <p className="text-sm text-tbm-text-muted mt-0.5">{cargo}</p>}
+            </div>
+            <button className="tbm-btn-primary w-full" onClick={() => setPhase("test")}>
+              Empezar test →
+            </button>
+            <p className="text-center text-xs text-tbm-text-muted">
+              ¿No sos vos? Pedile al Arquitecto el link correcto.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <Input label="Tu nombre completo" value={name} onChange={setName} placeholder="Juan García" />
+            <Input label="Tu cargo o área" value={cargo} onChange={setCargo} placeholder="Operaciones" />
+            <Input label="Email (opcional)" value={email} onChange={setEmail} placeholder="juan@empresa.com" type="email" />
+            <button
+              className="tbm-btn-primary w-full"
+              disabled={!name.trim()}
+              onClick={() => setPhase("test")}
+            >
+              Empezar test →
+            </button>
+          </div>
+        )}
       </div>
     );
   }
