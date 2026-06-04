@@ -173,6 +173,14 @@ export function primaryLetter(raw: string | null | undefined): DiscLetter | null
   return first && first in DISC_FACTORS ? first : null;
 }
 
+// Segmento DISC (escala 1–7) → porcentaje 0–100. Fórmula ÚNICA en toda la app
+// (informe público, informe del Arquitecto y mapa de equipo) para que el mismo
+// segmento se dibuje con el mismo largo en todos lados. 1 → 0%, 4 → 50%, 7 → 100%.
+export function segToPct(seg: number | null | undefined): number {
+  const v = typeof seg === "number" ? seg : 4;
+  return Math.max(0, Math.min(100, Math.round(((v - 1) / 6) * 100)));
+}
+
 // Devuelve { icon, name } del sistema para unas letras dadas.
 export function systemProfile(raw: string | null | undefined): { icon: string; name: string } | null {
   const norm = normalizeLetters(raw);
@@ -291,6 +299,21 @@ export function detectDangerousCrossings(
   const out: Crossing[] = [];
   if (total < 2) return out;
 
+  // Equipo homogéneo (todos el mismo estilo) absorbe las demás reglas: es la
+  // lectura más completa del mismo problema, así no duplicamos alertas.
+  const homogeneous = (Object.keys(count) as DiscLetter[]).find(
+    (l) => count[l] >= 3 && count[l] === total
+  );
+  if (homogeneous) {
+    out.push({
+      titulo: `Equipo homogéneo (todos ${homogeneous})`,
+      detalle: `Las ${total} personas con DISC comparten el estilo ${homogeneous} · ${DISC_DIMENSIONS[homogeneous].name}. Poca diversidad = puntos ciegos comunes.`,
+      sugerencia: "Buscá complementariedad al sumar gente y cuidá los puntos ciegos típicos de ese estilo.",
+      severity: "media",
+    });
+    return out;
+  }
+
   if (count.D >= 2 && count.S === 0) {
     out.push({
       titulo: "Dominancia sin Estabilidad",
@@ -315,16 +338,6 @@ export function detectDangerousCrossings(
       severity: "media",
     });
   }
-  (Object.keys(count) as DiscLetter[]).forEach((l) => {
-    if (count[l] >= 3 && count[l] === total) {
-      out.push({
-        titulo: `Equipo homogéneo (todos ${l})`,
-        detalle: `Las ${total} personas con DISC comparten el estilo ${l} · ${DISC_DIMENSIONS[l].name}. Poca diversidad = puntos ciegos comunes.`,
-        sugerencia: "Buscá complementariedad al sumar gente y cuidá los puntos ciegos típicos de ese estilo.",
-        severity: "media",
-      });
-    }
-  });
   return out;
 }
 

@@ -14,8 +14,14 @@ export type AuthorityMatrixRow = {
 };
 
 function toNum(s: string): number | null {
-  const v = s.replace(/[^\d.]/g, "");
-  return v === "" ? null : Number(v);
+  const cleaned = s.replace(/[^\d.]/g, "");
+  // Colapsar múltiples puntos a uno solo ("1.2.3" → "1.23").
+  const parts = cleaned.split(".");
+  const normalized =
+    parts.length > 1 ? `${parts[0]}.${parts.slice(1).join("")}` : cleaned;
+  if (normalized === "" || normalized === ".") return null;
+  const n = Number(normalized);
+  return Number.isFinite(n) ? n : null;
 }
 
 export function AuthorityMatrixPanel({
@@ -44,6 +50,12 @@ export function AuthorityMatrixPanel({
 
   async function save() {
     if (saving) return;
+    const vN2min = toNum(n2min);
+    const vN2max = toNum(n2max);
+    if (vN2min != null && vN2max != null && vN2min > vN2max) {
+      setErr("El mínimo de N2 no puede ser mayor que el máximo.");
+      return;
+    }
     setSaving(true);
     setErr("");
     try {
@@ -51,8 +63,8 @@ export function AuthorityMatrixPanel({
       const { error } = await supabase.from("authority_matrix").upsert({
         company_id: companyId,
         n1_amount: toNum(n1),
-        n2_min: toNum(n2min),
-        n2_max: toNum(n2max),
+        n2_min: vN2min,
+        n2_max: vN2max,
         n3_threshold: toNum(n3),
         currency,
         updated_at: new Date().toISOString(),

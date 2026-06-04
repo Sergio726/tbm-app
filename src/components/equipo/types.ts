@@ -1,4 +1,5 @@
 import type { Profile } from "@/types/database";
+import { DISC_DIMENSIONS, primaryLetter, segToPct, systemProfile } from "@/lib/disc";
 
 export const FONT = "Inter, system-ui, sans-serif";
 export const MONO = "JetBrains Mono, ui-monospace, monospace";
@@ -65,10 +66,10 @@ export function scoresToPct(
   const seg = scores.segments;
   if (seg && [seg.D, seg.I, seg.S, seg.C].every((v) => typeof v === "number")) {
     return {
-      D: Math.round(((seg.D! - 1) / 6) * 100),
-      I: Math.round(((seg.I! - 1) / 6) * 100),
-      S: Math.round(((seg.S! - 1) / 6) * 100),
-      C: Math.round(((seg.C! - 1) / 6) * 100),
+      D: segToPct(seg.D),
+      I: segToPct(seg.I),
+      S: segToPct(seg.S),
+      C: segToPct(seg.C),
     };
   }
   const raw = scores.raw;
@@ -132,7 +133,8 @@ export function buildChecklist(draft: Draft): ChecklistItem[] {
   ];
 }
 
-// Archetypes de letras (replicando lo del design)
+// Arquetipo por letras. Fuente ÚNICA: `DISC_SYSTEM_PROFILES` / `DISC_DIMENSIONS`
+// de `@/lib/disc` (evita que el roster nombre los perfiles distinto que el informe).
 export type Archetype = {
   letters: string;
   name: string;
@@ -141,49 +143,25 @@ export type Archetype = {
   desc: string;
 };
 
-const ARCHETYPES: Record<string, Archetype> = {
-  D: { letters: "D", name: "El Resolutivo", emoji: "🔥", primary: "D",
-       desc: "Dominante: Dominancia — Empuje, decisión y foco en resultados." },
-  DS: { letters: "DS", name: "El Resolutivo", emoji: "🔥", primary: "D",
-        desc: "Dominante: Dominancia — Empuje, decisión y foco en resultados." },
-  DC: { letters: "DC", name: "El Creativo", emoji: "💡", primary: "D",
-        desc: "Dominante: Dominancia — Innovación con criterio." },
-  DI: { letters: "DI", name: "El Pionero", emoji: "⚡", primary: "D",
-        desc: "Dominante: Dominancia — Energía, riesgo y velocidad." },
-  I: { letters: "I", name: "El Promotor", emoji: "📣", primary: "I",
-       desc: "Dominante: Influencia — Comunicación, entusiasmo y conexión." },
-  ID: { letters: "ID", name: "El Persuasivo", emoji: "🤝", primary: "I",
-        desc: "Dominante: Influencia — Inspira y mueve a la acción." },
-  IS: { letters: "IS", name: "El Conector", emoji: "🤝", primary: "I",
-        desc: "Dominante: Influencia — Personas, vínculo y entusiasmo." },
-  IC: { letters: "IC", name: "El Evaluador", emoji: "📊", primary: "I",
-        desc: "Dominante: Influencia — Análisis con sensibilidad." },
-  S: { letters: "S", name: "El Especialista", emoji: "🛠", primary: "S",
-       desc: "Dominante: Estabilidad — Constancia y trabajo sostenido." },
-  SC: { letters: "SC", name: "El Guardián", emoji: "🛡️", primary: "S",
-        desc: "Dominante: Estabilidad — Constancia, orden y confianza." },
-  SI: { letters: "SI", name: "El Alentador", emoji: "✨", primary: "S",
-        desc: "Dominante: Estabilidad — Sostiene con calidez." },
-  C: { letters: "C", name: "El Perfeccionista", emoji: "🔬", primary: "C",
-       desc: "Dominante: Cumplimiento — Precisión, análisis y calidad." },
-  CD: { letters: "CD", name: "El Arquitecto", emoji: "📐", primary: "C",
-        desc: "Dominante: Cumplimiento — Precisión, análisis y estándar." },
-  CI: { letters: "CI", name: "El Evaluador", emoji: "📊", primary: "C",
-        desc: "Dominante: Cumplimiento — Análisis con sensibilidad." },
-  CS: { letters: "CS", name: "El Agente", emoji: "🌿", primary: "C",
-        desc: "Dominante: Cumplimiento — Calidad sostenida." },
-};
-
 export function archetypeFor(rawLetters: string | null | undefined): Archetype {
-  const k = (rawLetters || "").toUpperCase().replace(/[^DISC]/g, "").slice(0, 2);
-  if (ARCHETYPES[k]) return ARCHETYPES[k];
-  const first = k[0];
-  if (first && ARCHETYPES[first]) return ARCHETYPES[first];
+  const letters = (rawLetters || "").toUpperCase().replace(/[^DISC]/g, "").slice(0, 2);
+  const primary = primaryLetter(letters);
+  const sys = systemProfile(letters);
+  if (!primary || !sys) {
+    return {
+      letters: "",
+      name: "Sin clasificar",
+      emoji: "✦",
+      primary: "D",
+      desc: "Cargá las letras del informe DISC.",
+    };
+  }
+  const dim = DISC_DIMENSIONS[primary];
   return {
-    letters: "",
-    name: "Sin clasificar",
-    emoji: "✦",
-    primary: "D",
-    desc: "Cargá las letras del informe DISC.",
+    letters,
+    name: sys.name,
+    emoji: sys.icon,
+    primary,
+    desc: `Dominante: ${dim.name} — ${dim.plain}`,
   };
 }

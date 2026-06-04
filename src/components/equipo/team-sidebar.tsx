@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { User, Plus, Check, Clock } from "lucide-react";
 import type { Profile } from "@/types/database";
-import { DISC_COLORS, normalizeLetters } from "@/lib/disc";
+import { DISC_COLORS, normalizeLetters, profileByKey } from "@/lib/disc";
 import { archetypeFor, initials, MONO } from "./types";
 
 type DiscFilter = "todos" | "sin" | "ok";
@@ -156,6 +156,11 @@ function RosterCard({
   const code = normalizeLetters(member.disc_letters);
   const arch = archetypeFor(code);
   const ring = DISC_COLORS[arch.primary] ?? "#5b8aff";
+  // Nombre/ícono canónicos: el perfil calculado por el test manda; si no hay
+  // (letras cargadas a mano), cae al arquetipo por letras.
+  const canon = profileByKey(member.disc_profile_key);
+  const displayName = canon?.name ?? arch.name;
+  const displayEmoji = canon?.icon ?? arch.emoji;
   const complete = member.disc_status === "completado";
   const sent = member.disc_status === "enviado";
 
@@ -213,7 +218,7 @@ function RosterCard({
           )}
         </div>
         <div className="mt-0.5 truncate text-[12px] text-white/55">
-          {arch.emoji} {arch.name}
+          {displayEmoji} {displayName}
         </div>
       </div>
 

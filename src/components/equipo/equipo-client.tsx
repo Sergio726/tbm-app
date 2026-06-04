@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Send, Trophy, Bell, X, FileText } from "lucide-react";
+import { Send, Trophy, Bell, X, FileText, AlertTriangle } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
 import { normalizeLetters } from "@/lib/disc";
@@ -45,8 +45,10 @@ export function EquipoClient({
   );
   const [draft, setDraft] = useState<Draft | null>(null);
   const [baseId, setBaseId] = useState<string | null>(null);
+  const [baseSnapshot, setBaseSnapshot] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
+  const [errorFlash, setErrorFlash] = useState<string | null>(null);
   const [toast, setToast] = useState<{ name: string } | null>(null);
 
   const [freshToken, setFreshToken] = useState<Record<string, string>>({});
@@ -64,7 +66,12 @@ export function EquipoClient({
       .channel("equipo-disc-assessments")
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "disc_assessments" },
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "disc_assessments",
+          filter: `company_id=eq.${companyId}`,
+        },
         (payload) => {
           const row = payload.new as { profile_id?: string | null; status?: string };
           if (row?.status === "completado") {
@@ -77,12 +84,17 @@ export function EquipoClient({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [companyId]);
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 12000);
     return () => clearTimeout(t);
   }, [toast]);
+  useEffect(() => {
+    if (!errorFlash) return;
+    const t = setTimeout(() => setErrorFlash(null), 5000);
+    return () => clearTimeout(t);
+  }, [errorFlash]);
 
   const selected = team.find((m) => m.id === selectedId) ?? null;
   const selectedAssessment = selected
@@ -92,8 +104,22 @@ export function EquipoClient({
     ? freshToken[selected.id] ?? selectedAssessment?.token ?? null
     : null;
 
+  // Sembrar/refrescar el draft. Reseed al cambiar de miembro; y también cuando
+  // los datos del servidor del MISMO miembro cambian (p. ej. tras "Actualizar
+  // ahora" del toast realtime o tras guardar) SIEMPRE que no haya ediciones sin
+  // guardar (draft === snapshot base), para no pisar lo que el Arquitecto escribió.
+  const freshSnapshot = selected ? JSON.stringify(draftFrom(selected)) : null;
   if (selected && baseId !== selected.id) {
     setBaseId(selected.id);
+    setBaseSnapshot(freshSnapshot);
+    setDraft(draftFrom(selected));
+  } else if (
+    selected &&
+    freshSnapshot !== baseSnapshot &&
+    draft &&
+    JSON.stringify(draft) === baseSnapshot
+  ) {
+    setBaseSnapshot(freshSnapshot);
     setDraft(draftFrom(selected));
   }
 
@@ -134,7 +160,7 @@ export function EquipoClient({
       router.refresh();
     } catch (e) {
       console.error("Error guardando perfil:", e);
-      alert("No se pudo guardar. Revisá tu conexión e intentá de nuevo.");
+      setErrorFlash("No se pudo guardar. Revisá tu conexión e intentá de nuevo.");
     } finally {
       setSaving(false);
     }
@@ -179,7 +205,7 @@ export function EquipoClient({
       router.refresh();
     } catch (e) {
       console.error("Error generando link DISC:", e);
-      alert("No se pudo generar el link. Intentá de nuevo.");
+      setErrorFlash("No se pudo generar el link. Intentá de nuevo.");
     } finally {
       setGenerating(false);
     }
@@ -203,7 +229,7 @@ export function EquipoClient({
       router.refresh();
     } catch (e) {
       console.error("Error subiendo PDF:", e);
-      alert(
+      setErrorFlash(
         "No se pudo subir el informe. Revisá que sea un PDF y volvé a intentar."
       );
     } finally {
@@ -269,13 +295,6 @@ export function EquipoClient({
         )}
       </div>
 
-      {isArquitecto && (
-        <div className="mb-[22px] grid gap-4 md:grid-cols-2">
-          <AuthorityMatrixPanel companyId={companyId} initial={authorityMatrix} editable={isArquitecto} />
-          <DangerousCrossings team={team} />
-        </div>
-      )}
-
       <div
         className="grid items-start gap-[22px]"
         style={{ gridTemplateColumns: "300px minmax(0, 1fr)" }}
@@ -325,6 +344,32 @@ export function EquipoClient({
         )}
       </div>
 
+      {/* Salud del equipo — lectura agregada (debajo del mapa individual). */}
+      {isArquitecto && (
+        <section className="mt-9">
+          <div className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[1.6px] text-[#9fb9ff]">
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: "#5b8aff", boxShadow: "0 0 6px #5b8aff" }}
+            />
+            Salud del equipo
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <DangerousCrossings team={team} />
+            <div className="space-y-1.5">
+              <AuthorityMatrixPanel
+                companyId={companyId}
+                initial={authorityMatrix}
+                editable={isArquitecto}
+              />
+              <p className="px-1 text-[10.5px] text-white/35">
+                Anticipo del módulo Delegación (S4).
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {reportOpen && selected && (
         <MemberReportModal member={selected} team={team} onClose={() => setReportOpen(false)} />
       )}
@@ -342,6 +387,25 @@ export function EquipoClient({
         >
           <Trophy size={16} strokeWidth={2} />
           ¡Ficha guardada! +1 jugador alineado
+        </div>
+      )}
+
+      {/* Toast de error — abajo central */}
+      {errorFlash && (
+        <div
+          className="fixed bottom-6 left-1/2 z-[55] inline-flex max-w-[90vw] -translate-x-1/2 items-center gap-2.5 rounded-xl border border-[#f87171]/40 bg-[#2a1416] px-5 py-3 text-[13px] font-semibold text-[#fca5a5]"
+          style={{ boxShadow: "0 12px 34px rgba(0,0,0,0.4)", animation: "tbm-rise .25s ease" }}
+          role="alert"
+        >
+          <AlertTriangle size={16} strokeWidth={2} />
+          {errorFlash}
+          <button
+            type="button"
+            onClick={() => setErrorFlash(null)}
+            className="ml-1.5 text-[#fca5a5]/60 hover:text-[#fca5a5]"
+          >
+            <X size={15} />
+          </button>
         </div>
       )}
 

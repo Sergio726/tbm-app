@@ -9,6 +9,7 @@ import {
   DISC_ACTION_STEPS,
   primaryLetter,
   profileByKey,
+  segToPct,
   type DiscLetter,
 } from "@/lib/disc";
 import type { DiscScores, DiscSegments } from "@/lib/disc-evaluator";
@@ -125,7 +126,7 @@ export function DiscResult({
       <div className="tbm-card p-4 space-y-3 tbm-rise" style={{ animationDelay: "210ms" }}>
         {DIM_ORDER.map((letter, i) => {
           const seg = segments[letter] ?? 4;
-          const pct = Math.round((seg / 7) * 100);
+          const pct = segToPct(seg);
           return (
             <div key={letter}>
               <div className="flex justify-between text-xs mb-1">

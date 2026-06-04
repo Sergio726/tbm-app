@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { X, Users, Sun, Moon, Crown, Send, MessageSquare, Flame } from "lucide-react";
 import type { Profile } from "@/types/database";
 import {
@@ -10,6 +11,7 @@ import {
   normalizeLetters,
   primaryLetter,
   profileByKey,
+  segToPct,
   type DiscLetter,
 } from "@/lib/disc";
 
@@ -36,6 +38,15 @@ export function MemberReportModal({
   team: Profile[];
   onClose: () => void;
 }) {
+  // Cerrar con la tecla Escape.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   const primary = primaryLetter(member.disc_letters);
   const profile = profileByKey(member.disc_profile_key);
   const factor = primary ? DISC_FACTORS[primary] : null;
@@ -63,16 +74,16 @@ export function MemberReportModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:p-8"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
       style={{ background: "rgba(5,10,20,0.72)" }}
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[680px] rounded-2xl border border-white/10 bg-[#0F1B2D] shadow-2xl"
+        className="flex max-h-[calc(100vh-4rem)] w-full max-w-[680px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0F1B2D] shadow-2xl"
       >
         {/* Header */}
-        <div className="flex items-center gap-3.5 border-b border-white/[0.07] p-5">
+        <div className="flex flex-shrink-0 items-center gap-3.5 border-b border-white/[0.07] p-5">
           <span
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-bold text-white"
             style={{ background: color }}
@@ -110,7 +121,7 @@ export function MemberReportModal({
           </button>
         </div>
 
-        <div className="max-h-[calc(100vh-180px)] space-y-5 overflow-y-auto p-5">
+        <div className="flex-1 space-y-5 overflow-y-auto p-5">
           {/* Barras del perfil */}
           {segments && (
             <Section title="Perfil DISC" Icon={Users}>
@@ -131,7 +142,7 @@ export function MemberReportModal({
                       <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
                         <div
                           className="h-full rounded-full"
-                          style={{ width: `${(seg / 7) * 100}%`, background: DISC_COLORS[l] }}
+                          style={{ width: `${segToPct(seg)}%`, background: DISC_COLORS[l] }}
                         />
                       </div>
                     </div>
