@@ -759,6 +759,120 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          id: string
+          company_id: string
+          created_by: string
+          assigned_to: string | null
+          what_dod: string
+          why_context: string
+          how_constraints: string
+          when_deadline: string
+          check_loop: string
+          los_required: number | null
+          estimated_cost: number | null
+          authority_level: number | null
+          status: string
+          delegable_flag: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          created_by: string
+          assigned_to?: string | null
+          what_dod?: string
+          why_context?: string
+          how_constraints?: string
+          when_deadline?: string
+          check_loop?: string
+          los_required?: number | null
+          estimated_cost?: number | null
+          authority_level?: number | null
+          status?: string
+          delegable_flag?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          created_by?: string
+          assigned_to?: string | null
+          what_dod?: string
+          why_context?: string
+          how_constraints?: string
+          when_deadline?: string
+          check_loop?: string
+          los_required?: number | null
+          estimated_cost?: number | null
+          authority_level?: number | null
+          status?: string
+          delegable_flag?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_updates: {
+        Row: {
+          id: string
+          task_id: string
+          user_id: string
+          type: string
+          content: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          user_id: string
+          type: string
+          content?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          task_id?: string
+          user_id?: string
+          type?: string
+          content?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_updates_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       disc_assessments: {
         Row: {
           id: string
@@ -977,6 +1091,12 @@ export type ParkingSource = "war_up" | "5_grandes" | "manual";
 export type ParkingStatus = "parked" | "promoted" | "discarded";
 
 export type UserRole = "arquitecto" | "colaborador" | "observador";
+
+// Sprint 4 — Delegación
+export type Task = Database["public"]["Tables"]["tasks"]["Row"];
+export type TaskUpdate = Database["public"]["Tables"]["task_updates"]["Row"];
+export type TaskStatus = "pending" | "in_progress" | "blocked" | "done";
+export type TaskUpdateType = "progress" | "blocked" | "boomerang_attempt" | "completed" | "stale_alert";
 export type DiscStatus = "pendiente" | "enviado" | "completado";
 export type DiscState = "luz" | "sombra";
 export type LosLevel = 1 | 2 | 3 | 4 | 5;
