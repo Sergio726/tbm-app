@@ -42,7 +42,6 @@ export default async function DelegacionPage() {
       tasks={(tasks ?? []) as Task[]}
       team={(team ?? []) as Profile[]}
       currentUserId={user.id}
-      companyId={profile.company_id!}
       isArquitecto={isArquitecto}
     />
   );

@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { Plus, Send, ClipboardList } from "lucide-react";
 import type { Task, Profile } from "@/types/database";
+import { KanbanBoard } from "./kanban-board";
 
 interface DelegacionClientProps {
   tasks: Task[];
   team: Profile[];
   currentUserId: string;
-  companyId: string;
   isArquitecto: boolean;
 }
 
@@ -16,10 +16,9 @@ export function DelegacionClient({
   tasks,
   team,
   currentUserId,
-  companyId,
   isArquitecto,
 }: DelegacionClientProps) {
-  const myTasks = isArquitecto
+  const visibleTasks = isArquitecto
     ? tasks
     : tasks.filter((t) => t.assigned_to === currentUserId);
 
@@ -76,10 +75,14 @@ export function DelegacionClient({
       </div>
 
       {/* Contenido */}
-      {myTasks.length === 0 ? (
+      {visibleTasks.length === 0 ? (
         <EmptyState isArquitecto={isArquitecto} />
       ) : (
-        <TaskList tasks={myTasks} team={team} isArquitecto={isArquitecto} />
+        <KanbanBoard
+          initialTasks={visibleTasks}
+          team={team}
+          isArquitecto={isArquitecto}
+        />
       )}
 
       {/* Vista colaborador: link a mis tareas */}
@@ -155,107 +158,6 @@ function EmptyState({ isArquitecto }: { isArquitecto: boolean }) {
           Crear primera tarea
         </Link>
       )}
-    </div>
-  );
-}
-
-// ── TaskList provisional (se reemplaza por KanbanBoard en E3) ─────────────────
-const STATUS_LABELS: Record<string, string> = {
-  pending: "Pendiente",
-  in_progress: "En curso",
-  blocked: "Bloqueado",
-  done: "Listo",
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: "rgba(255,255,255,0.3)",
-  in_progress: "#5b8aff",
-  blocked: "#f87171",
-  done: "#34d399",
-};
-
-function TaskList({
-  tasks,
-  team,
-  isArquitecto,
-}: {
-  tasks: Task[];
-  team: Profile[];
-  isArquitecto: boolean;
-}) {
-  const profileMap = Object.fromEntries(team.map((p) => [p.id, p]));
-
-  return (
-    <div className="flex flex-col gap-3">
-      {tasks.map((task) => {
-        const assignee = task.assigned_to ? profileMap[task.assigned_to] : null;
-        const deadline = new Date(task.when_deadline);
-        const isOverdue = deadline < new Date() && task.status !== "done";
-        const isSoon =
-          !isOverdue &&
-          deadline < new Date(Date.now() + 24 * 60 * 60 * 1000) &&
-          task.status !== "done";
-
-        return (
-          <div
-            key={task.id}
-            className="rounded-2xl border px-5 py-4"
-            style={{
-              borderColor: "rgba(255,255,255,0.07)",
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.006))",
-            }}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <p
-                  className="mb-1 truncate text-white"
-                  style={{ fontSize: 14, fontWeight: 500 }}
-                >
-                  {task.what_dod || "Sin descripción"}
-                </p>
-                {assignee && (
-                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>
-                    → {assignee.full_name ?? assignee.email ?? "Colaborador"}
-                  </p>
-                )}
-              </div>
-              <div className="flex flex-shrink-0 items-center gap-3">
-                {/* Deadline */}
-                <span
-                  style={{
-                    fontSize: 11.5,
-                    color: isOverdue
-                      ? "#f87171"
-                      : isSoon
-                        ? "#fbbf24"
-                        : "rgba(255,255,255,0.4)",
-                    fontFamily: "JetBrains Mono, monospace",
-                  }}
-                >
-                  {deadline.toLocaleDateString("es-AR", {
-                    day: "2-digit",
-                    month: "short",
-                  })}
-                </span>
-                {/* Badge status */}
-                <span
-                  className="rounded-full px-2.5 py-0.5"
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: STATUS_COLORS[task.status] ?? "rgba(255,255,255,0.4)",
-                    background: `${STATUS_COLORS[task.status] ?? "rgba(255,255,255,0.15)"}18`,
-                    border: `1px solid ${STATUS_COLORS[task.status] ?? "rgba(255,255,255,0.15)"}40`,
-                  }}
-                >
-                  {STATUS_LABELS[task.status] ?? task.status}
-                </span>
-              </div>
-            </div>
-          </div>
-        );
-      })}
     </div>
   );
 }
