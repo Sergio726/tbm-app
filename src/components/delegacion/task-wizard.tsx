@@ -162,7 +162,6 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
       }
 
       router.push("/delegacion");
-      router.refresh();
     });
   };
 

@@ -19,7 +19,7 @@ export default async function DelegacionPage() {
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login");
-  if (!profile.onboarding_completed) redirect("/onboarding");
+  if (!profile.onboarding_completed || !profile.company_id) redirect("/onboarding");
 
   const isArquitecto = profile.role === "arquitecto";
 

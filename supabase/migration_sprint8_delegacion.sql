@@ -9,12 +9,12 @@ create table if not exists tasks (
   created_by    uuid          not null references profiles(id),
   assigned_to   uuid          references profiles(id),
 
-  -- Los 5 puntos del Pase de Estafeta
-  what_dod      text          not null default '',
-  why_context   text          not null default '',
-  how_constraints text        not null default '',
-  when_deadline timestamptz   not null default now(),
-  check_loop    text          not null default '',
+  -- Los 5 puntos del Pase de Estafeta (CHECK enforceado en BD, no solo en UI)
+  what_dod      text          not null check (length(trim(what_dod)) > 0),
+  why_context   text          not null check (length(trim(why_context)) > 0),
+  how_constraints text        not null check (length(trim(how_constraints)) > 0),
+  when_deadline timestamptz   not null,
+  check_loop    text          not null check (length(trim(check_loop)) > 0),
 
   -- Metadata
   los_required  smallint,
@@ -62,18 +62,21 @@ create policy "tasks_select_company"
     company_id = (select company_id from profiles where id = auth.uid())
   );
 
--- Insertar: cualquier miembro autenticado de la empresa puede crear tareas
+-- Insertar: el usuario autenticado debe pertenecer a la empresa
+-- y created_by debe ser su propio UUID (evita impersonación)
 create policy "tasks_insert_company"
   on tasks for insert
   with check (
     company_id = (select company_id from profiles where id = auth.uid())
+    and created_by = auth.uid()
   );
 
--- Actualizar: el creador o el asignado pueden actualizar
+-- Actualizar: solo el creador o el asignado pueden modificar la tarea
 create policy "tasks_update_company"
   on tasks for update
   using (
     company_id = (select company_id from profiles where id = auth.uid())
+    and (created_by = auth.uid() or assigned_to = auth.uid())
   );
 
 -- Eliminar: solo el creador puede eliminar
