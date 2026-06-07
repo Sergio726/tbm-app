@@ -47,6 +47,7 @@
 | **S10** | Beta cerrada | 21–22 | Feedback real de 3–5 empresas piloto |
 | **S11** | Tour Guiado de Onboarding | 23–24 | Primera experiencia interactiva paso a paso para usuarios nuevos |
 | **S12** | Dashboard 100% Funcional | 25–26 | Hero strip, rituales y diagnóstico con datos reales — sin hardcoding |
+| **S13** | Hero Strip Interactivo | 27–28 | Las 4 tiles del dashboard con hover, click, tooltips y paneles de detalle |
 
 ---
 
@@ -1118,8 +1119,340 @@ const teamActiveToday = energyLogs?.length ?? 0
 
 ---
 
+## SPRINT 13 — Hero Strip Interactivo *(Añadido 2026-06-07)*
+**Semanas:** 27–28 · **Horas estimadas:** ~16h  
+**Prerrequisito:** S12 completado (datos reales en BD antes de agregar interacción)  
+**Objetivo:** Las 4 tiles del Hero Strip pasan de ser decoración visual a ser los accesos rápidos más poderosos del sistema. Cada tile muestra el dato más importante de su módulo, reacciona al hover con un resumen contextual, y al click navega directo a la acción relevante.
+
+---
+
+### Fundamento metodológico de cada tile
+
+Antes de implementar, entender QUÉ representa cada tile en el método TBM:
+
+| Tile | Concepto TBM | Por qué es el más importante |
+|------|-------------|------------------------------|
+| **Ciclo 90D** | Los ciclos de 90 días comprimen un año en un trimestre. Las Rocas son las únicas iniciativas que importan. | Sin saber en qué día del ciclo estás, todo lo urgente devora lo importante. |
+| **Racha activa** | La consistencia en el Pre-game es el indicador de hábito más honesto del sistema. Un líder que no hace Pre-game no está ejecutando el método. | La racha mide disciplina, no intención. |
+| **Multiplicador** | Mide qué % de la capacidad intelectual del equipo está siendo utilizada. Disminuidor = 48%, Multiplicador = 97%. | Cada punto de capacidad desperdiciada es dinero que el líder está tirando por la nómina. |
+| **Equipo hoy** | El registro de energía diaria es el pulso operativo del equipo. Quién no registró es señal de fricción invisible. | Si el equipo no está en el sistema, el sistema no funciona. |
+
+---
+
+### Patrón de interacción (aplica a todas las tiles)
+
+**Estado base:** Tile compacta con dato principal + subtítulo  
+**Hover:** Ring de color del tile + tooltip con 2-3 items de detalle  
+**Click:** Navegación directa al módulo correspondiente  
+**Estado "sin datos":** CTA de configuración en lugar de número vacío  
+**Cursor:** `pointer` en todas — dejan claro que son clickeables
+
+```tsx
+// HeroTile pasa de ser un <div> estático a un componente interactivo
+<Link href={tile.href} className="group relative ...">
+  {/* Contenido base siempre visible */}
+  {/* Tooltip que aparece en group-hover */}
+</Link>
 ```
-Frontend:     Next.js 14 (App Router) + TypeScript
+
+---
+
+### Tile 1 — CICLO 90D (rediseño completo)
+
+**Fuente de datos:** Fecha del scorecard con `is_baseline = true` (ya disponible desde S12)  
+**Módulo destino:** `/plan-90d` (S6) · Si no existe: `/diagnostico`
+
+**Compact (estado base):**
+```
+[Target icon]  CICLO 90D
+Día 27/90
+══════░░░░░░░░  30%
+Ciclo 2 · 63 días restantes
+```
+
+**Tooltip en hover (grupo de items):**
+```
+📅 Inicio del ciclo: 15 mar 2026
+🏔️ Rocas activas: 3 de 5
+⚡ En riesgo: 1 roca al 12% a 30 días
+```
+> Las Rocas se muestran cuando exista el módulo Plan 90D (S6). Hasta entonces: solo la fecha de inicio y días restantes.
+
+**Click:**
+- Si Plan 90D existe: `→ /plan-90d`
+- Si Plan 90D no existe: `→ /diagnostico` con mensaje "Completá tu diagnóstico para activar el ciclo"
+
+**Estado "sin ciclo activo":**
+```
+[Target icon]  CICLO 90D
+Sin iniciar
+─────────────
+"Completá el diagnóstico inicial →"
+```
+
+**Schema extra necesario (S6):**
+```sql
+-- Tabla a crear en S6, no en este sprint:
+create table plan_90d_rocks (
+  id uuid primary key,
+  company_id uuid references companies(id),
+  cycle_number int,
+  title text not null,
+  owner_id uuid references profiles(id),
+  progress_pct int default 0,        -- 0-100, actualizado semanalmente
+  success_criteria text,
+  due_date date,
+  status varchar(20) default 'active' -- active | completed | at_risk | cancelled
+)
+```
+> Este sprint no crea esa tabla — la documenta para que S6 la implemente. En S13 la tile funciona con datos del ciclo pero sin Rocas.
+
+---
+
+### Tile 2 — RACHA ACTIVA (renombrar desde "Sprint actual")
+
+**Fuente de datos:** `pre_games` — días consecutivos con registro completado (disponible desde S12)  
+**Módulo destino:** `/rituales`
+
+**Compact (estado base):**
+```
+[Flame icon]  RACHA ACTIVA
+14 días
+racha de Pre-game
+```
+
+**Tooltip en hover — historial visual de 7 días:**
+```
+Últimos 7 días:
+● ● ● ○ ● ● ●   (dots verde/gris)
+Lun Mar Mié Jue Vie Sáb Dom
+
+Mejor racha: 21 días
+```
+
+**Click:**
+- Si Pre-game de hoy no fue completado: `→ /rituales/pregame` (directo al formulario)
+- Si Pre-game de hoy ya fue completado: `→ /rituales` (historial)
+
+**Estados:**
+```
+Racha = 0  →  "¡Empezá hoy!" + link al pre-game
+Racha = 1  →  "1 día · ¡Seguí así!"
+Racha >= 7 →  "X días 🔥"
+Racha >= 30 →  "X días 🏆"
+```
+
+**Datos para el tooltip:**
+```ts
+// En el server component — historial de los últimos 7 días
+const { data: last7Days } = await supabase
+  .from("pre_games")
+  .select("log_date")
+  .eq("user_id", user.id)
+  .gte("log_date", sevenDaysAgo)
+
+// Mejor racha histórica — query separada
+const { data: allPreGames } = await supabase
+  .from("pre_games")
+  .select("log_date")
+  .eq("user_id", user.id)
+  .order("log_date", { ascending: false })
+  .limit(90)  // 90 días alcanza para calcular racha máxima
+```
+
+---
+
+### Tile 3 — MULTIPLICADOR (redefinir + dos fases)
+
+**Concepto:** Qué % de la capacidad intelectual del equipo está siendo utilizada.  
+- Disminuidor = 48% · Disminuidor Accidental = 65% · Multiplicador = 97%
+
+**Fuente de datos — Fase A (este sprint, proxy):**
+```ts
+// Proxy usando 3 indicadores existentes en la BD:
+// 1. score_delegacion del último scorecard (peso 40%)
+// 2. Tasa de Anti-Boomerang: task_updates boomerang_attempt / total tasks (peso 40%)
+// 3. Tareas completadas por colaboradores sin intervención del arquitecto (peso 20%)
+
+const delegacionScore = (latestScorecard?.score_delegacion ?? 0) / 5  // 0-1
+const totalTasks = tasks?.length ?? 0
+const boomerangCount = taskUpdates?.filter(u => u.type === "boomerang_attempt").length ?? 0
+const boomerangRate = totalTasks > 0 ? 1 - (boomerangCount / totalTasks) : 0.5
+
+const multiplicadorPct = Math.round(
+  (delegacionScore * 0.4 + boomerangRate * 0.4 + 0.5 * 0.2) * 100
+)
+```
+
+**Fuente de datos — Fase B (cuando exista módulo Multiplicador):**
+- Score real del diagnóstico de los 3 Pecados del Disminuidor (/36 puntos)
+- Fórmula: `(36 - score) / 36 * 100 = % de capacidad utilizada`
+
+**Compact (estado base):**
+```
+[Zap icon]  MULTIPLICADOR
+73%
+capacidad de equipo utilizada
+```
+Badge de clasificación:
+- `>= 85%` → "Multiplicador" (verde)
+- `65–84%` → "Disminuidor Accidental" (amarillo)
+- `< 65%` → "Disminuidor Activo" (rojo)
+
+**Tooltip en hover:**
+```
+Delegación efectiva:   ████░  4.0/5
+Autonomía del equipo:  ███░░  2 de 5 tareas sin escalaciones
+Boomerang rate:        ██░░░  3 escalaciones esta semana
+```
+
+**Click:**
+- Si diagnóstico Multiplicador no existe: abre inline CTA `"Hacer diagnóstico (5 min) →"`
+- Si diagnóstico existe: `→ /equipo#multiplicador`
+
+**Datos necesarios (S13 agrega estas queries al dashboard server):**
+```ts
+// Tasa de Anti-Boomerang
+const { data: taskUpdatesBoomerang } = await supabase
+  .from("task_updates")
+  .select("type")
+  .eq("type", "boomerang_attempt")
+  .in("task_id", companyTaskIds)
+
+// Tareas completadas en los últimos 30 días
+const { data: recentTasks } = await supabase
+  .from("tasks")
+  .select("status, assigned_to, created_by")
+  .eq("company_id", profile.company_id!)
+  .gte("updated_at", thirtyDaysAgo)
+```
+
+---
+
+### Tile 4 — EQUIPO HOY (ampliar con panel)
+
+**Fuente de datos:** `energy_logs` + `profiles` (disponible desde S12)  
+**Módulo destino:** `/equipo`
+
+**Compact (estado base):**
+```
+[Users icon]  EQUIPO HOY
+9 / 12
+registraron energía hoy
+[A] [L] [M] [C] [P] +4
+```
+Los avatares son reales: iniciales + color DISC del perfil.
+
+**Tooltip en hover — panel de miembros:**
+```
+Ana García      ●●●●○  Energía 4
+Luis Martínez   ●●●○○  Energía 3
+María López     ●●●●●  Energía 5
+Carlos Ruiz     ○○○○○  Sin registrar  ⚠
+────────────────────────────────
+4 sin registrar hoy
+```
+Los que no registraron aparecen con ⚠ para que el líder note quién puede tener fricción invisible.
+
+**Click:** `→ /equipo` (módulo de equipo)
+
+**Datos para el tooltip:**
+```ts
+// En el server component — cruzar team con energy_logs de hoy
+const teamWithEnergy = teamProfiles?.map(member => ({
+  ...member,
+  energyToday: energyLogs?.find(e => e.user_id === member.id)?.level ?? null
+}))
+// null = no registró, número = su nivel de energía
+```
+
+---
+
+### Archivos a crear/modificar
+
+**Modificar:**
+- `src/app/(dashboard)/dashboard/page.tsx` — agregar queries para tooltip data + pasar a HeroStrip
+- `src/components/dashboard/HeroStrip` (extraer de page.tsx a su propio archivo) — agregar interactividad
+
+**Crear:**
+- `src/components/dashboard/hero-strip.tsx` — componente cliente con hover/click/tooltip
+- `src/components/dashboard/tile-tooltip.tsx` — componente tooltip reutilizable (glass morphism)
+
+**Estructura del componente:**
+
+```tsx
+// hero-strip.tsx — "use client"
+// Recibe todos los datos pre-calculados del server component
+
+interface HeroStripProps {
+  // Tile 1 — Ciclo 90D
+  dayInCycle: number | null
+  cycleNumber: number
+  pctCycle: number
+  cycleStartDate: string | null
+  // Tile 2 — Racha
+  streak: number
+  bestStreak: number
+  last7Days: boolean[]      // true=hecho, false=falló
+  preGameDoneToday: boolean
+  // Tile 3 — Multiplicador
+  multiplicadorPct: number
+  multiplicadorLabel: "Multiplicador" | "Disminuidor Accidental" | "Disminuidor Activo"
+  delegacionScore: number
+  boomerangRate: number
+  // Tile 4 — Equipo hoy
+  teamWithEnergy: { id: string; full_name: string; disc_letters: string; energyToday: number | null }[]
+}
+```
+
+---
+
+### Diseño visual del tooltip
+
+El tooltip sigue el design system glassmorphism de la app:
+
+```tsx
+// tile-tooltip.tsx
+<div
+  style={{
+    position: "absolute",
+    top: "calc(100% + 8px)",
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 50,
+    minWidth: 220,
+    padding: "12px 14px",
+    borderRadius: 12,
+    background: "#111827",
+    border: "1px solid rgba(255,255,255,0.1)",
+    boxShadow: "0 16px 40px rgba(0,0,0,0.6)",
+    pointerEvents: "none",   // el tooltip no bloquea el click
+  }}
+>
+  {children}
+</div>
+```
+
+El tooltip aparece en `onMouseEnter` y desaparece en `onMouseLeave` via `useState<string | null>(null)` en el componente padre:
+```tsx
+const [hoveredTile, setHoveredTile] = useState<"ciclo" | "racha" | "multiplicador" | "equipo" | null>(null)
+```
+
+---
+
+### ✅ Criterio de éxito del Sprint 13
+
+> 1. **Hover** en cualquier tile muestra un tooltip con contexto adicional — el líder puede escanear el estado del negocio sin abrir ningún módulo
+> 2. **Click** en cualquier tile lleva directamente al módulo correspondiente (o a su CTA de configuración si no existe)
+> 3. **Tile Multiplicador** muestra un % calculado con datos reales (proxy fase A) y el badge de clasificación correcto
+> 4. **Tile Racha** muestra el historial visual de 7 días en el tooltip
+> 5. **Tile Equipo hoy** muestra en el tooltip quién registró energía y quién no, con alerta para los ausentes
+> 6. **Tile Ciclo 90D** calcula el día real del ciclo basado en el baseline del diagnóstico, no un número inventado
+> 7. Todos los tiles tienen `cursor: pointer` y responden visualmente al hover
+
+---
+
+
 Styling:      Tailwind CSS + shadcn/ui
 Database:     Supabase (PostgreSQL + Auth + Realtime + Storage)
 Backend:      Supabase Edge Functions (Deno) para cron jobs y lógica server-side
