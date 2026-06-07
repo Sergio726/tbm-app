@@ -45,6 +45,7 @@
 | **S8** | Workbooks S5–S8 | 17–18 | Programa completo digitalizado |
 | **S9** | Polish + Exportación + Super Coach | 19–20 | App lista para beta + panel de Dilio |
 | **S10** | Beta cerrada | 21–22 | Feedback real de 3–5 empresas piloto |
+| **S11** | Tour Guiado de Onboarding | 23–24 | Primera experiencia interactiva paso a paso para usuarios nuevos |
 
 ---
 
@@ -677,7 +678,193 @@ coaching_notes (id, coach_id, student_company_id,
 
 ---
 
-## STACK TECNOLÓGICO DEFINITIVO
+## SPRINT 11 — Tour Guiado de Onboarding *(Añadido 2026-06-07)*
+**Semanas:** 23–24 · **Horas estimadas:** ~14h  
+**Objetivo:** El sistema crece en módulos y complejidad. Un usuario que entra por primera vez necesita entender dónde está cada cosa y para qué sirve — sin necesidad de documentación externa. El tour guiado resuelve esto con una experiencia interactiva en tiempo real: la pantalla focaliza las secciones más importantes paso a paso, y el usuario avanza haciendo click en "Siguiente".
+
+### Concepto de UX
+
+El tour funciona como los recorridos de productos tipo Notion, Loom o Linear:
+- El fondo se oscurece levemente
+- Un elemento de la pantalla queda "iluminado" (spotlight)
+- Un popover aparece junto al elemento explicando qué es y para qué sirve
+- El usuario avanza con **"Siguiente →"**, puede **Omitir** en cualquier paso, y al final ve una pantalla de bienvenida final
+- El tour se puede **repetir desde configuración de perfil** ("Ver tour de nuevo")
+
+---
+
+### Librería recomendada: `driver.js` v2
+
+**Por qué driver.js y no react-joyride:**
+
+| Criterio | driver.js | react-joyride |
+|---|---|---|
+| Peso | ~12 KB gzip | ~28 KB gzip |
+| Dependencias | Vanilla JS (cero) | React + Popper.js |
+| Compatibilidad Next.js | Excelente (solo client-side) | Buena, pero más verbosa |
+| Popover personalizable | Sí, CSS variables | Sí, props React |
+| Highlight / Overlay | Nativo | Nativo |
+| Mantenimiento | Activo (2024–2025) | Activo |
+
+**Instalación:**
+```bash
+npm install driver.js
+```
+
+---
+
+### Base de datos — cambio de schema
+
+```sql
+-- Agregar campo a profiles existente
+alter table profiles
+  add column if not exists tour_completed boolean default false;
+```
+
+> El campo vive en `profiles` porque el tour es por usuario, no por empresa. Un colaborador y un arquitecto ven pasos distintos — el tour se adapta al rol.
+
+---
+
+### Pasos del tour (ordenados)
+
+| # | Elemento objetivo | Título | Descripción | Visible para |
+|---|---|---|---|---|
+| 1 | Sidebar completo | "Tu panel de control" | "Todo el sistema TBM vive en esta barra. Cada sección es un módulo que se va desbloqueando." | Todos |
+| 2 | Dashboard — semáforos | "El diagnóstico de tu negocio" | "Estos 8 semáforos muestran la salud de cada área clave. Verde = bien, rojo = atención urgente." | Todos |
+| 3 | Sección Rituales | "El motor de tu día" | "Pre-game, War Up y Cool Down son los rituales que sincronizan al equipo. Hacerlos diario es la diferencia." | Todos |
+| 4 | Sección Mi Equipo | "El mapa de tu gente" | "Aquí vivé el DISC y el nivel LOS de cada colaborador. Conocer a tu equipo es delegar mejor." | Arquitecto |
+| 5 | Sección Delegación | "El Pase de Estafeta" | "Cada tarea delegada tiene 5 puntos obligatorios. Sin los 5 puntos, el error es del líder." | Arquitecto |
+| 6 | Botón "Nueva tarea" | "Delegá con claridad" | "Usá el wizard para crear tu primera tarea. Los 5 campos son la diferencia entre delegar y rezar." | Arquitecto |
+| 5 | Sección Delegación → Mis tareas | "Tus tareas asignadas" | "Aquí ves todo lo que te delegaron, con los 5 puntos explicados. Sin excusas para no saber qué hacer." | Colaborador |
+| 6 | Botón "Estoy bloqueado" | "El Escudo Anti-Boomerang" | "Antes de escalar un problema, el sistema te pide 3 opciones. Así el líder recibe soluciones, no problemas." | Colaborador |
+| 7 | Ícono de perfil / avatar | "Tu perfil y configuración" | "Desde aquí podés actualizar tu DISC, tu nivel LOS, y reiniciar este tour cuando quieras." | Todos |
+| Final | Pantalla full (overlay) | "¡Ya conocés el sistema!" | "Ahora es tiempo de actuar. El primer paso es completar el diagnóstico de las 8 áreas." | Todos |
+
+> Los pasos 4–6 cambian según el rol (`profile.role === "arquitecto"`). El tour lee el rol desde contexto y muestra el flujo correspondiente.
+
+---
+
+### Archivos a crear/modificar
+
+**Nuevos:**
+- `src/lib/tour-steps.ts` — definición de pasos por rol (arrays `ARQUITECTO_STEPS` y `COLABORADOR_STEPS`)
+- `src/components/layout/tour-provider.tsx` — wrapper client-side que inicializa driver.js
+- `src/hooks/use-tour.ts` — hook: lee `tourCompleted`, expone `startTour()` y `completeTour()`
+
+**Modificar:**
+- `src/app/(dashboard)/layout.tsx` — pasar `tourCompleted` y `userRole` como props al `TourProvider`
+- `src/components/layout/sidebar.tsx` — agregar atributos `data-tour="..."` en los items del menú
+- `src/components/layout/profile-dropdown.tsx` (o equivalente) — agregar opción "Ver tour de nuevo" que llama `startTour()`
+- `src/app/(dashboard)/delegacion/page.tsx` — agregar `data-tour="delegacion-nueva-tarea"` al botón "Nueva tarea"
+
+**Migración SQL:**
+- `supabase/migration_s11_tour.sql` — `alter table profiles add column tour_completed boolean default false`
+
+---
+
+### Lógica principal
+
+**Trigger del tour:**
+```ts
+// tour-provider.tsx — se ejecuta en el layout del dashboard
+useEffect(() => {
+  if (tourCompleted) return;           // ya lo vio
+  if (!document) return;               // SSR guard
+
+  const driver = new Driver({ ... })
+  driver.setSteps(roleSteps)           // pasos según rol
+  driver.drive()                       // inicia desde paso 0
+}, [tourCompleted])
+```
+
+**Completar el tour (skip o finish):**
+```ts
+const completeTour = async () => {
+  const supabase = createClient()
+  await supabase.from("profiles").update({ tour_completed: true }).eq("id", userId)
+  setCompleted(true)  // evita re-trigger en el mismo session
+}
+
+// Se pasa como onDestroyed y onDeselected a driver.js
+```
+
+**Reiniciar tour desde perfil:**
+```ts
+// profile-dropdown.tsx
+const { startTour } = useTour()
+
+<button onClick={() => {
+  supabase.from("profiles").update({ tour_completed: false }).eq("id", userId)
+  startTour()
+}}>Ver tour de nuevo</button>
+```
+
+---
+
+### Identificadores DOM (atributos `data-tour`)
+
+Los elementos del DOM necesitan IDs únicos que el tour pueda encontrar:
+
+```html
+<!-- sidebar.tsx -->
+<a data-tour="nav-dashboard" href="/dashboard">Dashboard</a>
+<a data-tour="nav-rituales" href="/rituales">Rituales</a>
+<a data-tour="nav-equipo" href="/equipo">Mi Equipo</a>
+<a data-tour="nav-delegacion" href="/delegacion">Delegación</a>
+
+<!-- delegacion/page.tsx -->
+<Link data-tour="btn-nueva-tarea" href="/delegacion/nueva">Nueva tarea</Link>
+
+<!-- mis-tareas-client.tsx -->
+<Link data-tour="btn-bloqueado" href="/delegacion/bloqueado/...">Estoy bloqueado</Link>
+
+<!-- layout — perfil -->
+<div data-tour="user-avatar">...</div>
+```
+
+---
+
+### Diseño visual del popover
+
+Usar CSS variables de driver.js para que el popover siga el design system de la app:
+
+```css
+/* globals.css o tour-provider.tsx con <style> tag */
+.driver-popover {
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  font-family: Inter, system-ui, sans-serif;
+  color: rgba(255,255,255,0.85);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+}
+.driver-popover-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+.driver-popover-description {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.6);
+}
+.driver-popover-next-btn {
+  background: linear-gradient(135deg, #5b8aff, #2c5fe6);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.driver-overlay { background: rgba(0,0,0,0.7); }
+```
+
+---
+
+### ✅ Criterio de éxito del Sprint 11
+> Un usuario nuevo (Arquitecto o Colaborador) que ingresa por primera vez ve el tour automáticamente. Puede omitirlo con un click. Al completarlo, no vuelve a aparecer en logins siguientes. Puede reiniciarlo desde su perfil. Cada paso del tour apunta al elemento correcto en pantalla con un texto que explica el valor del módulo en 2 líneas.
+
+---
+
+
 
 ```
 Frontend:     Next.js 14 (App Router) + TypeScript
