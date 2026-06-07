@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { ChevronDown, User, Clock, ArrowRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { User, Clock, AlertTriangle } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import type { Task, Profile, TaskStatus } from "@/types/database";
 
@@ -14,29 +12,20 @@ const LOS_LABELS: Record<number, string> = {
   5: "N5",
 };
 
-const STATUS_OPTIONS: { value: TaskStatus; label: string; color: string }[] = [
-  { value: "pending", label: "Pendiente", color: "rgba(255,255,255,0.4)" },
-  { value: "in_progress", label: "En curso", color: "#5b8aff" },
-  { value: "blocked", label: "Bloqueado", color: "#f87171" },
-  { value: "done", label: "Listo", color: "#34d399" },
-];
+const STATUS_ACCENT: Record<TaskStatus, string> = {
+  pending: "rgba(255,255,255,0.3)",
+  in_progress: "#5b8aff",
+  blocked: "#f87171",
+  done: "#34d399",
+};
 
 interface TaskCardProps {
   task: Task;
   assignee: Profile | null;
-  isArquitecto: boolean;
-  onStatusChange: (taskId: string, newStatus: TaskStatus) => void;
+  onOpen: (task: Task) => void;
 }
 
-export function TaskCard({
-  task,
-  assignee,
-  isArquitecto,
-  onStatusChange,
-}: TaskCardProps) {
-  const [showMenu, setShowMenu] = useState(false);
-  const [isPending, startTransition] = useTransition();
-
+export function TaskCard({ task, assignee, onOpen }: TaskCardProps) {
   const deadline = new Date(task.when_deadline);
   const now = new Date();
   const isOverdue = deadline < now && task.status !== "done";
@@ -51,98 +40,119 @@ export function TaskCard({
       ? "#fbbf24"
       : "rgba(255,255,255,0.35)";
 
-  const handleStatusChange = (newStatus: TaskStatus) => {
-    setShowMenu(false);
-    if (newStatus === task.status) return;
-
-    startTransition(async () => {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("tasks")
-        .update({ status: newStatus })
-        .eq("id", task.id);
-      if (!error) onStatusChange(task.id, newStatus);
-    });
-  };
-
+  const accent = STATUS_ACCENT[task.status as TaskStatus] ?? STATUS_ACCENT.pending;
   const initials = assignee ? getInitials(assignee.full_name) : null;
   const discColor = getDiscColor(assignee?.disc_letters ?? null);
 
   return (
-    <div
-      className="relative rounded-xl border"
+    <button
+      type="button"
+      onClick={() => onOpen(task)}
+      className="relative w-full overflow-hidden rounded-xl border text-left transition-all hover:border-white/20"
       style={{
         borderColor: "rgba(255,255,255,0.07)",
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015))",
-        padding: "14px 16px",
-        opacity: isPending ? 0.6 : 1,
-        transition: "opacity 0.15s",
+        cursor: "pointer",
       }}
     >
-      {/* QUÉ */}
-      <p
-        className="mb-2 text-white"
-        style={{
-          fontSize: 13,
-          fontWeight: 500,
-          lineHeight: 1.45,
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}
-      >
-        {task.what_dod || "Sin descripción"}
-      </p>
+      {/* Borde lateral de estado */}
+      <span
+        className="absolute inset-y-0 left-0 w-[3px]"
+        style={{ background: accent }}
+      />
 
-      {/* Footer */}
-      <div className="flex items-center justify-between gap-2">
-        {/* Assignee + LOS */}
-        <div className="flex items-center gap-2">
-          {assignee ? (
-            <div
-              className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-white"
-              style={{
-                background: `linear-gradient(135deg, ${discColor}, ${discColor}88)`,
-                fontSize: 9,
-                fontWeight: 700,
-                boxShadow: `0 2px 6px ${discColor}44`,
-              }}
-              title={assignee.full_name ?? ""}
-            >
-              {initials}
-            </div>
-          ) : (
-            <div
-              className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                border: "1px dashed rgba(255,255,255,0.2)",
-              }}
-            >
-              <User size={11} style={{ color: "rgba(255,255,255,0.3)" }} />
-            </div>
-          )}
-
-          {task.los_required && (
+      <div style={{ padding: "13px 14px 13px 17px" }}>
+        {/* Banner de urgencia */}
+        {(isOverdue || isSoon) && (
+          <div
+            className="mb-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5"
+            style={{
+              background: isOverdue
+                ? "rgba(248,113,113,0.14)"
+                : "rgba(251,191,36,0.14)",
+              border: `1px solid ${isOverdue ? "rgba(248,113,113,0.3)" : "rgba(251,191,36,0.3)"}`,
+            }}
+          >
+            <AlertTriangle
+              size={9}
+              strokeWidth={2.5}
+              style={{ color: isOverdue ? "#f87171" : "#fbbf24" }}
+            />
             <span
-              className="rounded-md px-1.5 py-0.5"
               style={{
-                fontSize: 10,
+                fontSize: 9.5,
                 fontWeight: 700,
-                color: "#a78bfa",
-                background: "rgba(167,139,250,0.12)",
-                border: "1px solid rgba(167,139,250,0.25)",
+                letterSpacing: 0.3,
+                color: isOverdue ? "#fca5a5" : "#fcd34d",
+                textTransform: "uppercase",
               }}
             >
-              {LOS_LABELS[task.los_required] ?? `N${task.los_required}`}
+              {isOverdue ? "Vencida" : "Hoy"}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Deadline + cambio de estado */}
-        <div className="flex items-center gap-2">
+        {/* QUÉ */}
+        <p
+          className="mb-2.5 text-white"
+          style={{
+            fontSize: 13,
+            fontWeight: 500,
+            lineHeight: 1.45,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {task.what_dod || "Sin descripción"}
+        </p>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            {assignee ? (
+              <div
+                className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-white"
+                style={{
+                  background: `linear-gradient(135deg, ${discColor}, ${discColor}88)`,
+                  fontSize: 9,
+                  fontWeight: 700,
+                  boxShadow: `0 2px 6px ${discColor}44`,
+                }}
+                title={assignee.full_name ?? ""}
+              >
+                {initials}
+              </div>
+            ) : (
+              <div
+                className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px dashed rgba(255,255,255,0.2)",
+                }}
+              >
+                <User size={11} style={{ color: "rgba(255,255,255,0.3)" }} />
+              </div>
+            )}
+
+            {task.los_required && (
+              <span
+                className="rounded-md px-1.5 py-0.5"
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  color: "#a78bfa",
+                  background: "rgba(167,139,250,0.12)",
+                  border: "1px solid rgba(167,139,250,0.25)",
+                }}
+              >
+                {LOS_LABELS[task.los_required] ?? `N${task.los_required}`}
+              </span>
+            )}
+          </div>
+
           <span
             className="flex items-center gap-1"
             style={{
@@ -157,63 +167,9 @@ export function TaskCard({
               month: "short",
             })}
           </span>
-
-          {isArquitecto && (
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowMenu((v) => !v)}
-                className="flex items-center gap-0.5 rounded-lg px-2 py-1 transition-colors hover:bg-white/10"
-                style={{
-                  fontSize: 11,
-                  color: "rgba(255,255,255,0.45)",
-                  cursor: "pointer",
-                }}
-                title="Cambiar estado"
-              >
-                <ArrowRight size={11} strokeWidth={2} />
-                <ChevronDown size={10} strokeWidth={2} />
-              </button>
-
-              {showMenu && (
-                <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setShowMenu(false)}
-                  />
-                  <div
-                    className="absolute right-0 top-full z-20 mt-1 min-w-[130px] overflow-hidden rounded-xl border"
-                    style={{
-                      background: "#111827",
-                      borderColor: "rgba(255,255,255,0.1)",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
-                    }}
-                  >
-                    {STATUS_OPTIONS.filter(
-                      (o) => o.value !== task.status
-                    ).map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => handleStatusChange(opt.value)}
-                        className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.06]"
-                        style={{ fontSize: 12.5 }}
-                      >
-                        <span
-                          className="h-2 w-2 rounded-full flex-shrink-0"
-                          style={{ background: opt.color }}
-                        />
-                        <span style={{ color: opt.color }}>{opt.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 

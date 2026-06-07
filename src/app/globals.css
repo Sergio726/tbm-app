@@ -231,6 +231,12 @@ input.tbm-range:focus {
 .tbm-slide-right { animation: tbm-slide-in-right .35s cubic-bezier(.4,0,.2,1) both; }
 .tbm-slide-left  { animation: tbm-slide-in-left  .35s cubic-bezier(.4,0,.2,1) both; }
 
+@keyframes tbm-drawer-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+.tbm-drawer-in { animation: tbm-drawer-in .28s cubic-bezier(.4,0,.2,1) both; }
+
 /* ── Dashboard — pulse + live strip ───────────────────────── */
 @keyframes tbm-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }

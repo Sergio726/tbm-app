@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, Send, ClipboardList } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 import type { Task, Profile } from "@/types/database";
 import { KanbanBoard } from "./kanban-board";
 
@@ -82,25 +82,8 @@ export function DelegacionClient({
           initialTasks={visibleTasks}
           team={team}
           isArquitecto={isArquitecto}
+          currentUserId={currentUserId}
         />
-      )}
-
-      {/* Vista colaborador: link a mis tareas */}
-      {!isArquitecto && (
-        <div className="mt-6">
-          <Link
-            href="/delegacion/mis-tareas"
-            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-white/70 transition-colors hover:text-white"
-            style={{
-              borderColor: "rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.03)",
-              fontSize: 13.5,
-            }}
-          >
-            <ClipboardList size={15} strokeWidth={1.6} />
-            Ver mis tareas asignadas
-          </Link>
-        </div>
       )}
     </div>
   );

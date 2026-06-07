@@ -9,37 +9,44 @@ import {
   Clock,
   ArrowLeft,
   AlertTriangle,
+  Play,
+  Check,
+  ShieldAlert,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Task, Profile, TaskStatus } from "@/types/database";
 
 const STATUS_DISPLAY: Record<
   TaskStatus,
-  { label: string; color: string; bg: string; border: string }
+  { label: string; color: string; bg: string; border: string; accent: string }
 > = {
   pending: {
     label: "Pendiente",
     color: "rgba(255,255,255,0.6)",
     bg: "rgba(255,255,255,0.07)",
     border: "rgba(255,255,255,0.12)",
+    accent: "rgba(255,255,255,0.3)",
   },
   in_progress: {
     label: "En curso",
     color: "#5b8aff",
     bg: "rgba(91,138,255,0.1)",
     border: "rgba(91,138,255,0.25)",
+    accent: "#5b8aff",
   },
   blocked: {
     label: "Bloqueado",
     color: "#f87171",
     bg: "rgba(248,113,113,0.1)",
     border: "rgba(248,113,113,0.25)",
+    accent: "#f87171",
   },
   done: {
     label: "Listo",
     color: "#34d399",
     bg: "rgba(52,211,153,0.1)",
     border: "rgba(52,211,153,0.25)",
+    accent: "#34d399",
   },
 };
 
@@ -92,12 +99,12 @@ export function MisTareasClient({ tasks: initialTasks }: MisTareasClientProps) {
       {/* Header */}
       <div className="mb-8">
         <Link
-          href="/delegacion"
+          href="/dashboard"
           className="mb-4 inline-flex items-center gap-1.5 transition-colors hover:text-white"
           style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
-          Delegación
+          Dashboard
         </Link>
 
         <div className="flex items-center gap-3">
@@ -129,7 +136,7 @@ export function MisTareasClient({ tasks: initialTasks }: MisTareasClientProps) {
       {tasks.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="flex flex-col gap-2.5" style={{ maxWidth: 780 }}>
+        <div className="flex flex-col gap-3" style={{ maxWidth: 820 }}>
           {tasks.map((task) => (
             <TaskRow
               key={task.id}
@@ -185,7 +192,7 @@ function TaskRow({
 
   return (
     <div
-      className="rounded-xl border transition-all"
+      className="relative overflow-hidden rounded-xl border transition-all"
       style={{
         borderColor: isExpanded
           ? "rgba(91,138,255,0.2)"
@@ -197,11 +204,17 @@ function TaskRow({
         transition: "opacity 0.15s, border-color 0.15s, background 0.15s",
       }}
     >
+      {/* Borde lateral de estado */}
+      <span
+        className="absolute inset-y-0 left-0 w-[3px]"
+        style={{ background: status.accent }}
+      />
+
       {/* Fila colapsada — siempre visible */}
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center gap-3 px-4 py-3.5 text-left"
+        className="flex w-full items-center gap-3 py-3.5 pl-5 pr-4 text-left"
       >
         {/* Status pill */}
         <span
@@ -241,8 +254,11 @@ function TaskRow({
             fontFamily: "JetBrains Mono, monospace",
           }}
         >
-          {isOverdue && <AlertTriangle size={10} strokeWidth={2} />}
-          {!isOverdue && <Clock size={10} strokeWidth={2} />}
+          {isOverdue ? (
+            <AlertTriangle size={10} strokeWidth={2} />
+          ) : (
+            <Clock size={10} strokeWidth={2} />
+          )}
           {deadline.toLocaleDateString("es-AR", { day: "2-digit", month: "short" })}
         </span>
 
@@ -254,16 +270,76 @@ function TaskRow({
         )}
       </button>
 
-      {/* Contenido expandido */}
+      {/* Acciones — siempre visibles (excepto si está completada) */}
+      {!isDone && (
+        <div
+          className="flex flex-wrap items-center gap-2.5 pb-3.5 pl-5 pr-4"
+          style={{ marginTop: isExpanded ? 0 : -4 }}
+        >
+          {isPending && (
+            <ActionButton
+              onClick={() => onStatusChange(task.id, "in_progress")}
+              disabled={isLoading}
+              icon={Play}
+              label={isLoading ? "Guardando…" : "Iniciar"}
+              grad="linear-gradient(135deg, #5b8aff, #2c5fe6)"
+              shadow="rgba(91,138,255,0.3)"
+            />
+          )}
+
+          {isInProgress && (
+            <ActionButton
+              onClick={() => onStatusChange(task.id, "done")}
+              disabled={isLoading}
+              icon={Check}
+              label={isLoading ? "Guardando…" : "Marcar completado"}
+              grad="linear-gradient(135deg, #34d399, #059669)"
+              shadow="rgba(52,211,153,0.3)"
+            />
+          )}
+
+          {!isBlocked && (
+            <Link
+              href={`/delegacion/bloqueado/${task.id}`}
+              className="inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 transition-colors hover:border-red-400/40 hover:text-red-300"
+              style={{
+                fontSize: 12.5,
+                fontWeight: 500,
+                color: "rgba(248,113,113,0.7)",
+                borderColor: "rgba(248,113,113,0.2)",
+                background: "rgba(248,113,113,0.04)",
+              }}
+            >
+              <ShieldAlert size={13} strokeWidth={2} />
+              Estoy bloqueado
+            </Link>
+          )}
+
+          {isBlocked && (
+            <span
+              className="inline-flex items-center gap-1.5"
+              style={{
+                fontSize: 12.5,
+                color: "rgba(248,113,113,0.65)",
+                fontStyle: "italic",
+              }}
+            >
+              <ShieldAlert size={13} strokeWidth={2} />
+              Escalado al líder — esperá respuesta
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Contenido expandido: los 5 puntos */}
       {isExpanded && (
         <div
           style={{
             borderTop: "1px solid rgba(255,255,255,0.06)",
-            padding: "20px 20px 20px",
+            padding: "18px 18px 18px 21px",
           }}
         >
-          {/* 5 puntos */}
-          <div className="mb-5 flex flex-col gap-3.5">
+          <div className="flex flex-col gap-3.5">
             {PUNTOS.map((p) => {
               let value = task[p.key] as string;
               if (p.key === "when_deadline") {
@@ -302,82 +378,52 @@ function TaskRow({
               );
             })}
           </div>
-
-          {/* Botones de acción */}
-          {!isDone && (
-            <div className="flex items-center gap-2.5">
-              {isPending && (
-                <button
-                  type="button"
-                  onClick={() => onStatusChange(task.id, "in_progress")}
-                  disabled={isLoading}
-                  className="rounded-xl px-4 py-2 text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed"
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-                    boxShadow: "0 4px 12px rgba(91,138,255,0.3)",
-                  }}
-                >
-                  {isLoading ? "Guardando…" : "Iniciar"}
-                </button>
-              )}
-
-              {isInProgress && (
-                <button
-                  type="button"
-                  onClick={() => onStatusChange(task.id, "done")}
-                  disabled={isLoading}
-                  className="rounded-xl px-4 py-2 text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed"
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    background: "linear-gradient(135deg, #34d399, #059669)",
-                    boxShadow: "0 4px 12px rgba(52,211,153,0.3)",
-                  }}
-                >
-                  {isLoading ? "Guardando…" : "Marcar completado"}
-                </button>
-              )}
-
-              {!isBlocked && (
-                <Link
-                  href={`/delegacion/bloqueado/${task.id}`}
-                  className="rounded-xl border px-4 py-2 transition-colors hover:border-red-400/40 hover:text-red-300"
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: "rgba(248,113,113,0.7)",
-                    borderColor: "rgba(248,113,113,0.2)",
-                    background: "rgba(248,113,113,0.04)",
-                  }}
-                >
-                  Estoy bloqueado
-                </Link>
-              )}
-
-              {isBlocked && (
-                <span
-                  style={{
-                    fontSize: 12.5,
-                    color: "rgba(248,113,113,0.6)",
-                    fontStyle: "italic",
-                  }}
-                >
-                  Escalado al líder — esperá respuesta
-                </span>
-              )}
-            </div>
-          )}
-
-          {isDone && (
-            <p style={{ fontSize: 13, color: "#34d399", fontWeight: 500 }}>
-              ✓ Tarea completada
-            </p>
-          )}
         </div>
       )}
+
+      {isDone && (
+        <p
+          className="pb-3.5 pl-5 pr-4"
+          style={{ fontSize: 13, color: "#34d399", fontWeight: 500, marginTop: -4 }}
+        >
+          ✓ Tarea completada
+        </p>
+      )}
     </div>
+  );
+}
+
+function ActionButton({
+  onClick,
+  disabled,
+  icon: Icon,
+  label,
+  grad,
+  shadow,
+}: {
+  onClick: () => void;
+  disabled: boolean;
+  icon: typeof Play;
+  label: string;
+  grad: string;
+  shadow: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed"
+      style={{
+        fontSize: 12.5,
+        fontWeight: 600,
+        background: grad,
+        boxShadow: `0 4px 12px ${shadow}`,
+      }}
+    >
+      <Icon size={13} strokeWidth={2} />
+      {label}
+    </button>
   );
 }
 
@@ -389,7 +435,7 @@ function EmptyState() {
         borderColor: "rgba(255,255,255,0.06)",
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        maxWidth: 780,
+        maxWidth: 820,
       }}
     >
       <div

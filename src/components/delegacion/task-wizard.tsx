@@ -13,6 +13,8 @@ import {
   Check,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { LOS_LEVELS } from "@/lib/disc";
+import { DeadlinePicker } from "./deadline-picker";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -382,9 +384,11 @@ function StepCard({
 }) {
   const Icon = step.icon;
 
+  const isDatetime = step.type === "datetime";
+
   return (
     <div
-      className="relative mb-6 overflow-hidden rounded-2xl border"
+      className={`relative mb-6 rounded-2xl border ${isDatetime ? "overflow-visible" : "overflow-hidden"}`}
       style={{
         borderColor: "rgba(255,255,255,0.07)",
         background:
@@ -394,7 +398,7 @@ function StepCard({
     >
       {/* Hairline de acento */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-0.5"
+        className="pointer-events-none absolute left-4 right-4 top-0 h-0.5 rounded-full"
         style={{
           background: `linear-gradient(90deg, ${step.iconColor}88, transparent 60%)`,
         }}
@@ -462,17 +466,7 @@ function StepCard({
           style={{ borderColor: "rgba(255,255,255,0.09)" }}
         />
       ) : (
-        <input
-          type="datetime-local"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          autoFocus
-          className="w-full rounded-xl border bg-white/[0.035] px-4 py-3 text-sm text-white outline-none transition focus:border-[#5b8aff]/50 focus:ring-2 focus:ring-[#5b8aff]/15"
-          style={{
-            borderColor: "rgba(255,255,255,0.09)",
-            colorScheme: "dark",
-          }}
-        />
+        <DeadlinePicker value={value} onChange={onChange} />
       )}
     </div>
   );
@@ -491,14 +485,6 @@ function AssigneeSelector({
   onAssign: (id: string) => void;
   onLos: (l: string) => void;
 }) {
-  const LOS_LABELS: Record<number, string> = {
-    1: "N1 · Cadete",
-    2: "N2 · Aprendiz",
-    3: "N3 · Operador",
-    4: "N4 · Experto",
-    5: "N5 · Socio",
-  };
-
   return (
     <div
       className="mb-6 rounded-2xl border p-6"
@@ -598,45 +584,82 @@ function AssigneeSelector({
 
       {/* Nivel LOS requerido */}
       <div>
-        <label
-          style={{
-            fontSize: 11.5,
-            fontWeight: 600,
-            color: "rgba(255,255,255,0.5)",
-            letterSpacing: 0.2,
-            display: "block",
-            marginBottom: 8,
-          }}
-        >
-          Nivel LOS mínimo requerido
-        </label>
-        <div className="flex gap-2">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <button
-              key={n}
-              type="button"
-              onClick={() =>
-                onLos(losRequired === String(n) ? "" : String(n))
-              }
-              className="rounded-lg border px-3 py-1.5 transition-all"
-              style={{
-                fontSize: 12,
-                border: `1px solid ${losRequired === String(n) ? "rgba(167,139,250,0.5)" : "rgba(255,255,255,0.08)"}`,
-                background:
-                  losRequired === String(n)
-                    ? "rgba(167,139,250,0.15)"
-                    : "rgba(255,255,255,0.03)",
-                color:
-                  losRequired === String(n)
-                    ? "#a78bfa"
-                    : "rgba(255,255,255,0.5)",
-                cursor: "pointer",
-              }}
-              title={LOS_LABELS[n]}
-            >
-              N{n}
-            </button>
-          ))}
+        <div className="mb-3">
+          <label
+            style={{
+              fontSize: 11.5,
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.5)",
+              letterSpacing: 0.2,
+              display: "block",
+              marginBottom: 4,
+            }}
+          >
+            Nivel LOS mínimo requerido
+          </label>
+          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.38)" }}>
+            Elegí la autonomía mínima que necesita la persona para completar esta tarea.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-5">
+          {LOS_LEVELS.map((level) => {
+            const active = losRequired === String(level.level);
+
+            return (
+              <button
+                key={level.level}
+                type="button"
+                onClick={() =>
+                  onLos(active ? "" : String(level.level))
+                }
+                className="rounded-xl border p-3 text-left transition-all"
+                style={{
+                  border: `1px solid ${active ? "rgba(167,139,250,0.65)" : "rgba(255,255,255,0.08)"}`,
+                  background: active
+                    ? "linear-gradient(180deg, rgba(167,139,250,0.18), rgba(167,139,250,0.08))"
+                    : "rgba(255,255,255,0.025)",
+                  color: active ? "#ddd6fe" : "rgba(255,255,255,0.62)",
+                  cursor: "pointer",
+                  boxShadow: active ? "0 8px 22px rgba(167,139,250,0.16)" : "none",
+                  minHeight: 116,
+                }}
+              >
+                <span
+                  className="mb-2 inline-flex rounded-md px-2 py-0.5"
+                  style={{
+                    background: active
+                      ? "rgba(167,139,250,0.22)"
+                      : "rgba(255,255,255,0.04)",
+                    color: active ? "#c4b5fd" : "rgba(255,255,255,0.45)",
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}
+                >
+                  N{level.level}
+                </span>
+                <div
+                  style={{
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    color: active ? "#fff" : "rgba(255,255,255,0.72)",
+                    marginBottom: 6,
+                  }}
+                >
+                  {level.name}
+                </div>
+                <p
+                  style={{
+                    fontSize: 11,
+                    lineHeight: 1.35,
+                    color: active ? "rgba(255,255,255,0.72)" : "rgba(255,255,255,0.38)",
+                  }}
+                >
+                  {level.desc}
+                </p>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

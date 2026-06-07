@@ -23,6 +23,9 @@ export default async function DelegacionPage() {
 
   const isArquitecto = profile.role === "arquitecto";
 
+  // El colaborador trabaja desde su lista personal, no desde el kanban completo
+  if (!isArquitecto) redirect("/delegacion/mis-tareas");
+
   // Tareas de la empresa (RLS filtra por company_id automáticamente)
   const { data: tasks } = await supabase
     .from("tasks")
