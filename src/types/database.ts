@@ -948,6 +948,70 @@ export type Database = {
           },
         ]
       }
+      feedbacks: {
+        Row: {
+          id: string
+          company_id: string
+          from_user: string
+          to_user: string
+          type: string
+          content: string
+          disc_profile_target: string | null
+          disc_tone_notes: string | null
+          is_draft: boolean
+          delivered_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          from_user: string
+          to_user: string
+          type: string
+          content?: string
+          disc_profile_target?: string | null
+          disc_tone_notes?: string | null
+          is_draft?: boolean
+          delivered_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          from_user?: string
+          to_user?: string
+          type?: string
+          content?: string
+          disc_profile_target?: string | null
+          disc_tone_notes?: string | null
+          is_draft?: boolean
+          delivered_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedbacks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedbacks_from_user_fkey"
+            columns: ["from_user"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedbacks_to_user_fkey"
+            columns: ["to_user"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1101,6 +1165,10 @@ export type DiscStatus = "pendiente" | "enviado" | "completado";
 export type DiscState = "luz" | "sombra";
 export type LosLevel = 1 | 2 | 3 | 4 | 5;
 export type Alignment = "alta" | "media" | "baja";
+
+// Sprint 5 — Feedback S.E.C.
+export type Feedback = Database["public"]["Tables"]["feedbacks"]["Row"];
+export type FeedbackType = "S" | "E" | "C";
 
 export const SCORECARD_AREAS = [
   { key: "score_liderazgo",    label: "Liderazgo",    descripcion: "Tenes claro hacia donde vas y lideras con vision?" },
