@@ -46,6 +46,7 @@
 | **S9** | Polish + Exportación + Super Coach | 19–20 | App lista para beta + panel de Dilio |
 | **S10** | Beta cerrada | 21–22 | Feedback real de 3–5 empresas piloto |
 | **S11** | Tour Guiado de Onboarding | 23–24 | Primera experiencia interactiva paso a paso para usuarios nuevos |
+| **S12** | Dashboard 100% Funcional | 25–26 | Hero strip, rituales y diagnóstico con datos reales — sin hardcoding |
 
 ---
 
@@ -864,7 +865,258 @@ Usar CSS variables de driver.js para que el popover siga el design system de la 
 
 ---
 
+## SPRINT 12 — Dashboard 100% Funcional *(Añadido 2026-06-07)*
+**Semanas:** 25–26 · **Horas estimadas:** ~14h  
+**Prioridad:** Alta — implementar antes de S5. El Dashboard es la pantalla que el usuario ve cada día; mostrar datos hardcodeados destruye la confianza en el sistema.
 
+### Problema a resolver
+
+El módulo Dashboard (S1) se construyó con datos reales en Diagnóstico y KPIs, pero tiene tres zonas hardcodeadas que hacen que la pantalla principal se vea "de demo":
+
+| Sección | Problema actual |
+|---------|----------------|
+| **Hero Strip** (4 tiles de arriba) | 100% hardcodeado: "73 días", "Sprint 2", "2.3×", "8/12" — valores inventados |
+| **Rituales de hoy** (3 cards abajo) | Array estático con estados fijos: Pre-game siempre "Completado", War Up siempre "En vivo" |
+| **Tendencia del Diagnóstico** (barras por área) | Las 5 barras repiten el mismo valor — no hay historial real |
+| **Re-evaluación del Diagnóstico** | El botón "Actualizar" lleva al onboarding completo — no existe una página dedicada |
+
+### Tablas disponibles (sin migraciones nuevas)
+
+Todos los datos necesarios ya existen en la BD:
+
+| Tabla | Datos relevantes |
+|-------|-----------------|
+| `scorecards` | `score_*` × 8 áreas, `is_baseline`, `created_at`, `company_id` |
+| `pre_games` | `log_date`, `user_id`, `big_win_1/2/3` |
+| `war_ups` | `war_up_date`, `company_id`, `started_at`, `status` |
+| `cool_downs` | `log_date`, `user_id`, `victory_log` |
+| `energy_logs` | `log_date`, `user_id`, `company_id` |
+| `profiles` | `company_id` (para contar equipo total) |
+| `ritual_configs` | `war_up_deadline`, `cool_down_start` (horarios) |
+
+---
+
+### Entregable 1 — Página de re-evaluación del Diagnóstico (~3h)
+
+**Archivos a crear:**
+- `src/app/(dashboard)/diagnostico/page.tsx` — server, guard arquitecto, pre-carga último scorecard
+- `src/components/diagnostico/diagnostico-form.tsx` — client, 8 selectores 1–5, insert + redirect
+
+**UI del formulario:**
+- 8 filas: ícono + nombre del área + selector de 5 botones (1=Crítico … 5=Excelente)
+- Pre-rellena con los valores del último scorecard para que el usuario solo ajuste lo que cambió
+- Botón "Guardar evaluación" → `supabase.from("scorecards").insert({ ..., is_baseline: false })`
+- Al guardar: redirect a `/dashboard`
+
+**Cambio en el Dashboard:**
+- `href="/onboarding"` en el botón "Actualizar" → `href="/diagnostico"`
+
+---
+
+### Entregable 2 — Tendencia histórica real (~1.5h)
+
+**Archivo a modificar:** `src/app/(dashboard)/dashboard/page.tsx`
+
+**Query a agregar:**
+```ts
+const { data: scorecardHistory } = await supabase
+  .from("scorecards")
+  .select("*")
+  .eq("company_id", profile.company_id!)
+  .order("created_at", { ascending: true })
+  .limit(5)
+```
+
+**Función de trend:**
+```ts
+function buildTrend(history: Scorecard[], key: ScorecardKey): number[] {
+  const values = history
+    .map(s => s[key])
+    .filter((v): v is number => v !== null)
+  const padded = Array(5).fill(0)
+  values.slice(-5).forEach((v, i) => {
+    padded[i + (5 - Math.min(values.length, 5))] = v
+  })
+  return padded
+}
+```
+
+**Reemplazar en el render (línea 1166 actual):**
+```tsx
+// Antes:
+const trend = score !== null ? [score, score, score, score, score] : [0,0,0,0,0]
+// Después:
+const trend = buildTrend(scorecardHistory ?? [], area.key)
+```
+
+Con una sola evaluación las barras son iguales. Con 3+ evaluaciones se ve la curva real de evolución.
+
+---
+
+### Entregable 3 — Rituales de hoy con estado real (~4h)
+
+**Archivo a modificar:** `src/app/(dashboard)/dashboard/page.tsx`
+
+**Queries a agregar:**
+```ts
+const { data: preGameHoy } = await supabase
+  .from("pre_games")
+  .select("big_win_1")
+  .eq("user_id", user.id)
+  .eq("log_date", todayStr)
+  .maybeSingle()
+
+const { data: warUpHoy } = await supabase
+  .from("war_ups")
+  .select("started_at, status")
+  .eq("company_id", profile.company_id!)
+  .eq("war_up_date", todayStr)
+  .maybeSingle()
+
+const { data: coolDownHoy } = await supabase
+  .from("cool_downs")
+  .select("victory_log")
+  .eq("user_id", user.id)
+  .eq("log_date", todayStr)
+  .maybeSingle()
+```
+
+**Lógica de status:**
+```ts
+const preGameStatus: RitualStatus =
+  preGameHoy?.big_win_1 ? "done" : "upcoming"
+
+const warUpStatus: RitualStatus =
+  warUpHoy?.status === "closed" ? "done" :
+  warUpHoy?.status === "active" ? "live" : "upcoming"
+
+const coolDownStatus: RitualStatus =
+  coolDownHoy?.victory_log ? "done" : "upcoming"
+```
+
+**Reemplazar el array estático `RITUALS`** por uno construido con estas variables, donde cada objeto tiene el `status` calculado arriba en lugar del hardcodeado.
+
+**Corregir el subtítulo hardcodeado** `"1 completado · 1 en vivo · 1 programado"`:
+```ts
+const completados = [preGameStatus, warUpStatus, coolDownStatus]
+  .filter(s => s === "done").length
+// → `"${completados} completado · ${enVivo} en vivo · ${programados} programado"`
+```
+
+---
+
+### Entregable 4 — Hero Strip con datos reales (~4h)
+
+**Archivo a modificar:** `src/app/(dashboard)/dashboard/page.tsx` + función `HeroStrip`
+
+Los 4 tiles se redefinen con fuentes reales:
+
+#### Tile 1 — "Ciclo 90D" (mantiene posición y diseño)
+
+Fuente: fecha del scorecard con `is_baseline = true`
+
+```ts
+const baseline = scorecardHistory?.find(s => s.is_baseline)
+const startDate = baseline ? new Date(baseline.created_at!) : null
+const dayInProgram = startDate
+  ? Math.floor((today.getTime() - startDate.getTime()) / 86400000) + 1
+  : null
+const dayInCycle = dayInProgram ? ((dayInProgram - 1) % 90) + 1 : null
+const pctCycle = dayInCycle ? Math.round((dayInCycle / 90) * 100) : 0
+```
+
+- Valor: `"Día ${dayInCycle}/90"` (o "Sin iniciar" si no hay baseline)
+- Barra de progreso: `pctCycle`% real
+- Sub: `"${90 - (dayInCycle ?? 0)} días restantes en este ciclo"`
+
+#### Tile 2 — "Racha de Pre-game" (reemplaza "Sprint actual")
+
+Fuente: tabla `pre_games` — días consecutivos con registro completado
+
+```ts
+const { data: recentPreGames } = await supabase
+  .from("pre_games")
+  .select("log_date")
+  .eq("user_id", user.id)
+  .gte("log_date", thirtyDaysAgo)   // string YYYY-MM-DD hace 30 días
+  .order("log_date", { ascending: false })
+
+// Contar días consecutivos desde hoy hacia atrás
+const dateSet = new Set(recentPreGames?.map(p => p.log_date) ?? [])
+let streak = 0
+const checkDate = new Date(today)
+while (dateSet.has(checkDate.toISOString().split("T")[0])) {
+  streak++
+  checkDate.setDate(checkDate.getDate() - 1)
+}
+```
+
+- Valor: `"${streak} días"`
+- Sub: `"racha actual de Pre-game"` (o "¡Empezá hoy!" si streak=0)
+- Ícono: `Flame` en color naranja `#fb923c`
+
+#### Tile 3 — "Diagnóstico" (reemplaza "Multiplicador")
+
+Fuente: último y penúltimo scorecard para calcular promedio y delta
+
+```ts
+function avgScorecard(sc: Scorecard | null): number | null {
+  if (!sc) return null
+  const vals = SCORECARD_AREAS
+    .map(a => sc[a.key])
+    .filter((v): v is number => v !== null)
+  return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null
+}
+
+const latestAvg = avgScorecard(latestScorecard)
+const prevScorecard = scorecardHistory?.at(-2) ?? null
+const prevAvg = avgScorecard(prevScorecard)
+const delta = latestAvg !== null && prevAvg !== null
+  ? (latestAvg - prevAvg).toFixed(1)
+  : null
+```
+
+- Valor: promedio actual (ej: `"3.4"`) con `/5`
+- Sub con delta: `"+0.4 vs evaluación anterior"` en verde, o `"-0.2"` en rojo
+- Si no hay scorecard previo: `"Primera evaluación"`
+- Ícono: `TrendingUp`
+
+#### Tile 4 — "Equipo hoy" (misma posición, datos reales)
+
+Fuente: `profiles` (total) + `energy_logs` (quién registró energía hoy)
+
+```ts
+const { data: teamProfiles } = await supabase
+  .from("profiles")
+  .select("id, full_name, disc_letters")
+  .eq("company_id", profile.company_id!)
+
+const { data: energyLogs } = await supabase
+  .from("energy_logs")
+  .select("user_id")
+  .eq("company_id", profile.company_id!)
+  .eq("log_date", todayStr)
+
+const teamTotal = teamProfiles?.length ?? 0
+const teamActiveToday = energyLogs?.length ?? 0
+```
+
+- Valor: `"${teamActiveToday} / ${teamTotal}"`
+- Sub: `"registraron energía hoy"`
+- Avatares: reales, generados desde `teamProfiles` con iniciales + color DISC
+
+---
+
+### ✅ Criterio de éxito del Sprint 12
+
+> Abrir el Dashboard y ver **cero valores inventados**. Cada número en pantalla viene de la BD:
+>
+> 1. Las barras de tendencia del Diagnóstico suben cuando el arquitecto hace una nueva evaluación en `/diagnostico`
+> 2. Los rituales cambian de estado a medida que se completan durante el día
+> 3. El Hero Strip muestra: día real del ciclo 90D · racha real de Pre-game · promedio real del diagnóstico · equipo activo hoy
+> 4. El botón "Actualizar" del Diagnóstico navega a `/diagnostico` (no al onboarding)
+
+---
 
 ```
 Frontend:     Next.js 14 (App Router) + TypeScript
