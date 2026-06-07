@@ -48,6 +48,7 @@
 | **S11** | Tour Guiado de Onboarding | 23–24 | Primera experiencia interactiva paso a paso para usuarios nuevos |
 | **S12** | Dashboard 100% Funcional | 25–26 | Hero strip, rituales y diagnóstico con datos reales — sin hardcoding |
 | **S13** | Hero Strip Interactivo | 27–28 | Las 4 tiles del dashboard con hover, click, tooltips y paneles de detalle |
+| **S14** | Búsqueda, Notificaciones & Energía | 29–30 | ⌘K navegación rápida + campana funcional con eventos reales + fix energía |
 
 ---
 
@@ -1452,8 +1453,365 @@ const [hoveredTile, setHoveredTile] = useState<"ciclo" | "racha" | "multiplicado
 
 ---
 
+## SPRINT 14 — Búsqueda, Notificaciones & Energía *(Añadido 2026-06-07)*
+**Semanas:** 29–30 · **Horas estimadas:** ~16h  
+**Objetivo:** Completar los 3 elementos del header del Dashboard que actualmente son decorativos o incompletos: el selector de energía (fix menor), la barra de búsqueda ⌘K (navegación rápida por el sistema), y la campana de notificaciones (sistema completo con eventos reales, panel y badge preciso).
 
-Styling:      Tailwind CSS + shadcn/ui
+---
+
+### Entregable 1 — Fix selector de energía (~1h)
+
+**Problema:** Usa `createBrowserClient` (versión deprecada) y no maneja errores en el upsert.
+
+**Archivo:** `src/components/dashboard/EnergySelector.tsx`
+
+**Cambios:**
+```ts
+// Antes:
+import { createBrowserClient } from "@/lib/supabase/client"
+const supabase = createBrowserClient()
+
+// Después:
+import { createClient } from "@/lib/supabase/client"
+const supabase = createClient()
+```
+
+```ts
+// Agregar manejo de error al upsert:
+const { error } = await supabase.from("energy_logs").upsert(...)
+if (error) {
+  setSelected(currentLevel)  // revertir selección optimista
+  setError("No se pudo guardar. Intentá de nuevo.")
+}
+```
+
+**También agregar:**
+- `useState<string | null>(null)` para error
+- Mensaje de error inline debajo del selector si falla
+- El estado `loading` ya existe pero no se usa visualmente — agregar `opacity-50 pointer-events-none` al contenedor mientras guarda
+
+---
+
+### Entregable 2 — Búsqueda ⌘K (navegación rápida) (~5h)
+
+**Versión a implementar:** Navegación rápida — el sistema tiene módulos fijos, no necesita full-text search. El ⌘K permite moverse entre secciones sin usar el sidebar.
+
+**Archivos a crear:**
+- `src/components/layout/command-palette.tsx` — modal de búsqueda (client component)
+- `src/hooks/use-command-palette.ts` — hook para abrir/cerrar + keyboard shortcut
+
+**Archivos a modificar:**
+- `src/app/(dashboard)/layout.tsx` — montar `<CommandPalette>` a nivel de layout
+- `src/app/(dashboard)/dashboard/page.tsx` — el `<div>` de búsqueda pasa a `<button>` con `onClick`
+
+#### UX del command palette
+
+```
+┌──────────────────────────────────────────────┐
+│  🔍  Buscar o ir a...            [Esc]        │
+│──────────────────────────────────────────────│
+│  MÓDULOS                                      │
+│  🏠  Dashboard                               │
+│  📋  Rituales                                │
+│  👥  Mi Equipo                               │
+│  📤  Delegación                   ↵          │  ← item activo
+│  📊  Plan 90D                                │
+│                                              │
+│  ACCIONES RÁPIDAS                            │
+│  ➕  Nueva tarea delegada                    │
+│  📝  Completar Pre-game de hoy               │
+│  📈  Actualizar diagnóstico                  │
+│──────────────────────────────────────────────│
+│  ↑↓ navegar · ↵ ir · Esc cerrar             │
+└──────────────────────────────────────────────┘
+```
+
+**Comportamiento:**
+- Se abre con `⌘K` (Mac) / `Ctrl+K` (Windows) y con click en el `<div>` de búsqueda
+- Se cierra con `Esc` o click fuera
+- Filtro en tiempo real mientras el usuario escribe (client-side, sin queries a BD)
+- Navegación con `↑↓` y confirmación con `Enter`
+- Overlay oscuro detrás del modal (mismo patrón que el status dropdown del Kanban)
+
+**Items del palette (estáticos, sin BD):**
+
+```ts
+const MODULES = [
+  { label: "Dashboard", href: "/dashboard", icon: "🏠", keywords: ["inicio", "home"] },
+  { label: "Rituales", href: "/rituales", icon: "📋", keywords: ["pregame", "warmup", "cooldown"] },
+  { label: "Mi Equipo", href: "/equipo", icon: "👥", keywords: ["disc", "los", "equipo"] },
+  { label: "Delegación", href: "/delegacion", icon: "📤", keywords: ["tareas", "pase", "estafeta"] },
+  { label: "Diagnóstico", href: "/diagnostico", icon: "📊", keywords: ["scorecard", "areas"] },
+]
+
+const QUICK_ACTIONS = [
+  { label: "Nueva tarea delegada", href: "/delegacion/nueva", icon: "➕", role: "arquitecto" },
+  { label: "Completar Pre-game de hoy", href: "/rituales/pregame", icon: "📝" },
+  { label: "Actualizar diagnóstico", href: "/diagnostico", icon: "📈" },
+  { label: "Mis tareas asignadas", href: "/delegacion/mis-tareas", icon: "✅", role: "colaborador" },
+]
+```
+
+Las acciones con `role` se muestran u ocultan según el rol del usuario (pasar `userRole` como prop al layout).
+
+**Keyboard shortcut:**
+```ts
+// use-command-palette.ts
+useEffect(() => {
+  const handler = (e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault()
+      setOpen(prev => !prev)
+    }
+    if (e.key === "Escape") setOpen(false)
+  }
+  document.addEventListener("keydown", handler)
+  return () => document.removeEventListener("keydown", handler)
+}, [])
+```
+
+**Diseño visual:** modal centrado, backdrop blur, mismo glassmorphism del sistema:
+```tsx
+<div style={{
+  position: "fixed", inset: 0, zIndex: 100,
+  background: "rgba(0,0,0,0.6)",
+  backdropFilter: "blur(4px)",
+}}>
+  <div style={{
+    position: "absolute", top: "20%", left: "50%",
+    transform: "translateX(-50%)",
+    width: "min(560px, 90vw)",
+    background: "#0f1525",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: 16,
+    boxShadow: "0 24px 64px rgba(0,0,0,0.7)",
+  }}>
+    ...
+  </div>
+</div>
+```
+
+---
+
+### Entregable 3 — Sistema de notificaciones (~10h)
+
+#### 3a. Schema en BD (~1h)
+
+**Migración SQL:**
+```sql
+create table notifications (
+  id uuid primary key default gen_random_uuid(),
+  company_id uuid not null references companies(id) on delete cascade,
+  user_id uuid not null references profiles(id) on delete cascade,
+  type varchar(40) not null,
+  title text not null,
+  body text,
+  href text,              -- link a donde navegar al hacer click
+  read_at timestamptz,   -- null = no leída
+  created_at timestamptz default now()
+);
+
+-- Índice para el badge: notificaciones no leídas por usuario
+create index notifications_user_unread
+  on notifications(user_id, read_at)
+  where read_at is null;
+
+alter table notifications enable row level security;
+create policy "own_notifications" on notifications
+  for all using (user_id = auth.uid());
+```
+
+**Tipos de notificación (`type`):**
+
+| type | Quién la recibe | Cuándo se genera |
+|------|----------------|-----------------|
+| `task_blocked` | Arquitecto | Colaborador escala con Anti-Boomerang |
+| `task_overdue` | Colaborador | Tarea sin movimiento en 72h (E7 Sprint 4) |
+| `task_done` | Arquitecto (creador) | Colaborador marca tarea como completada |
+| `task_assigned` | Colaborador | Arquitecto le asigna una nueva tarea |
+| `war_up_started` | Todo el equipo | Arquitecto inicia el War Up del día |
+| `scorecard_updated` | Arquitecto | Alguien del equipo actualiza el diagnóstico |
+
+#### 3b. Generación de notificaciones (~4h)
+
+Las notificaciones se insertan en el mismo server action o mutation donde ocurre el evento. No hay triggers de BD — se crea en la misma transacción del lado del cliente.
+
+**Ejemplo — al escalar con Anti-Boomerang (`anti-boomerang-form.tsx`):**
+```ts
+// Después de insertar en task_updates y cambiar status a blocked:
+const { data: taskCreator } = await supabase
+  .from("tasks")
+  .select("created_by, what_dod")
+  .eq("id", task.id)
+  .single()
+
+await supabase.from("notifications").insert({
+  company_id: task.company_id,
+  user_id: taskCreator.created_by,        // notifica al arquitecto
+  type: "task_blocked",
+  title: "Tarea bloqueada",
+  body: `${assigneeName} escaló "${task.what_dod.slice(0, 60)}…" con 3 opciones.`,
+  href: `/delegacion`,
+})
+```
+
+**Ejemplo — al crear una tarea nueva (`task-wizard.tsx`):**
+```ts
+await supabase.from("notifications").insert({
+  company_id: profile.company_id,
+  user_id: data.assigned_to,              // notifica al colaborador asignado
+  type: "task_assigned",
+  title: "Te asignaron una tarea",
+  body: `"${data.what_dod.slice(0, 60)}…" — revisá los 5 puntos.`,
+  href: `/delegacion/mis-tareas`,
+})
+```
+
+**Ejemplo — al marcar completada (`mis-tareas-client.tsx`):**
+```ts
+// Después de update status="done":
+const { data: taskData } = await supabase
+  .from("tasks")
+  .select("created_by, what_dod")
+  .eq("id", taskId)
+  .single()
+
+await supabase.from("notifications").insert({
+  company_id: ...,
+  user_id: taskData.created_by,
+  type: "task_done",
+  title: "Tarea completada",
+  body: `"${taskData.what_dod.slice(0, 60)}…" fue marcada como lista.`,
+  href: `/delegacion`,
+})
+```
+
+#### 3c. Badge en el header (~1h)
+
+**En el layout server component** — contar no-leídas para que el badge sea preciso desde el primer render:
+
+```ts
+// src/app/(dashboard)/layout.tsx
+const { count: unreadCount } = await supabase
+  .from("notifications")
+  .select("*", { count: "exact", head: true })
+  .eq("user_id", user.id)
+  .is("read_at", null)
+```
+
+El badge deja de ser un punto rojo hardcodeado:
+```tsx
+{/* Antes: siempre encendido */}
+<span style={{ background: "#f87171" }} />
+
+{/* Después: solo si hay no-leídas */}
+{(unreadCount ?? 0) > 0 && (
+  <span style={{ background: "#f87171" }}>
+    {unreadCount! > 9 ? "9+" : unreadCount}
+  </span>
+)}
+```
+
+#### 3d. Panel de notificaciones (~4h)
+
+**Archivo a crear:** `src/components/layout/notifications-panel.tsx`
+
+Al hacer click en la campana se abre un panel dropdown (no una página nueva):
+
+```
+┌──────────────────────────────────────────┐
+│  Notificaciones              Marcar todo │
+│──────────────────────────────────────────│
+│  🔴  Tarea bloqueada           hace 5m  │
+│      Luis escaló "Implementar módulo…"  │
+│──────────────────────────────────────────│
+│  🟡  Tarea asignada          hace 2h    │
+│      "Revisar propuesta Q3" — 5 puntos  │
+│──────────────────────────────────────────│
+│  ✅  Tarea completada         ayer       │
+│      "Onboarding nuevo cliente" — listo │
+│──────────────────────────────────────────│
+│              Ver todas →                 │
+└──────────────────────────────────────────┘
+```
+
+**Comportamiento:**
+- Al abrir el panel: marca todas como leídas (`update read_at = now()` para las no-leídas mostradas)
+- Click en una notificación: navega al `href` y cierra el panel
+- "Marcar todo": `update read_at = now() where user_id = x and read_at is null`
+- "Ver todas →": navega a `/notificaciones` (página simple con historial completo)
+- Se cierra al click fuera (mismo patrón overlay que el Kanban dropdown)
+- Muestra las últimas 10 notificaciones ordenadas por `created_at DESC`
+
+**Query al abrir el panel:**
+```ts
+const { data: notifications } = await supabase
+  .from("notifications")
+  .select("*")
+  .eq("user_id", userId)
+  .order("created_at", { ascending: false })
+  .limit(10)
+```
+
+**Tiempo relativo** (`hace 5m`, `ayer`):
+```ts
+function timeAgo(date: string): string {
+  const diff = Date.now() - new Date(date).getTime()
+  const min = Math.floor(diff / 60000)
+  if (min < 1) return "ahora"
+  if (min < 60) return `hace ${min}m`
+  const h = Math.floor(min / 60)
+  if (h < 24) return `hace ${h}h`
+  const d = Math.floor(h / 24)
+  if (d === 1) return "ayer"
+  return `hace ${d} días`
+}
+```
+
+**Ícono por tipo de notificación:**
+```ts
+const NOTIF_ICONS: Record<string, string> = {
+  task_blocked:   "🚨",
+  task_overdue:   "⏰",
+  task_done:      "✅",
+  task_assigned:  "📋",
+  war_up_started: "☀️",
+  scorecard_updated: "📊",
+}
+```
+
+---
+
+### Archivos resumen
+
+**Crear:**
+- `src/components/layout/command-palette.tsx`
+- `src/components/layout/notifications-panel.tsx`
+- `src/hooks/use-command-palette.ts`
+- `supabase/migration_s14_notifications.sql`
+
+**Modificar:**
+- `src/components/dashboard/EnergySelector.tsx` — fix cliente + errores
+- `src/app/(dashboard)/layout.tsx` — montar CommandPalette + pasar unreadCount
+- `src/app/(dashboard)/dashboard/page.tsx` — barra de búsqueda pasa a `<button>` con onClick
+- `src/components/delegacion/anti-boomerang-form.tsx` — agregar insert de notificación al escalar
+- `src/components/delegacion/task-wizard.tsx` — agregar insert de notificación al asignar
+- `src/components/delegacion/mis-tareas-client.tsx` — agregar insert de notificación al completar
+
+---
+
+### ✅ Criterio de éxito del Sprint 14
+
+> 1. **Energía:** El selector guarda correctamente, muestra error visible si falla, y no usa cliente deprecado
+> 2. **Búsqueda:** Presionar `⌘K` / `Ctrl+K` abre el palette; escribir filtra los módulos; `Enter` navega; `Esc` cierra
+> 3. **Notificaciones — badge:** El punto rojo solo aparece cuando hay notificaciones reales no leídas. Si no hay ninguna, desaparece
+> 4. **Notificaciones — panel:** Click en la campana abre el dropdown con las últimas 10 notificaciones con tiempo relativo e ícono por tipo
+> 5. **Notificaciones — generación:** Crear una tarea notifica al colaborador asignado. Escalar con Anti-Boomerang notifica al arquitecto. Completar una tarea notifica al creador
+> 6. **Notificaciones — read:** Al abrir el panel las notificaciones se marcan como leídas y el badge desaparece
+
+---
+
+
 Database:     Supabase (PostgreSQL + Auth + Realtime + Storage)
 Backend:      Supabase Edge Functions (Deno) para cron jobs y lógica server-side
 Email:        Resend
