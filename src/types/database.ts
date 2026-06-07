@@ -948,6 +948,220 @@ export type Database = {
           },
         ]
       }
+      rocks: {
+        Row: {
+          id: string
+          company_id: string
+          title: string
+          owner_id: string | null
+          success_criteria: string | null
+          start_date: string
+          end_date: string
+          progress: number
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          title: string
+          owner_id?: string | null
+          success_criteria?: string | null
+          start_date?: string
+          end_date: string
+          progress?: number
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          title?: string
+          owner_id?: string | null
+          success_criteria?: string | null
+          start_date?: string
+          end_date?: string
+          progress?: number
+          status?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rocks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rock_updates: {
+        Row: {
+          id: string
+          rock_id: string
+          user_id: string
+          note: string | null
+          progress_at: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          rock_id: string
+          user_id: string
+          note?: string | null
+          progress_at?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          rock_id?: string
+          user_id?: string
+          note?: string | null
+          progress_at?: number | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rock_updates_rock_id_fkey"
+            columns: ["rock_id"]
+            isOneToOne: false
+            referencedRelation: "rocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_parking: {
+        Row: {
+          id: string
+          company_id: string
+          proposed_by: string | null
+          idea: string
+          rationale: string | null
+          parked_at: string
+          review_at: string
+          status: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          proposed_by?: string | null
+          idea: string
+          rationale?: string | null
+          parked_at?: string
+          review_at: string
+          status?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          proposed_by?: string | null
+          idea?: string
+          rationale?: string | null
+          parked_at?: string
+          review_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_parking_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decisions: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          decision_text: string
+          info_available: number | null
+          applied_70_rule: boolean
+          disagree_and_commit: boolean
+          disagree_with: string | null
+          outcome: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          decision_text: string
+          info_available?: number | null
+          applied_70_rule?: boolean
+          disagree_and_commit?: boolean
+          disagree_with?: string | null
+          outcome?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          decision_text?: string
+          info_available?: number | null
+          applied_70_rule?: boolean
+          disagree_and_commit?: boolean
+          disagree_with?: string | null
+          outcome?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decisions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leading_indicators: {
+        Row: {
+          id: string
+          company_id: string
+          name: string
+          owner_id: string | null
+          weekly_target: number
+          current_value: number | null
+          week_date: string
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          name: string
+          owner_id?: string | null
+          weekly_target?: number
+          current_value?: number | null
+          week_date: string
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          name?: string
+          owner_id?: string | null
+          weekly_target?: number
+          current_value?: number | null
+          week_date?: string
+          is_active?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leading_indicators_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedbacks: {
         Row: {
           id: string
@@ -1169,6 +1383,14 @@ export type Alignment = "alta" | "media" | "baja";
 // Sprint 5 — Feedback S.E.C.
 export type Feedback = Database["public"]["Tables"]["feedbacks"]["Row"];
 export type FeedbackType = "S" | "E" | "C";
+
+export type Rock = Database["public"]["Tables"]["rocks"]["Row"];
+export type RockUpdate = Database["public"]["Tables"]["rock_updates"]["Row"];
+export type IdeaParking = Database["public"]["Tables"]["idea_parking"]["Row"];
+export type Decision = Database["public"]["Tables"]["decisions"]["Row"];
+export type LeadingIndicator = Database["public"]["Tables"]["leading_indicators"]["Row"];
+export type RockStatus = "active" | "completed" | "failed" | "archived";
+export type IdeaStatus = "parked" | "promoted" | "discarded";
 
 export const SCORECARD_AREAS = [
   { key: "score_liderazgo",    label: "Liderazgo",    descripcion: "Tenes claro hacia donde vas y lideras con vision?" },
