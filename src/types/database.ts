@@ -1226,6 +1226,85 @@ export type Database = {
           },
         ]
       }
+      workbook_responses: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          session_number: number
+          exercise_key: string
+          response: Json
+          completed_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          session_number: number
+          exercise_key: string
+          response?: Json
+          completed_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          session_number?: number
+          exercise_key?: string
+          response?: Json
+          completed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workbook_responses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workbook_progress: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          session_number: number
+          pct_complete: number
+          weekly_commitment: string | null
+          commitment_done: boolean
+          unlocked_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          session_number: number
+          pct_complete?: number
+          weekly_commitment?: string | null
+          commitment_done?: boolean
+          unlocked_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          session_number?: number
+          pct_complete?: number
+          weekly_commitment?: string | null
+          commitment_done?: boolean
+          unlocked_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workbook_progress_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1391,6 +1470,10 @@ export type Decision = Database["public"]["Tables"]["decisions"]["Row"];
 export type LeadingIndicator = Database["public"]["Tables"]["leading_indicators"]["Row"];
 export type RockStatus = "active" | "completed" | "failed" | "archived";
 export type IdeaStatus = "parked" | "promoted" | "discarded";
+
+// Sprint 7 — Workbooks Dinámicos
+export type WorkbookResponse = Database["public"]["Tables"]["workbook_responses"]["Row"];
+export type WorkbookProgress = Database["public"]["Tables"]["workbook_progress"]["Row"];
 
 export const SCORECARD_AREAS = [
   { key: "score_liderazgo",    label: "Liderazgo",    descripcion: "Tenes claro hacia donde vas y lideras con vision?" },
