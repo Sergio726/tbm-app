@@ -7,13 +7,21 @@ export type ExerciseType =
   | "text_group"
   | "disc_map"
   | "shadows"
-  | "slider_group";
+  | "slider_group"
+  | "counter_tracker";
 
 export type ExerciseIntegration =
   | "scorecards"
   | "profiles_disc"
   | "profiles_state"
-  | "pre_games";
+  | "pre_games"
+  | "tasks"
+  | "feedbacks"
+  | "kpis"
+  | "rocks"
+  | "idea_parking"
+  | "authority_matrix"
+  | "decisions";
 
 export interface SliderDef {
   key: string;
@@ -30,15 +38,24 @@ export interface ExerciseDef {
     items?: string[];
     questions?: string[];
     sliders?: SliderDef[];
+    /** Para counter_tracker: cantidad de días a contar (default 3). */
+    days?: number;
+    /** Para counter_tracker: etiqueta del contador (ej. "interrupciones hoy"). */
+    counterLabel?: string;
   };
 }
 
+export type SessionNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
 export interface SessionDef {
-  number: 1 | 2 | 3 | 4;
+  number: SessionNumber;
   title: string;
   subtitle: string;
   exercises: ExerciseDef[];
 }
+
+/** Total de sesiones del programa TBM (para validaciones y vistas). */
+export const TOTAL_SESSIONS = 8;
 
 export const SESSIONS: SessionDef[] = [
   {
@@ -268,7 +285,7 @@ export function daysUntilUnlock(n: number, allProgress: WorkbookProgress[]): num
 }
 
 export function canRequestEarlyUnlock(currentSessionNum: number, allProgress: WorkbookProgress[]): boolean {
-  if (currentSessionNum >= 4) return false;
+  if (currentSessionNum >= TOTAL_SESSIONS) return false;
   const currentProg = allProgress.find((p) => p.session_number === currentSessionNum);
   if (!currentProg || currentProg.pct_complete < 100) return false;
   return !isSessionUnlocked(currentSessionNum + 1, allProgress);
