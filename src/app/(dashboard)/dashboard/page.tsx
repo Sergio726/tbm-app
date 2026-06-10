@@ -9,7 +9,7 @@ import {
   Bell,
   Target,
   RotateCcw,
-  Zap,
+  Flame,
   Users,
   TrendingUp,
   ArrowRight,
@@ -30,6 +30,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
+import { DISC_COLORS, primaryLetter } from "@/lib/disc";
 
 // =============================================================
 // Helpers
@@ -68,7 +69,7 @@ function greetingForHour(h: number) {
 
 // =============================================================
 // Hero Strip — 4 tiles (Plan 90D, Sprint, Multiplicador, Equipo)
-// Datos placeholder hasta tener Plan 90D real en Sprint 2+
+// Tiles del Hero Strip — los datos llegan por props desde la página (S12)
 // =============================================================
 function HeroTile({
   Icon,
@@ -161,13 +162,36 @@ function HeroTile({
   );
 }
 
-function HeroStrip() {
+type HeroData = {
+  dayInCycle: number | null;
+  preGameStreak: number;
+  latestAvg: number | null;
+  scoreDelta: number | null;
+  teamActiveToday: number;
+  teamTotal: number;
+  teamAvatars: { initial: string; color: string }[];
+};
+
+function HeroStrip({
+  dayInCycle,
+  preGameStreak,
+  latestAvg,
+  scoreDelta,
+  teamActiveToday,
+  teamTotal,
+  teamAvatars,
+}: HeroData) {
+  const pctCycle = dayInCycle ? Math.round((dayInCycle / 90) * 100) : 0;
+  const shownAvatars = teamAvatars.slice(0, 5);
+  const extraAvatars = teamTotal - shownAvatars.length;
+
   return (
     <div className="flex" style={{ gap: 12, marginBottom: 32 }}>
+      {/* Tile 1 — Ciclo 90D (desde el baseline del diagnóstico) */}
       <HeroTile
         Icon={Target}
-        label="Plan 90D"
-        value="73 días"
+        label="Ciclo 90D"
+        value={dayInCycle ? `Día ${dayInCycle}/90` : "Sin iniciar"}
         accent="#5b8aff"
         tone="accent"
       >
@@ -182,7 +206,7 @@ function HeroStrip() {
         >
           <div
             style={{
-              width: "19%",
+              width: `${pctCycle}%`,
               height: "100%",
               background: "linear-gradient(90deg, #5b8aff, #34d399)",
               borderRadius: 99,
@@ -198,55 +222,76 @@ function HeroStrip() {
             color: "rgba(255,255,255,0.45)",
           }}
         >
-          <span>día 17/90</span>
-          <span>19%</span>
+          <span>
+            {dayInCycle
+              ? `${90 - dayInCycle} días restantes`
+              : "hacé tu primer diagnóstico"}
+          </span>
+          <span>{pctCycle}%</span>
         </div>
       </HeroTile>
 
+      {/* Tile 2 — Racha de Pre-game */}
       <HeroTile
-        Icon={RotateCcw}
-        label="Sprint actual"
-        value="Sprint 2"
-        sub="día 4 de 14 · cierra viernes"
-        accent="#34d399"
+        Icon={Flame}
+        label="Racha Pre-game"
+        value={`${preGameStreak} ${preGameStreak === 1 ? "día" : "días"}`}
+        sub={preGameStreak > 0 ? "racha actual de Pre-game" : "¡Empezá hoy!"}
+        accent="#fb923c"
       />
 
+      {/* Tile 3 — Promedio del Diagnóstico + delta */}
       <HeroTile
-        Icon={Zap}
-        label="Multiplicador"
-        value="2.3×"
+        Icon={TrendingUp}
+        label="Diagnóstico"
+        value={latestAvg !== null ? `${latestAvg.toFixed(1)}` : "—"}
         accent="#fbbf24"
       >
         <div
           className="flex items-center"
           style={{ gap: 6, marginTop: 6, fontSize: 12 }}
         >
-          <span
-            className="flex items-center"
-            style={{ color: "#34d399", gap: 3, fontWeight: 600 }}
-          >
-            <TrendingUp size={11} strokeWidth={2.4} />
-            +0.5×
-          </span>
-          <span style={{ color: "rgba(255,255,255,0.45)" }}>vs semana pasada</span>
+          {scoreDelta !== null ? (
+            <>
+              <span
+                className="flex items-center"
+                style={{
+                  color: scoreDelta >= 0 ? "#34d399" : "#f87171",
+                  gap: 3,
+                  fontWeight: 600,
+                }}
+              >
+                <TrendingUp
+                  size={11}
+                  strokeWidth={2.4}
+                  style={
+                    scoreDelta < 0 ? { transform: "rotate(180deg)" } : undefined
+                  }
+                />
+                {scoreDelta >= 0 ? `+${scoreDelta}` : scoreDelta}
+              </span>
+              <span style={{ color: "rgba(255,255,255,0.45)" }}>
+                vs evaluación anterior
+              </span>
+            </>
+          ) : (
+            <span style={{ color: "rgba(255,255,255,0.45)" }}>
+              {latestAvg !== null ? "Primera evaluación" : "Sin diagnóstico aún"}
+            </span>
+          )}
         </div>
       </HeroTile>
 
+      {/* Tile 4 — Equipo hoy (energía registrada) */}
       <HeroTile
         Icon={Users}
         label="Equipo hoy"
-        value="8 / 12"
-        sub="activos esta mañana"
+        value={`${teamActiveToday} / ${teamTotal}`}
+        sub="registraron energía hoy"
         accent="#a78bfa"
       >
         <div className="flex" style={{ marginTop: 8 }}>
-          {[
-            ["#f87171", "A"],
-            ["#5b8aff", "L"],
-            ["#34d399", "M"],
-            ["#fbbf24", "C"],
-            ["#a78bfa", "P"],
-          ].map(([c, i], idx) => (
+          {shownAvatars.map((a, idx) => (
             <div
               key={idx}
               className="flex items-center justify-center text-white"
@@ -254,32 +299,34 @@ function HeroStrip() {
                 width: 22,
                 height: 22,
                 borderRadius: "50%",
-                background: c,
+                background: a.color,
                 border: "2px solid #0a0e1a",
                 marginLeft: idx === 0 ? 0 : -6,
                 fontSize: 10,
                 fontWeight: 600,
               }}
             >
-              {i}
+              {a.initial}
             </div>
           ))}
-          <div
-            className="flex items-center justify-center"
-            style={{
-              width: 22,
-              height: 22,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.06)",
-              border: "2px solid #0a0e1a",
-              marginLeft: -6,
-              fontSize: 10,
-              fontWeight: 600,
-              color: "rgba(255,255,255,0.55)",
-            }}
-          >
-            +3
-          </div>
+          {extraAvatars > 0 && (
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: "50%",
+                background: "rgba(255,255,255,0.06)",
+                border: "2px solid #0a0e1a",
+                marginLeft: shownAvatars.length === 0 ? 0 : -6,
+                fontSize: 10,
+                fontWeight: 600,
+                color: "rgba(255,255,255,0.55)",
+              }}
+            >
+              +{extraAvatars}
+            </div>
+          )}
         </div>
       </HeroTile>
     </div>
@@ -436,8 +483,8 @@ function ScoreCard({
 }
 
 // =============================================================
-// Rituales — 3 cards (Pre-game ✓ done, Warm Up live, Cool Down upcoming)
-// Placeholder hasta tener Rituales reales en Sprint 2+
+// Rituales — 3 cards con estado real (S12). El array se construye
+// en la página con los datos del día; acá viven los tipos y helpers.
 // =============================================================
 type RitualStatus = "done" | "live" | "upcoming";
 type RitualDef = {
@@ -449,50 +496,34 @@ type RitualDef = {
   sprint: string;
   status: RitualStatus;
   statusLabel: string;
+  href: string;
   duration?: string;
   solo?: boolean;
   participants?: number;
   total?: number;
 };
 
-const RITUALS: RitualDef[] = [
-  {
-    id: "pregame",
-    title: "Pre-game",
-    desc: "Rutina matutina personal",
-    Icon: Sunrise,
-    time: "06:30 – 07:00",
-    sprint: "Sprint 2",
-    status: "done",
-    statusLabel: "Completado",
-    duration: "24 min",
-    solo: true,
-  },
-  {
-    id: "warmup",
-    title: "Warm Up",
-    desc: "Inicio del día con el equipo",
-    Icon: Sun,
-    time: "09:00 – 09:30",
-    sprint: "Sprint 2",
-    status: "live",
-    statusLabel: "En vivo · 12 min restantes",
-    participants: 8,
-    total: 12,
-  },
-  {
-    id: "cooldown",
-    title: "Cool Down",
-    desc: "Cierre y Victory Log",
-    Icon: Sunset,
-    time: "17:30 – 18:00",
-    sprint: "Sprint 2",
-    status: "upcoming",
-    statusLabel: "Programado",
-    participants: 0,
-    total: 12,
-  },
-];
+// Promedio de las 8 áreas de un scorecard (null si no hay datos)
+function avgScorecard(sc: Scorecard | null): number | null {
+  if (!sc) return null;
+  const vals = SCORECARD_AREAS.map((a) => sc[a.key]).filter(
+    (v): v is number => v !== null
+  );
+  return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
+}
+
+// Últimas 5 evaluaciones de un área, paddeadas a la izquierda con 0
+function buildTrend(history: Scorecard[], key: ScorecardKey): number[] {
+  const values = history
+    .map((s) => s[key])
+    .filter((v): v is number => v !== null)
+    .slice(-5);
+  const padded = Array(5).fill(0);
+  values.forEach((v, i) => {
+    padded[i + (5 - values.length)] = v;
+  });
+  return padded;
+}
 
 const STATUS_STYLES: Record<RitualStatus, { color: string; cta: string; CTAIcon: LucideIcon }> = {
   done: { color: "#34d399", cta: "Ver resumen", CTAIcon: ArrowRight },
@@ -722,8 +753,8 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
             </span>
           )}
         </div>
-        <button
-          type="button"
+        <a
+          href={ritual.href}
           className="flex items-center transition-all"
           style={{
             gap: 6,
@@ -737,6 +768,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
             fontSize: 12.5,
             fontWeight: 600,
             cursor: "pointer",
+            textDecoration: "none",
             boxShadow: isLive
               ? "0 4px 12px rgba(54,114,255,0.32), inset 0 1px 0 rgba(255,255,255,0.2)"
               : "none",
@@ -744,7 +776,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
         >
           {s.cta}
           <CTAIcon size={12} strokeWidth={2.2} />
-        </button>
+        </a>
       </div>
     </div>
   );
@@ -774,14 +806,15 @@ export default async function DashboardPage() {
   const company = (profile as { companies?: { name: string } | null }).companies ?? null;
   const firstName = profile.full_name?.split(" ")[0] ?? "Arquitecto";
 
-  // Scorecard
-  const { data: latestScorecard } = await supabase
+  // Historial completo de scorecards (ascendente) — alimenta semáforos,
+  // tendencia por área y Hero Strip (baseline, promedio, delta)
+  const { data: scorecardRows } = await supabase
     .from("scorecards")
     .select("*")
     .eq("company_id", profile.company_id!)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+    .order("created_at", { ascending: true });
+  const scorecardHistory = (scorecardRows ?? []) as Scorecard[];
+  const latestScorecard = scorecardHistory.at(-1) ?? null;
 
   // KPIs de la semana
   const today = new Date();
@@ -806,6 +839,113 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
     .eq("log_date", todayStr)
     .single();
+
+  // ── S12: datos reales para Hero Strip + Rituales de hoy ──────
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+
+  const [
+    { data: warUpHoy },
+    { data: coolDownsHoyRows },
+    { data: recentPreGames },
+    { data: teamProfiles },
+    { data: energyLogsHoy },
+    { data: ritualConfig },
+  ] = await Promise.all([
+    supabase
+      .from("war_ups")
+      .select("id, started_at, status")
+      .eq("company_id", profile.company_id!)
+      .eq("war_up_date", todayStr)
+      .maybeSingle(),
+    supabase
+      .from("cool_downs")
+      .select("user_id")
+      .eq("company_id", profile.company_id!)
+      .eq("log_date", todayStr),
+    supabase
+      .from("pre_games")
+      .select("log_date")
+      .eq("user_id", user.id)
+      .gte("log_date", thirtyDaysAgoStr)
+      .order("log_date", { ascending: false }),
+    supabase
+      .from("profiles")
+      .select("id, full_name, disc_letters")
+      .eq("company_id", profile.company_id!),
+    supabase
+      .from("energy_logs")
+      .select("user_id")
+      .eq("company_id", profile.company_id!)
+      .eq("log_date", todayStr),
+    supabase
+      .from("ritual_configs")
+      .select("mode, war_up_deadline, cool_down_start")
+      .eq("company_id", profile.company_id!)
+      .maybeSingle(),
+  ]);
+
+  // Participantes del War Up de hoy (solo si la sala existe)
+  let warUpParticipants = 0;
+  if (warUpHoy) {
+    const { count } = await supabase
+      .from("war_up_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("war_up_id", warUpHoy.id);
+    warUpParticipants = count ?? 0;
+  }
+
+  // Estados de los 3 rituales de hoy
+  const preGameDates = new Set((recentPreGames ?? []).map((p) => p.log_date));
+  const preGameStatus: RitualStatus = preGameDates.has(todayStr) ? "done" : "upcoming";
+  const warUpStatus: RitualStatus =
+    warUpHoy?.status === "closed" ? "done" : warUpHoy?.status === "active" ? "live" : "upcoming";
+  const myCoolDownDone = (coolDownsHoyRows ?? []).some((c) => c.user_id === user.id);
+  const coolDownStatus: RitualStatus = myCoolDownDone ? "done" : "upcoming";
+
+  // Racha de Pre-game: días consecutivos desde hoy hacia atrás
+  let preGameStreak = 0;
+  const checkDate = new Date(today);
+  while (preGameDates.has(checkDate.toISOString().split("T")[0])) {
+    preGameStreak++;
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  // Ciclo 90D: día actual desde el scorecard baseline
+  const baseline = scorecardHistory.find((s) => s.is_baseline) ?? scorecardHistory[0] ?? null;
+  const cycleStart = baseline?.created_at ? new Date(baseline.created_at) : null;
+  const dayInProgram = cycleStart
+    ? Math.floor((today.getTime() - cycleStart.getTime()) / 86_400_000) + 1
+    : null;
+  const dayInCycle = dayInProgram ? ((dayInProgram - 1) % 90) + 1 : null;
+
+  // Promedio del diagnóstico + delta vs evaluación anterior
+  const latestAvgNum = avgScorecard(latestScorecard);
+  const prevAvgNum = avgScorecard(scorecardHistory.at(-2) ?? null);
+  const scoreDelta =
+    latestAvgNum !== null && prevAvgNum !== null
+      ? Number((latestAvgNum - prevAvgNum).toFixed(1))
+      : null;
+
+  // Equipo activo hoy (registró energía) + avatares reales
+  const activeIds = new Set((energyLogsHoy ?? []).map((e) => e.user_id));
+  const teamTotal = teamProfiles?.length ?? 0;
+  const teamActiveToday = activeIds.size;
+  const teamAvatars = (teamProfiles ?? []).slice(0, 5).map((p) => {
+    const letter = primaryLetter(p.disc_letters);
+    return {
+      initial: (p.full_name ?? "?").trim().charAt(0).toUpperCase() || "?",
+      color: letter ? DISC_COLORS[letter] : "#5b8aff",
+    };
+  });
+
+  // Horarios y modo desde ritual_configs
+  const fmtTime = (t: string | null | undefined) => (t ? t.slice(0, 5) : null);
+  const warUpDeadline = fmtTime(ritualConfig?.war_up_deadline) ?? "09:00";
+  const coolDownStart = fmtTime(ritualConfig?.cool_down_start) ?? "17:00";
+  const modeBadge =
+    !ritualConfig || ritualConfig.mode === "daily" ? "Diario" : `Modo ${ritualConfig.mode}`;
 
   // Áreas críticas
   const areasCriticas = latestScorecard
@@ -832,8 +972,56 @@ export default async function DashboardPage() {
       ? (scoreValues.reduce((s, v) => s + v, 0) / scoreValues.length).toFixed(1)
       : "–";
 
-  // Total rituales programados hoy (placeholder)
-  const ritualsProgramados = RITUALS.length;
+  // Rituales de hoy — construidos con el estado real del día
+  const rituals: RitualDef[] = [
+    {
+      id: "pregame",
+      title: "Pre-game",
+      desc: "Rutina matutina personal",
+      Icon: Sunrise,
+      time: `antes de ${warUpDeadline}`,
+      sprint: modeBadge,
+      status: preGameStatus,
+      statusLabel: preGameStatus === "done" ? "Completado" : "Pendiente",
+      href: "/rituales/pre-game",
+      solo: true,
+    },
+    {
+      id: "warup",
+      title: "War Up",
+      desc: "Stand-up en vivo con el equipo",
+      Icon: Sun,
+      time: `hasta ${warUpDeadline}`,
+      sprint: modeBadge,
+      status: warUpStatus,
+      statusLabel:
+        warUpStatus === "done"
+          ? "Cerrado"
+          : warUpStatus === "live"
+            ? "En vivo"
+            : "Sin iniciar",
+      href: "/rituales/war-up",
+      participants: warUpParticipants,
+      total: teamTotal,
+    },
+    {
+      id: "cooldown",
+      title: "Cool Down",
+      desc: "Cierre y Victory Log",
+      Icon: Sunset,
+      time: `desde ${coolDownStart}`,
+      sprint: modeBadge,
+      status: coolDownStatus,
+      statusLabel: coolDownStatus === "done" ? "Completado" : "Programado",
+      href: "/rituales/cool-down",
+      participants: coolDownsHoyRows?.length ?? 0,
+      total: teamTotal,
+    },
+  ];
+  const ritualsProgramados = rituals.length;
+  const ritualesCompletados = rituals.filter((r) => r.status === "done").length;
+  const ritualesEnVivo = rituals.filter((r) => r.status === "live").length;
+  const ritualesPendientes = rituals.filter((r) => r.status === "upcoming").length;
 
   return (
     <div
@@ -1022,8 +1210,16 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Hero strip Plan 90D ────────────────────────────── */}
-      <HeroStrip />
+      {/* ── Hero strip — datos reales (S12) ────────────────── */}
+      <HeroStrip
+        dayInCycle={dayInCycle}
+        preGameStreak={preGameStreak}
+        latestAvg={latestAvgNum}
+        scoreDelta={scoreDelta}
+        teamActiveToday={teamActiveToday}
+        teamTotal={teamTotal}
+        teamAvatars={teamAvatars}
+      />
 
       {/* ── Alerta áreas críticas ──────────────────────────── */}
       {areasCriticas.length > 0 && (
@@ -1136,7 +1332,7 @@ export default async function DashboardPage() {
               </span>
             </div>
             <a
-              href="/onboarding"
+              href="/diagnostico"
               className="flex items-center transition-colors hover:text-white"
               style={{
                 gap: 6,
@@ -1163,7 +1359,7 @@ export default async function DashboardPage() {
           >
             {SCORECARD_AREAS.map((area) => {
               const score = (latestScorecard as Scorecard)[area.key];
-              const trend = score !== null ? [score, score, score, score, score] : [0, 0, 0, 0, 0];
+              const trend = buildTrend(scorecardHistory, area.key);
               return (
                 <ScoreCard
                   key={area.key}
@@ -1190,7 +1386,7 @@ export default async function DashboardPage() {
               Completá el diagnóstico inicial para ver tus semáforos
             </p>
             <a
-              href="/onboarding"
+              href="/diagnostico"
               className="inline-block hover:underline"
               style={{
                 marginTop: 12,
@@ -1313,7 +1509,9 @@ export default async function DashboardPage() {
               Rituales de hoy
             </div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
-              1 completado · 1 en vivo · 1 programado
+              {ritualesCompletados} completado{ritualesCompletados === 1 ? "" : "s"} ·{" "}
+              {ritualesEnVivo} en vivo · {ritualesPendientes} programado
+              {ritualesPendientes === 1 ? "" : "s"}
             </div>
           </div>
           <a
@@ -1336,7 +1534,7 @@ export default async function DashboardPage() {
           className="grid grid-cols-1 lg:grid-cols-3"
           style={{ gap: 12 }}
         >
-          {RITUALS.map((r) => (
+          {rituals.map((r) => (
             <RitualCard key={r.id} ritual={r} />
           ))}
         </div>

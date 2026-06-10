@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-09 · **Completitud global:** 10 / 14 sprints (71%) · **Última pieza cerrada:** S8 completo
+**Última actualización:** 2026-06-09 · **Completitud global:** 11 / 14 sprints (79%) · **Última pieza cerrada:** S12 completo
 
 ---
 
@@ -26,7 +26,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S9** | Polish + Exportación + Super Coach | 🟡 | Exportación PDF parcial. **Falta Panel Super Coach 3 capas (CHANGELOG N1)** + notificaciones email (Resend). |
 | **S10** | Beta cerrada | 🚫 | Tarea operativa, fuera de código. |
 | **S11** | Tour guiado | ❌ | `driver.js` + steps + provider + flag `tour_completed` en `profiles`. |
-| **S12** | Dashboard 100% funcional | ❌ | Hero Strip con datos reales (no hardcoded) + `/diagnostico` re-eval. |
+| **S12** | Dashboard 100% funcional | ✅ | `/diagnostico` re-eval (pre-cargada) · tendencia histórica real por área · rituales de hoy con estado real (done/live/upcoming + CTA links) · Hero Strip real (Ciclo 90D desde baseline, racha Pre-game, promedio+delta diagnóstico, equipo activo hoy con avatares DISC). |
 | **S13** | Hero Strip interactivo | ❌ | Tiles clickeables + tooltips. Depende de S12. |
 | **S14** | Búsqueda ⌘K + Notificaciones | ❌ | Command Palette (`cmdk`) + schema `notifications` + panel dropdown + generación en eventos. |
 
