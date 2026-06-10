@@ -16,6 +16,7 @@ import { ExerciseTextGroup } from "./exercises/exercise-text-group";
 import { ExerciseDiscMap } from "./exercises/exercise-disc-map";
 import { ExerciseShadows } from "./exercises/exercise-shadows";
 import { ExerciseSliderGroup } from "./exercises/exercise-slider-group";
+import { ExerciseCounterTracker } from "./exercises/exercise-counter-tracker";
 
 type TeamMember = Pick<Profile, "id" | "full_name" | "cargo" | "disc_letters" | "disc_state" | "disc_temor">;
 
@@ -563,6 +564,16 @@ export function WorkbookClient({
                     <ExerciseSliderGroup
                       exerciseKey={exercise.key}
                       sliders={exercise.data?.sliders ?? []}
+                      savedResponse={savedResp}
+                      onSave={handleSaveExercise}
+                      isPending={isPending}
+                    />
+                  )}
+                  {exercise.type === "counter_tracker" && (
+                    <ExerciseCounterTracker
+                      exerciseKey={exercise.key}
+                      days={exercise.data?.days ?? 3}
+                      counterLabel={exercise.data?.counterLabel ?? "eventos"}
                       savedResponse={savedResp}
                       onSave={handleSaveExercise}
                       isPending={isPending}

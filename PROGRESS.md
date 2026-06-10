@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-09 · **Completitud global:** 9 / 14 sprints (64%) · **En curso:** S8 (Fase A ✅)
+**Última actualización:** 2026-06-09 · **Completitud global:** 9 / 14 sprints (64%) · **En curso:** S8 (Fase A ✅ · Fase B ✅)
 
 ---
 
@@ -22,7 +22,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S5** | Feedback S.E.C. | ✅ | Templates S/E/C por perfil DISC · Sesiones Escape · 3 Streaks. |
 | **S6** | Plan 90D + BOS + Activos | 🟡 | Rocas + Leading Indicators + Disagree & Commit + L4 YoY. **Falta UI de "Activos del Sistema"** (tabla `process_assets` ya creada). |
 | **S7** | Workbooks S1–S4 | ✅ | 4 sesiones digitalizadas + desbloqueo híbrido (7 días o "avance anticipado"). |
-| **S8** | Workbooks S5–S8 | 🟡 | **EN CURSO** · Fase A ✅ engine extendido (1..8, integrations nuevas, tipo `counter_tracker`). Falta contenido S5/S6/S7/S8 + vista "Mi Programa". |
+| **S8** | Workbooks S5–S8 | 🟡 | **EN CURSO** · Fase A ✅ engine 1..8 · Fase B ✅ Sesiones 5/6/7/8 con 16 ejercicios + componente `exercise-counter-tracker`. Falta Fase C: vista "Mi Programa". |
 | **S9** | Polish + Exportación + Super Coach | 🟡 | Exportación PDF parcial. **Falta Panel Super Coach 3 capas (CHANGELOG N1)** + notificaciones email (Resend). |
 | **S10** | Beta cerrada | 🚫 | Tarea operativa, fuera de código. |
 | **S11** | Tour guiado | ❌ | `driver.js` + steps + provider + flag `tour_completed` en `profiles`. |
