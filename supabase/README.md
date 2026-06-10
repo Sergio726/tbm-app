@@ -25,6 +25,7 @@ del dashboard (el MCP/CLI no llega a este proyecto). Correr **en orden**.
 | 13 | `migration_sprint11_workbooks.sql` | **S7 Workbooks**: `workbook_responses` + `workbook_progress` | aplicado (módulo en uso) |
 | 14 | `migration_sprint12_activos.sql` | **Cierre S6 [B3]**: tabla `process_assets` (Activos del Sistema) + RLS | ⏳ pendiente |
 | 15 | `migration_sprint13_notifications.sql` | **S14**: tabla `notifications` + índice parcial no-leídas + RLS | ⏳ pendiente |
+| 16 | `migration_sprint14_tour.sql` | **S11**: columna `tour_completed` en profiles (tour guiado) | ⏳ pendiente |
 
 ## Limpieza puntual (no es migración de esquema)
 

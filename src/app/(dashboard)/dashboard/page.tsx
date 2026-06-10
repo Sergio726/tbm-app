@@ -995,7 +995,7 @@ export default async function DashboardPage() {
       )}
 
       {/* ── Diagnóstico Organizacional TBM ─────────────────────── */}
-      <section style={{ marginBottom: 36 }}>
+      <section data-tour="semaforos" style={{ marginBottom: 36 }}>
         <div
           className="flex items-baseline justify-between"
           style={{ marginBottom: 14 }}

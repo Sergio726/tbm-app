@@ -152,7 +152,10 @@ export function Sidebar({
         </div>
 
         {/* Nav */}
-        <nav className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-[14px] py-1.5">
+        <nav
+          data-tour="sidebar-nav"
+          className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-[14px] py-1.5"
+        >
           {MODULES.map(({ href, label, Icon }) => {
             const isActive =
               pathname === href ||
@@ -162,6 +165,7 @@ export function Sidebar({
               <Link
                 key={href}
                 href={href}
+                data-tour={`nav-${href.slice(1)}`}
                 aria-current={isActive ? "page" : undefined}
                 className="group relative flex items-center gap-[13px] rounded-[11px] transition-colors duration-150"
                 style={{
@@ -200,6 +204,7 @@ export function Sidebar({
         {/* Footer user — glass card con dot de sesión + bell */}
         <div className="p-[14px]">
           <div
+            data-tour="user-avatar"
             className="flex items-center gap-[11px] rounded-xl"
             style={{
               padding: "12px 13px",

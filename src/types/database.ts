@@ -217,6 +217,7 @@ export type Database = {
           los_level: number | null
           los_target: number | null
           onboarding_completed: boolean | null
+          tour_completed: boolean | null
           onboarding_step: number | null
           role: string | null
           updated_at: string | null
@@ -248,6 +249,7 @@ export type Database = {
           los_level?: number | null
           los_target?: number | null
           onboarding_completed?: boolean | null
+          tour_completed?: boolean | null
           onboarding_step?: number | null
           role?: string | null
           updated_at?: string | null
@@ -279,6 +281,7 @@ export type Database = {
           los_level?: number | null
           los_target?: number | null
           onboarding_completed?: boolean | null
+          tour_completed?: boolean | null
           onboarding_step?: number | null
           role?: string | null
           updated_at?: string | null

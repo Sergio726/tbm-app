@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-09 · **Completitud global:** 14 / 15 piezas de código · **Última pieza cerrada:** S13 (Hero Strip interactivo). Quedan: S9 parcial (Super Coach + emails) · S11 (tour) · S10 (beta, operativo)
+**Última actualización:** 2026-06-10 · **Completitud:** 13 de 14 sprints de código ✅ · **Última pieza cerrada:** S11 (tour guiado). Queda: S9 parcial (Super Coach + emails Resend) · S10 (beta, operativo)
 
 ---
 
@@ -15,7 +15,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | Sprint | Tema | Estado | Notas |
 |---|---|---|---|
 | **S0** | Setup & Auth | ✅ | App en Vercel · auth + 2 tipos de usuario (Alumno/Independiente). |
-| **S1** | Onboarding + Dashboard | 🟡 | Diagnóstico OK + Naming v1.1 aplicado. Falta Dashboard con datos reales (queda en S12). |
+| **S1** | Onboarding + Dashboard | ✅ | Diagnóstico + Naming v1.1. El pendiente "Dashboard con datos reales" se cerró en S12. |
 | **S2** | Rituales | ✅ | Pre-game · Los 5 Grandes · War Up Realtime · Cool Down + Reporte Semanal automático · Parking Lot · Config. |
 | **S3** | Mi Equipo (DISC + LOS + Matriz) | ✅ | DISC + LOS + Matriz Autoridad + Cruces Peligrosos · rediseño RPG gamificado. |
 | **S4** | Delegación | ✅ | Wizard Pase de Estafeta (5 puntos) · Kanban · Vista colaborador · Escudo Anti-Boomerang. |
@@ -25,7 +25,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S8** | Workbooks S5–S8 | ✅ | 4 sesiones + 16 ejercicios + componente `counter_tracker` + vista "Mi Programa" (`/workbooks/mi-programa`) con timeline 8 sesiones + comparativa scorecard baseline vs último (Día 1 vs Hoy). |
 | **S9** | Polish + Exportación + Super Coach | 🟡 | Exportación PDF parcial. **Falta Panel Super Coach 3 capas (CHANGELOG N1)** + notificaciones email (Resend). |
 | **S10** | Beta cerrada | 🚫 | Tarea operativa, fuera de código. |
-| **S11** | Tour guiado | ❌ | `driver.js` + steps + provider + flag `tour_completed` en `profiles`. |
+| **S11** | Tour guiado | ✅ | `driver.js` instalado · `tour-steps.ts` con flujos por rol (arquitecto/colaborador) · `TourProvider` en layout con auto-arranque la primera vez + marca `tour_completed` al cerrar · `data-tour` en sidebar/semáforos/avatar · popover con design system en globals.css · "Ver tour de nuevo" en /cuenta (sección Ayuda) · migración `sprint14_tour` (⏳ aplicar; el layout degrada con gracia si la columna no existe). |
 | **S12** | Dashboard 100% funcional | ✅ | `/diagnostico` re-eval (pre-cargada) · tendencia histórica real por área · rituales de hoy con estado real (done/live/upcoming + CTA links) · Hero Strip real (Ciclo 90D desde baseline, racha Pre-game, promedio+delta diagnóstico, equipo activo hoy con avatares DISC). |
 | **S13** | Hero Strip interactivo | ✅ | HeroStrip extraído a client component (`hero-strip.tsx` + `tile-tooltip.tsx`): tiles clickeables con hover ring + tooltips (ciclo/fechas, racha 7 días + mejor racha, Multiplicador proxy fase A con badge Multiplicador/Disminuidor, panel de energía por miembro con ⚠ sin registrar). |
 | **S14** | Búsqueda ⌘K + Notificaciones | ✅ | Command Palette custom (⌘K/Ctrl+K, módulos + quick actions por rol) · tabla `notifications` (migración `sprint13`, ⏳ aplicar) · badge real + panel dropdown + `/notificaciones` · eventos: task_assigned, task_blocked, task_done, war_up_started · fix EnergySelector (error + revert). Pendiente menor: `task_overdue` necesita cron (S4 E7) y `scorecard_updated` no tiene emisor no-arquitecto. |
@@ -48,14 +48,13 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 ---
 
-## Pendientes priorizados para beta
+## Pendientes para beta
 
-1. **S12 — Dashboard funcional con datos reales** (~4h) — quita el "se siente prototipo" del módulo más visitado.
-2. **S14 — Notificaciones** (~10h) — sin esto la colaboración asincrónica no fluye.
-3. **S6 — Activos del Sistema (UI)** (~2h) — pieza chica.
-4. **S8 — Workbooks S5–S8** (~6h) — cierra el programa completo.
-5. **S9 — Panel Super Coach** (~4h) — solo si hay coaches en la beta.
-6. **S11 + S13** — UX polish (tour + tiles interactivas) — después de los anteriores.
+1. **⏳ Aplicar 3 migraciones en Supabase** (SQL Editor, en orden): `migration_sprint12_activos.sql` · `migration_sprint13_notifications.sql` · `migration_sprint14_tour.sql`. Sin esto: tab Activos y notificaciones tiran error; el tour simplemente no aparece.
+2. **S9 — Panel Super Coach 3 capas** (~4h) — requiere decidir el modelo de acceso cross-company (coach ve varias empresas). CHANGELOG N1.
+3. **S9 — Emails transaccionales Resend** (~6h) — recordatorios Pre-game, alerta War Up 9am, alerta 72h, resumen semanal. Resend ya está integrado (envío de link DISC) — falta extender.
+4. **S4 E7 — Cron 72h** (Supabase Edge Function) — habilita la notificación `task_overdue`.
+5. **S10 — Beta cerrada** — operativo (seleccionar pilotos, onboarding guiado, analytics).
 
 ---
 
@@ -77,6 +76,9 @@ Orden de aplicación en Supabase (ver [`supabase/README.md`](supabase/README.md)
 | 9 | `migration_sprint9_feedback.sql` | S5 — feedbacks |
 | 10 | `migration_sprint10_plan90d.sql` | S6 — rocks + process_assets + leading_indicators |
 | 11 | `migration_sprint11_workbooks.sql` | S7 — workbook_responses + progress |
+| 12 | `migration_sprint12_activos.sql` | S6 — process_assets (Activos del Sistema) · ⏳ aplicar |
+| 13 | `migration_sprint13_notifications.sql` | S14 — notifications · ⏳ aplicar |
+| 14 | `migration_sprint14_tour.sql` | S11 — tour_completed en profiles · ⏳ aplicar |
 
 > ⚠️ **Numeración no coincide con sprint del plan** — los archivos se numeraron por orden de creación. Cruzá con esta tabla para saber qué cubre cada uno.
 

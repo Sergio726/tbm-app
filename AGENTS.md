@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 Instrucciones obligatorias para asistentes de IA (Claude Code u otros) trabajando en este repo.
 
