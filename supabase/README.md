@@ -24,6 +24,7 @@ del dashboard (el MCP/CLI no llega a este proyecto). Correr **en orden**.
 | 12 | `migration_sprint10_plan90d.sql` | **S6 Plan 90D**: `rocks`, `rock_updates`, `idea_parking`, `decisions`, `leading_indicators` | aplicado (módulo en uso) |
 | 13 | `migration_sprint11_workbooks.sql` | **S7 Workbooks**: `workbook_responses` + `workbook_progress` | aplicado (módulo en uso) |
 | 14 | `migration_sprint12_activos.sql` | **Cierre S6 [B3]**: tabla `process_assets` (Activos del Sistema) + RLS | ⏳ pendiente |
+| 15 | `migration_sprint13_notifications.sql` | **S14**: tabla `notifications` + índice parcial no-leídas + RLS | ⏳ pendiente |
 
 ## Limpieza puntual (no es migración de esquema)
 

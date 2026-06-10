@@ -28,13 +28,16 @@ export default function EnergySelector({
   const supabase = createBrowserClient();
   const [selected, setSelected] = useState<number | null>(currentLevel);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSelect = async (level: number) => {
     if (loading) return;
     setLoading(true);
-    setSelected(level);
+    setError(null);
+    const previous = selected;
+    setSelected(level); // optimista
 
-    await supabase.from("energy_logs").upsert(
+    const { error: upsertError } = await supabase.from("energy_logs").upsert(
       {
         user_id: userId,
         company_id: companyId,
@@ -44,13 +47,22 @@ export default function EnergySelector({
       { onConflict: "user_id,log_date" }
     );
 
+    if (upsertError) {
+      setSelected(previous); // revertir selección optimista
+      setError("No se pudo guardar. Intentá de nuevo.");
+    }
     setLoading(false);
   };
 
   const current = LEVELS.find((l) => l.level === selected);
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div
+      className={cn(
+        "flex flex-col items-end gap-1",
+        loading && "pointer-events-none opacity-50"
+      )}
+    >
       <p className="text-xs text-tbm-text-muted">
         Mi energía hoy{" "}
         {current && (
@@ -75,6 +87,11 @@ export default function EnergySelector({
           </button>
         ))}
       </div>
+      {error && (
+        <p className="text-xs" style={{ color: "#f87171" }}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }

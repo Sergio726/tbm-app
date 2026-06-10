@@ -3,6 +3,8 @@ import { createServerClient } from "@/lib/supabase/server";
 import { SCORECARD_AREAS, type Scorecard, type ScorecardKey } from "@/types/database";
 import EnergySelector from "@/components/dashboard/EnergySelector";
 import KpiCard from "@/components/dashboard/KpiCard";
+import { SearchTrigger } from "@/components/layout/search-trigger";
+import { NotificationsBell } from "@/components/layout/notifications-bell";
 import {
   Sparkles,
   Search,
@@ -940,6 +942,13 @@ export default async function DashboardPage() {
     };
   });
 
+  // Notificaciones no leídas (badge de la campana)
+  const { count: unreadCount } = await supabase
+    .from("notifications")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .is("read_at", null);
+
   // Horarios y modo desde ritual_configs
   const fmtTime = (t: string | null | undefined) => (t ? t.slice(0, 5) : null);
   const warUpDeadline = fmtTime(ritualConfig?.war_up_deadline) ?? "09:00";
@@ -1124,81 +1133,11 @@ export default async function DashboardPage() {
           className="flex items-center"
           style={{ gap: 16, flexShrink: 0 }}
         >
-          {/* Search (placeholder visual, futuro ⌘K) */}
-          <div
-            className="hidden lg:flex items-center"
-            style={{
-              gap: 8,
-              padding: "8px 12px",
-              borderRadius: 10,
-              background: "rgba(255,255,255,0.025)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              color: "rgba(255,255,255,0.5)",
-              fontSize: 13,
-              minWidth: 220,
-              cursor: "pointer",
-            }}
-          >
-            <Search size={14} />
-            <span style={{ flex: 1 }}>Buscar</span>
-            <div
-              className="flex"
-              style={{
-                gap: 3,
-                fontSize: 10,
-                color: "rgba(255,255,255,0.45)",
-              }}
-            >
-              <kbd
-                style={{
-                  padding: "1px 5px",
-                  borderRadius: 4,
-                  background: "rgba(255,255,255,0.06)",
-                }}
-              >
-                ⌘
-              </kbd>
-              <kbd
-                style={{
-                  padding: "1px 5px",
-                  borderRadius: 4,
-                  background: "rgba(255,255,255,0.06)",
-                }}
-              >
-                K
-              </kbd>
-            </div>
-          </div>
+          {/* Search — abre el Command Palette (⌘K) */}
+          <SearchTrigger />
 
-          {/* Notifications */}
-          <button
-            type="button"
-            aria-label="Notificaciones"
-            className="relative flex items-center justify-center"
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              background: "rgba(255,255,255,0.025)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              color: "rgba(255,255,255,0.7)",
-              cursor: "pointer",
-            }}
-          >
-            <Bell size={16} />
-            <span
-              style={{
-                position: "absolute",
-                top: 8,
-                right: 9,
-                width: 7,
-                height: 7,
-                borderRadius: "50%",
-                background: "#f87171",
-                border: "2px solid #0a0e1a",
-              }}
-            />
-          </button>
+          {/* Notifications — badge real de no-leídas */}
+          <NotificationsBell userId={user.id} initialUnread={unreadCount ?? 0} />
 
           {/* Energía — selector ACTUAL (mantenido por requerimiento) */}
           <EnergySelector

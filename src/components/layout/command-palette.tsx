@@ -1,0 +1,243 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
+import { useCommandPalette } from "@/hooks/use-command-palette";
+
+type PaletteItem = {
+  label: string;
+  href: string;
+  icon: string;
+  keywords?: string[];
+  role?: "arquitecto" | "colaborador";
+};
+
+const MODULES: PaletteItem[] = [
+  { label: "Dashboard", href: "/dashboard", icon: "🏠", keywords: ["inicio", "home"] },
+  { label: "Rituales", href: "/rituales", icon: "📋", keywords: ["pregame", "warup", "cooldown", "5 grandes"] },
+  { label: "Mi Equipo", href: "/equipo", icon: "👥", keywords: ["disc", "los", "equipo", "matriz"] },
+  { label: "Delegación", href: "/delegacion", icon: "📤", keywords: ["tareas", "pase", "estafeta", "kanban"] },
+  { label: "Feedback S.E.C.", href: "/feedback", icon: "💬", keywords: ["sostener", "elevar", "corregir"] },
+  { label: "Plan 90D", href: "/plan-90d", icon: "🎯", keywords: ["rocas", "bos", "ideas", "activos"] },
+  { label: "Workbooks", href: "/workbooks", icon: "📚", keywords: ["sesiones", "programa", "ejercicios"] },
+  { label: "Diagnóstico", href: "/diagnostico", icon: "📊", keywords: ["scorecard", "areas", "evaluacion"] },
+  { label: "Mi cuenta", href: "/cuenta", icon: "⚙️", keywords: ["perfil", "configuracion"] },
+];
+
+const QUICK_ACTIONS: PaletteItem[] = [
+  { label: "Nueva tarea delegada", href: "/delegacion/nueva", icon: "➕", role: "arquitecto", keywords: ["crear", "delegar"] },
+  { label: "Completar Pre-game de hoy", href: "/rituales/pre-game", icon: "📝", keywords: ["big wins", "ritual"] },
+  { label: "Iniciar / unirme al War Up", href: "/rituales/war-up", icon: "⚡", keywords: ["standup", "ritual"] },
+  { label: "Actualizar diagnóstico", href: "/diagnostico", icon: "📈", role: "arquitecto", keywords: ["scorecard"] },
+  { label: "Mis tareas asignadas", href: "/delegacion/mis-tareas", icon: "✅", role: "colaborador", keywords: ["pendientes"] },
+  { label: "Mi Programa (8 sesiones)", href: "/workbooks/mi-programa", icon: "🗺️", role: "arquitecto", keywords: ["progreso"] },
+];
+
+function matches(item: PaletteItem, q: string): boolean {
+  if (!q) return true;
+  const hay = [item.label, ...(item.keywords ?? [])].join(" ").toLowerCase();
+  return q
+    .toLowerCase()
+    .split(/\s+/)
+    .every((word) => hay.includes(word));
+}
+
+export function CommandPalette({ userRole }: { userRole: string }) {
+  const { open, setOpen } = useCommandPalette();
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [activeIdx, setActiveIdx] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const byRole = (item: PaletteItem) => !item.role || item.role === userRole;
+
+  const sections = useMemo(() => {
+    const mods = MODULES.filter(byRole).filter((m) => matches(m, query));
+    const actions = QUICK_ACTIONS.filter(byRole).filter((a) => matches(a, query));
+    return { mods, actions, flat: [...mods, ...actions] };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, userRole]);
+
+  // Reset al abrir
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setActiveIdx(0);
+      // focus después del render del modal
+      setTimeout(() => inputRef.current?.focus(), 10);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    setActiveIdx(0);
+  }, [query]);
+
+  if (!open) return null;
+
+  const go = (href: string) => {
+    setOpen(false);
+    router.push(href);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIdx((i) => Math.min(i + 1, sections.flat.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIdx((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const item = sections.flat[activeIdx];
+      if (item) go(item.href);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 100,
+        background: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+      }}
+      onClick={() => setOpen(false)}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: "absolute",
+          top: "18%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "min(560px, 90vw)",
+          background: "#0f1525",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 16,
+          boxShadow: "0 24px 64px rgba(0,0,0,0.7)",
+          overflow: "hidden",
+        }}
+      >
+        {/* Input */}
+        <div
+          className="flex items-center gap-3 border-b px-4 py-3.5"
+          style={{ borderColor: "rgba(255,255,255,0.07)" }}
+        >
+          <Search size={16} className="text-white/40" />
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={onKeyDown}
+            placeholder="Buscar o ir a…"
+            className="flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-white/35"
+          />
+          <kbd
+            className="rounded px-1.5 py-0.5 text-[10px] text-white/40"
+            style={{ background: "rgba(255,255,255,0.06)" }}
+          >
+            Esc
+          </kbd>
+        </div>
+
+        {/* Resultados */}
+        <div className="max-h-[380px] overflow-y-auto py-2">
+          {sections.flat.length === 0 && (
+            <p className="px-4 py-6 text-center text-[13px] text-white/40">
+              Sin resultados para &quot;{query}&quot;
+            </p>
+          )}
+
+          {sections.mods.length > 0 && (
+            <PaletteSection
+              title="Módulos"
+              items={sections.mods}
+              offset={0}
+              activeIdx={activeIdx}
+              onHover={setActiveIdx}
+              onSelect={go}
+            />
+          )}
+          {sections.actions.length > 0 && (
+            <PaletteSection
+              title="Acciones rápidas"
+              items={sections.actions}
+              offset={sections.mods.length}
+              activeIdx={activeIdx}
+              onHover={setActiveIdx}
+              onSelect={go}
+            />
+          )}
+        </div>
+
+        {/* Footer */}
+        <div
+          className="flex items-center gap-3 border-t px-4 py-2.5 text-[10.5px] text-white/35"
+          style={{ borderColor: "rgba(255,255,255,0.07)" }}
+        >
+          <span>↑↓ navegar</span>
+          <span>↵ ir</span>
+          <span>Esc cerrar</span>
+          <span className="ml-auto">⌘K / Ctrl+K</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PaletteSection({
+  title,
+  items,
+  offset,
+  activeIdx,
+  onHover,
+  onSelect,
+}: {
+  title: string;
+  items: PaletteItem[];
+  offset: number;
+  activeIdx: number;
+  onHover: (idx: number) => void;
+  onSelect: (href: string) => void;
+}) {
+  return (
+    <div className="mb-1">
+      <div className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[1.2px] text-white/35">
+        {title}
+      </div>
+      {items.map((item, i) => {
+        const idx = offset + i;
+        const active = idx === activeIdx;
+        return (
+          <button
+            key={item.href + item.label}
+            type="button"
+            onMouseEnter={() => onHover(idx)}
+            onClick={() => onSelect(item.href)}
+            className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors"
+            style={{
+              background: active ? "rgba(91,138,255,0.12)" : "transparent",
+              borderLeft: active
+                ? "2px solid #5b8aff"
+                : "2px solid transparent",
+            }}
+          >
+            <span className="text-[15px]">{item.icon}</span>
+            <span
+              className="flex-1 text-[13.5px]"
+              style={{ color: active ? "#fff" : "rgba(255,255,255,0.75)" }}
+            >
+              {item.label}
+            </span>
+            {active && (
+              <span className="text-[11px] text-white/40">↵</span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

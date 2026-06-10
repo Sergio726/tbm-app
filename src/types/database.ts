@@ -1305,6 +1305,50 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          type: string
+          title: string
+          body: string | null
+          href: string | null
+          read_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          type: string
+          title: string
+          body?: string | null
+          href?: string | null
+          read_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          body?: string | null
+          href?: string | null
+          read_at?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       process_assets: {
         Row: {
           id: string
@@ -1520,6 +1564,7 @@ export type Rock = Database["public"]["Tables"]["rocks"]["Row"];
 export type RockUpdate = Database["public"]["Tables"]["rock_updates"]["Row"];
 export type IdeaParking = Database["public"]["Tables"]["idea_parking"]["Row"];
 export type ProcessAsset = Database["public"]["Tables"]["process_assets"]["Row"];
+export type AppNotification = Database["public"]["Tables"]["notifications"]["Row"];
 export type Decision = Database["public"]["Tables"]["decisions"]["Row"];
 export type LeadingIndicator = Database["public"]["Tables"]["leading_indicators"]["Row"];
 export type RockStatus = "active" | "completed" | "failed" | "archived";

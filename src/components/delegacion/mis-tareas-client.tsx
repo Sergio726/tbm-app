@@ -14,6 +14,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/lib/notifications";
 import type { Task, Profile, TaskStatus } from "@/types/database";
 
 const STATUS_DISPLAY: Record<
@@ -64,7 +65,7 @@ interface MisTareasClientProps {
   currentUserId: string;
 }
 
-export function MisTareasClient({ tasks: initialTasks }: MisTareasClientProps) {
+export function MisTareasClient({ tasks: initialTasks, currentUserId }: MisTareasClientProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [pendingTaskId, setPendingTaskId] = useState<string | null>(null);
@@ -82,6 +83,21 @@ export function MisTareasClient({ tasks: initialTasks }: MisTareasClientProps) {
         setTasks((prev) =>
           prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
         );
+        // Al completar: notificar al creador de la tarea (no bloqueante)
+        if (newStatus === "done") {
+          const task = tasks.find((t) => t.id === taskId);
+          if (task) {
+            await notify(supabase, {
+              companyId: task.company_id,
+              userId: task.created_by,
+              actorId: currentUserId,
+              type: "task_done",
+              title: "Tarea completada",
+              body: `"${task.what_dod.slice(0, 60)}" fue marcada como lista.`,
+              href: "/delegacion",
+            });
+          }
+        }
       }
       setPendingTaskId(null);
     });

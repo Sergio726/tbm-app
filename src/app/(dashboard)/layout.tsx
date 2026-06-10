@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/layout/sidebar";
+import { CommandPalette } from "@/components/layout/command-palette";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
@@ -51,6 +52,9 @@ export default async function DashboardLayout({
       >
         {children}
       </main>
+
+      {/* Command Palette global (⌘K / Ctrl+K) */}
+      <CommandPalette userRole={profile?.role ?? "colaborador"} />
     </div>
   );
 }
