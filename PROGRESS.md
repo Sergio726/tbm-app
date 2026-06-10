@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-10 · **Completitud:** 13 de 14 sprints ✅ + S9 casi completo · **Última pieza cerrada:** S9 Panel Super Coach (N1). Queda: S9 emails cron · S10 (beta, operativo)
+**Última actualización:** 2026-06-10 · **Completitud:** 13 de 14 sprints ✅ + S9 casi completo · **Última pieza cerrada:** S9 emails cron (código listo, activar con envs). Queda de código: exportación PDF (S9) · S10 (beta, operativo)
 
 ---
 
@@ -23,7 +23,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S6** | Plan 90D + BOS + Activos | ✅ | Rocas + Leading Indicators + Disagree & Commit + L4 YoY + **Activos del Sistema** (tab en /plan-90d: `process_assets` con categorías, links video/doc, dueño y estado — migración `sprint12_activos`, ⏳ aplicar en Supabase). |
 | **S7** | Workbooks S1–S4 | ✅ | 4 sesiones digitalizadas + desbloqueo híbrido (7 días o "avance anticipado"). |
 | **S8** | Workbooks S5–S8 | ✅ | 4 sesiones + 16 ejercicios + componente `counter_tracker` + vista "Mi Programa" (`/workbooks/mi-programa`) con timeline 8 sesiones + comparativa scorecard baseline vs último (Día 1 vs Hoy). |
-| **S9** | Polish + Exportación + Super Coach | 🟡 | **Panel Super Coach ✅** (N1): `/super-coach` capa 1 (semáforo por empresa: diagnóstico + War Ups 7d + Rocas + equipo) · `/super-coach/[companyId]` capa 2 (Día 1 vs hoy, equipo DISC/LOS, Rocas) · capa 3 notas de coaching → notificación al Arquitecto. Modelo de seguridad: asignación explícita `coach_assignments` (sin auto-asignación), coach solo-lectura, Pre-game/Cool Down excluidos por privacidad. Migración `sprint15_super_coach` ⏳. **Falta:** emails transaccionales Resend (recordatorios; requieren cron). |
+| **S9** | Polish + Exportación + Super Coach | 🟡 | **Panel Super Coach ✅** (N1): 3 capas en `/super-coach` con seguridad por asignación explícita (`coach_assignments`, solo-lectura, Pre-game/Cool Down excluidos) — migración `sprint15` ⏳. **Emails cron ✅ código**: `/api/cron/daily` (Vercel Cron 11:00 UTC) con digest matinal al Arquitecto (Pre-game/War Up/72h + lunes Rocas + domingo Reporte), alerta `task_overdue` in-app+email con dedup 72h (cierra S4 E7) — **inerte hasta setear `CRON_SECRET` + `SUPABASE_SERVICE_ROLE_KEY` + `RESEND_*` en Vercel**. **Falta:** exportación PDF (diagnóstico / Plan 90D / equipo / semana — el informe DISC ya imprime a PDF). |
 | **S10** | Beta cerrada | 🚫 | Tarea operativa, fuera de código. |
 | **S11** | Tour guiado | ✅ | `driver.js` instalado · `tour-steps.ts` con flujos por rol (arquitecto/colaborador) · `TourProvider` en layout con auto-arranque la primera vez + marca `tour_completed` al cerrar · `data-tour` en sidebar/semáforos/avatar · popover con design system en globals.css · "Ver tour de nuevo" en /cuenta (sección Ayuda) · migración `sprint14_tour` (⏳ aplicar; el layout degrada con gracia si la columna no existe). |
 | **S12** | Dashboard 100% funcional | ✅ | `/diagnostico` re-eval (pre-cargada) · tendencia histórica real por área · rituales de hoy con estado real (done/live/upcoming + CTA links) · Hero Strip real (Ciclo 90D desde baseline, racha Pre-game, promedio+delta diagnóstico, equipo activo hoy con avatares DISC). |
@@ -52,9 +52,9 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 1. **⏳ Aplicar 4 migraciones en Supabase** (SQL Editor, en orden): `migration_sprint12_activos.sql` · `migration_sprint13_notifications.sql` · `migration_sprint14_tour.sql` · `migration_sprint15_super_coach.sql`. Sin esto: tab Activos y notificaciones tiran error; tour y panel coach simplemente no aparecen.
 2. **Asignar el coach** (después de la migración 15): `insert into coach_assignments (coach_id, company_id) values ('<uuid de Dilio>', '<uuid empresa>');` — el item "Super Coach" aparece solo en el sidebar del coach.
-3. **S9 — Emails transaccionales Resend** (~6h) — recordatorios Pre-game, alerta War Up 9am, alerta 72h, resumen semanal. Requieren cron (Vercel Cron o Supabase scheduled functions) + decidir horarios. Resend ya está integrado (envío de link DISC).
-4. **S4 E7 — Cron 72h** — habilita la notificación `task_overdue` (mismo cron del punto 3).
-5. **S10 — Beta cerrada** — operativo (seleccionar pilotos, onboarding guiado, analytics).
+3. **Activar el cron de emails** (código ya deployado): en Vercel → Settings → Environment Variables agregar `CRON_SECRET` (string aleatorio largo), `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Settings → API → service_role) y `RESEND_API_KEY` + `RESEND_FROM` si no están. El cron corre solo a las 11:00 UTC (~6-8am LATAM). Esto también habilita `task_overdue` (S4 E7).
+4. **S9 — Exportación PDF** (~5h) — diagnóstico, Plan 90D, perfil de equipo y resumen semanal. Patrón sugerido: print stylesheets como el informe DISC existente.
+5. **S10 — Beta cerrada** — operativo (seleccionar pilotos, onboarding guiado, analytics Posthog, Sentry).
 
 ---
 
