@@ -1,7 +1,14 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import { isoDate, isoMonday } from "@/lib/dates";
-import type { Profile, Rock, IdeaParking, Decision, LeadingIndicator } from "@/types/database";
+import type {
+  Profile,
+  Rock,
+  IdeaParking,
+  Decision,
+  LeadingIndicator,
+  ProcessAsset,
+} from "@/types/database";
 import { PlanClient } from "@/components/plan-90d/plan-client";
 
 export const dynamic = "force-dynamic";
@@ -32,6 +39,7 @@ export default async function Plan90dPage() {
     { data: ideas },
     { data: decisions },
     { data: team },
+    { data: assets },
   ] = await Promise.all([
     supabase
       .from("rocks")
@@ -59,6 +67,11 @@ export default async function Plan90dPage() {
       .select("id, full_name, cargo, disc_letters")
       .eq("company_id", companyId)
       .order("full_name", { ascending: true }),
+    supabase
+      .from("process_assets")
+      .select("*")
+      .eq("company_id", companyId)
+      .order("created_at", { ascending: false }),
   ]);
 
   return (
@@ -69,6 +82,7 @@ export default async function Plan90dPage() {
       weekDate={weekDate}
       initialIdeas={(ideas ?? []) as IdeaParking[]}
       initialDecisions={(decisions ?? []) as Decision[]}
+      initialAssets={(assets ?? []) as ProcessAsset[]}
       team={(team ?? []) as Pick<Profile, "id" | "full_name" | "cargo" | "disc_letters">[]}
     />
   );

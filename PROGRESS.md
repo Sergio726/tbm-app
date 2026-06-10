@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-09 · **Completitud global:** 11 / 14 sprints (79%) · **Última pieza cerrada:** S12 completo
+**Última actualización:** 2026-06-09 · **Completitud global:** 12 / 14 sprints (86%) · **Última pieza cerrada:** S6 completo (Activos del Sistema)
 
 ---
 
@@ -20,7 +20,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S3** | Mi Equipo (DISC + LOS + Matriz) | ✅ | DISC + LOS + Matriz Autoridad + Cruces Peligrosos · rediseño RPG gamificado. |
 | **S4** | Delegación | ✅ | Wizard Pase de Estafeta (5 puntos) · Kanban · Vista colaborador · Escudo Anti-Boomerang. |
 | **S5** | Feedback S.E.C. | ✅ | Templates S/E/C por perfil DISC · Sesiones Escape · 3 Streaks. |
-| **S6** | Plan 90D + BOS + Activos | 🟡 | Rocas + Leading Indicators + Disagree & Commit + L4 YoY. **Falta UI de "Activos del Sistema"** (tabla `process_assets` ya creada). |
+| **S6** | Plan 90D + BOS + Activos | ✅ | Rocas + Leading Indicators + Disagree & Commit + L4 YoY + **Activos del Sistema** (tab en /plan-90d: `process_assets` con categorías, links video/doc, dueño y estado — migración `sprint12_activos`, ⏳ aplicar en Supabase). |
 | **S7** | Workbooks S1–S4 | ✅ | 4 sesiones digitalizadas + desbloqueo híbrido (7 días o "avance anticipado"). |
 | **S8** | Workbooks S5–S8 | ✅ | 4 sesiones + 16 ejercicios + componente `counter_tracker` + vista "Mi Programa" (`/workbooks/mi-programa`) con timeline 8 sesiones + comparativa scorecard baseline vs último (Día 1 vs Hoy). |
 | **S9** | Polish + Exportación + Super Coach | 🟡 | Exportación PDF parcial. **Falta Panel Super Coach 3 capas (CHANGELOG N1)** + notificaciones email (Resend). |
@@ -38,7 +38,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 |---|---|---|---|
 | I4 | Naming "Team Performance Scorecard" sólo para módulo S7 (KPI individual); el diagnóstico 8 áreas se llama "Diagnóstico Organizacional TBM" | ✅ | S1/S7 |
 | I2/I3 | Los 5 Grandes = ritual nocturno (≠ Pre-game matutino) | ✅ | S2 |
-| B3 | Módulo "Activos del Sistema" (repositorio de procesos) | 🟡 | S6 |
+| B3 | Módulo "Activos del Sistema" (repositorio de procesos) | ✅ | S6 |
 | B4 | Cool Down del viernes genera Reporte Semanal automático | ✅ | S2 |
 | L1 | War Up en vivo (sala digital, Supabase Realtime) | ✅ | S2 |
 | L3 | Desbloqueo híbrido de workbooks (7 días + botón anticipado) | ✅ | S7 |

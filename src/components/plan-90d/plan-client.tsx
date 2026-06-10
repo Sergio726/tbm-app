@@ -2,7 +2,14 @@
 
 import { useState, useTransition, useRef, useEffect } from "react";
 import { Target } from "lucide-react";
-import type { Profile, Rock, LeadingIndicator, IdeaParking, Decision } from "@/types/database";
+import type {
+  Profile,
+  Rock,
+  LeadingIndicator,
+  IdeaParking,
+  Decision,
+  ProcessAsset,
+} from "@/types/database";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { isoDate } from "@/lib/dates";
 import { RocksPanel } from "./rocks-panel";
@@ -10,8 +17,10 @@ import { BosPanel } from "./bos-panel";
 import { MatrixPanel } from "./matrix-panel";
 import { IdeasPanel } from "./ideas-panel";
 import { DecisionsPanel } from "./decisions-panel";
+import { ActivosPanel } from "./activos-panel";
+import type { ActivoFormData } from "./activo-form";
 
-type Tab = "rocks" | "bos" | "matrix" | "ideas" | "decisions";
+type Tab = "rocks" | "bos" | "matrix" | "ideas" | "decisions" | "activos";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "rocks", label: "Plan 90D" },
@@ -19,6 +28,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "matrix", label: "Clasificador" },
   { key: "ideas", label: "Ideas" },
   { key: "decisions", label: "Decisiones" },
+  { key: "activos", label: "Activos" },
 ];
 
 interface PlanClientProps {
@@ -28,6 +38,7 @@ interface PlanClientProps {
   weekDate: string;
   initialIdeas: IdeaParking[];
   initialDecisions: Decision[];
+  initialAssets: ProcessAsset[];
   team: Pick<Profile, "id" | "full_name" | "cargo" | "disc_letters">[];
 }
 
@@ -38,6 +49,7 @@ export function PlanClient({
   weekDate,
   initialIdeas,
   initialDecisions,
+  initialAssets,
   team,
 }: PlanClientProps) {
   const [tab, setTab] = useState<Tab>("rocks");
@@ -45,6 +57,7 @@ export function PlanClient({
   const [indicators, setIndicators] = useState<LeadingIndicator[]>(initialIndicators);
   const [ideas, setIdeas] = useState<IdeaParking[]>(initialIdeas);
   const [decisions, setDecisions] = useState<Decision[]>(initialDecisions);
+  const [assets, setAssets] = useState<ProcessAsset[]>(initialAssets);
   const [isPending, startTransition] = useTransition();
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -314,6 +327,61 @@ export function PlanClient({
     });
   };
 
+  // --- ACTIVOS DEL SISTEMA ---
+  const handleCreateAsset = (data: ActivoFormData) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    startTransition(async () => {
+      try {
+        const supabase = createBrowserClient();
+        const { data: row, error } = await supabase
+          .from("process_assets")
+          .insert({
+            title: data.title,
+            description: data.description || null,
+            category: data.category,
+            video_url: data.video_url || null,
+            doc_url: data.doc_url || null,
+            owner_id: data.owner_id,
+            company_id: companyId,
+            created_by: userId,
+          })
+          .select()
+          .single();
+        if (error) {
+          showError("Error al guardar el activo.");
+        } else if (row) {
+          setAssets((prev) => [row as ProcessAsset, ...prev]);
+          showSuccess("Proceso documentado");
+        }
+      } finally {
+        isSubmittingRef.current = false;
+      }
+    });
+  };
+
+  const handleSetAssetStatus = (id: string, status: string) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    startTransition(async () => {
+      try {
+        const supabase = createBrowserClient();
+        const { error } = await supabase
+          .from("process_assets")
+          .update({ status })
+          .eq("id", id);
+        if (error) {
+          showError("Error al actualizar el estado.");
+        } else {
+          setAssets((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
+          showSuccess("Estado actualizado");
+        }
+      } finally {
+        isSubmittingRef.current = false;
+      }
+    });
+  };
+
   return (
     <div
       className="min-h-screen"
@@ -452,6 +520,16 @@ export function PlanClient({
             decisions={decisions}
             isPending={isPending}
             onCreateDecision={handleCreateDecision}
+          />
+        )}
+        {tab === "activos" && (
+          <ActivosPanel
+            assets={assets}
+            team={team}
+            isArquitecto={currentProfile.role === "arquitecto"}
+            isPending={isPending}
+            onCreate={handleCreateAsset}
+            onSetStatus={handleSetAssetStatus}
           />
         )}
       </div>

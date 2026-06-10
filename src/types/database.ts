@@ -1305,6 +1305,59 @@ export type Database = {
           },
         ]
       }
+      process_assets: {
+        Row: {
+          id: string
+          company_id: string
+          created_by: string
+          owner_id: string | null
+          title: string
+          description: string | null
+          category: string
+          video_url: string | null
+          doc_url: string | null
+          status: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          created_by: string
+          owner_id?: string | null
+          title: string
+          description?: string | null
+          category?: string
+          video_url?: string | null
+          doc_url?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          created_by?: string
+          owner_id?: string | null
+          title?: string
+          description?: string | null
+          category?: string
+          video_url?: string | null
+          doc_url?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_assets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1466,6 +1519,7 @@ export type FeedbackType = "S" | "E" | "C";
 export type Rock = Database["public"]["Tables"]["rocks"]["Row"];
 export type RockUpdate = Database["public"]["Tables"]["rock_updates"]["Row"];
 export type IdeaParking = Database["public"]["Tables"]["idea_parking"]["Row"];
+export type ProcessAsset = Database["public"]["Tables"]["process_assets"]["Row"];
 export type Decision = Database["public"]["Tables"]["decisions"]["Row"];
 export type LeadingIndicator = Database["public"]["Tables"]["leading_indicators"]["Row"];
 export type RockStatus = "active" | "completed" | "failed" | "archived";
