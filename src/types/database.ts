@@ -1308,6 +1308,67 @@ export type Database = {
           },
         ]
       }
+      coach_assignments: {
+        Row: {
+          id: string
+          coach_id: string
+          company_id: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          coach_id: string
+          company_id: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          coach_id?: string
+          company_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_assignments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coaching_notes: {
+        Row: {
+          id: string
+          company_id: string
+          coach_id: string
+          note: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          coach_id: string
+          note: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          coach_id?: string
+          note?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_notes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           id: string
@@ -1568,6 +1629,8 @@ export type RockUpdate = Database["public"]["Tables"]["rock_updates"]["Row"];
 export type IdeaParking = Database["public"]["Tables"]["idea_parking"]["Row"];
 export type ProcessAsset = Database["public"]["Tables"]["process_assets"]["Row"];
 export type AppNotification = Database["public"]["Tables"]["notifications"]["Row"];
+export type CoachAssignment = Database["public"]["Tables"]["coach_assignments"]["Row"];
+export type CoachingNote = Database["public"]["Tables"]["coaching_notes"]["Row"];
 export type Decision = Database["public"]["Tables"]["decisions"]["Row"];
 export type LeadingIndicator = Database["public"]["Tables"]["leading_indicators"]["Row"];
 export type RockStatus = "active" | "completed" | "failed" | "archived";

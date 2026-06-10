@@ -26,6 +26,7 @@ del dashboard (el MCP/CLI no llega a este proyecto). Correr **en orden**.
 | 14 | `migration_sprint12_activos.sql` | **Cierre S6 [B3]**: tabla `process_assets` (Activos del Sistema) + RLS | ⏳ pendiente |
 | 15 | `migration_sprint13_notifications.sql` | **S14**: tabla `notifications` + índice parcial no-leídas + RLS | ⏳ pendiente |
 | 16 | `migration_sprint14_tour.sql` | **S11**: columna `tour_completed` en profiles (tour guiado) | ⏳ pendiente |
+| 17 | `migration_sprint15_super_coach.sql` | **S9 [N1]**: `coach_assignments` + `auth_is_coach_of()` + policies read-only + `coaching_notes`. Las asignaciones se crean a mano (ver comentarios del archivo) | ⏳ pendiente |
 
 ## Limpieza puntual (no es migración de esquema)
 

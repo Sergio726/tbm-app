@@ -35,6 +35,19 @@ export default async function DashboardLayout({
     /* columna inexistente → sin tour */
   }
 
+  // Panel Super Coach (S9): visible solo si tiene empresas asignadas.
+  // Query resiliente — si la tabla coach_assignments no existe aún, no rompe.
+  let isCoach = false;
+  try {
+    const { count, error: coachErr } = await supabase
+      .from("coach_assignments")
+      .select("id", { count: "exact", head: true })
+      .eq("coach_id", user.id);
+    if (!coachErr) isCoach = (count ?? 0) > 0;
+  } catch {
+    /* tabla inexistente → sin panel */
+  }
+
   const companyName = (profile?.companies as { name: string } | null)?.name;
   const initials = profile?.full_name
     ?.split(" ")
@@ -58,6 +71,7 @@ export default async function DashboardLayout({
         userName={profile?.full_name ?? undefined}
         userRole={ROLE_LABEL[profile?.role ?? ""] ?? profile?.role ?? undefined}
         avatarUrl={profile?.avatar_url ?? undefined}
+        isCoach={isCoach}
       />
 
       {/* Contenido principal */}

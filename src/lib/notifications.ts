@@ -7,7 +7,8 @@ export type NotificationType =
   | "task_done"
   | "task_assigned"
   | "war_up_started"
-  | "scorecard_updated";
+  | "scorecard_updated"
+  | "coaching_note";
 
 export const NOTIF_META: Record<
   NotificationType,
@@ -19,6 +20,7 @@ export const NOTIF_META: Record<
   task_assigned: { icon: "📥", color: "#fbbf24" },
   war_up_started: { icon: "⚡", color: "#5b8aff" },
   scorecard_updated: { icon: "📊", color: "#a78bfa" },
+  coaching_note: { icon: "🎓", color: "#34d399" },
 };
 
 export function notifMeta(type: string) {

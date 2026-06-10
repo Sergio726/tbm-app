@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-10 · **Completitud:** 13 de 14 sprints de código ✅ · **Última pieza cerrada:** S11 (tour guiado). Queda: S9 parcial (Super Coach + emails Resend) · S10 (beta, operativo)
+**Última actualización:** 2026-06-10 · **Completitud:** 13 de 14 sprints ✅ + S9 casi completo · **Última pieza cerrada:** S9 Panel Super Coach (N1). Queda: S9 emails cron · S10 (beta, operativo)
 
 ---
 
@@ -23,7 +23,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S6** | Plan 90D + BOS + Activos | ✅ | Rocas + Leading Indicators + Disagree & Commit + L4 YoY + **Activos del Sistema** (tab en /plan-90d: `process_assets` con categorías, links video/doc, dueño y estado — migración `sprint12_activos`, ⏳ aplicar en Supabase). |
 | **S7** | Workbooks S1–S4 | ✅ | 4 sesiones digitalizadas + desbloqueo híbrido (7 días o "avance anticipado"). |
 | **S8** | Workbooks S5–S8 | ✅ | 4 sesiones + 16 ejercicios + componente `counter_tracker` + vista "Mi Programa" (`/workbooks/mi-programa`) con timeline 8 sesiones + comparativa scorecard baseline vs último (Día 1 vs Hoy). |
-| **S9** | Polish + Exportación + Super Coach | 🟡 | Exportación PDF parcial. **Falta Panel Super Coach 3 capas (CHANGELOG N1)** + notificaciones email (Resend). |
+| **S9** | Polish + Exportación + Super Coach | 🟡 | **Panel Super Coach ✅** (N1): `/super-coach` capa 1 (semáforo por empresa: diagnóstico + War Ups 7d + Rocas + equipo) · `/super-coach/[companyId]` capa 2 (Día 1 vs hoy, equipo DISC/LOS, Rocas) · capa 3 notas de coaching → notificación al Arquitecto. Modelo de seguridad: asignación explícita `coach_assignments` (sin auto-asignación), coach solo-lectura, Pre-game/Cool Down excluidos por privacidad. Migración `sprint15_super_coach` ⏳. **Falta:** emails transaccionales Resend (recordatorios; requieren cron). |
 | **S10** | Beta cerrada | 🚫 | Tarea operativa, fuera de código. |
 | **S11** | Tour guiado | ✅ | `driver.js` instalado · `tour-steps.ts` con flujos por rol (arquitecto/colaborador) · `TourProvider` en layout con auto-arranque la primera vez + marca `tour_completed` al cerrar · `data-tour` en sidebar/semáforos/avatar · popover con design system en globals.css · "Ver tour de nuevo" en /cuenta (sección Ayuda) · migración `sprint14_tour` (⏳ aplicar; el layout degrada con gracia si la columna no existe). |
 | **S12** | Dashboard 100% funcional | ✅ | `/diagnostico` re-eval (pre-cargada) · tendencia histórica real por área · rituales de hoy con estado real (done/live/upcoming + CTA links) · Hero Strip real (Ciclo 90D desde baseline, racha Pre-game, promedio+delta diagnóstico, equipo activo hoy con avatares DISC). |
@@ -43,17 +43,17 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | L1 | War Up en vivo (sala digital, Supabase Realtime) | ✅ | S2 |
 | L3 | Desbloqueo híbrido de workbooks (7 días + botón anticipado) | ✅ | S7 |
 | L4 | Indicador financiero YoY + ciclo continuo 90D | ✅ | S6 |
-| N1 | Panel Super Coach 3 capas | ❌ | S9 |
+| N1 | Panel Super Coach 3 capas | ✅ | S9 |
 | N2 | Tipo de acceso Alumno TBM vs Independiente | ✅ schema | S0 |
 
 ---
 
 ## Pendientes para beta
 
-1. **⏳ Aplicar 3 migraciones en Supabase** (SQL Editor, en orden): `migration_sprint12_activos.sql` · `migration_sprint13_notifications.sql` · `migration_sprint14_tour.sql`. Sin esto: tab Activos y notificaciones tiran error; el tour simplemente no aparece.
-2. **S9 — Panel Super Coach 3 capas** (~4h) — requiere decidir el modelo de acceso cross-company (coach ve varias empresas). CHANGELOG N1.
-3. **S9 — Emails transaccionales Resend** (~6h) — recordatorios Pre-game, alerta War Up 9am, alerta 72h, resumen semanal. Resend ya está integrado (envío de link DISC) — falta extender.
-4. **S4 E7 — Cron 72h** (Supabase Edge Function) — habilita la notificación `task_overdue`.
+1. **⏳ Aplicar 4 migraciones en Supabase** (SQL Editor, en orden): `migration_sprint12_activos.sql` · `migration_sprint13_notifications.sql` · `migration_sprint14_tour.sql` · `migration_sprint15_super_coach.sql`. Sin esto: tab Activos y notificaciones tiran error; tour y panel coach simplemente no aparecen.
+2. **Asignar el coach** (después de la migración 15): `insert into coach_assignments (coach_id, company_id) values ('<uuid de Dilio>', '<uuid empresa>');` — el item "Super Coach" aparece solo en el sidebar del coach.
+3. **S9 — Emails transaccionales Resend** (~6h) — recordatorios Pre-game, alerta War Up 9am, alerta 72h, resumen semanal. Requieren cron (Vercel Cron o Supabase scheduled functions) + decidir horarios. Resend ya está integrado (envío de link DISC).
+4. **S4 E7 — Cron 72h** — habilita la notificación `task_overdue` (mismo cron del punto 3).
 5. **S10 — Beta cerrada** — operativo (seleccionar pilotos, onboarding guiado, analytics).
 
 ---
@@ -79,6 +79,7 @@ Orden de aplicación en Supabase (ver [`supabase/README.md`](supabase/README.md)
 | 12 | `migration_sprint12_activos.sql` | S6 — process_assets (Activos del Sistema) · ⏳ aplicar |
 | 13 | `migration_sprint13_notifications.sql` | S14 — notifications · ⏳ aplicar |
 | 14 | `migration_sprint14_tour.sql` | S11 — tour_completed en profiles · ⏳ aplicar |
+| 15 | `migration_sprint15_super_coach.sql` | S9 — coach_assignments + coaching_notes + RLS coach · ⏳ aplicar |
 
 > ⚠️ **Numeración no coincide con sprint del plan** — los archivos se numeraron por orden de creación. Cruzá con esta tabla para saber qué cubre cada uno.
 
