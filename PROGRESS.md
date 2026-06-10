@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-09 · **Completitud global:** 13 / 14 sprints (93%) · **Última pieza cerrada:** S14 (⌘K + notificaciones)
+**Última actualización:** 2026-06-09 · **Completitud global:** 14 / 15 piezas de código · **Última pieza cerrada:** S13 (Hero Strip interactivo). Quedan: S9 parcial (Super Coach + emails) · S11 (tour) · S10 (beta, operativo)
 
 ---
 
@@ -27,7 +27,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S10** | Beta cerrada | 🚫 | Tarea operativa, fuera de código. |
 | **S11** | Tour guiado | ❌ | `driver.js` + steps + provider + flag `tour_completed` en `profiles`. |
 | **S12** | Dashboard 100% funcional | ✅ | `/diagnostico` re-eval (pre-cargada) · tendencia histórica real por área · rituales de hoy con estado real (done/live/upcoming + CTA links) · Hero Strip real (Ciclo 90D desde baseline, racha Pre-game, promedio+delta diagnóstico, equipo activo hoy con avatares DISC). |
-| **S13** | Hero Strip interactivo | ❌ | Tiles clickeables + tooltips. Depende de S12. |
+| **S13** | Hero Strip interactivo | ✅ | HeroStrip extraído a client component (`hero-strip.tsx` + `tile-tooltip.tsx`): tiles clickeables con hover ring + tooltips (ciclo/fechas, racha 7 días + mejor racha, Multiplicador proxy fase A con badge Multiplicador/Disminuidor, panel de energía por miembro con ⚠ sin registrar). |
 | **S14** | Búsqueda ⌘K + Notificaciones | ✅ | Command Palette custom (⌘K/Ctrl+K, módulos + quick actions por rol) · tabla `notifications` (migración `sprint13`, ⏳ aplicar) · badge real + panel dropdown + `/notificaciones` · eventos: task_assigned, task_blocked, task_done, war_up_started · fix EnergySelector (error + revert). Pendiente menor: `task_overdue` necesita cron (S4 E7) y `scorecard_updated` no tiene emisor no-arquitecto. |
 
 ---

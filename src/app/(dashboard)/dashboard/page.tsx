@@ -5,13 +5,10 @@ import EnergySelector from "@/components/dashboard/EnergySelector";
 import KpiCard from "@/components/dashboard/KpiCard";
 import { SearchTrigger } from "@/components/layout/search-trigger";
 import { NotificationsBell } from "@/components/layout/notifications-bell";
+import { HeroStrip } from "@/components/dashboard/hero-strip";
 import {
   Sparkles,
-  Search,
-  Bell,
-  Target,
   RotateCcw,
-  Flame,
   Users,
   TrendingUp,
   ArrowRight,
@@ -67,272 +64,6 @@ function greetingForHour(h: number) {
   if (h < 12) return "Buenos días";
   if (h < 19) return "Buenas tardes";
   return "Buenas noches";
-}
-
-// =============================================================
-// Hero Strip — 4 tiles (Plan 90D, Sprint, Multiplicador, Equipo)
-// Tiles del Hero Strip — los datos llegan por props desde la página (S12)
-// =============================================================
-function HeroTile({
-  Icon,
-  label,
-  value,
-  sub,
-  accent,
-  tone,
-  children,
-}: {
-  Icon: LucideIcon;
-  label: string;
-  value: string;
-  sub?: string;
-  accent: string;
-  tone?: "accent";
-  children?: ReactNode;
-}) {
-  return (
-    <div
-      className="relative overflow-hidden"
-      style={{
-        flex: 1,
-        padding: "18px 20px",
-        borderRadius: 14,
-        background:
-          tone === "accent"
-            ? "linear-gradient(135deg, rgba(91,138,255,0.16) 0%, rgba(91,138,255,0.04) 100%)"
-            : "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        border:
-          tone === "accent"
-            ? "1px solid rgba(91,138,255,0.28)"
-            : "1px solid rgba(255,255,255,0.06)",
-        boxShadow: tone === "accent" ? "0 8px 24px rgba(91,138,255,0.16)" : "none",
-      }}
-    >
-      <div
-        className="flex items-center"
-        style={{ gap: 8, marginBottom: 10 }}
-      >
-        <div
-          className="flex items-center justify-center"
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 8,
-            background: `${accent}1f`,
-            border: `1px solid ${accent}33`,
-            color: accent,
-          }}
-        >
-          <Icon size={14} strokeWidth={2} />
-        </div>
-        <div
-          className="uppercase"
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
-            letterSpacing: 1.2,
-          }}
-        >
-          {label}
-        </div>
-      </div>
-      <div
-        style={{
-          fontSize: 28,
-          fontWeight: 700,
-          letterSpacing: -0.6,
-          color: "#fff",
-          lineHeight: 1.1,
-        }}
-      >
-        {value}
-      </div>
-      {sub && (
-        <div
-          style={{
-            fontSize: 12,
-            color: "rgba(255,255,255,0.5)",
-            marginTop: 6,
-          }}
-        >
-          {sub}
-        </div>
-      )}
-      {children}
-    </div>
-  );
-}
-
-type HeroData = {
-  dayInCycle: number | null;
-  preGameStreak: number;
-  latestAvg: number | null;
-  scoreDelta: number | null;
-  teamActiveToday: number;
-  teamTotal: number;
-  teamAvatars: { initial: string; color: string }[];
-};
-
-function HeroStrip({
-  dayInCycle,
-  preGameStreak,
-  latestAvg,
-  scoreDelta,
-  teamActiveToday,
-  teamTotal,
-  teamAvatars,
-}: HeroData) {
-  const pctCycle = dayInCycle ? Math.round((dayInCycle / 90) * 100) : 0;
-  const shownAvatars = teamAvatars.slice(0, 5);
-  const extraAvatars = teamTotal - shownAvatars.length;
-
-  return (
-    <div className="flex" style={{ gap: 12, marginBottom: 32 }}>
-      {/* Tile 1 — Ciclo 90D (desde el baseline del diagnóstico) */}
-      <HeroTile
-        Icon={Target}
-        label="Ciclo 90D"
-        value={dayInCycle ? `Día ${dayInCycle}/90` : "Sin iniciar"}
-        accent="#5b8aff"
-        tone="accent"
-      >
-        <div
-          style={{
-            height: 4,
-            background: "rgba(255,255,255,0.06)",
-            borderRadius: 99,
-            marginTop: 10,
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              width: `${pctCycle}%`,
-              height: "100%",
-              background: "linear-gradient(90deg, #5b8aff, #34d399)",
-              borderRadius: 99,
-            }}
-          />
-        </div>
-        <div
-          className="flex justify-between"
-          style={{
-            ...MONO,
-            marginTop: 6,
-            fontSize: 10.5,
-            color: "rgba(255,255,255,0.45)",
-          }}
-        >
-          <span>
-            {dayInCycle
-              ? `${90 - dayInCycle} días restantes`
-              : "hacé tu primer diagnóstico"}
-          </span>
-          <span>{pctCycle}%</span>
-        </div>
-      </HeroTile>
-
-      {/* Tile 2 — Racha de Pre-game */}
-      <HeroTile
-        Icon={Flame}
-        label="Racha Pre-game"
-        value={`${preGameStreak} ${preGameStreak === 1 ? "día" : "días"}`}
-        sub={preGameStreak > 0 ? "racha actual de Pre-game" : "¡Empezá hoy!"}
-        accent="#fb923c"
-      />
-
-      {/* Tile 3 — Promedio del Diagnóstico + delta */}
-      <HeroTile
-        Icon={TrendingUp}
-        label="Diagnóstico"
-        value={latestAvg !== null ? `${latestAvg.toFixed(1)}` : "—"}
-        accent="#fbbf24"
-      >
-        <div
-          className="flex items-center"
-          style={{ gap: 6, marginTop: 6, fontSize: 12 }}
-        >
-          {scoreDelta !== null ? (
-            <>
-              <span
-                className="flex items-center"
-                style={{
-                  color: scoreDelta >= 0 ? "#34d399" : "#f87171",
-                  gap: 3,
-                  fontWeight: 600,
-                }}
-              >
-                <TrendingUp
-                  size={11}
-                  strokeWidth={2.4}
-                  style={
-                    scoreDelta < 0 ? { transform: "rotate(180deg)" } : undefined
-                  }
-                />
-                {scoreDelta >= 0 ? `+${scoreDelta}` : scoreDelta}
-              </span>
-              <span style={{ color: "rgba(255,255,255,0.45)" }}>
-                vs evaluación anterior
-              </span>
-            </>
-          ) : (
-            <span style={{ color: "rgba(255,255,255,0.45)" }}>
-              {latestAvg !== null ? "Primera evaluación" : "Sin diagnóstico aún"}
-            </span>
-          )}
-        </div>
-      </HeroTile>
-
-      {/* Tile 4 — Equipo hoy (energía registrada) */}
-      <HeroTile
-        Icon={Users}
-        label="Equipo hoy"
-        value={`${teamActiveToday} / ${teamTotal}`}
-        sub="registraron energía hoy"
-        accent="#a78bfa"
-      >
-        <div className="flex" style={{ marginTop: 8 }}>
-          {shownAvatars.map((a, idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-center text-white"
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: "50%",
-                background: a.color,
-                border: "2px solid #0a0e1a",
-                marginLeft: idx === 0 ? 0 : -6,
-                fontSize: 10,
-                fontWeight: 600,
-              }}
-            >
-              {a.initial}
-            </div>
-          ))}
-          {extraAvatars > 0 && (
-            <div
-              className="flex items-center justify-center"
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.06)",
-                border: "2px solid #0a0e1a",
-                marginLeft: shownAvatars.length === 0 ? 0 : -6,
-                fontSize: 10,
-                fontWeight: 600,
-                color: "rgba(255,255,255,0.55)",
-              }}
-            >
-              +{extraAvatars}
-            </div>
-          )}
-        </div>
-      </HeroTile>
-    </div>
-  );
 }
 
 // =============================================================
@@ -504,15 +235,6 @@ type RitualDef = {
   participants?: number;
   total?: number;
 };
-
-// Promedio de las 8 áreas de un scorecard (null si no hay datos)
-function avgScorecard(sc: Scorecard | null): number | null {
-  if (!sc) return null;
-  const vals = SCORECARD_AREAS.map((a) => sc[a.key]).filter(
-    (v): v is number => v !== null
-  );
-  return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
-}
 
 // Últimas 5 evaluaciones de un área, paddeadas a la izquierda con 0
 function buildTrend(history: Scorecard[], key: ScorecardKey): number[] {
@@ -842,10 +564,13 @@ export default async function DashboardPage() {
     .eq("log_date", todayStr)
     .single();
 
-  // ── S12: datos reales para Hero Strip + Rituales de hoy ──────
+  // ── S12/S13: datos reales para Hero Strip + Rituales de hoy ──
   const thirtyDaysAgo = new Date(today);
   thirtyDaysAgo.setDate(today.getDate() - 30);
   const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+  const ninetyDaysAgo = new Date(today);
+  ninetyDaysAgo.setDate(today.getDate() - 90);
+  const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split("T")[0];
 
   const [
     { data: warUpHoy },
@@ -854,6 +579,7 @@ export default async function DashboardPage() {
     { data: teamProfiles },
     { data: energyLogsHoy },
     { data: ritualConfig },
+    { data: recentTasks },
   ] = await Promise.all([
     supabase
       .from("war_ups")
@@ -870,7 +596,7 @@ export default async function DashboardPage() {
       .from("pre_games")
       .select("log_date")
       .eq("user_id", user.id)
-      .gte("log_date", thirtyDaysAgoStr)
+      .gte("log_date", ninetyDaysAgoStr)
       .order("log_date", { ascending: false }),
     supabase
       .from("profiles")
@@ -878,7 +604,7 @@ export default async function DashboardPage() {
       .eq("company_id", profile.company_id!),
     supabase
       .from("energy_logs")
-      .select("user_id")
+      .select("user_id, level")
       .eq("company_id", profile.company_id!)
       .eq("log_date", todayStr),
     supabase
@@ -886,7 +612,24 @@ export default async function DashboardPage() {
       .select("mode, war_up_deadline, cool_down_start")
       .eq("company_id", profile.company_id!)
       .maybeSingle(),
+    supabase
+      .from("tasks")
+      .select("id, status, assigned_to, created_by")
+      .eq("company_id", profile.company_id!)
+      .gte("updated_at", thirtyDaysAgoStr),
   ]);
+
+  // Escalaciones Anti-Boomerang sobre las tareas recientes (proxy Multiplicador)
+  const recentTaskIds = (recentTasks ?? []).map((t) => t.id);
+  let boomerangCount = 0;
+  if (recentTaskIds.length > 0) {
+    const { count } = await supabase
+      .from("task_updates")
+      .select("id", { count: "exact", head: true })
+      .eq("type", "boomerang_attempt")
+      .in("task_id", recentTaskIds);
+    boomerangCount = count ?? 0;
+  }
 
   // Participantes del War Up de hoy (solo si la sala existe)
   let warUpParticipants = 0;
@@ -914,6 +657,33 @@ export default async function DashboardPage() {
     checkDate.setDate(checkDate.getDate() - 1);
   }
 
+  // Mejor racha histórica (90 días de datos): secuencias consecutivas
+  const sortedDates = Array.from(preGameDates).sort();
+  let bestStreak = 0;
+  let run = 0;
+  let prevTime = 0;
+  for (const d of sortedDates) {
+    const t = new Date(d + "T12:00:00").getTime();
+    run = prevTime && t - prevTime === 86_400_000 ? run + 1 : 1;
+    bestStreak = Math.max(bestStreak, run);
+    prevTime = t;
+  }
+  bestStreak = Math.max(bestStreak, preGameStreak);
+
+  // Historial visual de los últimos 7 días (label es-AR + done)
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    const iso = d.toISOString().split("T")[0];
+    return {
+      label: d
+        .toLocaleDateString("es-AR", { weekday: "short" })
+        .replace(".", "")
+        .slice(0, 3),
+      done: preGameDates.has(iso),
+    };
+  });
+
   // Ciclo 90D: día actual desde el scorecard baseline
   const baseline = scorecardHistory.find((s) => s.is_baseline) ?? scorecardHistory[0] ?? null;
   const cycleStart = baseline?.created_at ? new Date(baseline.created_at) : null;
@@ -921,26 +691,39 @@ export default async function DashboardPage() {
     ? Math.floor((today.getTime() - cycleStart.getTime()) / 86_400_000) + 1
     : null;
   const dayInCycle = dayInProgram ? ((dayInProgram - 1) % 90) + 1 : null;
+  const cycleNumber = dayInProgram ? Math.floor((dayInProgram - 1) / 90) + 1 : 1;
+  const cycleStartLabel = cycleStart
+    ? cycleStart.toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })
+    : null;
 
-  // Promedio del diagnóstico + delta vs evaluación anterior
-  const latestAvgNum = avgScorecard(latestScorecard);
-  const prevAvgNum = avgScorecard(scorecardHistory.at(-2) ?? null);
-  const scoreDelta =
-    latestAvgNum !== null && prevAvgNum !== null
-      ? Number((latestAvgNum - prevAvgNum).toFixed(1))
+  // Multiplicador (proxy fase A): delegación 40% + autonomía 40% + base 20%
+  const delegacionScore = latestScorecard?.score_delegacion ?? null;
+  const totalRecentTasks = recentTasks?.length ?? 0;
+  const boomerangRate =
+    totalRecentTasks > 0
+      ? 1 - Math.min(1, boomerangCount / totalRecentTasks)
+      : 0.5;
+  const tasksDoneByTeam = (recentTasks ?? []).filter(
+    (t) => t.status === "done" && t.assigned_to && t.assigned_to !== t.created_by
+  ).length;
+  const multiplicadorPct =
+    delegacionScore !== null
+      ? Math.round(((delegacionScore / 5) * 0.4 + boomerangRate * 0.4 + 0.5 * 0.2) * 100)
       : null;
 
-  // Equipo activo hoy (registró energía) + avatares reales
-  const activeIds = new Set((energyLogsHoy ?? []).map((e) => e.user_id));
-  const teamTotal = teamProfiles?.length ?? 0;
-  const teamActiveToday = activeIds.size;
-  const teamAvatars = (teamProfiles ?? []).slice(0, 5).map((p) => {
+  // Equipo con su energía de hoy (tooltip del tile 4)
+  const energyByUser = new Map((energyLogsHoy ?? []).map((e) => [e.user_id, e.level]));
+  const teamWithEnergy = (teamProfiles ?? []).map((p) => {
     const letter = primaryLetter(p.disc_letters);
     return {
+      id: p.id,
+      name: p.full_name ?? "Sin nombre",
       initial: (p.full_name ?? "?").trim().charAt(0).toUpperCase() || "?",
       color: letter ? DISC_COLORS[letter] : "#5b8aff",
+      energyToday: energyByUser.get(p.id) ?? null,
     };
   });
+  const teamTotal = teamWithEnergy.length;
 
   // Notificaciones no leídas (badge de la campana)
   const { count: unreadCount } = await supabase
@@ -1149,15 +932,20 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Hero strip — datos reales (S12) ────────────────── */}
+      {/* ── Hero strip — interactivo con datos reales (S12+S13) ── */}
       <HeroStrip
         dayInCycle={dayInCycle}
-        preGameStreak={preGameStreak}
-        latestAvg={latestAvgNum}
-        scoreDelta={scoreDelta}
-        teamActiveToday={teamActiveToday}
-        teamTotal={teamTotal}
-        teamAvatars={teamAvatars}
+        cycleNumber={cycleNumber}
+        cycleStartLabel={cycleStartLabel}
+        streak={preGameStreak}
+        bestStreak={bestStreak}
+        last7Days={last7Days}
+        preGameDoneToday={preGameStatus === "done"}
+        multiplicadorPct={multiplicadorPct}
+        delegacionScore={delegacionScore}
+        boomerangCount={boomerangCount}
+        tasksDoneByTeam={tasksDoneByTeam}
+        teamWithEnergy={teamWithEnergy}
       />
 
       {/* ── Alerta áreas críticas ──────────────────────────── */}
