@@ -357,6 +357,29 @@ input.tbm-range:focus {
 .driver-popover-close-btn { color: rgba(255, 255, 255, 0.4) !important; }
 .driver-overlay { background: rgba(0, 0, 0, 0.7) !important; }
 
+/* ── Exportación PDF (S9) — /export/[tipo] ─────────────────── */
+@media print {
+  /* Imprimir SOLO el documento de exportación */
+  body:has(.tbm-export-page) * { visibility: hidden; }
+  .tbm-export-page, .tbm-export-page * { visibility: visible; }
+  .tbm-export-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+  .no-print { display: none !important; }
+  .tbm-export-page,
+  .tbm-export-page * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
 /* ── DISC test gamificado ─────────────────────────────────── */
 
 /* Reloj con urgencia */

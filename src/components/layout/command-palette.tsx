@@ -32,6 +32,10 @@ const QUICK_ACTIONS: PaletteItem[] = [
   { label: "Actualizar diagnóstico", href: "/diagnostico", icon: "📈", role: "arquitecto", keywords: ["scorecard"] },
   { label: "Mis tareas asignadas", href: "/delegacion/mis-tareas", icon: "✅", role: "colaborador", keywords: ["pendientes"] },
   { label: "Mi Programa (8 sesiones)", href: "/workbooks/mi-programa", icon: "🗺️", role: "arquitecto", keywords: ["progreso"] },
+  { label: "Exportar diagnóstico (PDF)", href: "/export/diagnostico", icon: "🖨️", role: "arquitecto", keywords: ["pdf", "imprimir", "exportar"] },
+  { label: "Exportar Plan 90D (PDF)", href: "/export/plan-90d", icon: "🖨️", role: "arquitecto", keywords: ["pdf", "rocas", "exportar"] },
+  { label: "Exportar perfil del equipo (PDF)", href: "/export/equipo", icon: "🖨️", role: "arquitecto", keywords: ["pdf", "disc", "exportar"] },
+  { label: "Exportar reporte semanal (PDF)", href: "/export/semana", icon: "🖨️", role: "arquitecto", keywords: ["pdf", "resumen", "exportar"] },
 ];
 
 function matches(item: PaletteItem, q: string): boolean {
