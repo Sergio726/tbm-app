@@ -15,10 +15,12 @@ import {
   LineChart,
   Bell,
   LogOut,
+  HelpCircle,
   GraduationCap,
   type LucideIcon,
 } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { useRestartTour } from "@/hooks/use-restart-tour";
 
 // ── Módulos TBM ──────────────────────────────────────────────
 type ModuleItem = {
@@ -40,6 +42,7 @@ const MODULES: ModuleItem[] = [
 ];
 
 interface SidebarProps {
+  userId: string;
   companyName?: string;
   userInitials?: string;
   userStatusLabel?: string;
@@ -57,6 +60,7 @@ interface SidebarProps {
  * notificación.
  */
 export function Sidebar({
+  userId,
   companyName,
   userInitials,
   userStatusLabel,
@@ -67,6 +71,7 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { restart: restartTour } = useRestartTour(userId);
   const [signingOut, setSigningOut] = useState(false);
 
   const handleSignOut = async () => {
@@ -325,6 +330,20 @@ export function Sidebar({
                     border: "2px solid #0a0e18",
                   }}
                 />
+              </button>
+              <button
+                type="button"
+                onClick={restartTour}
+                aria-label="Ver tour de nuevo"
+                title="Ver tour de nuevo"
+                className="flex items-center justify-center transition-colors hover:text-white"
+                style={{
+                  color: "rgba(255,255,255,0.55)",
+                  padding: 4,
+                  borderRadius: 6,
+                }}
+              >
+                <HelpCircle size={16} strokeWidth={1.6} />
               </button>
               <button
                 type="button"

@@ -29,6 +29,7 @@ Supabase **sí** llega al proyecto nuevo (apply_migration/execute_sql). Correr *
 | 15 | `migration_sprint13_notifications.sql` | **S14**: tabla `notifications` + índice parcial no-leídas + RLS | ⏳ pendiente |
 | 16 | `migration_sprint14_tour.sql` | **S11**: columna `tour_completed` en profiles (tour guiado) | ⏳ pendiente |
 | 17 | `migration_sprint15_super_coach.sql` | **S9 [N1]**: `coach_assignments` + `auth_is_coach_of()` + policies read-only + `coaching_notes`. Las asignaciones se crean a mano (ver comentarios del archivo) | ⏳ pendiente |
+| 18 | `migration_sprint17_multiplicador.sql` | **S17 [M8]**: tabla `multiplicador_diagnostics` (Diagnóstico ROI de Talento — Los 3 Pecados, total /36) + RLS por empresa | ⏳ pendiente |
 
 ## Limpieza puntual (no es migración de esquema)
 

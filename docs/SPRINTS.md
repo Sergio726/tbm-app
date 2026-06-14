@@ -50,6 +50,8 @@
 | **S13** | Hero Strip Interactivo | 27–28 | Las 4 tiles del dashboard con hover, click, tooltips y paneles de detalle |
 | **S14** | Búsqueda, Notificaciones & Energía | 29–30 | ⌘K navegación rápida + campana funcional con eventos reales + fix energía |
 | **S15** | Cierre de Migración Supabase | — | Proyecto nuevo en prod (Vercel) + SMTP propio + prueba real de colaborador |
+| **S16** | Mejoras y Correcciones (Mi Equipo) | — | 19 bugs resueltos del módulo Mi Equipo (4 ALTA + 9 MEDIA + 6 BAJA) |
+| **S17** | Multiplicador (M8) + Bienvenida JARVIS + Re-tour | — | Módulo Multiplicador de Liderazgo real + saludo contextual en login + re-acceso al tour |
 
 ---
 
@@ -2031,9 +2033,36 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 
 ---
 
-## SPRINT 17 — Experiencia de Bienvenida "JARVIS" + Re-acceso al Onboarding *(Propuesto 2026-06-14)*
-**Estado:** 🔮 Futuro — documentado, no implementado  
-**Objetivo:** Que cada inicio de sesión se sienta personal y "vivo" (estilo asistente de Iron Man), y resolver que el tour de onboarding hoy queda inaccesible una vez completado.
+## SPRINT 17 — Multiplicador (M8) + Bienvenida "JARVIS" + Re-acceso al Onboarding *(Implementado 2026-06-14)*
+**Estado:** ✅ Implementado  
+**Objetivo:** Convertir el ítem "Multiplicador" del sidebar (hoy un redirect muerto) en el módulo real M8, que cada inicio de sesión se sienta personal y "vivo" (estilo asistente de Iron Man), y resolver que el tour de onboarding hoy queda inaccesible una vez completado.
+
+> **Alcance ejecutado:** 17.A (JARVIS simple + localStorage), 17.B (re-tour vía
+> Command Palette + sidebar), 17.C (Multiplicador — core diagnóstico). Los **retos
+> interactivos del Multiplicador** (contador de interrupciones de 3 días y
+> experimento de preguntas de 48h, ver M8 en `SPEC.md`) quedan **diferidos** a un
+> sprint futuro; en esta entrega las 3 Herramientas se muestran como guía con su
+> reto semanal en texto.
+
+### Feature 17.C — Módulo Multiplicador de Liderazgo (M8) *(nuevo en este sprint)*
+
+**Problema**
+> El ítem "Multiplicador" del sidebar (`Zap`) llevaba a `/multiplicador`, que era
+> solo `redirect("/equipo")` — un dead-end visible que rompe la confianza en el
+> sistema (mismo motivo del S12).
+
+**Solución implementada (core diagnóstico)**
+- Nueva tabla `multiplicador_diagnostics` (migración `migration_sprint17_multiplicador.sql`):
+  pregunta de capacidad del equipo + 9 respuestas (3 Pecados × 3, escala 1–4) +
+  `total_score` calculado (/36) + RLS por empresa.
+- `/multiplicador` ahora es módulo real (server page + `multiplicador-client.tsx`
+  + `multiplicador-result.tsx`), guard solo arquitecto.
+- **Diagnóstico:** pregunta de entrada (% capacidad) + Los 3 Pecados del
+  Disminuidor (Rescatista / Marcapasos / Respuesta-Rápida).
+- **Resultados:** score /36, banda 🟢≤15 / 🟡16–24 / 🔴≥25, desglose por pecado,
+  las 3 Herramientas (Fichas de Póker / La Pregunta que Desbloquea / Definición de
+  "Hecho") con su reto semanal, e historial mensual de evolución.
+- Constantes y helper `scoreBandForTotal` en `src/types/database.ts`.
 
 ### Feature 17.A — Mensaje de bienvenida estilo Iron Man / JARVIS
 

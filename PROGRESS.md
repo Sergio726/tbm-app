@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-10 · **Completitud:** 🎉 **TODO el código de S0–S14 está implementado** · **Última pieza cerrada:** S9 exportación PDF. Lo que queda es configuración/operación (ver "Pendientes para beta").
+**Última actualización:** 2026-06-14 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17 (Multiplicador M8 + saludo JARVIS + re-acceso al tour). Lo que queda es configuración/operación (ver "Pendientes para beta").
 
 ---
 
@@ -29,6 +29,9 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S12** | Dashboard 100% funcional | ✅ | `/diagnostico` re-eval (pre-cargada) · tendencia histórica real por área · rituales de hoy con estado real (done/live/upcoming + CTA links) · Hero Strip real (Ciclo 90D desde baseline, racha Pre-game, promedio+delta diagnóstico, equipo activo hoy con avatares DISC). |
 | **S13** | Hero Strip interactivo | ✅ | HeroStrip extraído a client component (`hero-strip.tsx` + `tile-tooltip.tsx`): tiles clickeables con hover ring + tooltips (ciclo/fechas, racha 7 días + mejor racha, Multiplicador proxy fase A con badge Multiplicador/Disminuidor, panel de energía por miembro con ⚠ sin registrar). |
 | **S14** | Búsqueda ⌘K + Notificaciones | ✅ | Command Palette custom (⌘K/Ctrl+K, módulos + quick actions por rol) · tabla `notifications` (migración `sprint13`, ⏳ aplicar) · badge real + panel dropdown + `/notificaciones` · eventos: task_assigned, task_blocked, task_done, war_up_started · fix EnergySelector (error + revert). Pendiente menor: `task_overdue` necesita cron (S4 E7) y `scorecard_updated` no tiene emisor no-arquitecto. |
+| **S15** | Cierre Migración Supabase | ✅ | Proyecto nuevo en prod (`fozhnfxehbbgqaerprgf`) + SMTP propio + recovery tooling. |
+| **S16** | Mejoras y Correcciones (Mi Equipo) | ✅ | 19 bugs resueltos: 4 ALTA + 9 MEDIA + 6 BAJA del módulo Mi Equipo. |
+| **S17** | Multiplicador (M8) + JARVIS + Re-tour | ✅ | **17.C Multiplicador** real: `/multiplicador` deja de ser redirect → diagnóstico ROI de Talento (3 Pecados /36 + banda + 3 Herramientas + historial), tabla `multiplicador_diagnostics` (migración `sprint17`, ⏳ aplicar), guard arquitecto. **17.A JARVIS**: saludo contextual en login fresco (`welcome-greeting.tsx`, flag localStorage, descartable/apagable). **17.B Re-tour**: "Ver tour de nuevo" en Command Palette + botón ayuda en sidebar, hook compartido `use-restart-tour`. ⏳ Diferido: retos interactivos del Multiplicador (contador 3 días / experimento 48h). |
 
 ---
 
@@ -50,7 +53,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 ## Pendientes para beta
 
-1. **⏳ Aplicar 4 migraciones en Supabase** (SQL Editor, en orden): `migration_sprint12_activos.sql` · `migration_sprint13_notifications.sql` · `migration_sprint14_tour.sql` · `migration_sprint15_super_coach.sql`. Sin esto: tab Activos y notificaciones tiran error; tour y panel coach simplemente no aparecen.
+1. **⏳ Aplicar 5 migraciones en Supabase** (SQL Editor, en orden): `migration_sprint12_activos.sql` · `migration_sprint13_notifications.sql` · `migration_sprint14_tour.sql` · `migration_sprint15_super_coach.sql` · `migration_sprint17_multiplicador.sql`. Sin esto: tab Activos y notificaciones tiran error; tour y panel coach no aparecen; el módulo Multiplicador tira error al guardar/leer el diagnóstico.
 2. **Asignar el coach** (después de la migración 15): `insert into coach_assignments (coach_id, company_id) values ('<uuid de Dilio>', '<uuid empresa>');` — el item "Super Coach" aparece solo en el sidebar del coach.
 3. **Activar el cron de emails** (código ya deployado): en Vercel → Settings → Environment Variables agregar `CRON_SECRET` (string aleatorio largo), `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Settings → API → service_role) y `RESEND_API_KEY` + `RESEND_FROM` si no están. El cron corre solo a las 11:00 UTC (~6-8am LATAM). Esto también habilita `task_overdue` (S4 E7).
 4. **S9 — Exportación PDF** (~5h) — diagnóstico, Plan 90D, perfil de equipo y resumen semanal. Patrón sugerido: print stylesheets como el informe DISC existente.
@@ -80,6 +83,7 @@ Orden de aplicación en Supabase (ver [`supabase/README.md`](supabase/README.md)
 | 13 | `migration_sprint13_notifications.sql` | S14 — notifications · ⏳ aplicar |
 | 14 | `migration_sprint14_tour.sql` | S11 — tour_completed en profiles · ⏳ aplicar |
 | 15 | `migration_sprint15_super_coach.sql` | S9 — coach_assignments + coaching_notes + RLS coach · ⏳ aplicar |
+| 16 | `migration_sprint17_multiplicador.sql` | S17 — multiplicador_diagnostics (M8 ROI de Talento) · ⏳ aplicar |
 
 > ⚠️ **Numeración no coincide con sprint del plan** — los archivos se numeraron por orden de creación. Cruzá con esta tabla para saber qué cubre cada uno.
 
