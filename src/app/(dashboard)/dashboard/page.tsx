@@ -6,6 +6,7 @@ import KpiCard from "@/components/dashboard/KpiCard";
 import { SearchTrigger } from "@/components/layout/search-trigger";
 import { NotificationsBell } from "@/components/layout/notifications-bell";
 import { HeroStrip } from "@/components/dashboard/hero-strip";
+import { WelcomeGreeting } from "@/components/dashboard/welcome-greeting";
 import {
   Sparkles,
   RotateCcw,
@@ -732,6 +733,15 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
     .is("read_at", null);
 
+  // Tareas asignadas a mí por vencer (hoy o vencidas) sin completar — para el saludo JARVIS
+  const endOfTodayStr = `${todayStr}T23:59:59`;
+  const { count: tasksDueCount } = await supabase
+    .from("tasks")
+    .select("*", { count: "exact", head: true })
+    .eq("assigned_to", user.id)
+    .neq("status", "done")
+    .lte("when_deadline", endOfTodayStr);
+
   // Horarios y modo desde ritual_configs
   const fmtTime = (t: string | null | undefined) => (t ? t.slice(0, 5) : null);
   const warUpDeadline = fmtTime(ritualConfig?.war_up_deadline) ?? "09:00";
@@ -814,6 +824,18 @@ export default async function DashboardPage() {
   const ritualesCompletados = rituals.filter((r) => r.status === "done").length;
   const ritualesEnVivo = rituals.filter((r) => r.status === "live").length;
   const ritualesPendientes = rituals.filter((r) => r.status === "upcoming").length;
+
+  // Próximo ritual pendiente (para el saludo JARVIS) — null si ya están todos hechos
+  const nextRitualLabel: string | null =
+    preGameStatus !== "done"
+      ? "tu Pre-game te espera"
+      : warUpStatus === "live"
+        ? "el War Up está en vivo ahora"
+        : warUpStatus !== "done"
+          ? `el War Up cierra a las ${warUpDeadline}`
+          : coolDownStatus !== "done"
+            ? `el Cool Down abre desde ${coolDownStart}`
+            : null;
 
   return (
     <div
@@ -931,6 +953,16 @@ export default async function DashboardPage() {
           />
         </div>
       </div>
+
+      {/* ── Saludo JARVIS — solo en login fresco (S17.A) ── */}
+      <WelcomeGreeting
+        greeting={greeting}
+        firstName={firstName}
+        tasksDueCount={tasksDueCount ?? 0}
+        nextRitualLabel={nextRitualLabel}
+        areasCriticasCount={areasCriticas.length}
+        unreadCount={unreadCount ?? 0}
+      />
 
       {/* ── Hero strip — interactivo con datos reales (S12+S13) ── */}
       <HeroStrip

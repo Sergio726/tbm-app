@@ -590,6 +590,12 @@ function RightPanel() {
       return;
     }
 
+    // Marca de login fresco → el dashboard muestra el saludo JARVIS una sola vez (S17.A)
+    try {
+      localStorage.setItem("tbm:just-logged-in", "1");
+    } catch {
+      /* ignore */
+    }
     router.push("/dashboard");
     router.refresh();
   };
@@ -598,6 +604,12 @@ function RightPanel() {
     setSsoLoading(provider);
     setError(null);
     try {
+      // Marca de login fresco (persiste el redirect de OAuth) → saludo JARVIS (S17.A)
+      try {
+        localStorage.setItem("tbm:just-logged-in", "1");
+      } catch {
+        /* ignore */
+      }
       const supabase = createClient();
       const { error: ssoErr } = await supabase.auth.signInWithOAuth({
         provider,

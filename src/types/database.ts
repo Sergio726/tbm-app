@@ -361,6 +361,69 @@ export type Database = {
           },
         ]
       }
+      multiplicador_diagnostics: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          team_capacity_pct: number | null
+          rescatista_q1: number | null
+          rescatista_q2: number | null
+          rescatista_q3: number | null
+          marcapasos_q1: number | null
+          marcapasos_q2: number | null
+          marcapasos_q3: number | null
+          respuesta_q1: number | null
+          respuesta_q2: number | null
+          respuesta_q3: number | null
+          total_score: number | null
+          notes: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          team_capacity_pct?: number | null
+          rescatista_q1?: number | null
+          rescatista_q2?: number | null
+          rescatista_q3?: number | null
+          marcapasos_q1?: number | null
+          marcapasos_q2?: number | null
+          marcapasos_q3?: number | null
+          respuesta_q1?: number | null
+          respuesta_q2?: number | null
+          respuesta_q3?: number | null
+          notes?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          team_capacity_pct?: number | null
+          rescatista_q1?: number | null
+          rescatista_q2?: number | null
+          rescatista_q3?: number | null
+          marcapasos_q1?: number | null
+          marcapasos_q2?: number | null
+          marcapasos_q3?: number | null
+          respuesta_q1?: number | null
+          respuesta_q2?: number | null
+          respuesta_q3?: number | null
+          notes?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "multiplicador_diagnostics_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ritual_configs: {
         Row: {
           company_id: string
@@ -1587,6 +1650,7 @@ export type TablesUpdate<
 export type Company = Database["public"]["Tables"]["companies"]["Row"];
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Scorecard = Database["public"]["Tables"]["scorecards"]["Row"];
+export type MultiplicadorDiagnostic = Database["public"]["Tables"]["multiplicador_diagnostics"]["Row"];
 export type KPI = Database["public"]["Tables"]["kpis"]["Row"];
 export type EnergyLog = Database["public"]["Tables"]["energy_logs"]["Row"];
 export type Invitation = Database["public"]["Tables"]["invitations"]["Row"];
@@ -1652,6 +1716,114 @@ export const SCORECARD_AREAS = [
 ] as const;
 
 export type ScorecardKey = typeof SCORECARD_AREAS[number]["key"];
+
+// ── M8 — Multiplicador de Liderazgo (S17) ──────────────────────────
+// Diagnóstico ROI de Talento: Los 3 Pecados del Disminuidor.
+// 3 pecados × 3 preguntas, escala 1–4 → total /36.
+export const MULTIPLICADOR_SINS = [
+  {
+    key: "rescatista",
+    emoji: "🚨",
+    label: "El Rescatista",
+    descripcion: "Interviene antes de que el equipo resuelva solo.",
+    sintoma: "Termina haciendo lo que delegó.",
+    questions: [
+      { key: "rescatista_q1", text: "Cuando alguien se traba, termino resolviéndolo yo." },
+      { key: "rescatista_q2", text: "Reviso y corrijo el trabajo del equipo antes de que lo terminen." },
+      { key: "rescatista_q3", text: "Me cuesta ver al equipo equivocarse sin intervenir." },
+    ],
+  },
+  {
+    key: "marcapasos",
+    emoji: "⚡",
+    label: "El Marcapasos",
+    descripcion: "Trabaja a un ritmo que nadie puede seguir.",
+    sintoma: "El equipo se vuelve espectador.",
+    questions: [
+      { key: "marcapasos_q1", text: "Marco un ritmo que el equipo no logra sostener." },
+      { key: "marcapasos_q2", text: "Asumo tareas que delegué porque 'voy más rápido'." },
+      { key: "marcapasos_q3", text: "El equipo espera a que yo arranque para moverse." },
+    ],
+  },
+  {
+    key: "respuesta",
+    emoji: "💬",
+    label: "El Respuesta-Rápida",
+    descripcion: "Da la solución antes de que terminen de explicar.",
+    sintoma: "Es el que más habla en reuniones.",
+    questions: [
+      { key: "respuesta_q1", text: "Doy la solución antes de que terminen de explicar el problema." },
+      { key: "respuesta_q2", text: "Soy quien más habla en las reuniones." },
+      { key: "respuesta_q3", text: "Respondo rápido en vez de devolver la pregunta al equipo." },
+    ],
+  },
+] as const;
+
+export type MultiplicadorSinKey = typeof MULTIPLICADOR_SINS[number]["key"];
+export type MultiplicadorQuestionKey =
+  typeof MULTIPLICADOR_SINS[number]["questions"][number]["key"];
+
+// Escala de respuesta 1–4 del diagnóstico.
+export const MULTIPLICADOR_SCALE = ["Casi nunca", "A veces", "Seguido", "Casi siempre"];
+
+// Las 3 Herramientas del Multiplicador (guía post-diagnóstico).
+export const MULTIPLICADOR_TOOLS = [
+  {
+    emoji: "🃏",
+    label: "Las Fichas de Póker",
+    mecanica: "5 fichas por reunión. Cada intervención gasta una. Al acabarse, solo preguntas.",
+    reto: "Máximo 5 intervenciones en la próxima reunión.",
+  },
+  {
+    emoji: "❓",
+    label: "La Pregunta que Desbloquea",
+    mecanica: "Ante cualquier problema: «¿Tú qué recomiendas?» → «¿Cuáles son tus 3 opciones y cuál recomendás?» → «Confío en tu criterio.»",
+    reto: "48h sin dar respuestas directas.",
+  },
+  {
+    emoji: "✅",
+    label: "Definición de «Hecho»",
+    mecanica: "Antes de delegar: formato exacto + fecha/hora + criterios de calidad (A.R.Q.U.I.).",
+    reto: "Definir el «Hecho» de la próxima delegación.",
+  },
+] as const;
+
+// Banda de resultado según el score total (/36). Umbrales del método TBM.
+export type MultiplicadorBand = "multiplicador" | "accidental" | "disminuidor";
+
+export function scoreBandForTotal(total: number): {
+  band: MultiplicadorBand;
+  emoji: string;
+  label: string;
+  color: string;
+  resumen: string;
+} {
+  if (total <= 15) {
+    return {
+      band: "multiplicador",
+      emoji: "🟢",
+      label: "Multiplicador Natural",
+      color: "#34d399",
+      resumen: "Extraés cerca del 97% de la inteligencia de tu equipo. Sostené el estándar.",
+    };
+  }
+  if (total <= 24) {
+    return {
+      band: "accidental",
+      emoji: "🟡",
+      label: "Disminuidor Accidental",
+      color: "#fbbf24",
+      resumen: "Buenas intenciones, pero hay patrones que limitan a tu gente. Es corregible.",
+    };
+  }
+  return {
+    band: "disminuidor",
+    emoji: "🔴",
+    label: "Disminuidor en Acción",
+    color: "#f87171",
+    resumen: "Tu equipo opera al ~48% de su capacidad. Cada nómina rinde la mitad.",
+  };
+}
 
 export const LOS_NAMES: Record<number, string> = {
   1: "Cadete",

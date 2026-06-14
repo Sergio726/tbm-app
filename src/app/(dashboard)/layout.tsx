@@ -66,6 +66,7 @@ export default async function DashboardLayout({
     <div className="min-h-screen bg-tbm-bg">
       {/* Sidebar fijo */}
       <Sidebar
+        userId={user.id}
         companyName={companyName}
         userInitials={initials}
         userName={profile?.full_name ?? undefined}
@@ -83,7 +84,7 @@ export default async function DashboardLayout({
       </main>
 
       {/* Command Palette global (⌘K / Ctrl+K) */}
-      <CommandPalette userRole={profile?.role ?? "colaborador"} />
+      <CommandPalette userRole={profile?.role ?? "colaborador"} userId={user.id} />
 
       {/* Tour guiado de onboarding (S11) — auto-arranca la primera vez */}
       <TourProvider

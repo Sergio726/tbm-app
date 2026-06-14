@@ -4,10 +4,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useCommandPalette } from "@/hooks/use-command-palette";
+import { useRestartTour } from "@/hooks/use-restart-tour";
 
 type PaletteItem = {
   label: string;
-  href: string;
+  href?: string;
+  action?: string; // id de acción especial (ej. "restart-tour")
   icon: string;
   keywords?: string[];
   role?: "arquitecto" | "colaborador";
@@ -21,6 +23,7 @@ const MODULES: PaletteItem[] = [
   { label: "Feedback S.E.C.", href: "/feedback", icon: "💬", keywords: ["sostener", "elevar", "corregir"] },
   { label: "Plan 90D", href: "/plan-90d", icon: "🎯", keywords: ["rocas", "bos", "ideas", "activos"] },
   { label: "Workbooks", href: "/workbooks", icon: "📚", keywords: ["sesiones", "programa", "ejercicios"] },
+  { label: "Multiplicador", href: "/multiplicador", icon: "⚡", keywords: ["disminuidor", "pecados", "liderazgo", "roi", "talento"] },
   { label: "Diagnóstico", href: "/diagnostico", icon: "📊", keywords: ["scorecard", "areas", "evaluacion"] },
   { label: "Mi cuenta", href: "/cuenta", icon: "⚙️", keywords: ["perfil", "configuracion"] },
 ];
@@ -30,8 +33,10 @@ const QUICK_ACTIONS: PaletteItem[] = [
   { label: "Completar Pre-game de hoy", href: "/rituales/pre-game", icon: "📝", keywords: ["big wins", "ritual"] },
   { label: "Iniciar / unirme al War Up", href: "/rituales/war-up", icon: "⚡", keywords: ["standup", "ritual"] },
   { label: "Actualizar diagnóstico", href: "/diagnostico", icon: "📈", role: "arquitecto", keywords: ["scorecard"] },
+  { label: "Diagnóstico Multiplicador", href: "/multiplicador", icon: "⚡", role: "arquitecto", keywords: ["disminuidor", "pecados", "roi"] },
   { label: "Mis tareas asignadas", href: "/delegacion/mis-tareas", icon: "✅", role: "colaborador", keywords: ["pendientes"] },
   { label: "Mi Programa (8 sesiones)", href: "/workbooks/mi-programa", icon: "🗺️", role: "arquitecto", keywords: ["progreso"] },
+  { label: "Ver tour de nuevo", action: "restart-tour", icon: "🧭", keywords: ["tour", "ayuda", "onboarding", "guia", "help"] },
   { label: "Exportar diagnóstico (PDF)", href: "/export/diagnostico", icon: "🖨️", role: "arquitecto", keywords: ["pdf", "imprimir", "exportar"] },
   { label: "Exportar Plan 90D (PDF)", href: "/export/plan-90d", icon: "🖨️", role: "arquitecto", keywords: ["pdf", "rocas", "exportar"] },
   { label: "Exportar perfil del equipo (PDF)", href: "/export/equipo", icon: "🖨️", role: "arquitecto", keywords: ["pdf", "disc", "exportar"] },
@@ -47,9 +52,10 @@ function matches(item: PaletteItem, q: string): boolean {
     .every((word) => hay.includes(word));
 }
 
-export function CommandPalette({ userRole }: { userRole: string }) {
+export function CommandPalette({ userRole, userId }: { userRole: string; userId: string }) {
   const { open, setOpen } = useCommandPalette();
   const router = useRouter();
+  const { restart } = useRestartTour(userId);
   const [query, setQuery] = useState("");
   const [activeIdx, setActiveIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -79,9 +85,13 @@ export function CommandPalette({ userRole }: { userRole: string }) {
 
   if (!open) return null;
 
-  const go = (href: string) => {
+  const go = (item: PaletteItem) => {
     setOpen(false);
-    router.push(href);
+    if (item.action === "restart-tour") {
+      void restart();
+      return;
+    }
+    if (item.href) router.push(item.href);
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -94,7 +104,7 @@ export function CommandPalette({ userRole }: { userRole: string }) {
     } else if (e.key === "Enter") {
       e.preventDefault();
       const item = sections.flat[activeIdx];
-      if (item) go(item.href);
+      if (item) go(item);
     }
   };
 
@@ -205,7 +215,7 @@ function PaletteSection({
   offset: number;
   activeIdx: number;
   onHover: (idx: number) => void;
-  onSelect: (href: string) => void;
+  onSelect: (item: PaletteItem) => void;
 }) {
   return (
     <div className="mb-1">
@@ -217,10 +227,10 @@ function PaletteSection({
         const active = idx === activeIdx;
         return (
           <button
-            key={item.href + item.label}
+            key={(item.href ?? item.action ?? "") + item.label}
             type="button"
             onMouseEnter={() => onHover(idx)}
-            onClick={() => onSelect(item.href)}
+            onClick={() => onSelect(item)}
             className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors"
             style={{
               background: active ? "rgba(91,138,255,0.12)" : "transparent",
