@@ -31,7 +31,7 @@ export default async function WorkbookSessionPage({ params }: Props) {
 
   // Validar parámetro de sesión
   const sessionNum = parseInt(sessionParam, 10);
-  if (isNaN(sessionNum) || sessionNum < 1 || sessionNum > 4) redirect("/workbooks");
+  if (isNaN(sessionNum) || sessionNum < 1 || sessionNum > 8) redirect("/workbooks");
 
   const sessionDef = SESSIONS.find((s) => s.number === sessionNum);
   if (!sessionDef) redirect("/workbooks");

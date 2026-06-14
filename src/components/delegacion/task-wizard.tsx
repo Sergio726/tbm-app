@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { LOS_LEVELS } from "@/lib/disc";
+import { notify } from "@/lib/notifications";
 import { DeadlinePicker } from "./deadline-picker";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -161,6 +162,19 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
       if (insertError) {
         setError(insertError.message);
         return;
+      }
+
+      // Notificar al colaborador asignado (no bloqueante)
+      if (data.assigned_to) {
+        await notify(supabase, {
+          companyId,
+          userId: data.assigned_to,
+          actorId: userId,
+          type: "task_assigned",
+          title: "Te asignaron una tarea",
+          body: `"${data.what_dod.trim().slice(0, 60)}" — revisá los 5 puntos.`,
+          href: "/delegacion/mis-tareas",
+        });
       }
 
       router.push("/delegacion");

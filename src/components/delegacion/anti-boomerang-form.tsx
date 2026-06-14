@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Shield, ArrowLeft, Clock, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/lib/notifications";
 import type { Task } from "@/types/database";
 
 interface AntiBoomerangFormProps {
@@ -66,6 +67,22 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
         setError(taskErr.message);
         return;
       }
+
+      // Notificar al creador de la tarea (el Arquitecto) — no bloqueante
+      const { data: me } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", currentUserId)
+        .single();
+      await notify(supabase, {
+        companyId: task.company_id,
+        userId: task.created_by,
+        actorId: currentUserId,
+        type: "task_blocked",
+        title: "Tarea bloqueada",
+        body: `${me?.full_name ?? "Un colaborador"} escaló "${task.what_dod.slice(0, 60)}" con 3 opciones.`,
+        href: "/delegacion",
+      });
 
       setDone(true);
       router.push("/delegacion/mis-tareas");

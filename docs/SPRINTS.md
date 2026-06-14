@@ -49,6 +49,7 @@
 | **S12** | Dashboard 100% Funcional | 25–26 | Hero strip, rituales y diagnóstico con datos reales — sin hardcoding |
 | **S13** | Hero Strip Interactivo | 27–28 | Las 4 tiles del dashboard con hover, click, tooltips y paneles de detalle |
 | **S14** | Búsqueda, Notificaciones & Energía | 29–30 | ⌘K navegación rápida + campana funcional con eventos reales + fix energía |
+| **S15** | Cierre de Migración Supabase | — | Proyecto nuevo en prod (Vercel) + SMTP propio + prueba real de colaborador |
 
 ---
 
@@ -1828,10 +1829,20 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
   viejo en `localhost:3000` con el env anterior cacheado).
 
 **Robustez de email (recomendado para producción)**
+- [ ] **(Sebas) Comprar un dominio propio** (~$10/año, ej. Namecheap / Cloudflare /
+  Google Domains) para la app. Es prerrequisito de todo lo de abajo: sin dominio
+  verificado, Resend solo entrega a la propia casilla de la cuenta Resend
+  (remitente de prueba `onboarding@resend.dev`), así que **ningún email llega a
+  colaboradores reales**. Estado actual (2026-06-14): sin dominio →
+  `RESEND_FROM=onboarding@resend.dev` (modo prueba) en `.env.local`.
+- [ ] **Verificar el dominio en Resend** (`resend.com → Domains → Add Domain` →
+  pegar los registros DNS SPF/DKIM en el proveedor del dominio). Luego cambiar
+  `RESEND_FROM` a `The Business Multiplier <noreply@TU_DOMINIO>` en `.env.local` y Vercel.
 - [ ] Configurar **SMTP propio (Resend)** en Auth del proyecto nuevo
   (`Dashboard → Settings → Auth → SMTP Settings`). Las invitaciones usan `signInWithOtp`
   (email de Supabase Auth, no Resend); el email interno de proyectos nuevos es rate-limited.
-  Sin SMTP propio las invitaciones pueden cortarse en producción.
+  Sin SMTP propio las invitaciones pueden cortarse en producción. (Requiere el dominio
+  verificado del paso anterior.)
 
 **Pruebas pendientes**
 - [ ] Prueba **end-to-end de colaborador** con un segundo email real: invitar desde la app
@@ -1917,25 +1928,29 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 
 #### 🔴 Severidad ALTA
 
-**3.1 — Pérdida de datos sin confirmación al re-hacer test / regenerar link**
+**3.1 — Pérdida de datos sin confirmación al re-hacer test / regenerar link** · ✅ RESUELTO (2026-06-14)
 - `equipo-client.tsx` ~169–212 (`handleGenerateLink`), disparado desde `test-link-box.tsx` ~105–116 y ~173–181.
 - Generar un link nuevo borra destructivamente el perfil DISC (`disc_letters/disc_name/disc_icon/disc_profile_key/disc_scores → null`) sin diálogo de confirmación y se aplica al instante en la UI. Un clic accidental destruye datos cargados.
 - **Categoría:** bug funcional / riesgo de pérdida de datos.
+- **Fix:** nuevo gate `requestGenerateLink()` + modal de confirmación (cancelable con Escape / click afuera) que solo se dispara si hay perfil DISC que perder (`disc_letters` o `disc_status==='completado'`). El primer "Generar link" procede directo.
 
-**3.2 — "Regenerar link (invalida el anterior)" NO invalida el anterior**
+**3.2 — "Regenerar link (invalida el anterior)" NO invalida el anterior** · ✅ RESUELTO (2026-06-14)
 - `equipo-client.tsx` ~179–202; copy en `test-link-box.tsx` ~180.
 - Solo hace `insert` de una fila nueva en `disc_assessments`; nunca invalida el token anterior. El `/disc/<token>` viejo sigue activo → dos tests válidos para la misma persona. El copy es engañoso y hay riesgo de consistencia/seguridad.
 - **Categoría:** bug funcional / seguridad.
+- **Fix:** antes de insertar el nuevo test, `handleGenerateLink` borra las filas no-completadas de esa persona (`delete ... eq(profile_id).neq(status,'completado')`). El token viejo deja de resolver (`get_disc_assessment → null →` página "Link inválido"), así nunca hay dos links de test válidos. Los tests completados se preservan como historial. Sin migración SQL. El copy ahora es veraz.
 
-**3.3 — Layout de 2 columnas no responsive (grid por estilo inline)**
+**3.3 — Layout de 2 columnas no responsive (grid por estilo inline)** · ✅ RESUELTO (2026-06-14)
 - `equipo-client.tsx` ~298–301 (`gridTemplateColumns: "300px minmax(0,1fr)"`) + `px-10` en ~244.
 - El grid inline no se puede sobreescribir con clases responsive de Tailwind; en viewports angostos no colapsa a una columna → overflow horizontal / squeeze. En mobile la experiencia se rompe.
 - **Categoría:** responsive / consistencia visual.
+- **Fix:** grid pasado a clases Tailwind `grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)]` (una columna en mobile/tablet, dos en `lg+`) y padding del main `px-5 md:px-10`. Sin `style` inline.
 
-**3.4 — Subir PDF marca el test como "completado" aunque no se haya hecho**
+**3.4 — Subir PDF marca el test como "completado" aunque no se haya hecho** · ✅ RESUELTO (2026-06-14)
 - `equipo-client.tsx` ~224–227 (`disc_status: "completado"` al subir PDF).
 - Cargar un PDF fuerza el estado a completado, contaminando el % de "Estado DISC del equipo" (`team-sidebar.tsx` ~26–29), el badge ✓ del roster (~191–197) y el estado del `TestLinkBox`. Conflación de "tiene PDF" con "completó el test".
 - **Categoría:** bug funcional.
+- **Fix:** `handleUploadPdf` ahora solo guarda `disc_pdf_url` (sin tocar `disc_status`). El estado "completado" lo fija únicamente la entrega del test (`submit_disc`), así el % del equipo y el badge ✓ reflejan tests reales, no PDFs adjuntos.
 
 #### 🟠 Severidad MEDIA
 
@@ -2003,7 +2018,7 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 - `equipo-client.tsx` ~342–344: `EmptyDetail` casi inalcanzable (el propio usuario siempre está en `team`); su copy rara vez aplica.
 - `equipo-client.tsx` ~378–410: `savedFlash` (z-50) y `errorFlash` (z-55) comparten posición bottom-center y pueden solaparse.
 
-**Estado:** 📝 Documentado — pendiente de priorización y resolución (no implementado)
+**Estado:** 🟠 En progreso — 🔴 las 4 de severidad ALTA (3.1–3.4) **resueltas** (2026-06-14, build verde); 🟠 medias (3.5–3.13) y 🟡 bajas (3.14–3.19) aún documentadas, pendientes de priorización.
 
 ---
 

@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BookOpen } from "lucide-react";
+import { BookOpen, BarChart3, ArrowRight } from "lucide-react";
 import { createServerClient } from "@/lib/supabase/server";
 import type { Profile, WorkbookProgress } from "@/types/database";
 import { SessionsGrid } from "@/components/workbooks/sessions-grid";
@@ -63,28 +64,45 @@ export default async function WorkbooksPage() {
       }}
     >
       {/* Header */}
-      <div className="mb-8">
-        <div className="mb-1 flex items-center gap-3">
-          <div
-            className="flex h-10 w-10 items-center justify-center rounded-xl"
-            style={{
-              background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
-              border: "1px solid rgba(91,138,255,0.25)",
-              color: "#9fb9ff",
-            }}
-          >
-            <BookOpen size={18} strokeWidth={1.6} />
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="mb-1 flex items-center gap-3">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl"
+              style={{
+                background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
+                border: "1px solid rgba(91,138,255,0.25)",
+                color: "#9fb9ff",
+              }}
+            >
+              <BookOpen size={18} strokeWidth={1.6} />
+            </div>
+            <h1
+              className="text-white"
+              style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}
+            >
+              Workbooks
+            </h1>
           </div>
-          <h1
-            className="text-white"
-            style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}
+          <p
+            style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", marginLeft: 52 }}
           >
-            Workbooks
-          </h1>
+            Programa TBM — 8 sesiones interactivas que transforman el conocimiento en acción concreta
+          </p>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", marginLeft: 52 }}>
-          Programa TBM — 4 sesiones interactivas que transforman el conocimiento en acción concreta
-        </p>
+        <Link
+          href="/workbooks/mi-programa"
+          className="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-[13px] font-semibold transition hover:bg-white/[0.05]"
+          style={{
+            background: "rgba(91,138,255,0.10)",
+            borderColor: "rgba(91,138,255,0.30)",
+            color: "#bcd0ff",
+          }}
+        >
+          <BarChart3 size={15} />
+          Mi Programa
+          <ArrowRight size={14} />
+        </Link>
       </div>
 
       {/* Info banner */}

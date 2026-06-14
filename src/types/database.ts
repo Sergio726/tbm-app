@@ -217,6 +217,7 @@ export type Database = {
           los_level: number | null
           los_target: number | null
           onboarding_completed: boolean | null
+          tour_completed: boolean | null
           onboarding_step: number | null
           role: string | null
           updated_at: string | null
@@ -248,6 +249,7 @@ export type Database = {
           los_level?: number | null
           los_target?: number | null
           onboarding_completed?: boolean | null
+          tour_completed?: boolean | null
           onboarding_step?: number | null
           role?: string | null
           updated_at?: string | null
@@ -279,6 +281,7 @@ export type Database = {
           los_level?: number | null
           los_target?: number | null
           onboarding_completed?: boolean | null
+          tour_completed?: boolean | null
           onboarding_step?: number | null
           role?: string | null
           updated_at?: string | null
@@ -1305,6 +1308,164 @@ export type Database = {
           },
         ]
       }
+      coach_assignments: {
+        Row: {
+          id: string
+          coach_id: string
+          company_id: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          coach_id: string
+          company_id: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          coach_id?: string
+          company_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_assignments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coaching_notes: {
+        Row: {
+          id: string
+          company_id: string
+          coach_id: string
+          note: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          coach_id: string
+          note: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          coach_id?: string
+          note?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_notes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          type: string
+          title: string
+          body: string | null
+          href: string | null
+          read_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          type: string
+          title: string
+          body?: string | null
+          href?: string | null
+          read_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          body?: string | null
+          href?: string | null
+          read_at?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      process_assets: {
+        Row: {
+          id: string
+          company_id: string
+          created_by: string
+          owner_id: string | null
+          title: string
+          description: string | null
+          category: string
+          video_url: string | null
+          doc_url: string | null
+          status: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          created_by: string
+          owner_id?: string | null
+          title: string
+          description?: string | null
+          category?: string
+          video_url?: string | null
+          doc_url?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          created_by?: string
+          owner_id?: string | null
+          title?: string
+          description?: string | null
+          category?: string
+          video_url?: string | null
+          doc_url?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_assets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1466,6 +1627,10 @@ export type FeedbackType = "S" | "E" | "C";
 export type Rock = Database["public"]["Tables"]["rocks"]["Row"];
 export type RockUpdate = Database["public"]["Tables"]["rock_updates"]["Row"];
 export type IdeaParking = Database["public"]["Tables"]["idea_parking"]["Row"];
+export type ProcessAsset = Database["public"]["Tables"]["process_assets"]["Row"];
+export type AppNotification = Database["public"]["Tables"]["notifications"]["Row"];
+export type CoachAssignment = Database["public"]["Tables"]["coach_assignments"]["Row"];
+export type CoachingNote = Database["public"]["Tables"]["coaching_notes"]["Row"];
 export type Decision = Database["public"]["Tables"]["decisions"]["Row"];
 export type LeadingIndicator = Database["public"]["Tables"]["leading_indicators"]["Row"];
 export type RockStatus = "active" | "completed" | "failed" | "archived";

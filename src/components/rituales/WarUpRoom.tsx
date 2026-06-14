@@ -131,6 +131,26 @@ export default function WarUpRoom({
       }
       setWarUp(data);
       setEntries([]);
+
+      // Notificar a todo el equipo que la sala está abierta (no bloqueante)
+      const recipients = teamProfiles.filter((p) => p.id !== userId);
+      if (recipients.length > 0) {
+        try {
+          await supabase.from("notifications").insert(
+            recipients.map((p) => ({
+              company_id: companyId,
+              user_id: p.id,
+              type: "war_up_started",
+              title: "War Up iniciado",
+              body: "La sala está abierta — entrá con tu QUÉ / POR QUÉ / BLOQUEO.",
+              href: "/rituales/war-up",
+            }))
+          );
+        } catch (e) {
+          console.error("Notificación war_up_started falló (no bloqueante):", e);
+        }
+      }
+
       router.refresh();
     });
   };

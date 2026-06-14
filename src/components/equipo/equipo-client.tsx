@@ -56,6 +56,7 @@ export function EquipoClient({
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [confirmRegen, setConfirmRegen] = useState(false);
 
   // Realtime: aviso cuando un miembro completa su test DISC
   const teamRef = useRef(team);
@@ -95,6 +96,15 @@ export function EquipoClient({
     const t = setTimeout(() => setErrorFlash(null), 5000);
     return () => clearTimeout(t);
   }, [errorFlash]);
+  // Cerrar el diálogo de confirmación con Escape.
+  useEffect(() => {
+    if (!confirmRegen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setConfirmRegen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [confirmRegen]);
 
   const selected = team.find((m) => m.id === selectedId) ?? null;
   const selectedAssessment = selected
@@ -166,11 +176,32 @@ export function EquipoClient({
     }
   }
 
+  // Gate de confirmación: solo pide confirmar si hay un perfil DISC que se
+  // perdería (test completado o letras cargadas). En el primer "Generar link"
+  // no hay nada que perder → procede directo.
+  function requestGenerateLink() {
+    if (!selected || generating) return;
+    const hasData = !!(selected.disc_letters || selected.disc_status === "completado");
+    if (hasData) setConfirmRegen(true);
+    else void handleGenerateLink();
+  }
+
   async function handleGenerateLink() {
     if (!selected || generating) return;
+    setConfirmRegen(false);
     setGenerating(true);
     try {
       const supabase = createBrowserClient();
+      // Invalida los tests anteriores NO completados de esta persona: al borrar
+      // la fila, su token deja de resolver (get_disc_assessment → null →
+      // "Link inválido"), evitando dos links de test válidos a la vez. Los tests
+      // ya completados se conservan como historial.
+      const { error: delErr } = await supabase
+        .from("disc_assessments")
+        .delete()
+        .eq("profile_id", selected.id)
+        .neq("status", "completado");
+      if (delErr) throw delErr;
       const token =
         (typeof crypto !== "undefined" && crypto.randomUUID
           ? crypto.randomUUID().replace(/-/g, "")
@@ -221,9 +252,12 @@ export function EquipoClient({
         .from("disc-reports")
         .upload(path, file, { upsert: true, contentType: "application/pdf" });
       if (upErr) throw upErr;
+      // Adjuntar el PDF NO equivale a completar el test: solo guarda el informe.
+      // El estado "completado" lo fija únicamente la entrega del test (submit_disc),
+      // para no contaminar el % "Estado DISC del equipo" ni el badge ✓ del roster.
       const { error } = await supabase
         .from("profiles")
-        .update({ disc_pdf_url: path, disc_status: "completado" })
+        .update({ disc_pdf_url: path })
         .eq("id", selected.id);
       if (error) throw error;
       router.refresh();
@@ -241,7 +275,7 @@ export function EquipoClient({
 
   return (
     <main
-      className="mx-auto w-full max-w-[1500px] px-10 py-[30px] pb-10 text-white"
+      className="mx-auto w-full max-w-[1500px] px-5 py-[30px] pb-10 text-white md:px-10"
       style={{ fontFamily: "Inter, system-ui, sans-serif" }}
     >
       {/* page header */}
@@ -295,10 +329,7 @@ export function EquipoClient({
         )}
       </div>
 
-      <div
-        className="grid items-start gap-[22px]"
-        style={{ gridTemplateColumns: "300px minmax(0, 1fr)" }}
-      >
+      <div className="grid grid-cols-1 items-start gap-[22px] lg:grid-cols-[300px_minmax(0,1fr)]">
         <TeamSidebar
           team={team}
           currentUserId={currentUserId}
@@ -329,7 +360,7 @@ export function EquipoClient({
               scores={scores}
               testToken={selectedToken}
               testStatus={selectedAssessment?.status ?? null}
-              onGenerateLink={handleGenerateLink}
+              onGenerateLink={requestGenerateLink}
               generating={generating}
               onUploadPdf={handleUploadPdf}
               uploadingPdf={uploadingPdf}
@@ -372,6 +403,53 @@ export function EquipoClient({
 
       {reportOpen && selected && (
         <MemberReportModal member={selected} team={team} onClose={() => setReportOpen(false)} />
+      )}
+
+      {/* Confirmación antes de re-hacer el test (acción destructiva) */}
+      {confirmRegen && selected && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-regen-title"
+          onClick={() => setConfirmRegen(false)}
+        >
+          <div
+            className="w-full max-w-[420px] rounded-2xl border border-[#f87171]/30 bg-[#141b2b] p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center gap-2.5">
+              <AlertTriangle size={18} className="text-[#fca5a5]" />
+              <h2 id="confirm-regen-title" className="text-[15px] font-bold text-white">
+                Re-hacer test DISC
+              </h2>
+            </div>
+            <p className="text-[13px] leading-relaxed text-white/70">
+              Esto va a <b className="text-white">borrar el perfil DISC actual</b> de{" "}
+              <b className="text-white">{selected.full_name ?? "esta persona"}</b> (letras, scores y
+              arquetipo) y a <b className="text-white">invalidar el link anterior</b>. Esta acción no
+              se puede deshacer.
+            </p>
+            <div className="mt-5 flex justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setConfirmRegen(false)}
+                className="rounded-[10px] border border-white/[0.12] bg-white/[0.04] px-4 py-2.5 text-[13px] font-semibold text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleGenerateLink}
+                disabled={generating}
+                autoFocus
+                className="rounded-[10px] bg-gradient-to-br from-[#f87171] to-[#dc2626] px-4 py-2.5 text-[13px] font-bold text-white transition hover:brightness-110 disabled:cursor-default disabled:opacity-60"
+              >
+                {generating ? "Generando…" : "Sí, re-hacer test"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Toast (savedFlash) — abajo central, RPG-style */}

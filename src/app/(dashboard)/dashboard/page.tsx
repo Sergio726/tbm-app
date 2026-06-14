@@ -3,13 +3,12 @@ import { createServerClient } from "@/lib/supabase/server";
 import { SCORECARD_AREAS, type Scorecard, type ScorecardKey } from "@/types/database";
 import EnergySelector from "@/components/dashboard/EnergySelector";
 import KpiCard from "@/components/dashboard/KpiCard";
+import { SearchTrigger } from "@/components/layout/search-trigger";
+import { NotificationsBell } from "@/components/layout/notifications-bell";
+import { HeroStrip } from "@/components/dashboard/hero-strip";
 import {
   Sparkles,
-  Search,
-  Bell,
-  Target,
   RotateCcw,
-  Zap,
   Users,
   TrendingUp,
   ArrowRight,
@@ -30,6 +29,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
+import { DISC_COLORS, primaryLetter } from "@/lib/disc";
 
 // =============================================================
 // Helpers
@@ -64,226 +64,6 @@ function greetingForHour(h: number) {
   if (h < 12) return "Buenos días";
   if (h < 19) return "Buenas tardes";
   return "Buenas noches";
-}
-
-// =============================================================
-// Hero Strip — 4 tiles (Plan 90D, Sprint, Multiplicador, Equipo)
-// Datos placeholder hasta tener Plan 90D real en Sprint 2+
-// =============================================================
-function HeroTile({
-  Icon,
-  label,
-  value,
-  sub,
-  accent,
-  tone,
-  children,
-}: {
-  Icon: LucideIcon;
-  label: string;
-  value: string;
-  sub?: string;
-  accent: string;
-  tone?: "accent";
-  children?: ReactNode;
-}) {
-  return (
-    <div
-      className="relative overflow-hidden"
-      style={{
-        flex: 1,
-        padding: "18px 20px",
-        borderRadius: 14,
-        background:
-          tone === "accent"
-            ? "linear-gradient(135deg, rgba(91,138,255,0.16) 0%, rgba(91,138,255,0.04) 100%)"
-            : "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        border:
-          tone === "accent"
-            ? "1px solid rgba(91,138,255,0.28)"
-            : "1px solid rgba(255,255,255,0.06)",
-        boxShadow: tone === "accent" ? "0 8px 24px rgba(91,138,255,0.16)" : "none",
-      }}
-    >
-      <div
-        className="flex items-center"
-        style={{ gap: 8, marginBottom: 10 }}
-      >
-        <div
-          className="flex items-center justify-center"
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 8,
-            background: `${accent}1f`,
-            border: `1px solid ${accent}33`,
-            color: accent,
-          }}
-        >
-          <Icon size={14} strokeWidth={2} />
-        </div>
-        <div
-          className="uppercase"
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
-            letterSpacing: 1.2,
-          }}
-        >
-          {label}
-        </div>
-      </div>
-      <div
-        style={{
-          fontSize: 28,
-          fontWeight: 700,
-          letterSpacing: -0.6,
-          color: "#fff",
-          lineHeight: 1.1,
-        }}
-      >
-        {value}
-      </div>
-      {sub && (
-        <div
-          style={{
-            fontSize: 12,
-            color: "rgba(255,255,255,0.5)",
-            marginTop: 6,
-          }}
-        >
-          {sub}
-        </div>
-      )}
-      {children}
-    </div>
-  );
-}
-
-function HeroStrip() {
-  return (
-    <div className="flex" style={{ gap: 12, marginBottom: 32 }}>
-      <HeroTile
-        Icon={Target}
-        label="Plan 90D"
-        value="73 días"
-        accent="#5b8aff"
-        tone="accent"
-      >
-        <div
-          style={{
-            height: 4,
-            background: "rgba(255,255,255,0.06)",
-            borderRadius: 99,
-            marginTop: 10,
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              width: "19%",
-              height: "100%",
-              background: "linear-gradient(90deg, #5b8aff, #34d399)",
-              borderRadius: 99,
-            }}
-          />
-        </div>
-        <div
-          className="flex justify-between"
-          style={{
-            ...MONO,
-            marginTop: 6,
-            fontSize: 10.5,
-            color: "rgba(255,255,255,0.45)",
-          }}
-        >
-          <span>día 17/90</span>
-          <span>19%</span>
-        </div>
-      </HeroTile>
-
-      <HeroTile
-        Icon={RotateCcw}
-        label="Sprint actual"
-        value="Sprint 2"
-        sub="día 4 de 14 · cierra viernes"
-        accent="#34d399"
-      />
-
-      <HeroTile
-        Icon={Zap}
-        label="Multiplicador"
-        value="2.3×"
-        accent="#fbbf24"
-      >
-        <div
-          className="flex items-center"
-          style={{ gap: 6, marginTop: 6, fontSize: 12 }}
-        >
-          <span
-            className="flex items-center"
-            style={{ color: "#34d399", gap: 3, fontWeight: 600 }}
-          >
-            <TrendingUp size={11} strokeWidth={2.4} />
-            +0.5×
-          </span>
-          <span style={{ color: "rgba(255,255,255,0.45)" }}>vs semana pasada</span>
-        </div>
-      </HeroTile>
-
-      <HeroTile
-        Icon={Users}
-        label="Equipo hoy"
-        value="8 / 12"
-        sub="activos esta mañana"
-        accent="#a78bfa"
-      >
-        <div className="flex" style={{ marginTop: 8 }}>
-          {[
-            ["#f87171", "A"],
-            ["#5b8aff", "L"],
-            ["#34d399", "M"],
-            ["#fbbf24", "C"],
-            ["#a78bfa", "P"],
-          ].map(([c, i], idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-center text-white"
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: "50%",
-                background: c,
-                border: "2px solid #0a0e1a",
-                marginLeft: idx === 0 ? 0 : -6,
-                fontSize: 10,
-                fontWeight: 600,
-              }}
-            >
-              {i}
-            </div>
-          ))}
-          <div
-            className="flex items-center justify-center"
-            style={{
-              width: 22,
-              height: 22,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.06)",
-              border: "2px solid #0a0e1a",
-              marginLeft: -6,
-              fontSize: 10,
-              fontWeight: 600,
-              color: "rgba(255,255,255,0.55)",
-            }}
-          >
-            +3
-          </div>
-        </div>
-      </HeroTile>
-    </div>
-  );
 }
 
 // =============================================================
@@ -436,8 +216,8 @@ function ScoreCard({
 }
 
 // =============================================================
-// Rituales — 3 cards (Pre-game ✓ done, Warm Up live, Cool Down upcoming)
-// Placeholder hasta tener Rituales reales en Sprint 2+
+// Rituales — 3 cards con estado real (S12). El array se construye
+// en la página con los datos del día; acá viven los tipos y helpers.
 // =============================================================
 type RitualStatus = "done" | "live" | "upcoming";
 type RitualDef = {
@@ -449,50 +229,25 @@ type RitualDef = {
   sprint: string;
   status: RitualStatus;
   statusLabel: string;
+  href: string;
   duration?: string;
   solo?: boolean;
   participants?: number;
   total?: number;
 };
 
-const RITUALS: RitualDef[] = [
-  {
-    id: "pregame",
-    title: "Pre-game",
-    desc: "Rutina matutina personal",
-    Icon: Sunrise,
-    time: "06:30 – 07:00",
-    sprint: "Sprint 2",
-    status: "done",
-    statusLabel: "Completado",
-    duration: "24 min",
-    solo: true,
-  },
-  {
-    id: "warmup",
-    title: "Warm Up",
-    desc: "Inicio del día con el equipo",
-    Icon: Sun,
-    time: "09:00 – 09:30",
-    sprint: "Sprint 2",
-    status: "live",
-    statusLabel: "En vivo · 12 min restantes",
-    participants: 8,
-    total: 12,
-  },
-  {
-    id: "cooldown",
-    title: "Cool Down",
-    desc: "Cierre y Victory Log",
-    Icon: Sunset,
-    time: "17:30 – 18:00",
-    sprint: "Sprint 2",
-    status: "upcoming",
-    statusLabel: "Programado",
-    participants: 0,
-    total: 12,
-  },
-];
+// Últimas 5 evaluaciones de un área, paddeadas a la izquierda con 0
+function buildTrend(history: Scorecard[], key: ScorecardKey): number[] {
+  const values = history
+    .map((s) => s[key])
+    .filter((v): v is number => v !== null)
+    .slice(-5);
+  const padded = Array(5).fill(0);
+  values.forEach((v, i) => {
+    padded[i + (5 - values.length)] = v;
+  });
+  return padded;
+}
 
 const STATUS_STYLES: Record<RitualStatus, { color: string; cta: string; CTAIcon: LucideIcon }> = {
   done: { color: "#34d399", cta: "Ver resumen", CTAIcon: ArrowRight },
@@ -722,8 +477,8 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
             </span>
           )}
         </div>
-        <button
-          type="button"
+        <a
+          href={ritual.href}
           className="flex items-center transition-all"
           style={{
             gap: 6,
@@ -737,6 +492,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
             fontSize: 12.5,
             fontWeight: 600,
             cursor: "pointer",
+            textDecoration: "none",
             boxShadow: isLive
               ? "0 4px 12px rgba(54,114,255,0.32), inset 0 1px 0 rgba(255,255,255,0.2)"
               : "none",
@@ -744,7 +500,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
         >
           {s.cta}
           <CTAIcon size={12} strokeWidth={2.2} />
-        </button>
+        </a>
       </div>
     </div>
   );
@@ -774,14 +530,15 @@ export default async function DashboardPage() {
   const company = (profile as { companies?: { name: string } | null }).companies ?? null;
   const firstName = profile.full_name?.split(" ")[0] ?? "Arquitecto";
 
-  // Scorecard
-  const { data: latestScorecard } = await supabase
+  // Historial completo de scorecards (ascendente) — alimenta semáforos,
+  // tendencia por área y Hero Strip (baseline, promedio, delta)
+  const { data: scorecardRows } = await supabase
     .from("scorecards")
     .select("*")
     .eq("company_id", profile.company_id!)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+    .order("created_at", { ascending: true });
+  const scorecardHistory = (scorecardRows ?? []) as Scorecard[];
+  const latestScorecard = scorecardHistory.at(-1) ?? null;
 
   // KPIs de la semana
   const today = new Date();
@@ -806,6 +563,181 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
     .eq("log_date", todayStr)
     .single();
+
+  // ── S12/S13: datos reales para Hero Strip + Rituales de hoy ──
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+  const ninetyDaysAgo = new Date(today);
+  ninetyDaysAgo.setDate(today.getDate() - 90);
+  const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split("T")[0];
+
+  const [
+    { data: warUpHoy },
+    { data: coolDownsHoyRows },
+    { data: recentPreGames },
+    { data: teamProfiles },
+    { data: energyLogsHoy },
+    { data: ritualConfig },
+    { data: recentTasks },
+  ] = await Promise.all([
+    supabase
+      .from("war_ups")
+      .select("id, started_at, status")
+      .eq("company_id", profile.company_id!)
+      .eq("war_up_date", todayStr)
+      .maybeSingle(),
+    supabase
+      .from("cool_downs")
+      .select("user_id")
+      .eq("company_id", profile.company_id!)
+      .eq("log_date", todayStr),
+    supabase
+      .from("pre_games")
+      .select("log_date")
+      .eq("user_id", user.id)
+      .gte("log_date", ninetyDaysAgoStr)
+      .order("log_date", { ascending: false }),
+    supabase
+      .from("profiles")
+      .select("id, full_name, disc_letters")
+      .eq("company_id", profile.company_id!),
+    supabase
+      .from("energy_logs")
+      .select("user_id, level")
+      .eq("company_id", profile.company_id!)
+      .eq("log_date", todayStr),
+    supabase
+      .from("ritual_configs")
+      .select("mode, war_up_deadline, cool_down_start")
+      .eq("company_id", profile.company_id!)
+      .maybeSingle(),
+    supabase
+      .from("tasks")
+      .select("id, status, assigned_to, created_by")
+      .eq("company_id", profile.company_id!)
+      .gte("updated_at", thirtyDaysAgoStr),
+  ]);
+
+  // Escalaciones Anti-Boomerang sobre las tareas recientes (proxy Multiplicador)
+  const recentTaskIds = (recentTasks ?? []).map((t) => t.id);
+  let boomerangCount = 0;
+  if (recentTaskIds.length > 0) {
+    const { count } = await supabase
+      .from("task_updates")
+      .select("id", { count: "exact", head: true })
+      .eq("type", "boomerang_attempt")
+      .in("task_id", recentTaskIds);
+    boomerangCount = count ?? 0;
+  }
+
+  // Participantes del War Up de hoy (solo si la sala existe)
+  let warUpParticipants = 0;
+  if (warUpHoy) {
+    const { count } = await supabase
+      .from("war_up_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("war_up_id", warUpHoy.id);
+    warUpParticipants = count ?? 0;
+  }
+
+  // Estados de los 3 rituales de hoy
+  const preGameDates = new Set((recentPreGames ?? []).map((p) => p.log_date));
+  const preGameStatus: RitualStatus = preGameDates.has(todayStr) ? "done" : "upcoming";
+  const warUpStatus: RitualStatus =
+    warUpHoy?.status === "closed" ? "done" : warUpHoy?.status === "active" ? "live" : "upcoming";
+  const myCoolDownDone = (coolDownsHoyRows ?? []).some((c) => c.user_id === user.id);
+  const coolDownStatus: RitualStatus = myCoolDownDone ? "done" : "upcoming";
+
+  // Racha de Pre-game: días consecutivos desde hoy hacia atrás
+  let preGameStreak = 0;
+  const checkDate = new Date(today);
+  while (preGameDates.has(checkDate.toISOString().split("T")[0])) {
+    preGameStreak++;
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  // Mejor racha histórica (90 días de datos): secuencias consecutivas
+  const sortedDates = Array.from(preGameDates).sort();
+  let bestStreak = 0;
+  let run = 0;
+  let prevTime = 0;
+  for (const d of sortedDates) {
+    const t = new Date(d + "T12:00:00").getTime();
+    run = prevTime && t - prevTime === 86_400_000 ? run + 1 : 1;
+    bestStreak = Math.max(bestStreak, run);
+    prevTime = t;
+  }
+  bestStreak = Math.max(bestStreak, preGameStreak);
+
+  // Historial visual de los últimos 7 días (label es-AR + done)
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    const iso = d.toISOString().split("T")[0];
+    return {
+      label: d
+        .toLocaleDateString("es-AR", { weekday: "short" })
+        .replace(".", "")
+        .slice(0, 3),
+      done: preGameDates.has(iso),
+    };
+  });
+
+  // Ciclo 90D: día actual desde el scorecard baseline
+  const baseline = scorecardHistory.find((s) => s.is_baseline) ?? scorecardHistory[0] ?? null;
+  const cycleStart = baseline?.created_at ? new Date(baseline.created_at) : null;
+  const dayInProgram = cycleStart
+    ? Math.floor((today.getTime() - cycleStart.getTime()) / 86_400_000) + 1
+    : null;
+  const dayInCycle = dayInProgram ? ((dayInProgram - 1) % 90) + 1 : null;
+  const cycleNumber = dayInProgram ? Math.floor((dayInProgram - 1) / 90) + 1 : 1;
+  const cycleStartLabel = cycleStart
+    ? cycleStart.toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })
+    : null;
+
+  // Multiplicador (proxy fase A): delegación 40% + autonomía 40% + base 20%
+  const delegacionScore = latestScorecard?.score_delegacion ?? null;
+  const totalRecentTasks = recentTasks?.length ?? 0;
+  const boomerangRate =
+    totalRecentTasks > 0
+      ? 1 - Math.min(1, boomerangCount / totalRecentTasks)
+      : 0.5;
+  const tasksDoneByTeam = (recentTasks ?? []).filter(
+    (t) => t.status === "done" && t.assigned_to && t.assigned_to !== t.created_by
+  ).length;
+  const multiplicadorPct =
+    delegacionScore !== null
+      ? Math.round(((delegacionScore / 5) * 0.4 + boomerangRate * 0.4 + 0.5 * 0.2) * 100)
+      : null;
+
+  // Equipo con su energía de hoy (tooltip del tile 4)
+  const energyByUser = new Map((energyLogsHoy ?? []).map((e) => [e.user_id, e.level]));
+  const teamWithEnergy = (teamProfiles ?? []).map((p) => {
+    const letter = primaryLetter(p.disc_letters);
+    return {
+      id: p.id,
+      name: p.full_name ?? "Sin nombre",
+      initial: (p.full_name ?? "?").trim().charAt(0).toUpperCase() || "?",
+      color: letter ? DISC_COLORS[letter] : "#5b8aff",
+      energyToday: energyByUser.get(p.id) ?? null,
+    };
+  });
+  const teamTotal = teamWithEnergy.length;
+
+  // Notificaciones no leídas (badge de la campana)
+  const { count: unreadCount } = await supabase
+    .from("notifications")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .is("read_at", null);
+
+  // Horarios y modo desde ritual_configs
+  const fmtTime = (t: string | null | undefined) => (t ? t.slice(0, 5) : null);
+  const warUpDeadline = fmtTime(ritualConfig?.war_up_deadline) ?? "09:00";
+  const coolDownStart = fmtTime(ritualConfig?.cool_down_start) ?? "17:00";
+  const modeBadge =
+    !ritualConfig || ritualConfig.mode === "daily" ? "Diario" : `Modo ${ritualConfig.mode}`;
 
   // Áreas críticas
   const areasCriticas = latestScorecard
@@ -832,8 +764,56 @@ export default async function DashboardPage() {
       ? (scoreValues.reduce((s, v) => s + v, 0) / scoreValues.length).toFixed(1)
       : "–";
 
-  // Total rituales programados hoy (placeholder)
-  const ritualsProgramados = RITUALS.length;
+  // Rituales de hoy — construidos con el estado real del día
+  const rituals: RitualDef[] = [
+    {
+      id: "pregame",
+      title: "Pre-game",
+      desc: "Rutina matutina personal",
+      Icon: Sunrise,
+      time: `antes de ${warUpDeadline}`,
+      sprint: modeBadge,
+      status: preGameStatus,
+      statusLabel: preGameStatus === "done" ? "Completado" : "Pendiente",
+      href: "/rituales/pre-game",
+      solo: true,
+    },
+    {
+      id: "warup",
+      title: "War Up",
+      desc: "Stand-up en vivo con el equipo",
+      Icon: Sun,
+      time: `hasta ${warUpDeadline}`,
+      sprint: modeBadge,
+      status: warUpStatus,
+      statusLabel:
+        warUpStatus === "done"
+          ? "Cerrado"
+          : warUpStatus === "live"
+            ? "En vivo"
+            : "Sin iniciar",
+      href: "/rituales/war-up",
+      participants: warUpParticipants,
+      total: teamTotal,
+    },
+    {
+      id: "cooldown",
+      title: "Cool Down",
+      desc: "Cierre y Victory Log",
+      Icon: Sunset,
+      time: `desde ${coolDownStart}`,
+      sprint: modeBadge,
+      status: coolDownStatus,
+      statusLabel: coolDownStatus === "done" ? "Completado" : "Programado",
+      href: "/rituales/cool-down",
+      participants: coolDownsHoyRows?.length ?? 0,
+      total: teamTotal,
+    },
+  ];
+  const ritualsProgramados = rituals.length;
+  const ritualesCompletados = rituals.filter((r) => r.status === "done").length;
+  const ritualesEnVivo = rituals.filter((r) => r.status === "live").length;
+  const ritualesPendientes = rituals.filter((r) => r.status === "upcoming").length;
 
   return (
     <div
@@ -936,81 +916,11 @@ export default async function DashboardPage() {
           className="flex items-center"
           style={{ gap: 16, flexShrink: 0 }}
         >
-          {/* Search (placeholder visual, futuro ⌘K) */}
-          <div
-            className="hidden lg:flex items-center"
-            style={{
-              gap: 8,
-              padding: "8px 12px",
-              borderRadius: 10,
-              background: "rgba(255,255,255,0.025)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              color: "rgba(255,255,255,0.5)",
-              fontSize: 13,
-              minWidth: 220,
-              cursor: "pointer",
-            }}
-          >
-            <Search size={14} />
-            <span style={{ flex: 1 }}>Buscar</span>
-            <div
-              className="flex"
-              style={{
-                gap: 3,
-                fontSize: 10,
-                color: "rgba(255,255,255,0.45)",
-              }}
-            >
-              <kbd
-                style={{
-                  padding: "1px 5px",
-                  borderRadius: 4,
-                  background: "rgba(255,255,255,0.06)",
-                }}
-              >
-                ⌘
-              </kbd>
-              <kbd
-                style={{
-                  padding: "1px 5px",
-                  borderRadius: 4,
-                  background: "rgba(255,255,255,0.06)",
-                }}
-              >
-                K
-              </kbd>
-            </div>
-          </div>
+          {/* Search — abre el Command Palette (⌘K) */}
+          <SearchTrigger />
 
-          {/* Notifications */}
-          <button
-            type="button"
-            aria-label="Notificaciones"
-            className="relative flex items-center justify-center"
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              background: "rgba(255,255,255,0.025)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              color: "rgba(255,255,255,0.7)",
-              cursor: "pointer",
-            }}
-          >
-            <Bell size={16} />
-            <span
-              style={{
-                position: "absolute",
-                top: 8,
-                right: 9,
-                width: 7,
-                height: 7,
-                borderRadius: "50%",
-                background: "#f87171",
-                border: "2px solid #0a0e1a",
-              }}
-            />
-          </button>
+          {/* Notifications — badge real de no-leídas */}
+          <NotificationsBell userId={user.id} initialUnread={unreadCount ?? 0} />
 
           {/* Energía — selector ACTUAL (mantenido por requerimiento) */}
           <EnergySelector
@@ -1022,8 +932,21 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Hero strip Plan 90D ────────────────────────────── */}
-      <HeroStrip />
+      {/* ── Hero strip — interactivo con datos reales (S12+S13) ── */}
+      <HeroStrip
+        dayInCycle={dayInCycle}
+        cycleNumber={cycleNumber}
+        cycleStartLabel={cycleStartLabel}
+        streak={preGameStreak}
+        bestStreak={bestStreak}
+        last7Days={last7Days}
+        preGameDoneToday={preGameStatus === "done"}
+        multiplicadorPct={multiplicadorPct}
+        delegacionScore={delegacionScore}
+        boomerangCount={boomerangCount}
+        tasksDoneByTeam={tasksDoneByTeam}
+        teamWithEnergy={teamWithEnergy}
+      />
 
       {/* ── Alerta áreas críticas ──────────────────────────── */}
       {areasCriticas.length > 0 && (
@@ -1072,7 +995,7 @@ export default async function DashboardPage() {
       )}
 
       {/* ── Diagnóstico Organizacional TBM ─────────────────────── */}
-      <section style={{ marginBottom: 36 }}>
+      <section data-tour="semaforos" style={{ marginBottom: 36 }}>
         <div
           className="flex items-baseline justify-between"
           style={{ marginBottom: 14 }}
@@ -1136,7 +1059,7 @@ export default async function DashboardPage() {
               </span>
             </div>
             <a
-              href="/onboarding"
+              href="/diagnostico"
               className="flex items-center transition-colors hover:text-white"
               style={{
                 gap: 6,
@@ -1163,7 +1086,7 @@ export default async function DashboardPage() {
           >
             {SCORECARD_AREAS.map((area) => {
               const score = (latestScorecard as Scorecard)[area.key];
-              const trend = score !== null ? [score, score, score, score, score] : [0, 0, 0, 0, 0];
+              const trend = buildTrend(scorecardHistory, area.key);
               return (
                 <ScoreCard
                   key={area.key}
@@ -1190,7 +1113,7 @@ export default async function DashboardPage() {
               Completá el diagnóstico inicial para ver tus semáforos
             </p>
             <a
-              href="/onboarding"
+              href="/diagnostico"
               className="inline-block hover:underline"
               style={{
                 marginTop: 12,
@@ -1313,7 +1236,9 @@ export default async function DashboardPage() {
               Rituales de hoy
             </div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
-              1 completado · 1 en vivo · 1 programado
+              {ritualesCompletados} completado{ritualesCompletados === 1 ? "" : "s"} ·{" "}
+              {ritualesEnVivo} en vivo · {ritualesPendientes} programado
+              {ritualesPendientes === 1 ? "" : "s"}
             </div>
           </div>
           <a
@@ -1336,7 +1261,7 @@ export default async function DashboardPage() {
           className="grid grid-cols-1 lg:grid-cols-3"
           style={{ gap: 12 }}
         >
-          {RITUALS.map((r) => (
+          {rituals.map((r) => (
             <RitualCard key={r.id} ritual={r} />
           ))}
         </div>

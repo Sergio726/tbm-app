@@ -1,0 +1,95 @@
+# PROGRESS — The Business Multiplier App
+
+> **Fuente de verdad del estado del proyecto, sprint por sprint.**
+> Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
+> Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
+
+**Última actualización:** 2026-06-10 · **Completitud:** 🎉 **TODO el código de S0–S14 está implementado** · **Última pieza cerrada:** S9 exportación PDF. Lo que queda es configuración/operación (ver "Pendientes para beta").
+
+---
+
+## Estado por sprint
+
+Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (ops)
+
+| Sprint | Tema | Estado | Notas |
+|---|---|---|---|
+| **S0** | Setup & Auth | ✅ | App en Vercel · auth + 2 tipos de usuario (Alumno/Independiente). |
+| **S1** | Onboarding + Dashboard | ✅ | Diagnóstico + Naming v1.1. El pendiente "Dashboard con datos reales" se cerró en S12. |
+| **S2** | Rituales | ✅ | Pre-game · Los 5 Grandes · War Up Realtime · Cool Down + Reporte Semanal automático · Parking Lot · Config. |
+| **S3** | Mi Equipo (DISC + LOS + Matriz) | ✅ | DISC + LOS + Matriz Autoridad + Cruces Peligrosos · rediseño RPG gamificado. |
+| **S4** | Delegación | ✅ | Wizard Pase de Estafeta (5 puntos) · Kanban · Vista colaborador · Escudo Anti-Boomerang. |
+| **S5** | Feedback S.E.C. | ✅ | Templates S/E/C por perfil DISC · Sesiones Escape · 3 Streaks. |
+| **S6** | Plan 90D + BOS + Activos | ✅ | Rocas + Leading Indicators + Disagree & Commit + L4 YoY + **Activos del Sistema** (tab en /plan-90d: `process_assets` con categorías, links video/doc, dueño y estado — migración `sprint12_activos`, ⏳ aplicar en Supabase). |
+| **S7** | Workbooks S1–S4 | ✅ | 4 sesiones digitalizadas + desbloqueo híbrido (7 días o "avance anticipado"). |
+| **S8** | Workbooks S5–S8 | ✅ | 4 sesiones + 16 ejercicios + componente `counter_tracker` + vista "Mi Programa" (`/workbooks/mi-programa`) con timeline 8 sesiones + comparativa scorecard baseline vs último (Día 1 vs Hoy). |
+| **S9** | Polish + Exportación + Super Coach | ✅ | **Panel Super Coach** (N1): 3 capas en `/super-coach`, seguridad por asignación explícita (`coach_assignments`, solo-lectura, Pre-game/Cool Down excluidos) — migración `sprint15` ⏳. **Emails cron**: `/api/cron/daily` (Vercel Cron 11:00 UTC) con digest matinal + `task_overdue` (cierra S4 E7) — inerte hasta setear envs en Vercel. **Exportación PDF**: `/export/{diagnostico,plan-90d,equipo,semana}` con vista documento + print stylesheet; accesos desde ⌘K y el reporte semanal. |
+| **S10** | Beta cerrada | 🚫 | Tarea operativa, fuera de código. |
+| **S11** | Tour guiado | ✅ | `driver.js` instalado · `tour-steps.ts` con flujos por rol (arquitecto/colaborador) · `TourProvider` en layout con auto-arranque la primera vez + marca `tour_completed` al cerrar · `data-tour` en sidebar/semáforos/avatar · popover con design system en globals.css · "Ver tour de nuevo" en /cuenta (sección Ayuda) · migración `sprint14_tour` (⏳ aplicar; el layout degrada con gracia si la columna no existe). |
+| **S12** | Dashboard 100% funcional | ✅ | `/diagnostico` re-eval (pre-cargada) · tendencia histórica real por área · rituales de hoy con estado real (done/live/upcoming + CTA links) · Hero Strip real (Ciclo 90D desde baseline, racha Pre-game, promedio+delta diagnóstico, equipo activo hoy con avatares DISC). |
+| **S13** | Hero Strip interactivo | ✅ | HeroStrip extraído a client component (`hero-strip.tsx` + `tile-tooltip.tsx`): tiles clickeables con hover ring + tooltips (ciclo/fechas, racha 7 días + mejor racha, Multiplicador proxy fase A con badge Multiplicador/Disminuidor, panel de energía por miembro con ⚠ sin registrar). |
+| **S14** | Búsqueda ⌘K + Notificaciones | ✅ | Command Palette custom (⌘K/Ctrl+K, módulos + quick actions por rol) · tabla `notifications` (migración `sprint13`, ⏳ aplicar) · badge real + panel dropdown + `/notificaciones` · eventos: task_assigned, task_blocked, task_done, war_up_started · fix EnergySelector (error + revert). Pendiente menor: `task_overdue` necesita cron (S4 E7) y `scorecard_updated` no tiene emisor no-arquitecto. |
+
+---
+
+## CHANGELOG v1.1 — checklist específico
+
+| Ref | Cambio | Estado | Sprint |
+|---|---|---|---|
+| I4 | Naming "Team Performance Scorecard" sólo para módulo S7 (KPI individual); el diagnóstico 8 áreas se llama "Diagnóstico Organizacional TBM" | ✅ | S1/S7 |
+| I2/I3 | Los 5 Grandes = ritual nocturno (≠ Pre-game matutino) | ✅ | S2 |
+| B3 | Módulo "Activos del Sistema" (repositorio de procesos) | ✅ | S6 |
+| B4 | Cool Down del viernes genera Reporte Semanal automático | ✅ | S2 |
+| L1 | War Up en vivo (sala digital, Supabase Realtime) | ✅ | S2 |
+| L3 | Desbloqueo híbrido de workbooks (7 días + botón anticipado) | ✅ | S7 |
+| L4 | Indicador financiero YoY + ciclo continuo 90D | ✅ | S6 |
+| N1 | Panel Super Coach 3 capas | ✅ | S9 |
+| N2 | Tipo de acceso Alumno TBM vs Independiente | ✅ schema | S0 |
+
+---
+
+## Pendientes para beta
+
+1. **⏳ Aplicar 4 migraciones en Supabase** (SQL Editor, en orden): `migration_sprint12_activos.sql` · `migration_sprint13_notifications.sql` · `migration_sprint14_tour.sql` · `migration_sprint15_super_coach.sql`. Sin esto: tab Activos y notificaciones tiran error; tour y panel coach simplemente no aparecen.
+2. **Asignar el coach** (después de la migración 15): `insert into coach_assignments (coach_id, company_id) values ('<uuid de Dilio>', '<uuid empresa>');` — el item "Super Coach" aparece solo en el sidebar del coach.
+3. **Activar el cron de emails** (código ya deployado): en Vercel → Settings → Environment Variables agregar `CRON_SECRET` (string aleatorio largo), `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Settings → API → service_role) y `RESEND_API_KEY` + `RESEND_FROM` si no están. El cron corre solo a las 11:00 UTC (~6-8am LATAM). Esto también habilita `task_overdue` (S4 E7).
+4. **S9 — Exportación PDF** (~5h) — diagnóstico, Plan 90D, perfil de equipo y resumen semanal. Patrón sugerido: print stylesheets como el informe DISC existente.
+5. **S10 — Beta cerrada** — operativo (seleccionar pilotos, onboarding guiado, analytics Posthog, Sentry).
+
+---
+
+## Migraciones SQL aplicadas
+
+Orden de aplicación en Supabase (ver [`supabase/README.md`](supabase/README.md) para el detalle oficial):
+
+| # | Archivo | Sprint cubierto |
+|---|---|---|
+| 0 | `schema.sql` | S0 — companies, profiles |
+| 1 | `migration_sprint1.sql` | S1 — scorecards, kpis |
+| 2 | `migration_sprint2.sql` | S2 — rituales + parking_lot + weekly_reports + Realtime |
+| 3 | `migration_sprint3_disc.sql` | S3 — DISC public test |
+| 4 | `migration_sprint4_disc_ux.sql` | S3 — DISC UX (cargo, scores) |
+| 5 | `migration_sprint5_roles.sql` | misc — roles |
+| 6 | `migration_sprint6_account.sql` | módulo Mi Cuenta (phone, bio, timezone) |
+| 7 | `migration_sprint7_equipo.sql` | S3 — Matriz Autoridad + Cruces |
+| 8 | `migration_sprint8_delegacion.sql` | S4 — tasks + task_updates |
+| 9 | `migration_sprint9_feedback.sql` | S5 — feedbacks |
+| 10 | `migration_sprint10_plan90d.sql` | S6 — rocks + process_assets + leading_indicators |
+| 11 | `migration_sprint11_workbooks.sql` | S7 — workbook_responses + progress |
+| 12 | `migration_sprint12_activos.sql` | S6 — process_assets (Activos del Sistema) · ⏳ aplicar |
+| 13 | `migration_sprint13_notifications.sql` | S14 — notifications · ⏳ aplicar |
+| 14 | `migration_sprint14_tour.sql` | S11 — tour_completed en profiles · ⏳ aplicar |
+| 15 | `migration_sprint15_super_coach.sql` | S9 — coach_assignments + coaching_notes + RLS coach · ⏳ aplicar |
+
+> ⚠️ **Numeración no coincide con sprint del plan** — los archivos se numeraron por orden de creación. Cruzá con esta tabla para saber qué cubre cada uno.
+
+---
+
+## Cómo actualizar este archivo
+
+1. Cuando abrís un sprint → cambiá su fila a 🟡 con la nota "EN CURSO · <fecha>".
+2. Cuando cerrás una pieza concreta → tachá la línea en "Notas" y/o cambiá el estado.
+3. Cuando cerrás un sprint completo → ✅ y actualizá la fecha de "Última actualización" + el contador de completitud.
+4. Si surge una pieza nueva fuera del plan → agregala como fila al final con `S?` y referenciala al CHANGELOG si aplica.
+
+Commiteá los cambios al PROGRESS.md **en el mismo commit** que cierra/abre la pieza — no en uno aparte.

@@ -312,6 +312,84 @@ input.tbm-range:focus {
   100% { background-position: 200% 0; }
 }
 
+/* ── Tour guiado (S11) — popover de driver.js con el design system ── */
+.driver-popover {
+  background: #111827 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px !important;
+  font-family: Inter, system-ui, sans-serif !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6) !important;
+  max-width: 340px;
+}
+.driver-popover-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+}
+.driver-popover-description {
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+.driver-popover-progress-text {
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+.driver-popover-navigation-btns button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 10px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+  padding: 6px 12px !important;
+}
+.driver-popover-navigation-btns button.driver-popover-next-btn {
+  background: linear-gradient(135deg, #5b8aff, #2c5fe6) !important;
+  border: none !important;
+  color: #fff !important;
+}
+.driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: #111827 !important; }
+.driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: #111827 !important; }
+.driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: #111827 !important; }
+.driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: #111827 !important; }
+.driver-popover-close-btn { color: rgba(255, 255, 255, 0.4) !important; }
+
+/* La opacidad/color del overlay se controla desde tour-provider.tsx
+   (overlayColor + overlayOpacity). Resaltamos el elemento enfocado con un
+   anillo de acento + glow para que se entienda de qué sección se habla. */
+.driver-active-element {
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 2px rgba(91, 138, 255, 0.9),
+    0 0 0 6px rgba(91, 138, 255, 0.22),
+    0 0 28px 4px rgba(91, 138, 255, 0.35) !important;
+}
+
+/* ── Exportación PDF (S9) — /export/[tipo] ─────────────────── */
+@media print {
+  /* Imprimir SOLO el documento de exportación */
+  body:has(.tbm-export-page) * { visibility: hidden; }
+  .tbm-export-page, .tbm-export-page * { visibility: visible; }
+  .tbm-export-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+  .no-print { display: none !important; }
+  .tbm-export-page,
+  .tbm-export-page * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
 /* ── DISC test gamificado ─────────────────────────────────── */
 
 /* Reloj con urgencia */

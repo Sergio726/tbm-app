@@ -15,8 +15,10 @@ import {
   Shield,
   AlertCircle,
   X,
+  Compass,
 } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { RestartTourButton } from "./restart-tour-button";
 import type { Profile } from "@/types/database";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -835,6 +837,21 @@ export function AccountForm({
         >
           {passBusy ? "Guardando…" : "Cambiar contraseña"}
         </button>
+      </section>
+
+      {/* ── Ayuda — tour guiado (S11) ── */}
+      <section
+        className="tbm-card mt-5 p-6 tbm-rise"
+        style={{ animationDelay: "160ms" }}
+      >
+        <SectionTitle Icon={Compass} label="Ayuda" color="#a78bfa" />
+        <p
+          className="mb-3 text-[12.5px] leading-relaxed"
+          style={{ color: "rgba(255,255,255,0.5)" }}
+        >
+          ¿Te perdiste? Repetí el recorrido guiado por los módulos del sistema.
+        </p>
+        <RestartTourButton userId={profile.id} />
       </section>
 
       {/* ── Toast container ── */}

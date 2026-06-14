@@ -15,6 +15,7 @@ import {
   LineChart,
   Bell,
   LogOut,
+  GraduationCap,
   type LucideIcon,
 } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
@@ -45,6 +46,8 @@ interface SidebarProps {
   userName?: string;
   userRole?: string;
   avatarUrl?: string;
+  /** true si el usuario tiene empresas asignadas como coach (S9). */
+  isCoach?: boolean;
 }
 
 /**
@@ -58,6 +61,7 @@ export function Sidebar({
   userInitials,
   userStatusLabel,
   userName,
+  isCoach,
   userRole,
   avatarUrl,
 }: SidebarProps) {
@@ -152,7 +156,10 @@ export function Sidebar({
         </div>
 
         {/* Nav */}
-        <nav className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-[14px] py-1.5">
+        <nav
+          data-tour="sidebar-nav"
+          className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-[14px] py-1.5"
+        >
           {MODULES.map(({ href, label, Icon }) => {
             const isActive =
               pathname === href ||
@@ -162,6 +169,7 @@ export function Sidebar({
               <Link
                 key={href}
                 href={href}
+                data-tour={`nav-${href.slice(1)}`}
                 aria-current={isActive ? "page" : undefined}
                 className="group relative flex items-center gap-[13px] rounded-[11px] transition-colors duration-150"
                 style={{
@@ -195,11 +203,45 @@ export function Sidebar({
               </Link>
             );
           })}
+
+          {/* Panel Super Coach — solo visible para coaches asignados (S9) */}
+          {isCoach && (
+            <Link
+              href="/super-coach"
+              data-tour="nav-super-coach"
+              aria-current={pathname.startsWith("/super-coach") ? "page" : undefined}
+              className="group relative flex items-center gap-[13px] rounded-[11px] transition-colors duration-150"
+              style={{
+                padding: "11px 14px",
+                marginTop: 8,
+                background: pathname.startsWith("/super-coach")
+                  ? "linear-gradient(135deg, rgba(52,211,153,0.20) 0%, rgba(52,211,153,0.05) 100%)"
+                  : "rgba(52,211,153,0.05)",
+                border: `1px solid ${
+                  pathname.startsWith("/super-coach")
+                    ? "rgba(52,211,153,0.35)"
+                    : "rgba(52,211,153,0.18)"
+                }`,
+                color: pathname.startsWith("/super-coach") ? "#fff" : "rgba(255,255,255,0.7)",
+                fontSize: 13.5,
+                fontWeight: 500,
+              }}
+            >
+              <span
+                className="flex items-center justify-center"
+                style={{ color: "#34d399" }}
+              >
+                <GraduationCap size={17} strokeWidth={1.6} />
+              </span>
+              <span className="truncate">Super Coach</span>
+            </Link>
+          )}
         </nav>
 
         {/* Footer user — glass card con dot de sesión + bell */}
         <div className="p-[14px]">
           <div
+            data-tour="user-avatar"
             className="flex items-center gap-[11px] rounded-xl"
             style={{
               padding: "12px 13px",

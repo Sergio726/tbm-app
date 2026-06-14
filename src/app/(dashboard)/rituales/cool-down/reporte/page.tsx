@@ -85,29 +85,46 @@ export default async function ReporteSemanalPage() {
         Cool Down
       </Link>
 
-      <header style={{ marginBottom: 28 }}>
-        <div
-          className="uppercase"
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: "rgba(255,255,255,0.5)",
-            letterSpacing: 1.4,
-            marginBottom: 6,
-          }}
-        >
-          Reporte Semanal · Generado automáticamente
+      <header
+        className="flex flex-wrap items-end justify-between gap-3"
+        style={{ marginBottom: 28 }}
+      >
+        <div>
+          <div
+            className="uppercase"
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.5)",
+              letterSpacing: 1.4,
+              marginBottom: 6,
+            }}
+          >
+            Reporte Semanal · Generado automáticamente
+          </div>
+          <h1
+            style={{
+              fontSize: 26,
+              fontWeight: 700,
+              letterSpacing: -0.5,
+              marginBottom: 4,
+            }}
+          >
+            {humanDate(report.week_start)} → {humanDate(report.week_end)}
+          </h1>
         </div>
-        <h1
+        <Link
+          href="/export/semana"
+          className="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-[13px] font-semibold transition hover:bg-white/[0.05]"
           style={{
-            fontSize: 26,
-            fontWeight: 700,
-            letterSpacing: -0.5,
-            marginBottom: 4,
+            background: "rgba(91,138,255,0.10)",
+            borderColor: "rgba(91,138,255,0.30)",
+            color: "#bcd0ff",
+            textDecoration: "none",
           }}
         >
-          {humanDate(report.week_start)} → {humanDate(report.week_end)}
-        </h1>
+          🖨️ Exportar PDF
+        </Link>
       </header>
 
       {/* Ritual completion */}

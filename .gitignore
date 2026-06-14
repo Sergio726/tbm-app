@@ -35,6 +35,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# backups locales de datos (no subir datos reales del negocio al repo)
+/backups
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
