@@ -53,6 +53,13 @@ export function TourProvider({
         nextBtnText: "Siguiente →",
         prevBtnText: "← Atrás",
         doneBtnText: "Empezar",
+        // Overlay más claro + spotlight con padding/radio para que la
+        // sección enfocada se entienda sin oscurecer de más el fondo (S12).
+        overlayColor: "#0A0E17",
+        overlayOpacity: 0.55,
+        stagePadding: 8,
+        stageRadius: 12,
+        disableActiveInteraction: true,
         // Cerrar (X, Esc, click en overlay o terminar) = tour visto
         onDestroyed: () => {
           void markCompleted();

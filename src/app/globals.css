@@ -355,7 +355,17 @@ input.tbm-range:focus {
 .driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: #111827 !important; }
 .driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: #111827 !important; }
 .driver-popover-close-btn { color: rgba(255, 255, 255, 0.4) !important; }
-.driver-overlay { background: rgba(0, 0, 0, 0.7) !important; }
+
+/* La opacidad/color del overlay se controla desde tour-provider.tsx
+   (overlayColor + overlayOpacity). Resaltamos el elemento enfocado con un
+   anillo de acento + glow para que se entienda de qué sección se habla. */
+.driver-active-element {
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 2px rgba(91, 138, 255, 0.9),
+    0 0 0 6px rgba(91, 138, 255, 0.22),
+    0 0 28px 4px rgba(91, 138, 255, 0.35) !important;
+}
 
 /* ── Exportación PDF (S9) — /export/[tipo] ─────────────────── */
 @media print {
