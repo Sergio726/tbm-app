@@ -480,6 +480,7 @@ export function EquipoClient({
           <button
             type="button"
             onClick={() => setErrorFlash(null)}
+            aria-label="Cerrar aviso"
             className="ml-1.5 text-[#fca5a5]/60 hover:text-[#fca5a5]"
           >
             <X size={15} />
@@ -529,6 +530,7 @@ export function EquipoClient({
             <button
               type="button"
               onClick={() => setToast(null)}
+              aria-label="Cerrar notificación"
               className="text-white/40"
             >
               <X size={16} />

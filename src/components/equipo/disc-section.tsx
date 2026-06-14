@@ -16,7 +16,8 @@ import { DiscRadar } from "./disc-radar";
 import { DiscBars } from "./disc-bars";
 import {
   archetypeFor,
-  effectiveScores,
+  scoresToPct,
+  syntheticScoresFromLetters,
   MONO,
   type DiscScoresShape,
   type Draft,
@@ -49,7 +50,11 @@ export function DiscSection({
   const accent = DISC_COLORS[primary] ?? "#f87171";
   const factor = DISC_FACTORS[primary];
   const isSombra = draft.disc_state === "sombra";
-  const pctScores = effectiveScores(scores, code);
+  // Distinguir scores MEDIDOS (del test) de ESTIMADOS (derivados de las letras):
+  // si no hay medición real, se muestran valores estimados claramente rotulados.
+  const realScores = scoresToPct(scores);
+  const isEstimated = !realScores;
+  const pctScores = realScores ?? syntheticScoresFromLetters(code);
 
   return (
     <Panel
@@ -116,6 +121,21 @@ export function DiscSection({
             <DiscBars scores={pctScores} primary={primary} />
           </div>
 
+          {/* Origen de los valores: medidos (test) vs estimados (letras) */}
+          {isEstimated ? (
+            <p className="-mt-3 mb-[18px] flex items-start gap-1.5 text-[11.5px] leading-snug text-[#fbbf24]/85">
+              <span aria-hidden>⚠</span>
+              <span>
+                Valores <b>estimados</b> a partir de las letras DISC, no medidos. Hacé el test para
+                ver la medición real.
+              </span>
+            </p>
+          ) : (
+            <p className="-mt-3 mb-[18px] text-[11.5px] text-white/40">
+              Valores medidos en el test DISC.
+            </p>
+          )}
+
           {/* Luz / Sombra toggle */}
           <FieldLabel>Estado actual (evaluación del Arquitecto)</FieldLabel>
           <div className="grid grid-cols-2 gap-2.5">
@@ -177,13 +197,23 @@ export function DiscSection({
 
           {/* Temor */}
           <div className="mt-[18px]">
-            <FieldLabel hint="sugerido por perfil — editable">Temor dominante</FieldLabel>
+            <FieldLabel hint="opcional · sugerencia como placeholder">Temor dominante</FieldLabel>
             <TextAreaInput
-              value={draft.disc_temor || factor.temor}
+              value={draft.disc_temor}
+              placeholder={factor.temor}
               disabled={!editable}
               onChange={(e) => patch({ disc_temor: e.target.value })}
               rows={2}
             />
+            {editable && !draft.disc_temor.trim() && (
+              <button
+                type="button"
+                onClick={() => patch({ disc_temor: factor.temor })}
+                className="mt-1.5 text-[11.5px] font-semibold text-[#9fb9ff] transition hover:text-[#bcd0ff]"
+              >
+                Usar la sugerencia del perfil
+              </button>
+            )}
           </div>
         </>
       ) : (

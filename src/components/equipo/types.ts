@@ -96,13 +96,6 @@ export function syntheticScoresFromLetters(letters: string): {
   return { D: value("D"), I: value("I"), S: value("S"), C: value("C") };
 }
 
-export function effectiveScores(
-  scores: DiscScoresShape,
-  letters: string
-): { D: number; I: number; S: number; C: number } {
-  return scoresToPct(scores) ?? syntheticScoresFromLetters(letters);
-}
-
 // Checklist de la sticky completion bar (3 objetivos).
 export type ChecklistItem = {
   key: "disc" | "los" | "kpi";
