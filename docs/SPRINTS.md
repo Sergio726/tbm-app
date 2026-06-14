@@ -1811,6 +1811,323 @@ const NOTIF_ICONS: Record<string, string> = {
 
 ---
 
+## SPRINT 15 — Cierre de Migración Supabase *(Añadido 2026-06-14)*
+**Objetivo:** Terminar el corte al proyecto Supabase nuevo `fozhnfxehbbgqaerprgf` (org TBM Org,
+cuenta `sebastian.soporte.tbm@gmail.com`), creado tras perder el acceso al dashboard del proyecto
+viejo `onzsxbghmyuqykiejpxw`. La base, el esquema (27 tablas), los datos (27 filas) y el flujo de
+invitación ya quedaron migrados y verificados. Falta lo operativo de despliegue y robustez.
+Contexto completo en `docs/RECOVERY_SUPABASE.md`.
+
+### Tareas
+
+**Despliegue (operativo)**
+- [ ] **Vercel:** actualizar `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+  con los valores del proyecto nuevo (ya están en `.env.local`) en Production/Preview/Development,
+  y hacer **Redeploy** del último deploy.
+- [ ] **Local:** reiniciar `npm run dev` para que tome el nuevo `.env.local` (había un dev server
+  viejo en `localhost:3000` con el env anterior cacheado).
+
+**Robustez de email (recomendado para producción)**
+- [ ] Configurar **SMTP propio (Resend)** en Auth del proyecto nuevo
+  (`Dashboard → Settings → Auth → SMTP Settings`). Las invitaciones usan `signInWithOtp`
+  (email de Supabase Auth, no Resend); el email interno de proyectos nuevos es rate-limited.
+  Sin SMTP propio las invitaciones pueden cortarse en producción.
+
+**Pruebas pendientes**
+- [ ] Prueba **end-to-end de colaborador** con un segundo email real: invitar desde la app
+  (post-redeploy) → recibir magic link → `/accept-invite` → unirse al equipo como colaborador.
+  (Ya verificado: creación de invitación por RLS, envío de OTP 200, redirect aceptado, email recibido.)
+
+**Seguimiento (no bloqueante)**
+- [ ] Ticket **SU-395249**: transferencia/baja del proyecto viejo `onzsxbghmyuqykiejpxw`
+  (vive bajo otra cuenta de Supabase desconocida). Plantilla en `docs/RECOVERY_SUPABASE.md`.
+- [ ] (Opcional) Cambiar la contraseña de la app y activar "leaked password protection" en Auth.
+
+### Scripts de la migración (referencia, en `scripts/`)
+- `backup-data.mjs` — backup por REST (soporta `service_role` para backup completo).
+- `import-as-user.mjs` — import usado (REST autenticado como el usuario, respeta RLS).
+- `import-data.mjs` / `backup-to-sql.mjs` — variantes (service_role / SQL).
+
+### ✅ Criterio de éxito del Sprint 15
+> Producción en Vercel corre contra `fozhnfxehbbgqaerprgf`, un colaborador real puede aceptar una
+> invitación end-to-end con email confiable (SMTP propio), y el proyecto viejo queda encaminado a
+> transferencia/baja vía soporte.
+
+---
+
+## SPRINT 16 — Sprint de Mejoras y Correcciones *(Añadido 2026-06-14)*
+**Objetivo:** Iterar sobre la experiencia ya construida puliendo fricciones de UX y corrigiendo bugs detectados en uso real. Este sprint es acumulativo: cada mejora se documenta como una entrada con contexto, causa y solución.
+
+### Mejora #1 — Tour de onboarding: fondo demasiado oscuro
+
+**Síntoma reportado**
+> El onboarding cumple su función, pero deja el fondo muy oscuro y se dificulta entender sobre qué sección está hablando.
+
+**Causa raíz**
+- El overlay de `driver.js` estaba configurado a `rgba(0,0,0,0.7)` vía CSS (`.driver-overlay`), oscureciendo casi todo el viewport.
+- No existía un realce visual del elemento enfocado (spotlight), por lo que el ítem destacado se confundía con el resto del fondo oscuro.
+
+**Solución**
+- En `src/components/layout/tour-provider.tsx` se movió el control del overlay a la config de `driver.js`:
+  - `overlayColor: "#0A0E17"` (tono del fondo de la app, no negro puro)
+  - `overlayOpacity: 0.55` (antes 0.7 → fondo más legible)
+  - `stagePadding: 8` y `stageRadius: 12` (recorte del spotlight más suave)
+  - `disableActiveInteraction: true` (evita clicks accidentales sobre el elemento enfocado)
+- En `src/app/globals.css` se reemplazó el override de `.driver-overlay` por un realce del elemento activo:
+  - `.driver-active-element` ahora lleva un anillo de acento azul + glow (`box-shadow`), de modo que la sección de la que habla el popover queda claramente iluminada.
+
+**Archivos tocados**
+- `src/components/layout/tour-provider.tsx`
+- `src/app/globals.css`
+
+**Estado:** ✅ Implementado · ⏳ Pendiente verificación visual en navegador
+
+---
+
+### Mejora #2 — Textos secundarios con bajo contraste / poca legibilidad
+
+**Síntoma reportado**
+> Los textos "comunes" (descripciones, subtítulos, labels, placeholders y textos de apoyo) son difíciles de leer e interpretar. El contraste no los favorece.
+
+**Observado en**
+- Página **Mi Equipo** (`/equipo`) como caso testigo, pero es un patrón transversal a toda la app.
+- Elementos afectados típicos (gris tenue sobre fondo oscuro):
+  - Subtítulo de página: *"1 persona · perfil de comportamiento, nivel de autonomía y alineación de cada rol."*
+  - Texto guía del estado vacío: *"Usá 'Invitar colaborador' para sumar jugadores al escuadrón."*
+  - Descripción del Perfil DISC: *"Cómo se comporta naturalmente y cómo liderarlo. Generá el link del test o cargá las letras del informe."*
+  - Labels y helpers de formulario: *"Letras DISC"*, placeholder *"ej. SC, DI"*, *"Se interpreta como"*, descripción del rol DISC.
+  - Email del colaborador, label de rol en el avatar (*"Arquitecto"*), microcopys de estado (*"X/3 objetivos"*).
+
+**Hipótesis de causa**
+- Uso extendido de texto con baja opacidad (ej. `rgba(255,255,255,0.4–0.6)` / grises tenues) sobre fondos oscuros, por debajo del ratio de contraste recomendado (WCAG AA = 4.5:1 para texto normal).
+- Falta de una escala de jerarquía tipográfica clara para texto secundario/terciario que mantenga legibilidad mínima.
+
+**Alcance sugerido (a resolver en otra tarea)**
+- Auditar los tokens/clases de color de texto secundario (probablemente en `globals.css` / `tailwind.config.ts` y componentes del módulo Equipo).
+- Definir un nivel mínimo de contraste para texto de apoyo y aplicarlo de forma consistente en toda la app.
+
+**Estado:** 📝 Documentado — pendiente de resolución (no implementado)
+
+---
+
+### Mejora #3 — Auditoría completa del módulo "Mi Equipo" (`/equipo`)
+
+**Contexto**
+> Revisión a fondo de los 21 componentes de `src/components/equipo/`, la página `src/app/(dashboard)/equipo/page.tsx` y sus `actions.ts`, para detectar bugs y fricciones de UX. Todos los ítems están **solo documentados** (no resueltos). Las referencias de línea son aproximadas a la fecha de la auditoría.
+
+#### 🔴 Severidad ALTA
+
+**3.1 — Pérdida de datos sin confirmación al re-hacer test / regenerar link**
+- `equipo-client.tsx` ~169–212 (`handleGenerateLink`), disparado desde `test-link-box.tsx` ~105–116 y ~173–181.
+- Generar un link nuevo borra destructivamente el perfil DISC (`disc_letters/disc_name/disc_icon/disc_profile_key/disc_scores → null`) sin diálogo de confirmación y se aplica al instante en la UI. Un clic accidental destruye datos cargados.
+- **Categoría:** bug funcional / riesgo de pérdida de datos.
+
+**3.2 — "Regenerar link (invalida el anterior)" NO invalida el anterior**
+- `equipo-client.tsx` ~179–202; copy en `test-link-box.tsx` ~180.
+- Solo hace `insert` de una fila nueva en `disc_assessments`; nunca invalida el token anterior. El `/disc/<token>` viejo sigue activo → dos tests válidos para la misma persona. El copy es engañoso y hay riesgo de consistencia/seguridad.
+- **Categoría:** bug funcional / seguridad.
+
+**3.3 — Layout de 2 columnas no responsive (grid por estilo inline)**
+- `equipo-client.tsx` ~298–301 (`gridTemplateColumns: "300px minmax(0,1fr)"`) + `px-10` en ~244.
+- El grid inline no se puede sobreescribir con clases responsive de Tailwind; en viewports angostos no colapsa a una columna → overflow horizontal / squeeze. En mobile la experiencia se rompe.
+- **Categoría:** responsive / consistencia visual.
+
+**3.4 — Subir PDF marca el test como "completado" aunque no se haya hecho**
+- `equipo-client.tsx` ~224–227 (`disc_status: "completado"` al subir PDF).
+- Cargar un PDF fuerza el estado a completado, contaminando el % de "Estado DISC del equipo" (`team-sidebar.tsx` ~26–29), el badge ✓ del roster (~191–197) y el estado del `TestLinkBox`. Conflación de "tiene PDF" con "completó el test".
+- **Categoría:** bug funcional.
+
+#### 🟠 Severidad MEDIA
+
+**3.5 — Scores DISC sintéticos mostrados como datos reales**
+- `types.ts` ~84–104 (`syntheticScoresFromLetters`/`effectiveScores`); `disc-section.tsx` ~52/114–116; `disc-bars.tsx` ~82–88; `disc-radar.tsx`.
+- Sin scores reales, el radar y las barras muestran valores inventados (ej. 96/64/28) con apariencia de medición exacta. El usuario no distingue estimado de medido.
+- **Categoría:** UX / datos.
+
+**3.6 — "Temor dominante" sugerido se muestra pero no se guarda**
+- `disc-section.tsx` ~181–186 (`value={draft.disc_temor || factor.temor}`); guardado en `equipo-client.tsx` ~148.
+- El textarea muestra el temor sugerido como contenido real (no como placeholder atenuado), pero `draft.disc_temor` sigue vacío y se guarda `null` si no se edita. No marca `dirty`. Patrón "placeholder vía value" que confunde.
+- **Categoría:** UX / bug funcional.
+
+**3.7 — Nombre/emoji del perfil inconsistentes entre Hero y Sidebar/Modal**
+- `member-hero.tsx` ~104–106 (por letras/arquetipo) vs `team-sidebar.tsx` ~161–163 y `member-report-modal.tsx` ~51/115 (por `disc_profile_key` canónico).
+- El mismo miembro puede mostrar nombre y emoji distintos en el header vs la tarjeta lateral.
+- **Categoría:** consistencia visual / bug.
+
+**3.8 — Validación débil de email + invitaciones huérfanas/duplicadas**
+- `invite-modal.tsx` ~24–57 (solo valida `!email.trim()`, a diferencia de `actions.ts` ~6/59 con regex).
+- Acepta emails inválidos; si el `signInWithOtp` falla tras el `insert`, queda una fila de invitación huérfana; no controla duplicados (invitar dos veces crea filas repetidas).
+- **Categoría:** bug funcional / validación.
+
+**3.9 — Errores de Supabase silenciados en la carga de la página**
+- `page.tsx` ~25–44 (queries team / assessments / authorityMatrix).
+- No se inspecciona el `error` de ninguna query; ante fallo cae a `[]`/`null` y muestra equipo vacío sin distinguir "sin datos" de "error". Sin feedback al usuario.
+- **Categoría:** manejo de errores.
+
+**3.10 — Contraste bajo en textos secundarios (confirma y amplía Mejora #2)**
+- Ejemplos: `equipo-client.tsx` ~365 (`text-white/35`); `primitives.tsx` ~89; `member-report-modal.tsx` ~307/309 (`white/40`–`white/35`); `team-sidebar.tsx` ~119/126/239 (`white/45`); `pdf-report-box.tsx` ~53/64.
+- Texto `white/35`–`white/45` sobre fondo oscuro por debajo del mínimo WCAG AA.
+- **Categoría:** accesibilidad / contraste.
+
+**3.11 — Vista colaborador: formulario completo atenuado al 60%**
+- `primitives.tsx` ~105/123 (`disabled:opacity-60`); inputs del detalle con `disabled={!editable}`.
+- Para el colaborador (solo lectura) todo el detalle se ve al 60% de opacidad, agravando el bajo contraste. Leer el propio perfil resulta poco legible.
+- **Categoría:** accesibilidad / UX.
+
+**3.12 — Accesibilidad de modales y botones de solo ícono**
+- `invite-modal.tsx` ~59–85 (sin `role="dialog"`/`aria-modal`, sin focus trap, no cierra con Escape — `member-report-modal.tsx` ~42–48 sí); botones "X" sin `aria-label` en varios lugares (`invite-modal.tsx` ~78, `member-report-modal.tsx` ~119, `equipo-client.tsx` ~402/451).
+- Falta de roles ARIA, foco no atrapado, cierre por teclado inconsistente y botones de ícono sin nombre accesible.
+- **Categoría:** accesibilidad.
+
+**3.13 — Matriz de Autoridad: upsert duplicable y sin validación cruzada**
+- `authority-matrix-panel.tsx` ~51–82 (upsert) y ~94–100.
+- El `upsert` por `company_id` solo evita duplicados si existe constraint UNIQUE; solo valida `n2_min > n2_max` (no coherencia global N1<N2<N3); sin valores muestra textos confusos ("Hasta — → decide solo…").
+- **Categoría:** bug funcional / UX.
+
+#### 🟡 Severidad BAJA
+
+**3.14 —** `pdf-report-box.tsx` ~35–40 usa `alert()` nativo en vez del patrón de toasts del módulo (inconsistencia de feedback).
+
+**3.15 —** `test-link-box.tsx` ~56–65: fallo de "Copiar" silencioso (`catch { /* ignore */ }`), el usuario cree que copió.
+
+**3.16 —** `alignment-section.tsx` ~117–130: input de meta semanal `type="number"` sin `min` (admite negativos/cero).
+
+**3.17 —** `equipo-client.tsx` ~272 y `disc-section.tsx` ~159: clase `px-4.5` inexistente en Tailwind, anulada por padding inline (código muerto).
+
+**3.18 —** `disc-radar.tsx` ~30–34: `<svg>` sin `role="img"`/`<title>` (no accesible a lectores de pantalla).
+
+**3.19 —** Dos medidores de completitud con mismo aspecto y distinto significado: "PERFIL %" (`member-hero.tsx` ~32–33/154, checklist de 3 ítems) vs "Estado DISC %" (`team-sidebar.tsx` ~26–29, por `disc_status`). Puede leerse como contradictorio.
+
+#### Observaciones menores (no bloqueantes)
+- `equipo-client.tsx` ~111–124: reseed de `draft` con `JSON.stringify` en cada render (frágil / costo de serialización).
+- `equipo-client.tsx` ~342–344: `EmptyDetail` casi inalcanzable (el propio usuario siempre está en `team`); su copy rara vez aplica.
+- `equipo-client.tsx` ~378–410: `savedFlash` (z-50) y `errorFlash` (z-55) comparten posición bottom-center y pueden solaparse.
+
+**Estado:** 📝 Documentado — pendiente de priorización y resolución (no implementado)
+
+---
+
+## SPRINT 17 — Experiencia de Bienvenida "JARVIS" + Re-acceso al Onboarding *(Propuesto 2026-06-14)*
+**Estado:** 🔮 Futuro — documentado, no implementado  
+**Objetivo:** Que cada inicio de sesión se sienta personal y "vivo" (estilo asistente de Iron Man), y resolver que el tour de onboarding hoy queda inaccesible una vez completado.
+
+### Feature 17.A — Mensaje de bienvenida estilo Iron Man / JARVIS
+
+**Idea**
+> Cada vez que el usuario inicia sesión, recibe un saludo personalizado y contextual, con el tono de un asistente personal de alta gama ("Bienvenido de nuevo, Sebastián. Tenés 3 tareas por vencer hoy y el War Up arranca en 20 minutos.").
+
+**Comportamiento esperado**
+- Aparece al entrar al dashboard tras login (no en cada navegación interna).
+- Saludo según hora del día (buenos días / tardes / noches) + nombre del usuario.
+- Línea contextual dinámica con 1–3 datos reales del momento: tareas por vencer, próximo ritual, áreas en rojo, novedades sin leer.
+- Tono configurable (formal "JARVIS" / motivacional / neutro). Opción de desactivar en preferencias.
+- Animación de entrada sutil (fade + typewriter opcional) y auto-dismiss a los pocos segundos o al primer click.
+
+**Consideraciones técnicas (a definir)**
+- Detectar "nuevo login" vs navegación (flag de sesión / timestamp del último saludo en `localStorage` o en `profiles`).
+- Las frases contextuales reutilizan datos que ya se calculan para el dashboard (semáforos, rituales, delegación).
+- Posible plantilla de frases con variables; evaluar copy con tono de marca.
+
+### Feature 17.B — Re-acceder al onboarding/tour cuando ya fue completado
+
+**Problema**
+> El tour guiado (S11) solo arranca automáticamente la primera vez (`tour_completed=false`). Una vez hecho, el usuario no encuentra fácilmente cómo repetirlo.
+
+**Solución propuesta (a implementar a futuro)**
+- Punto de entrada visible y descubrible para "Ver tour de nuevo": en el menú de perfil / Mi cuenta y/o en un botón de ayuda (`?`) persistente.
+- Reusar la infraestructura ya existente: `startTour()` y el evento `tbm:start-tour` de `tour-provider.tsx`, reseteando `tour_completed=false` o disparando el tour sin reescribir el flag.
+- Idealmente, un menú de "Ayuda" que agrupe: repetir tour, ver atajos (⌘K), y documentación.
+
+**Criterio de éxito:** Al iniciar sesión el usuario recibe un saludo contextual con su nombre, y puede relanzar el tour en ≤2 clics desde cualquier pantalla.
+
+---
+
+## SPRINT 18 — Asistente IA Conversacional integrado *(Propuesto 2026-06-14)*
+**Estado:** 🔮 Futuro — documentado, no implementado  
+**Objetivo:** Un chat con un agente de IA embebido en la app que ayude al usuario a interactuar con el sistema: responder dudas, guiarlo entre módulos, ejecutar acciones y dar contexto sobre sus datos. Se implementa por etapas incrementales para acotar riesgo y costo.
+
+### Etapa 1 — Chat informativo (read-only / RAG sobre la app)
+- Widget de chat flotante accesible desde cualquier pantalla.
+- Responde preguntas sobre **cómo usar la app** (metodología TBM, qué es cada módulo, cómo delegar, qué es DISC/LOS, etc.) usando como base la documentación del proyecto.
+- Sin acceso a datos del usuario todavía; foco en onboarding y soporte.
+- Definir proveedor (OpenAI/Anthropic), límites de tokens y costo, y guardado de historial.
+
+### Etapa 2 — Chat con contexto de datos del usuario (consultas)
+- El agente puede leer datos del usuario (vía herramientas/funciones server-side con RLS) para responder: "¿qué tareas tengo por vencer?", "¿cómo viene mi Plan 90D?", "¿qué áreas están en rojo?".
+- Capa de *function calling* / tools que mapea a queries seguras de Supabase. Nunca SQL libre del modelo.
+- Respeto estricto de permisos por rol (un colaborador no ve datos de otros).
+
+### Etapa 3 — Chat con acciones (write / agente operativo)
+- El agente ejecuta acciones con confirmación del usuario: crear tarea delegada, agendar ritual, actualizar un KPI, marcar algo como hecho.
+- Toda acción de escritura pide confirmación explícita y queda auditada.
+- Manejo de errores y "deshacer".
+
+### Etapa 4 — Proactividad y memoria
+- El agente sugiere acciones según el estado (ej. "Hace 5 días que no hacés Cool Down").
+- Memoria de conversaciones y preferencias del usuario.
+
+**Consideraciones transversales:** costos por uso, rate limiting, privacidad de datos de empresa, logs/auditoría, y un *kill switch* por empresa. Evaluar UI (panel lateral vs modal vs página dedicada).
+
+**Criterio de éxito (Etapa 1):** Un usuario nuevo puede preguntarle al chat "¿cómo delego una tarea?" y recibir una respuesta correcta basada en la metodología, sin salir de la app.
+
+---
+
+## SPRINT 19 — Módulo de Notificaciones por Email *(Propuesto 2026-06-14)*
+**Estado:** 🔮 Futuro — documentado, no implementado  
+**Objetivo:** El sistema envía emails automáticos sobre vencimientos de tareas y un reporte semanal del estado del negocio. Todo se configura desde un **módulo de Notificaciones** propio.
+
+### Tipos de notificación
+1. **Vencimientos de tareas (delegación):** aviso antes del vencimiento (ej. 24–48h antes) y al vencer. Para el responsable y, opcionalmente, el líder.
+2. **Reporte semanal del estado** (digest): resumen consolidado con
+   - Estado de **dependencias / tareas** (pendientes, bloqueadas, vencidas).
+   - **Metas planteadas** y su avance.
+   - **Planes** (Plan 90D) y **Rocas** del trimestre.
+   - **Novedades** de la semana.
+3. (Futuro) Alertas de áreas en rojo del diagnóstico.
+
+### Módulo de configuración (nuevo)
+- Sección dedicada donde el usuario configura:
+  - Qué notificaciones quiere recibir (toggles por tipo).
+  - Frecuencia y día/hora del reporte semanal.
+  - Anticipación de los avisos de vencimiento.
+  - Destinatarios (solo yo / líder / equipo).
+  - Canal (email ahora; SMS/push a futuro).
+- Preferencias persistidas por usuario (y/o por empresa con defaults).
+
+### Consideraciones técnicas (alineadas al stack actual)
+- **Envío:** Resend (ya en el stack).
+- **Scheduling:** Supabase Edge Functions + cron (ya usado en `/api/cron/daily`) para el digest semanal y el barrido de vencimientos.
+- Plantillas de email con el design system (reusar enfoque de `@react-pdf/renderer` / HTML emails).
+- Tabla de preferencias de notificación + tabla de log de envíos (evitar duplicados, idempotencia).
+- Respetar zona horaria del usuario/empresa.
+- Link de "gestionar notificaciones" / unsubscribe en cada email.
+
+**Criterio de éxito:** Un Arquitecto configura el reporte semanal para los lunes 8:00 y recibe ese día un email con dependencias, metas, plan, rocas y novedades; además recibe un aviso 24h antes de cada tarea por vencer.
+
+---
+
+## SPRINT 20 — Diagrama de Flujo de Dependencias en Tiempo Real *(Propuesto 2026-06-14)*
+**Estado:** 🔮 Futuro — documentado, no implementado  
+**Objetivo:** Una vista visual tipo diagrama de flujo donde el dueño de empresa ve, **en tiempo real**, cómo se encadenan las tareas y sus dependencias, para **identificar cuellos de botella** de un vistazo.
+
+### Concepto
+- Grafo de nodos (tareas / responsables / hitos) conectados por sus dependencias.
+- Estado por color: en curso, bloqueada, vencida, completada.
+- **Detección de cuellos de botella:** resaltar nodos que bloquean a muchos otros, cadenas largas, o tareas vencidas que frenan dependientes.
+- Filtros por persona, área, estado o proyecto/plan.
+- Actualización en **tiempo real** vía Supabase Realtime (igual que el toast de DISC en `equipo-client.tsx`).
+
+### Consideraciones técnicas (a definir)
+- Modelo de datos de dependencias entre tareas (relación tarea → tarea; hoy delegación maneja tareas, falta el grafo de dependencias).
+- Librería de grafos/flow (ej. React Flow) — evaluar peso y compatibilidad Next.js.
+- Layout automático (jerárquico / DAG) y manejo de ciclos.
+- Rendimiento con muchos nodos; posible virtualización / agrupamiento.
+- Vista read-only primero; edición de dependencias (arrastrar conexiones) como etapa posterior.
+
+**Criterio de éxito:** El dueño abre el diagrama y, sin leer listas, identifica en segundos qué tarea/persona es el cuello de botella que está frenando al resto.
+
+---
+
 
 Database:     Supabase (PostgreSQL + Auth + Realtime + Storage)
 Backend:      Supabase Edge Functions (Deno) para cron jobs y lógica server-side
