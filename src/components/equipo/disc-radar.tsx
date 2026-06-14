@@ -30,6 +30,8 @@ export function DiscRadar({
     <svg
       width={size}
       height={size}
+      role="img"
+      aria-label={`Radar DISC — D ${scores.D}, I ${scores.I}, S ${scores.S}, C ${scores.C}`}
       style={{ display: "block", margin: "0 auto", overflow: "visible" }}
     >
       <defs>

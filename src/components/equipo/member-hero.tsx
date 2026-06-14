@@ -157,7 +157,9 @@ export function MemberHero({
               className="mb-1.5 flex justify-between text-[10.5px] text-white/50"
               style={{ fontFamily: MONO }}
             >
-              <span>PERFIL</span>
+              <span title="Completitud de la ficha: DISC + LOS + KPI cargados (distinto del Estado DISC del equipo, que mide el test)">
+                FICHA
+              </span>
               <span>{pct}%</span>
             </div>
             <div className="h-[7px] overflow-hidden rounded-full bg-white/[0.07]">

@@ -34,6 +34,7 @@ export function TestLinkBox({
 }) {
   const completed = status === "completado";
   const [copied, setCopied] = useState(false);
+  const [copyErr, setCopyErr] = useState(false);
   const [email, setEmail] = useState(defaultEmail ?? "");
   const [sending, setSending] = useState(false);
   const [sendMsg, setSendMsg] = useState("");
@@ -55,12 +56,16 @@ export function TestLinkBox({
 
   async function copy() {
     if (!url) return;
+    setCopyErr(false);
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      /* ignore */
+      // El portapapeles puede fallar (permisos / contexto no seguro): avisar en
+      // vez de fingir éxito. El input es readOnly y seleccionable a mano.
+      setCopyErr(true);
+      setTimeout(() => setCopyErr(false), 4000);
     }
   }
 
@@ -143,6 +148,11 @@ export function TestLinkBox({
               {copied ? "Copiado" : "Copiar"}
             </button>
           </div>
+          {copyErr && (
+            <p className="mt-1.5 text-[11.5px] text-[#f87171]">
+              No se pudo copiar automáticamente. Seleccioná el link y copialo a mano.
+            </p>
+          )}
 
           {/* Enviar por email */}
           <div className="mt-3 border-t border-white/[0.07] pt-3">
