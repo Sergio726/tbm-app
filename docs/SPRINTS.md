@@ -49,6 +49,7 @@
 | **S12** | Dashboard 100% Funcional | 25–26 | Hero strip, rituales y diagnóstico con datos reales — sin hardcoding |
 | **S13** | Hero Strip Interactivo | 27–28 | Las 4 tiles del dashboard con hover, click, tooltips y paneles de detalle |
 | **S14** | Búsqueda, Notificaciones & Energía | 29–30 | ⌘K navegación rápida + campana funcional con eventos reales + fix energía |
+| **S15** | Cierre de Migración Supabase | — | Proyecto nuevo en prod (Vercel) + SMTP propio + prueba real de colaborador |
 
 ---
 
@@ -1808,6 +1809,50 @@ const NOTIF_ICONS: Record<string, string> = {
 > 4. **Notificaciones — panel:** Click en la campana abre el dropdown con las últimas 10 notificaciones con tiempo relativo e ícono por tipo
 > 5. **Notificaciones — generación:** Crear una tarea notifica al colaborador asignado. Escalar con Anti-Boomerang notifica al arquitecto. Completar una tarea notifica al creador
 > 6. **Notificaciones — read:** Al abrir el panel las notificaciones se marcan como leídas y el badge desaparece
+
+---
+
+## SPRINT 15 — Cierre de Migración Supabase *(Añadido 2026-06-14)*
+**Objetivo:** Terminar el corte al proyecto Supabase nuevo `fozhnfxehbbgqaerprgf` (org TBM Org,
+cuenta `sebastian.soporte.tbm@gmail.com`), creado tras perder el acceso al dashboard del proyecto
+viejo `onzsxbghmyuqykiejpxw`. La base, el esquema (27 tablas), los datos (27 filas) y el flujo de
+invitación ya quedaron migrados y verificados. Falta lo operativo de despliegue y robustez.
+Contexto completo en `docs/RECOVERY_SUPABASE.md`.
+
+### Tareas
+
+**Despliegue (operativo)**
+- [ ] **Vercel:** actualizar `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+  con los valores del proyecto nuevo (ya están en `.env.local`) en Production/Preview/Development,
+  y hacer **Redeploy** del último deploy.
+- [ ] **Local:** reiniciar `npm run dev` para que tome el nuevo `.env.local` (había un dev server
+  viejo en `localhost:3000` con el env anterior cacheado).
+
+**Robustez de email (recomendado para producción)**
+- [ ] Configurar **SMTP propio (Resend)** en Auth del proyecto nuevo
+  (`Dashboard → Settings → Auth → SMTP Settings`). Las invitaciones usan `signInWithOtp`
+  (email de Supabase Auth, no Resend); el email interno de proyectos nuevos es rate-limited.
+  Sin SMTP propio las invitaciones pueden cortarse en producción.
+
+**Pruebas pendientes**
+- [ ] Prueba **end-to-end de colaborador** con un segundo email real: invitar desde la app
+  (post-redeploy) → recibir magic link → `/accept-invite` → unirse al equipo como colaborador.
+  (Ya verificado: creación de invitación por RLS, envío de OTP 200, redirect aceptado, email recibido.)
+
+**Seguimiento (no bloqueante)**
+- [ ] Ticket **SU-395249**: transferencia/baja del proyecto viejo `onzsxbghmyuqykiejpxw`
+  (vive bajo otra cuenta de Supabase desconocida). Plantilla en `docs/RECOVERY_SUPABASE.md`.
+- [ ] (Opcional) Cambiar la contraseña de la app y activar "leaked password protection" en Auth.
+
+### Scripts de la migración (referencia, en `scripts/`)
+- `backup-data.mjs` — backup por REST (soporta `service_role` para backup completo).
+- `import-as-user.mjs` — import usado (REST autenticado como el usuario, respeta RLS).
+- `import-data.mjs` / `backup-to-sql.mjs` — variantes (service_role / SQL).
+
+### ✅ Criterio de éxito del Sprint 15
+> Producción en Vercel corre contra `fozhnfxehbbgqaerprgf`, un colaborador real puede aceptar una
+> invitación end-to-end con email confiable (SMTP propio), y el proyecto viejo queda encaminado a
+> transferencia/baja vía soporte.
 
 ---
 

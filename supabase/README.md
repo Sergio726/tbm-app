@@ -1,7 +1,9 @@
 # Migraciones Supabase — orden de aplicación
 
-Proyecto: **onzsxbghmyuqykiejpxw** (org TBM Corp). Se aplican en el **SQL Editor**
-del dashboard (el MCP/CLI no llega a este proyecto). Correr **en orden**.
+Proyecto ACTIVO (desde 2026-06-14): **fozhnfxehbbgqaerprgf** (org TBM Org, cuenta
+sebastian.soporte.tbm@gmail.com), reconstruido tras perder acceso al dashboard del
+proyecto viejo `onzsxbghmyuqykiejpxw` (ver `../docs/RECOVERY_SUPABASE.md`). El MCP de
+Supabase **sí** llega al proyecto nuevo (apply_migration/execute_sql). Correr **en orden**.
 
 > Cada archivo es idempotente donde se puede (`if not exists`, `create or replace`,
 > `on conflict do nothing`). Si ya aplicaste alguno, re-correrlo no debería romper.
