@@ -303,7 +303,7 @@ export function EquipoClient({
           <button
             type="button"
             onClick={() => setInviteOpen(true)}
-            className="inline-flex items-center gap-2.5 rounded-xl border-0 px-4.5 py-3 text-[13.5px] font-semibold text-white transition hover:-translate-y-px"
+            className="inline-flex items-center gap-2.5 rounded-xl border-0 py-3 text-[13.5px] font-semibold text-white transition hover:-translate-y-px"
             style={{
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
               boxShadow:

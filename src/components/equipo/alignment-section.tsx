@@ -116,14 +116,19 @@ export function AlignmentSection({
             <FieldLabel>Meta semanal</FieldLabel>
             <TextInput
               type="number"
+              min={1}
+              step={1}
               value={draft.kpi_weekly_target ?? ""}
               disabled={!editable}
-              onChange={(e) =>
-                patch({
-                  kpi_weekly_target:
-                    e.target.value === "" ? null : Number(e.target.value),
-                })
-              }
+              onChange={(e) => {
+                if (e.target.value === "") {
+                  patch({ kpi_weekly_target: null });
+                  return;
+                }
+                // No persistir negativos: una meta semanal no puede ser < 0.
+                const n = Number(e.target.value);
+                patch({ kpi_weekly_target: Number.isFinite(n) ? Math.max(0, n) : null });
+              }}
               placeholder="10"
               className="text-center font-bold"
               style={{ fontFamily: MONO, fontSize: 16 }}

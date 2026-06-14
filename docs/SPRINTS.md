@@ -2010,24 +2010,24 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 
 #### 🟡 Severidad BAJA
 
-**3.14 —** `pdf-report-box.tsx` ~35–40 usa `alert()` nativo en vez del patrón de toasts del módulo (inconsistencia de feedback).
+**3.14 —** ✅ RESUELTO (2026-06-14) `pdf-report-box.tsx` usaba `alert()` nativo. **Fix:** estado local `openErr` + aviso inline rojo bajo "Ver PDF" (mismo patrón que `sendErr` en `test-link-box`).
 
-**3.15 —** `test-link-box.tsx` ~56–65: fallo de "Copiar" silencioso (`catch { /* ignore */ }`), el usuario cree que copió.
+**3.15 —** ✅ RESUELTO (2026-06-14) `test-link-box.tsx` tragaba el fallo de "Copiar" (`catch {}`). **Fix:** estado `copyErr`; al fallar muestra "No se pudo copiar automáticamente. Seleccioná el link y copialo a mano." (el input es `readOnly`/seleccionable).
 
-**3.16 —** `alignment-section.tsx` ~117–130: input de meta semanal `type="number"` sin `min` (admite negativos/cero).
+**3.16 —** ✅ RESUELTO (2026-06-14) `alignment-section.tsx` meta semanal sin `min`. **Fix:** `min={1} step={1}` + `onChange` que no persiste negativos (`Math.max(0, n)`; vacío = `null`).
 
-**3.17 —** `equipo-client.tsx` ~272 y `disc-section.tsx` ~159: clase `px-4.5` inexistente en Tailwind, anulada por padding inline (código muerto).
+**3.17 —** ✅ RESUELTO (2026-06-14) clase `px-4.5` inexistente. **Fix:** quitado el token de `equipo-client.tsx` (botón invitar) y `disc-section.tsx` (div "Cómo liderar"); el padding inline ya mandaba.
 
-**3.18 —** `disc-radar.tsx` ~30–34: `<svg>` sin `role="img"`/`<title>` (no accesible a lectores de pantalla).
+**3.18 —** ✅ RESUELTO (2026-06-14) `disc-radar.tsx` `<svg>` sin rol. **Fix:** `role="img"` + `aria-label` con los valores D/I/S/C.
 
-**3.19 —** Dos medidores de completitud con mismo aspecto y distinto significado: "PERFIL %" (`member-hero.tsx` ~32–33/154, checklist de 3 ítems) vs "Estado DISC %" (`team-sidebar.tsx` ~26–29, por `disc_status`). Puede leerse como contradictorio.
+**3.19 —** ✅ RESUELTO (2026-06-14) dos medidores con mismo aspecto. **Fix:** en `member-hero.tsx` el gauge "PERFIL" pasó a **"FICHA"** con `title` explicativo ("DISC + LOS + KPI cargados; distinto del Estado DISC del equipo"). Sin tocar cálculos.
 
 #### Observaciones menores (no bloqueantes)
 - `equipo-client.tsx` ~111–124: reseed de `draft` con `JSON.stringify` en cada render (frágil / costo de serialización).
 - `equipo-client.tsx` ~342–344: `EmptyDetail` casi inalcanzable (el propio usuario siempre está en `team`); su copy rara vez aplica.
 - `equipo-client.tsx` ~378–410: `savedFlash` (z-50) y `errorFlash` (z-55) comparten posición bottom-center y pueden solaparse.
 
-**Estado:** 🟢 Casi cerrado — 🔴 ALTAS (3.1–3.4) **resueltas** y 🟠 MEDIAS (3.5–3.13) **resueltas** (2026-06-14, build verde), salvo 3.10 que queda 🟡 parcial (el barrido transversal de contraste es Mejora #2). Pendientes: 🟡 BAJAS (3.14–3.19), de bajo impacto.
+**Estado:** ✅ CERRADO (2026-06-14, build verde) — 🔴 ALTAS (3.1–3.4), 🟠 MEDIAS (3.5–3.13) y 🟡 BAJAS (3.14–3.19) **todas resueltas**. Única excepción: 3.10 queda 🟡 parcial → el barrido transversal de contraste se trata como **Mejora #2** (afecta toda la app, no solo Equipo). Las "Observaciones menores" de abajo no son bloqueantes y quedan como backlog opcional.
 
 ---
 

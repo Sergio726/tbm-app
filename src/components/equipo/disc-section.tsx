@@ -176,7 +176,7 @@ export function DiscSection({
 
           {/* Cómo liderar */}
           <div
-            className="mt-[18px] rounded-[14px] border px-4.5 py-4"
+            className="mt-[18px] rounded-[14px] border py-4"
             style={{
               background: `${accent}0e`,
               borderColor: `${accent}30`,

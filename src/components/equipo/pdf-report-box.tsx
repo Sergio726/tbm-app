@@ -17,6 +17,7 @@ export function PdfReportBox({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [opening, setOpening] = useState(false);
+  const [openErr, setOpenErr] = useState("");
 
   async function view() {
     if (!pdfPath) return;
@@ -25,6 +26,7 @@ export function PdfReportBox({
       return;
     }
     setOpening(true);
+    setOpenErr("");
     try {
       const supabase = createBrowserClient();
       const { data, error } = await supabase.storage
@@ -34,7 +36,7 @@ export function PdfReportBox({
       window.open(data.signedUrl, "_blank");
     } catch (e) {
       console.error("Error abriendo informe:", e);
-      alert("No se pudo abrir el informe.");
+      setOpenErr("No se pudo abrir el informe. Intentá de nuevo.");
     } finally {
       setOpening(false);
     }
@@ -64,6 +66,9 @@ export function PdfReportBox({
               "Sin informe PDF cargado."
             )}
           </div>
+          {openErr && (
+            <div className="mt-1 text-[11.5px] text-[#f87171]">{openErr}</div>
+          )}
         </div>
       </div>
 
