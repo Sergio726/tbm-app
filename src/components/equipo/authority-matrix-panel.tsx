@@ -50,25 +50,47 @@ export function AuthorityMatrixPanel({
 
   async function save() {
     if (saving) return;
+    const vN1 = toNum(n1);
     const vN2min = toNum(n2min);
     const vN2max = toNum(n2max);
+    const vN3 = toNum(n3);
+
+    // Validación de coherencia global: N1 ≤ N2(min..max) ≤ N3, sin negativos.
+    if ([vN1, vN2min, vN2max, vN3].some((v) => v != null && v < 0)) {
+      setErr("Los montos no pueden ser negativos.");
+      return;
+    }
     if (vN2min != null && vN2max != null && vN2min > vN2max) {
       setErr("El mínimo de N2 no puede ser mayor que el máximo.");
       return;
     }
+    if (vN1 != null && vN2min != null && vN1 > vN2min) {
+      setErr("N1 (autonomía total) no puede superar el inicio de N2.");
+      return;
+    }
+    if (vN2max != null && vN3 != null && vN2max > vN3) {
+      setErr("El máximo de N2 no puede superar el umbral de N3.");
+      return;
+    }
+
     setSaving(true);
     setErr("");
     try {
       const supabase = createBrowserClient();
-      const { error } = await supabase.from("authority_matrix").upsert({
-        company_id: companyId,
-        n1_amount: toNum(n1),
-        n2_min: vN2min,
-        n2_max: vN2max,
-        n3_threshold: toNum(n3),
-        currency,
-        updated_at: new Date().toISOString(),
-      });
+      // onConflict explícito: company_id es PK, así que esto actualiza la fila
+      // existente en vez de intentar insertar un duplicado.
+      const { error } = await supabase.from("authority_matrix").upsert(
+        {
+          company_id: companyId,
+          n1_amount: vN1,
+          n2_min: vN2min,
+          n2_max: vN2max,
+          n3_threshold: vN3,
+          currency,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "company_id" }
+      );
       if (error) throw error;
       setSaved(true);
       setTimeout(() => setSaved(false), 2200);
@@ -91,13 +113,33 @@ export function AuthorityMatrixPanel({
 
       {/* Niveles */}
       <div className="space-y-2">
-        <Level color="#34d399" label="N1 · Autonomía total" desc={`Hasta ${fmt(n1)} → decide solo, sin avisar.`} />
+        <Level
+          color="#34d399"
+          label="N1 · Autonomía total"
+          desc={
+            toNum(n1) != null
+              ? `Hasta ${fmt(n1)} → decide solo, sin avisar.`
+              : "Sin definir — configurá el monto abajo."
+          }
+        />
         <Level
           color="#fbbf24"
           label="N2 · Táctica"
-          desc={`${fmt(n2min)} a ${fmt(n2max)} → ejecuta e informa.`}
+          desc={
+            toNum(n2min) != null || toNum(n2max) != null
+              ? `${fmt(n2min)} a ${fmt(n2max)} → ejecuta e informa.`
+              : "Sin definir — configurá el rango abajo."
+          }
         />
-        <Level color="#f87171" label="N3 · Requiere aprobación" desc={`Más de ${fmt(n3)} → pide tu OK antes.`} />
+        <Level
+          color="#f87171"
+          label="N3 · Requiere aprobación"
+          desc={
+            toNum(n3) != null
+              ? `Más de ${fmt(n3)} → pide tu OK antes.`
+              : "Sin definir — configurá el umbral abajo."
+          }
+        />
       </div>
 
       {/* Edición (Arquitecto) */}

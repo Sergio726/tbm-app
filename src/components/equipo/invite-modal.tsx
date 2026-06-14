@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Send, X, Check } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { TextInput } from "./primitives";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function InviteModal({
   companyId,
@@ -21,36 +23,72 @@ export function InviteModal({
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
 
+  // Cerrar con Escape (accesibilidad de modal).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   async function send() {
-    if (!email.trim()) {
-      setError("Ingresá un email.");
+    const value = email.trim().toLowerCase();
+    if (!EMAIL_RE.test(value)) {
+      setError("Ingresá un email válido.");
       return;
     }
     setSending(true);
     setError("");
     try {
       const supabase = createBrowserClient();
-      const { error: invErr } = await supabase.from("invitations").insert({
-        company_id: companyId,
-        invited_by: invitedBy,
-        email: email.trim(),
-        role: "colaborador",
-      });
-      if (invErr) throw invErr;
+
+      // Evitar invitaciones duplicadas: si ya existe una para este email en la
+      // empresa, no se inserta otra (se reenvía el link igual).
+      const { data: existingRows } = await supabase
+        .from("invitations")
+        .select("id")
+        .eq("company_id", companyId)
+        .eq("email", value)
+        .limit(1);
+      const existingId = existingRows?.[0]?.id ?? null;
+
+      let insertedId: string | null = null;
+      if (!existingId) {
+        const { data: inserted, error: invErr } = await supabase
+          .from("invitations")
+          .insert({
+            company_id: companyId,
+            invited_by: invitedBy,
+            email: value,
+            role: "colaborador",
+          })
+          .select("id")
+          .single();
+        if (invErr) throw invErr;
+        insertedId = inserted?.id ?? null;
+      }
 
       const { error: otpErr } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
+        email: value,
         options: {
           emailRedirectTo: `${window.location.origin}/accept-invite?company=${companyId}`,
         },
       });
-      if (otpErr) throw otpErr;
+      if (otpErr) {
+        // Rollback: si recién creamos la invitación y el email falló, borrarla
+        // para no dejar una invitación huérfana sin email enviado.
+        if (insertedId) {
+          await supabase.from("invitations").delete().eq("id", insertedId);
+        }
+        throw otpErr;
+      }
 
       setSent(true);
       setTimeout(onDone, 1200);
     } catch (e) {
       console.error("Error invitando:", e);
-      setError("No se pudo enviar la invitación. Intentá de nuevo.");
+      setError("No se pudo enviar la invitación. Revisá el email e intentá de nuevo.");
     } finally {
       setSending(false);
     }
@@ -61,6 +99,9 @@ export function InviteModal({
       className="fixed inset-0 z-50 flex items-center justify-center p-5"
       style={{ background: "rgba(5,10,20,0.7)" }}
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="invite-modal-title"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -68,7 +109,7 @@ export function InviteModal({
       >
         <div className="mb-3.5 flex items-start justify-between">
           <div>
-            <h3 className="m-0 text-[17px] font-bold text-white">
+            <h3 id="invite-modal-title" className="m-0 text-[17px] font-bold text-white">
               Invitar colaborador
             </h3>
             <p className="mt-1 text-[12.5px] text-white/50">
@@ -78,6 +119,7 @@ export function InviteModal({
           <button
             type="button"
             onClick={onClose}
+            aria-label="Cerrar"
             className="text-white/50 hover:text-white"
           >
             <X size={18} />

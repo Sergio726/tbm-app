@@ -3,7 +3,7 @@
 import { Mail, Compass, Target, Shield, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Profile } from "@/types/database";
-import { DISC_COLORS, LOS_LEVELS, normalizeLetters } from "@/lib/disc";
+import { DISC_COLORS, LOS_LEVELS, normalizeLetters, profileByKey } from "@/lib/disc";
 import { archetypeFor, initials, MONO, type ChecklistItem, type Draft } from "./types";
 
 /**
@@ -21,6 +21,12 @@ export function MemberHero({
 }) {
   const code = normalizeLetters(draft.disc_letters);
   const arch = archetypeFor(code);
+  // Nombre/emoji canónicos: el perfil calculado por el test (disc_profile_key)
+  // manda; si no hay, cae al arquetipo por letras. Mismo criterio que el roster
+  // (team-sidebar) y el modal de informe, para que no muestren nombres distintos.
+  const canon = profileByKey(member.disc_profile_key);
+  const displayName = canon?.name ?? arch.name;
+  const displayEmoji = canon?.icon ?? arch.emoji;
   const rarity = DISC_COLORS[arch.primary] ?? "#5b8aff";
   const ring = rarity;
   const losActual = LOS_LEVELS.find((l) => l.level === draft.los_level) ?? LOS_LEVELS[0];
@@ -101,8 +107,8 @@ export function MemberHero({
                 color: rarity,
               }}
             >
-              <span className="text-[14px]">{arch.emoji}</span>
-              {member.disc_name || arch.name}
+              <span className="text-[14px]">{displayEmoji}</span>
+              {displayName}
             </span>
           </div>
           {member.email && (

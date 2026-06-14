@@ -1954,50 +1954,59 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 
 #### 🟠 Severidad MEDIA
 
-**3.5 — Scores DISC sintéticos mostrados como datos reales**
+**3.5 — Scores DISC sintéticos mostrados como datos reales** · ✅ RESUELTO (2026-06-14)
 - `types.ts` ~84–104 (`syntheticScoresFromLetters`/`effectiveScores`); `disc-section.tsx` ~52/114–116; `disc-bars.tsx` ~82–88; `disc-radar.tsx`.
 - Sin scores reales, el radar y las barras muestran valores inventados (ej. 96/64/28) con apariencia de medición exacta. El usuario no distingue estimado de medido.
 - **Categoría:** UX / datos.
+- **Fix:** `disc-section.tsx` calcula `realScores = scoresToPct(scores)` y `isEstimated = !realScores`; debajo del radar/barras muestra un aviso claro: ⚠ "Valores estimados a partir de las letras DISC, no medidos. Hacé el test…" cuando son estimados, o "Valores medidos en el test DISC." cuando son reales. Se eliminó `effectiveScores` (código muerto).
 
-**3.6 — "Temor dominante" sugerido se muestra pero no se guarda**
+**3.6 — "Temor dominante" sugerido se muestra pero no se guarda** · ✅ RESUELTO (2026-06-14)
 - `disc-section.tsx` ~181–186 (`value={draft.disc_temor || factor.temor}`); guardado en `equipo-client.tsx` ~148.
 - El textarea muestra el temor sugerido como contenido real (no como placeholder atenuado), pero `draft.disc_temor` sigue vacío y se guarda `null` si no se edita. No marca `dirty`. Patrón "placeholder vía value" que confunde.
 - **Categoría:** UX / bug funcional.
+- **Fix:** la sugerencia pasó a ser `placeholder={factor.temor}` (atenuado, no se guarda) y `value={draft.disc_temor}` (lo real). Si el Arquitecto quiere adoptarla, un botón "Usar la sugerencia del perfil" la copia al draft (marca `dirty` y se guarda). Se acabó la confusión "se ve pero no se guarda".
 
-**3.7 — Nombre/emoji del perfil inconsistentes entre Hero y Sidebar/Modal**
+**3.7 — Nombre/emoji del perfil inconsistentes entre Hero y Sidebar/Modal** · ✅ RESUELTO (2026-06-14)
 - `member-hero.tsx` ~104–106 (por letras/arquetipo) vs `team-sidebar.tsx` ~161–163 y `member-report-modal.tsx` ~51/115 (por `disc_profile_key` canónico).
 - El mismo miembro puede mostrar nombre y emoji distintos en el header vs la tarjeta lateral.
 - **Categoría:** consistencia visual / bug.
+- **Fix:** `member-hero.tsx` ahora resuelve nombre/emoji con `profileByKey(member.disc_profile_key)` (canónico) y cae a `archetypeFor` por letras — mismo criterio que el roster y el modal. Hero, sidebar y modal muestran siempre el mismo nombre/emoji.
 
-**3.8 — Validación débil de email + invitaciones huérfanas/duplicadas**
+**3.8 — Validación débil de email + invitaciones huérfanas/duplicadas** · ✅ RESUELTO (2026-06-14)
 - `invite-modal.tsx` ~24–57 (solo valida `!email.trim()`, a diferencia de `actions.ts` ~6/59 con regex).
 - Acepta emails inválidos; si el `signInWithOtp` falla tras el `insert`, queda una fila de invitación huérfana; no controla duplicados (invitar dos veces crea filas repetidas).
 - **Categoría:** bug funcional / validación.
+- **Fix:** `invite-modal.tsx` ahora valida con `EMAIL_RE` (regex, email normalizado a lowercase); deduplica consultando invitaciones existentes (company_id+email) antes de insertar; y hace **rollback** (borra la fila recién creada) si el `signInWithOtp` falla → no quedan invitaciones huérfanas ni duplicadas.
 
-**3.9 — Errores de Supabase silenciados en la carga de la página**
+**3.9 — Errores de Supabase silenciados en la carga de la página** · ✅ RESUELTO (2026-06-14)
 - `page.tsx` ~25–44 (queries team / assessments / authorityMatrix).
 - No se inspecciona el `error` de ninguna query; ante fallo cae a `[]`/`null` y muestra equipo vacío sin distinguir "sin datos" de "error". Sin feedback al usuario.
 - **Categoría:** manejo de errores.
+- **Fix:** `page.tsx` captura el `error` de las 3 queries. Si falla la del equipo (data crítica) muestra `<EquipoError />` (bloque rojo claro) en vez de un equipo vacío engañoso; las de assessments/authority_matrix loguean a server y degradan a `[]`/`null`.
 
-**3.10 — Contraste bajo en textos secundarios (confirma y amplía Mejora #2)**
+**3.10 — Contraste bajo en textos secundarios (confirma y amplía Mejora #2)** · 🟡 PARCIAL (2026-06-14)
 - Ejemplos: `equipo-client.tsx` ~365 (`text-white/35`); `primitives.tsx` ~89; `member-report-modal.tsx` ~307/309 (`white/40`–`white/35`); `team-sidebar.tsx` ~119/126/239 (`white/45`); `pdf-report-box.tsx` ~53/64.
 - Texto `white/35`–`white/45` sobre fondo oscuro por debajo del mínimo WCAG AA.
 - **Categoría:** accesibilidad / contraste.
+- **Estado:** el caso del formulario read-only se resolvió en 3.11. El barrido **transversal** de contraste (definir token mínimo de texto secundario y aplicarlo en toda la app) sigue pendiente → se trata como **Mejora #2** (no es solo del módulo Equipo).
 
-**3.11 — Vista colaborador: formulario completo atenuado al 60%**
+**3.11 — Vista colaborador: formulario completo atenuado al 60%** · ✅ RESUELTO (2026-06-14)
 - `primitives.tsx` ~105/123 (`disabled:opacity-60`); inputs del detalle con `disabled={!editable}`.
 - Para el colaborador (solo lectura) todo el detalle se ve al 60% de opacidad, agravando el bajo contraste. Leer el propio perfil resulta poco legible.
 - **Categoría:** accesibilidad / UX.
+- **Fix:** `TextInput`/`TextAreaInput` cambian `disabled:opacity-60` por `disabled:cursor-default disabled:text-white/75` → el texto del campo read-only queda legible (75%) en vez de atenuar todo el campo al 60%.
 
-**3.12 — Accesibilidad de modales y botones de solo ícono**
+**3.12 — Accesibilidad de modales y botones de solo ícono** · ✅ RESUELTO (2026-06-14)
 - `invite-modal.tsx` ~59–85 (sin `role="dialog"`/`aria-modal`, sin focus trap, no cierra con Escape — `member-report-modal.tsx` ~42–48 sí); botones "X" sin `aria-label` en varios lugares (`invite-modal.tsx` ~78, `member-report-modal.tsx` ~119, `equipo-client.tsx` ~402/451).
 - Falta de roles ARIA, foco no atrapado, cierre por teclado inconsistente y botones de ícono sin nombre accesible.
 - **Categoría:** accesibilidad.
+- **Fix:** `invite-modal.tsx` ahora tiene `role="dialog"` + `aria-modal` + `aria-labelledby`, cierra con Escape y su "X" tiene `aria-label`. El modal de confirmación de re-test (bug 3.1) nació con esos atributos. Las "X" de los toasts de `equipo-client.tsx` ya llevan `aria-label`. (`member-report-modal.tsx` ya cerraba con Escape; queda como mejora menor sumarle `aria-label` a su "X".)
 
-**3.13 — Matriz de Autoridad: upsert duplicable y sin validación cruzada**
+**3.13 — Matriz de Autoridad: upsert duplicable y sin validación cruzada** · ✅ RESUELTO (2026-06-14)
 - `authority-matrix-panel.tsx` ~51–82 (upsert) y ~94–100.
 - El `upsert` por `company_id` solo evita duplicados si existe constraint UNIQUE; solo valida `n2_min > n2_max` (no coherencia global N1<N2<N3); sin valores muestra textos confusos ("Hasta — → decide solo…").
 - **Categoría:** bug funcional / UX.
+- **Fix:** `upsert` ahora con `onConflict: "company_id"` explícito (esa col es PK → actualiza, no duplica). Se agregó validación de coherencia global: sin negativos, `N2min ≤ N2max`, `N1 ≤ N2min`, `N2max ≤ N3`, con mensajes claros. Cuando un nivel no tiene valores, el desc muestra "Sin definir — configurá … abajo." en vez del texto confuso.
 
 #### 🟡 Severidad BAJA
 
@@ -2018,7 +2027,7 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 - `equipo-client.tsx` ~342–344: `EmptyDetail` casi inalcanzable (el propio usuario siempre está en `team`); su copy rara vez aplica.
 - `equipo-client.tsx` ~378–410: `savedFlash` (z-50) y `errorFlash` (z-55) comparten posición bottom-center y pueden solaparse.
 
-**Estado:** 🟠 En progreso — 🔴 las 4 de severidad ALTA (3.1–3.4) **resueltas** (2026-06-14, build verde); 🟠 medias (3.5–3.13) y 🟡 bajas (3.14–3.19) aún documentadas, pendientes de priorización.
+**Estado:** 🟢 Casi cerrado — 🔴 ALTAS (3.1–3.4) **resueltas** y 🟠 MEDIAS (3.5–3.13) **resueltas** (2026-06-14, build verde), salvo 3.10 que queda 🟡 parcial (el barrido transversal de contraste es Mejora #2). Pendientes: 🟡 BAJAS (3.14–3.19), de bajo impacto.
 
 ---
 

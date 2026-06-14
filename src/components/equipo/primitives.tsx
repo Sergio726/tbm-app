@@ -102,7 +102,9 @@ export function TextInput({
     <input
       {...props}
       className={cn(
-        "w-full rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm text-white outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:opacity-60",
+        // Read-only/colaborador: en vez de atenuar todo el campo al 60% (ilegible),
+        // se mantiene el texto legible (white/75) con cursor por defecto.
+        "w-full rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm text-white outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:cursor-default disabled:text-white/75",
         className
       )}
       style={style}
@@ -120,7 +122,8 @@ export function TextAreaInput({
     <textarea
       {...props}
       className={cn(
-        "min-h-[76px] w-full resize-y rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm leading-relaxed text-white outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:opacity-60",
+        // Mismo criterio de legibilidad en read-only que TextInput.
+        "min-h-[76px] w-full resize-y rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm leading-relaxed text-white outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:cursor-default disabled:text-white/75",
         className
       )}
       style={style}
