@@ -3,6 +3,11 @@
 Tablero único de estado. Roadmap original: `docs/SPRINTS.md` (S0–S10).
 Última actualización: 2026-06-03. Trabajo activo en rama **`dev`**.
 
+> ⚠️ **Este tablero refleja el estado a 2026-06-03 y quedó atrás** (S12–S17 ya
+> cerrados). Para el estado vigente ver [`../PROGRESS.md`](../PROGRESS.md). Para el
+> feedback del cliente jun-2026 y su backlog ver
+> [`OBSERVACIONES_DILIO_2026-06.md`](OBSERVACIONES_DILIO_2026-06.md).
+
 ## Estado por sprint
 
 | Sprint | Módulo | Estado | Qué falta |
