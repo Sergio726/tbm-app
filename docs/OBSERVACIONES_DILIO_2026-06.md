@@ -1,0 +1,223 @@
+# Observaciones de Dilio Donado — round jun-2026
+
+> **Origen:** feedback de Dilio (cliente/dueño de la metodología) registrado a
+> inicios de junio 2026, + tareas que Sebastian reconoció pendientes en esa misma
+> conversación.
+> **Cruce contra el código:** 2026-06-15 (estado real del repo, post S12–S17).
+> **Alcance de este doc:** solo lo que toca la **app TBM**. Los proyectos externos
+> (funnel GoHighLevel, IA de campañas, módulo financiero, cliente Venezuela,
+> hosting) se listan al final como **fuera de scope** para no perderlos, pero no
+> son backlog de este repo.
+
+**Para implementar en sesiones futuras.** Este documento es la fuente única de
+este round de feedback; cuando una pieza se cierra, marcarla acá y reflejarla en
+[`PROGRESS.md`](../PROGRESS.md).
+
+---
+
+## Leyenda
+
+- ✅ **Ya cubierto** — hecho en sprints recientes (S12–S17), no re-implementar.
+- 🟡 **Parcial** — la base existe; falta exactamente lo que pide Dilio.
+- ❌ **Pendiente** — feature nueva, no hay nada todavía.
+- ⛔ **Bloqueado** — depende de contenido/insumo que debe entregar Dilio.
+
+---
+
+## A. Metodología, rituales y experiencia de usuario
+
+### A1 · Recordatorio anticipado de "armá el próximo ciclo" — ❌
+Dilio: el sistema debe **recordar 30 días antes** que hay que armar el siguiente
+sprint, como parte del ecosistema de trabajo.
+
+- **Hoy:** existe el ciclo continuo 90D (S6) y el cron diario de emails (S9), pero
+  ningún recordatorio anticipado de planificación.
+- **Propuesta:** evento programado a `fecha_fin_ciclo − 30 días` que dispare
+  notificación in-app (tabla `notifications`, S14) + email (cron `daily`, S9).
+  Reusa infra existente; es de bajo costo.
+- **Definir con Dilio:** ¿30 días fijos o configurable? ¿un solo aviso o secuencia
+  (30/15/7 días)?
+
+### A2 · "Que fluya" / practicidad — 🟡 (principio, no feature)
+Principio de diseño transversal, no una tarea cerrable. Se aplica en cada mejora
+de UX. No se documenta como item de backlog con estado.
+
+### A3 · Pre-game: meditaciones + hábitos en checklist + mobile-first — ❌ / ⛔
+Dilio quiere que el Pre-game (ritual matutino, se hace al levantarse **desde el
+celular**) incluya:
+- **Meditaciones** — Dilio está escribiendo **365 meditaciones de autoliderazgo**.
+- **Hábitos sugeridos** (gym, meditar, tomar agua, no comer azúcar en la mañana…).
+  El usuario **no hace todos**: elige algunos (5–10) y los marca como checklist.
+
+- **Hoy:** el Pre-game (`src/app/(dashboard)/rituales/pre-game/page.tsx`) tiene
+  Big Wins personales + Marcha de 20 Millas + activación física + notas. **No** hay
+  meditaciones ni checklist de hábitos.
+- **Propuesta, en 2 piezas:**
+  1. **Checklist de hábitos** (implementable ya): catálogo de hábitos sugeridos +
+     selección del usuario (5–10) + marcado diario. Nueva tabla
+     (`pre_game_habits` / `user_habits`) + UI de checklist. Reusa la racha de
+     Pre-game existente.
+  2. **Meditaciones del día** — ⛔ **bloqueado**: requiere que Dilio entregue las
+     365 meditaciones (formato/estructura a definir: texto, audio, rotación diaria).
+- **Crítico (Dilio insiste):** esta sección debe estar **optimizada para móvil**.
+  Revisar el layout del Pre-game con enfoque mobile-first.
+
+### A4 · Parking lot + interfaz más práctica — ✅ base / 🟡 pulido
+- **Hoy:** el Parking Lot existe (S2, `/rituales/parking-lot`).
+- **Pendiente:** pulido iterativo de UX para que "fluya". No es construir, es
+  refinar. Se trata como mejora continua, no como feature bloqueante.
+
+> **Obsoleto:** la nota de Sebastian "el dashboard es solo un ejemplo visual"
+> quedó superada — S12/S13 conectaron el dashboard a datos reales (Hero Strip,
+> tendencias por área, rituales de hoy). Lo único abierto es **definir con Dilio
+> qué métricas priorizar**, no construir el contenedor.
+
+---
+
+## B. DISC y reportes
+
+### B1 · Perfil de rango: solo lo ve el líder — ✅ a nivel seguridad / 🟡 pulido UX
+Dilio: el perfil de rango debe verlo **solo el líder**, no el colaborador.
+
+- **Auditado el 2026-06-15 — NO hay fuga de datos.** El RLS está correctamente
+  cerrado:
+  - `profiles` SELECT (`supabase/schema.sql:90-103`): un usuario ve **solo su
+    propia fila**; ver todo el equipo exige `role = 'arquitecto'`.
+  - `disc_assessments` SELECT (`migration_sprint3_disc.sql:47-49`) y los PDFs en
+    storage: **solo arquitecto**.
+  - Resultado: aunque la UI de `/equipo` está construida para listar al equipo,
+    cuando entra un colaborador el server le devuelve **solo su propia fila** (cero
+    assessments). No puede ver el perfil DISC/LOS/rango de ningún compañero — ni por
+    la pantalla ni por query directa. Refuerza esto `migration_sprint5_roles.sql`,
+    que ya corrigió el bug histórico del default `arquitecto`.
+- **Pendiente (solo cosmético, opcional):**
+  - El link **"Mi Equipo"** aparece en el sidebar (`sidebar.tsx:35`) y en el ⌘K
+    (`command-palette.tsx:21`) también para colaboradores, sin gate de rol.
+  - Un colaborador que entra ve un "Mapa DISC + LOS del equipo · 1 jugador" con solo
+    su propia tarjeta. No está roto ni es inseguro, pero la página queda casi vacía.
+  - Opciones: ocultar el ítem para colaboradores, o reconvertir `/equipo` en una
+    vista "Mi perfil DISC" cuando el rol es colaborador.
+
+### B2 · Recomendaciones personalizadas con IA desde los documentos maestros — 🟡 / ⛔
+Dilio: el sistema debe usar sus **documentos maestros** para hacer un análisis y
+dar **recomendaciones personalizadas** a cada persona.
+
+- **Hoy:** ya hay síntesis narrativa con IA (`src/lib/ai-report.ts`,
+  `generateDiscNarrative`), gateada por `ANTHROPIC_API_KEY` y cacheada. Pero **no**
+  está alimentada con los documentos maestros de Dilio.
+- **Propuesta:** inyectar el conocimiento de Dilio en el prompt/contexto de la IA
+  (RAG o contexto curado) para que las recomendaciones reflejen su enfoque.
+- ⛔ **Bloqueado:** requiere que Dilio entregue los documentos maestros.
+
+### B3 + B4 · Las 3 gráficas DISC + intensidad centrada en la media — ❌ (FEATURE GRANDE)
+Dilio quiere las gráficas clásicas DISC:
+- **Temperamento bajo presión** (gráfica Pública / "máscara").
+- **Temperamento en público.**
+- **Autopercepción** (Espejo).
+- **Intensidad de las letras por encima/por debajo de la media**, en un gráfico
+  **con punto medio** (no barras 0→máx como hoy).
+
+- **Hoy:** el motor (`src/lib/disc-evaluator.ts`) calcula **un solo perfil**
+  (respuestas MÁS/MENOS → puntajes D/I/S/C → 1 de 16 perfiles). **No** deriva las 3
+  gráficas clásicas ni centra la intensidad en la media.
+- **Por qué es grande:** las 3 gráficas clásicas (Pública/Núcleo/Espejo) se derivan
+  por separado de las selecciones MÁS y MENOS. Hay que **rediseñar el motor** para
+  exponer las tres distribuciones, y rehacer la visualización con un eje centrado
+  en la media (punto medio) en vez de barras absolutas.
+- **A definir en la sesión de implementación:**
+  - Confirmar si el set de respuestas que ya se guarda permite derivar las 3
+    gráficas, o si hay que persistir más datos del test.
+  - Diseño visual del gráfico con punto medio (intensidad ± media).
+  - Validar el modelo de las 3 gráficas contra el material original de Dilio.
+
+### B5 · El sistema "llama la atención" y motiva a completar el test — ✅ mayormente
+- **Hoy:** la intro del test ya es gamificada (4 energías, cronómetro, frases de
+  momentum, reveal animado del resultado, `ProfileIcon` con emoji animado). Cubre
+  bien la intención.
+- **Opcional:** refuerzos menores (recordatorio si el test queda a medias, nudge en
+  el dashboard si falta completarlo).
+
+---
+
+## C. Sistema LOST y claridad conceptual
+
+### C1 · Que el usuario entienda LOST y dónde está parado — 🟡 / ⛔
+Dilio: **LOST (con T)** representa **todo el sistema**, no una parte. El usuario
+debe sentir claramente qué es **L**eadership Strategy, qué es **O**peration System,
+y qué significa cada letra. Dilio está actualizando las presentaciones para ser
+más incisivo en estas definiciones.
+
+- **Hoy:** la metodología está volcada en módulos, pero el **copy/naming** no guía
+  explícitamente "estás en esta parte del sistema LOST".
+- **Propuesta:** alinear naming, copy y, posiblemente, una vista de "mapa del
+  sistema" que ubique cada módulo dentro de LOST. Es trabajo de UX/copy, no de
+  lógica.
+- ⛔ **Bloqueado:** depende de las **presentaciones LOST actualizadas y unificadas**
+  de Dilio (una sola presentación vigente).
+
+---
+
+## E1 · Cobro de tests DISC: créditos + Stripe — ❌ (FEATURE GRANDE)
+Dilio: cada test DISC debe ser **pagado**. El sistema de **créditos** debe estar
+**enlazado con Stripe** para que el pago **habilite automáticamente** el acceso.
+
+- **Hoy:** no existe nada de Stripe ni de créditos en el repo.
+- **Propuesta (encaja en S10 / comercial):**
+  - Tabla de **créditos** por empresa/usuario.
+  - Integración **Stripe Checkout** + **webhook** que acredita al confirmarse el pago.
+  - **Gate** en la generación de links de test DISC (`/equipo`): consume 1 crédito;
+    sin saldo, ofrece comprar.
+- **A definir con Dilio:** precio por test, paquetes de créditos, quién paga
+  (empresa vs individuo), moneda.
+
+---
+
+## Insumos que necesitamos de Dilio (desbloqueos)
+
+| Item | Desbloquea |
+|---|---|
+| Las **365 meditaciones de autoliderazgo** | A3 (meditaciones del Pre-game) |
+| Los **documentos maestros DISC** | B2 (recomendaciones IA personalizadas) |
+| Las **presentaciones LOST** actualizadas y unificadas | C1 (claridad conceptual / naming) |
+| Modelo/material de las **3 gráficas DISC** clásicas | B3+B4 (validar el motor) |
+| Definición de **precios/paquetes** de créditos | E1 (Stripe) |
+
+---
+
+## Resumen ejecutable (qué se puede arrancar ya, sin esperar a Dilio)
+
+1. **A1** — Recordatorio de "armá el próximo ciclo" (reusa cron + notificaciones).
+2. **A3.1** — Checklist de hábitos del Pre-game (sin las meditaciones) + pasada
+   mobile-first.
+3. **B1** — Auditoría de permisos: colaborador no ve el perfil de rango del equipo.
+4. **E1** — Andamiaje de créditos + Stripe (la parte técnica; los precios después).
+5. **B3+B4** — Arrancar el rediseño del motor DISC para las 3 gráficas (feature
+   grande, conviene una sesión dedicada).
+
+> Lo demás (A3.2 meditaciones, B2 IA con docs, C1 LOST) queda **a la espera de los
+> insumos de Dilio**.
+
+---
+
+## Fuera de scope de la app TBM (registrado para no perderlo)
+
+Estos puntos del feedback **no son backlog de este repo** — son proyectos externos,
+infraestructura o coordinación. Se listan solo como referencia:
+
+- **Funnel de leads** (pauta → lead magnet → chat 1:1 con agente que califica →
+  comunidad): proyecto **GoHighLevel + IA**, separado.
+- **IA para campañas Meta / análisis de avatar / reportes diarios de pauta**:
+  proyecto de marketing-datos, separado.
+- **Plataforma actual con problemas** (emails en inglés sin branding, flujos de
+  cursos/correos mal configurados): pertenece a **otra herramienta**, no a la app
+  TBM. Coordinación aparte.
+- **Módulo financiero de Dilio** (ya construido por él): revisar + alojar en la
+  nueva infraestructura. Proyecto/infra separado.
+- **Cliente de Venezuela** (control financiero + integraciones IA): proyecto de
+  servicio a terceros, separado.
+- **Comunidad / mentoría / beta** (poner la plataforma al servicio de la comunidad,
+  acceso a presentaciones, sumar a Sebastian a los chats de mentoría y
+  "Plataformas"): **operativo/coordinación**, no código. La beta cerrada es la
+  tarea S10 en `PROGRESS.md`.
+- **Hosting / "cerebro IA de TBM"** (servidor GoDaddy, KB consultable con todo el
+  conocimiento de TBM): infraestructura/proyecto mayor, fuera de este repo.

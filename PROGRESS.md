@@ -3,6 +3,7 @@
 > **Fuente de verdad del estado del proyecto, sprint por sprint.**
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
+> Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
 
 **Última actualización:** 2026-06-15 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS — overlay + orbe persistente, cierra el sprint y resuelve el saludo doble). Lo que queda es configuración/operación (ver "Pendientes para beta").
 
