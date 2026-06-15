@@ -2043,6 +2043,10 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 > experimento de preguntas de 48h, ver M8 en `SPEC.md`) quedan **diferidos** a un
 > sprint futuro; en esta entrega las 3 Herramientas se muestran como guía con su
 > reto semanal en texto.
+>
+> **Próxima tarea (documentada, no implementada):** 17.D — **Bienvenida cinemática
+> "JARVIS"** (intro full-screen + presencia persistente del orbe). Ver el detalle al
+> final de esta sección. Resuelve además el saludo doble que dejó la v1 de 17.A.
 
 ### Feature 17.C — Módulo Multiplicador de Liderazgo (M8) *(nuevo en este sprint)*
 
@@ -2092,6 +2096,101 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 - Idealmente, un menú de "Ayuda" que agrupe: repetir tour, ver atajos (⌘K), y documentación.
 
 **Criterio de éxito:** Al iniciar sesión el usuario recibe un saludo contextual con su nombre, y puede relanzar el tour en ≤2 clics desde cualquier pantalla.
+
+---
+
+### Feature 17.D — Bienvenida cinemática "JARVIS" (intro + presencia persistente) *(Propuesto 2026-06-14 · 🔮 próxima tarea — solo documentado)*
+
+**Estado:** 🔮 Documentado, **no implementado**. Es la **primera tarea de la próxima sesión**.
+
+**Origen:** La v1 de 17.A dejó un saludo doble — el header del dashboard ya
+saluda ("Buenos días, {nombre}") y el banner JARVIS volvía a saludar encima. En
+vez de un simple fix (Opción A: convertir el banner en "briefing" sin re-saludar),
+se decidió subir la apuesta y convertir el saludo en una **experiencia cinemática
+de bienvenida** que además **adelanta el asistente de IA** de los sprints S18/S19.
+
+> ⚠️ **Deuda viva hasta que se implemente 17.D:** el saludo doble sigue presente en
+> producción (header + `welcome-greeting.tsx`). 17.D lo resuelve de raíz al
+> reemplazar el banner por la película; si se quiere un parche interino, aplicar la
+> Opción A (quitar "{greeting} de nuevo, {nombre}" del banner y dejarlo como
+> briefing).
+
+**Concepto — máquina de estados, solo en login fresco** (reusa el flag
+`tbm:just-logged-in` de localStorage que ya existe):
+
+1. **Cover** — al entrar, una capa full-screen cubre la app con un lavado de color
+   de marca (aurora/gradiente animado azul TBM). La app ya está renderizada debajo.
+2. **Speak** — en el centro aparece el **núcleo JARVIS** (orbe que respira/pulsa) +
+   texto *typewriter*: "Bienvenido de nuevo, {nombre}." + briefing del día.
+3. **Reveal** — el color se disuelve lentamente (~1.2 s) descubriendo el dashboard.
+   El orbe se encoge.
+4. **Settle** — el orbe **vuela del centro a su lugar al lado del nombre** en el
+   header (transición de elemento compartido).
+5. **Idle** — el orbe queda **persistente en el header** con animación sutil de
+   "respiración"/glow, incluso en navegaciones normales (reemplaza el ✨ actual).
+   Tooltip: "Tu asistente · próximamente". Es el adelanto del asistente IA (S18).
+
+**Decisiones tomadas (a respetar en la implementación):**
+- **Intensidad:** cinemática, ~2.5–3 s.
+- **Sonido:** *chime* sutil al aparecer JARVIS (Web Audio). ⚠️ Ojo con las políticas
+  de autoplay del navegador: puede no sonar en el primer load sin interacción
+  previa; degradar con gracia (sin sonido) si el navegador lo bloquea.
+
+**Tecnología recomendada (v1):** **Motion** (`motion/react`, ex Framer Motion) +
+CSS.
+- El **settle** (paso 4) es un *shared-element transition*: con `layoutId="jarvis-core"`
+  en el orbe del overlay y el mismo `layoutId` en el orbe del header, Motion anima
+  el vuelo automáticamente al desmontar el overlay (`AnimatePresence`). Sin medir
+  coordenadas a mano.
+- Lavado de color + glow del orbe: **CSS puro** (radial/conic-gradient animado +
+  `box-shadow`/`blur` pulsante), reusando el patrón de `globals.css` (`tbm-pulse`,
+  `tbm-float`).
+- Typewriter: hook chico (`setInterval`) o el `animate` de Motion. Sin lib extra.
+- Gating/descarte: reusa `localStorage` + "No volver a mostrar" + auto-skip al
+  click + `prefers-reduced-motion` → saltar directo al estado final (orbe en header,
+  sin película).
+
+**Alternativas evaluadas:**
+
+| Opción | "Wow" | Peso | Esfuerzo | Veredicto |
+|---|---|---|---|---|
+| CSS puro + JS | Medio | 0 kb | Medio-alto (el vuelo a mano con FLIP es fiddly) | Viable, settle costoso |
+| **Motion (`motion/react`)** ⭐ | Alto | ~30–40 kb gz | Bajo (layoutId resuelve el settle) | **Recomendada v1** |
+| GSAP | Alto | ~50 kb+ | Medio | Overkill |
+| react-three-fiber / Three.js | Máximo (orbe 3D, partículas, shader) | ~150 kb+ | Alto | Ideal para v2 del orbe |
+| Lottie | Alto (si hay diseño AE) | asset + lib | Medio | Solo si hay orbe diseñado en After Effects |
+
+**Plan por fases:**
+- **v1 (próxima sesión):** Motion + CSS. Orbe con glow CSS, lavado de color,
+  typewriter, vuelo con `layoutId`, presencia persistente en header, chime sutil.
+- **v2 (con el asistente, S18):** upgradear el *skin* del orbe a react-three-fiber
+  (glow volumétrico/partículas tipo arc-reactor). La máquina de estados y el
+  `layoutId` quedan iguales — solo cambia el render del orbe.
+
+**Notas técnicas a resolver en la implementación:**
+- El header hoy es **server component**; para que el orbe persistente participe del
+  `layoutId` hay que convertir **solo el orbe** en una isla cliente (no todo el
+  header).
+- Performance: animar solo `opacity`/`transform` (compositor), nada de layout
+  thrash. Desmontar el overlay al terminar.
+- Accesibilidad: respetar `prefers-reduced-motion` (saltar a estado final) y permitir
+  cerrar/saltar.
+
+**Archivos previstos (a crear/tocar):**
+- Nuevo: `src/components/dashboard/jarvis-intro.tsx` (overlay + máquina de estados).
+- Nuevo: `src/components/dashboard/jarvis-core.tsx` (el orbe reutilizable: overlay y
+  header comparten `layoutId`).
+- Modificar: `src/components/dashboard/welcome-greeting.tsx` (lo reemplaza/absorbe).
+- Modificar: el header del dashboard (`dashboard/page.tsx`) → isla cliente del orbe
+  al lado del nombre, eliminando el ✨ y el saludo duplicado.
+- `package.json` → dependencia `motion`.
+- `globals.css` → keyframes del lavado de color / glow si hacen falta.
+
+**Criterio de éxito:** En un login fresco, la pantalla se cubre de color, JARVIS
+saluda como si hablara (typewriter + chime), el color se disuelve revelando la app,
+y el orbe se acomoda junto al nombre y queda con presencia sutil. Sin saludo
+duplicado. En navegación normal no se repite la película, pero el orbe sigue
+presente. Con `prefers-reduced-motion` se salta a la versión estática.
 
 ---
 
