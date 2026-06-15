@@ -5,6 +5,7 @@ import { driver, type Driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { tourStepsForRole } from "@/lib/tour-steps";
+import { useJarvisPhase } from "@/components/dashboard/jarvis-store";
 
 export const START_TOUR_EVENT = "tbm:start-tour";
 
@@ -29,6 +30,9 @@ export function TourProvider({
 }) {
   const driverRef = useRef<Driver | null>(null);
   const completedRef = useRef(tourCompleted);
+  // Fase de la bienvenida JARVIS (S17.D): el tour espera a que la película
+  // termine ("playing" → no arranca) para no superponerse en el primer ingreso.
+  const jarvisPhase = useJarvisPhase();
 
   useEffect(() => {
     const markCompleted = async () => {
@@ -72,9 +76,12 @@ export function TourProvider({
       driverRef.current.drive();
     };
 
-    // Auto-trigger en el primer ingreso (pequeño delay para que el DOM asiente)
+    // Auto-trigger en el primer ingreso, pero NUNCA mientras corre la película
+    // JARVIS. Cuando la fase pasa a "idle" (intro terminada o sin intro) este
+    // efecto se re-ejecuta y recién ahí agenda el tour. En "pending" (estado
+    // inicial transitorio) agenda un fallback que se cancela si la intro arranca.
     let autoTimer: ReturnType<typeof setTimeout> | undefined;
-    if (!tourCompleted) {
+    if (!tourCompleted && jarvisPhase !== "playing") {
       autoTimer = setTimeout(run, 900);
     }
 
@@ -91,7 +98,7 @@ export function TourProvider({
       driverRef.current?.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, role, tourCompleted]);
+  }, [userId, role, tourCompleted, jarvisPhase]);
 
   return null;
 }
