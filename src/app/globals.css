@@ -312,6 +312,33 @@ input.tbm-range:focus {
   100% { background-position: 200% 0; }
 }
 
+/* ── Bienvenida cinemática JARVIS (S17.D) ──────────────────── */
+/* Lavado de color aurora azul TBM que cubre la app al entrar */
+@keyframes jarvis-wash {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.jarvis-wash {
+  background: linear-gradient(120deg, #0A1628 0%, #1E3A8A 28%, #2563EB 50%, #1D4ED8 72%, #0A1628 100%);
+  background-size: 280% 280%;
+  animation: jarvis-wash 6s ease-in-out infinite;
+}
+
+/* Respiración del orbe */
+@keyframes jarvis-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+.jarvis-breathe { animation: jarvis-breathe 3.2s ease-in-out infinite; }
+
+/* Caret parpadeante del typewriter */
+@keyframes jarvis-caret {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.jarvis-caret { animation: jarvis-caret 1s steps(1) infinite; }
+
 /* ── Tour guiado (S11) — popover de driver.js con el design system ── */
 .driver-popover {
   background: #111827 !important;
@@ -495,7 +522,8 @@ input.tbm-range:focus {
   .tbm-pop, .tbm-tap, .tbm-rise, .tbm-flicker, .tbm-float,
   .tbm-glow-pulse, .tbm-progress-pulse, .tbm-bar, .animate-fade-in,
   .tbm-heartbeat, .tbm-heartbeat-strong, .tbm-bar-shimmer, .tbm-notch,
-  .tbm-toast, .tbm-bar-flash, .tbm-confetti, .tbm-cta-glow {
+  .tbm-toast, .tbm-bar-flash, .tbm-confetti, .tbm-cta-glow,
+  .jarvis-wash, .jarvis-breathe, .jarvis-caret {
     animation: none !important;
     transition: none !important;
   }

@@ -2038,15 +2038,12 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 **Objetivo:** Convertir el ítem "Multiplicador" del sidebar (hoy un redirect muerto) en el módulo real M8, que cada inicio de sesión se sienta personal y "vivo" (estilo asistente de Iron Man), y resolver que el tour de onboarding hoy queda inaccesible una vez completado.
 
 > **Alcance ejecutado:** 17.A (JARVIS simple + localStorage), 17.B (re-tour vía
-> Command Palette + sidebar), 17.C (Multiplicador — core diagnóstico). Los **retos
-> interactivos del Multiplicador** (contador de interrupciones de 3 días y
-> experimento de preguntas de 48h, ver M8 en `SPEC.md`) quedan **diferidos** a un
-> sprint futuro; en esta entrega las 3 Herramientas se muestran como guía con su
-> reto semanal en texto.
->
-> **Próxima tarea (documentada, no implementada):** 17.D — **Bienvenida cinemática
-> "JARVIS"** (intro full-screen + presencia persistente del orbe). Ver el detalle al
-> final de esta sección. Resuelve además el saludo doble que dejó la v1 de 17.A.
+> Command Palette + sidebar), 17.C (Multiplicador — core diagnóstico) y **17.D
+> (bienvenida cinemática JARVIS — implementada 2026-06-15, reemplaza a 17.A y cierra
+> el saludo doble)**. Los **retos interactivos del Multiplicador** (contador de
+> interrupciones de 3 días y experimento de preguntas de 48h, ver M8 en `SPEC.md`)
+> quedan **diferidos** a un sprint futuro; en esta entrega las 3 Herramientas se
+> muestran como guía con su reto semanal en texto.
 
 ### Feature 17.C — Módulo Multiplicador de Liderazgo (M8) *(nuevo en este sprint)*
 
@@ -2099,9 +2096,18 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 
 ---
 
-### Feature 17.D — Bienvenida cinemática "JARVIS" (intro + presencia persistente) *(Propuesto 2026-06-14 · 🔮 próxima tarea — solo documentado)*
+### Feature 17.D — Bienvenida cinemática "JARVIS" (intro + presencia persistente) *(Implementado 2026-06-15)*
 
-**Estado:** 🔮 Documentado, **no implementado**. Es la **primera tarea de la próxima sesión**.
+**Estado:** ✅ Implementado. Stack final: **Motion (`motion/react`)** + CSS, con
+`layoutId="jarvis-core"` para el "vuelo" del orbe. Archivos:
+`src/components/dashboard/jarvis-intro.tsx` (overlay + máquina de estados),
+`jarvis-core.tsx` (orbe reutilizable), `jarvis-header-orb.tsx` (instancia
+persistente en el header), `jarvis-store.ts` (coordina overlay↔header con
+`useSyncExternalStore`, sin dependencias) y `src/lib/greeting.ts` (saludo +
+briefing compartidos). Se borró `welcome-greeting.tsx` (lo reemplaza). El
+`@keyframes jarvis-wash/breathe/caret` viven en `globals.css` (con override de
+`prefers-reduced-motion`). **Resuelto el saludo doble**: el `<h1>` del header es el
+único saludo persistente.
 
 **Origen:** La v1 de 17.A dejó un saludo doble — el header del dashboard ya
 saluda ("Buenos días, {nombre}") y el banner JARVIS volvía a saludar encima. En
@@ -2109,11 +2115,9 @@ vez de un simple fix (Opción A: convertir el banner en "briefing" sin re-saluda
 se decidió subir la apuesta y convertir el saludo en una **experiencia cinemática
 de bienvenida** que además **adelanta el asistente de IA** de los sprints S18/S19.
 
-> ⚠️ **Deuda viva hasta que se implemente 17.D:** el saludo doble sigue presente en
-> producción (header + `welcome-greeting.tsx`). 17.D lo resuelve de raíz al
-> reemplazar el banner por la película; si se quiere un parche interino, aplicar la
-> Opción A (quitar "{greeting} de nuevo, {nombre}" del banner y dejarlo como
-> briefing).
+> ✅ **Resuelto (2026-06-15):** 17.D reemplazó el banner `welcome-greeting.tsx`
+> (borrado) por la película transitoria. El `<h1>` del header quedó como único
+> saludo persistente → fin del saludo doble.
 
 **Concepto — máquina de estados, solo en login fresco** (reusa el flag
 `tbm:just-logged-in` de localStorage que ya existe):
