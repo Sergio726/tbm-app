@@ -6,9 +6,10 @@ import KpiCard from "@/components/dashboard/KpiCard";
 import { SearchTrigger } from "@/components/layout/search-trigger";
 import { NotificationsBell } from "@/components/layout/notifications-bell";
 import { HeroStrip } from "@/components/dashboard/hero-strip";
-import { WelcomeGreeting } from "@/components/dashboard/welcome-greeting";
+import { JarvisIntro } from "@/components/dashboard/jarvis-intro";
+import { JarvisHeaderOrb } from "@/components/dashboard/jarvis-header-orb";
+import { greetingForHour } from "@/lib/greeting";
 import {
-  Sparkles,
   RotateCcw,
   Users,
   TrendingUp,
@@ -59,13 +60,6 @@ const SCORECARD_ICONS: Record<ScorecardKey, LucideIcon> = {
   score_dinero: CircleDollarSign,
   score_cultura: Heart,
 };
-
-function greetingForHour(h: number) {
-  if (h < 6) return "Buenas noches";
-  if (h < 12) return "Buenos días";
-  if (h < 19) return "Buenas tardes";
-  return "Buenas noches";
-}
 
 // =============================================================
 // Scorecard cards
@@ -902,9 +896,7 @@ export default async function DashboardPage() {
             }}
           >
             {greeting}, {firstName}
-            <span style={{ color: "#fbbf24" }}>
-              <Sparkles size={22} strokeWidth={1.8} />
-            </span>
+            <JarvisHeaderOrb />
           </h1>
           <div
             style={{
@@ -954,8 +946,8 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Saludo JARVIS — solo en login fresco (S17.A) ── */}
-      <WelcomeGreeting
+      {/* ── Bienvenida cinemática JARVIS — solo en login fresco (S17.D) ── */}
+      <JarvisIntro
         greeting={greeting}
         firstName={firstName}
         tasksDueCount={tasksDueCount ?? 0}

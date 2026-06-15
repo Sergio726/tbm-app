@@ -4,7 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 
-**Última actualización:** 2026-06-14 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17 (Multiplicador M8 + saludo JARVIS + re-acceso al tour). Lo que queda es configuración/operación (ver "Pendientes para beta").
+**Última actualización:** 2026-06-15 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS — overlay + orbe persistente, cierra el sprint y resuelve el saludo doble). Lo que queda es configuración/operación (ver "Pendientes para beta").
 
 ---
 
@@ -31,7 +31,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 | **S14** | Búsqueda ⌘K + Notificaciones | ✅ | Command Palette custom (⌘K/Ctrl+K, módulos + quick actions por rol) · tabla `notifications` (migración `sprint13`, ⏳ aplicar) · badge real + panel dropdown + `/notificaciones` · eventos: task_assigned, task_blocked, task_done, war_up_started · fix EnergySelector (error + revert). Pendiente menor: `task_overdue` necesita cron (S4 E7) y `scorecard_updated` no tiene emisor no-arquitecto. |
 | **S15** | Cierre Migración Supabase | ✅ | Proyecto nuevo en prod (`fozhnfxehbbgqaerprgf`) + SMTP propio + recovery tooling. |
 | **S16** | Mejoras y Correcciones (Mi Equipo) | ✅ | 19 bugs resueltos: 4 ALTA + 9 MEDIA + 6 BAJA del módulo Mi Equipo. |
-| **S17** | Multiplicador (M8) + JARVIS + Re-tour | ✅ | **17.C Multiplicador** real: `/multiplicador` deja de ser redirect → diagnóstico ROI de Talento (3 Pecados /36 + banda + 3 Herramientas + historial), tabla `multiplicador_diagnostics` (migración `sprint17`, ⏳ aplicar), guard arquitecto. **17.A JARVIS**: saludo contextual en login fresco (`welcome-greeting.tsx`, flag localStorage, descartable/apagable). **17.B Re-tour**: "Ver tour de nuevo" en Command Palette + botón ayuda en sidebar, hook compartido `use-restart-tour`. ⏳ Diferido: retos interactivos del Multiplicador (contador 3 días / experimento 48h). 🔮 **Próxima tarea: 17.D — Bienvenida cinemática JARVIS** (documentada en SPRINTS.md, no implementada; resuelve el saludo doble actual de 17.A). |
+| **S17** | Multiplicador (M8) + JARVIS + Re-tour | ✅ | **17.C Multiplicador** real: `/multiplicador` deja de ser redirect → diagnóstico ROI de Talento (3 Pecados /36 + banda + 3 Herramientas + historial), tabla `multiplicador_diagnostics` (migración `sprint17`, ⏳ aplicar), guard arquitecto. **17.A JARVIS**: saludo contextual en login fresco (`welcome-greeting.tsx`, flag localStorage, descartable/apagable). **17.B Re-tour**: "Ver tour de nuevo" en Command Palette + botón ayuda en sidebar, hook compartido `use-restart-tour`. **17.D Bienvenida cinemática JARVIS**: overlay full-screen en login fresco (cover → typewriter con briefing real + chime Web Audio → reveal → el orbe "vuela" al header con `layoutId` de Motion y queda persistente como adelanto del asistente IA S18). Reemplaza `welcome-greeting.tsx` (borrado) → **resuelve el saludo doble**. Stack: `motion` + CSS; coordinación orbe overlay↔header vía store liviano (`jarvis-store`); respeta `prefers-reduced-motion`. ⏳ Diferido: retos interactivos del Multiplicador (contador 3 días / experimento 48h). |
 
 ---
 
