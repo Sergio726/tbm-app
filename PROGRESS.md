@@ -59,32 +59,63 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 ---
 
-## Pendientes para beta
+## Roadmap por fases (lo que viene)
 
-1. ~~**Aplicar 5 migraciones en Supabase**~~ ✅ **Hecho** (verificado por MCP el 2026-06-16; las tablas/columnas de sprint 12/13/14/15/17 existen en el proyecto `fozhnfxehbbgqaerprgf`).
-2. **Asignar el coach**: `insert into coach_assignments (coach_id, company_id) values ('<uuid de Dilio>', '<uuid empresa>');` — el item "Super Coach" aparece solo en el sidebar del coach. ⏳ Pendiente: la tabla existe pero está vacía; necesita la cuenta de Dilio creada.
-3. **Activar el cron de emails** (código ya deployado): en Vercel → Settings → Environment Variables agregar `CRON_SECRET` (string aleatorio largo), `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Settings → API → service_role) y `RESEND_API_KEY` + `RESEND_FROM` si no están. El cron corre solo a las 11:00 UTC (~6-8am LATAM). Esto también habilita `task_overdue` (S4 E7).
-4. **S9 — Exportación PDF** (~5h) — diagnóstico, Plan 90D, perfil de equipo y resumen semanal. Patrón sugerido: print stylesheets como el informe DISC existente.
-5. **S10 — Beta cerrada** — operativo (seleccionar pilotos, onboarding guiado, analytics Posthog, Sentry).
+> Reorganización estratégica (2026-06-16). Reemplaza las viejas listas sueltas de
+> "Pendientes para beta" + "Roadmap God Mode": ahora todo lo que queda (operativo +
+> backlog de Dilio + plataforma/god-mode) está ordenado en **5 fases por valor de
+> negocio y dependencias**, no por número de sprint. Tablero visual privado:
+> `_local/sprints-dashboard.html`. Detalle del god-mode:
+> [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md);
+> backlog de Dilio: [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
+>
+> **Migraciones:** las 5 ⏳ ya están aplicadas (verificado por MCP el 2026-06-16).
 
----
+### Fase 0 — Tapar huecos (días, no semanas)
+*No depende de nada; se hace en la app actual.*
+- **Cerrar el registro público** — hoy cualquiera entra a `/register` y se hace
+  arquitecto gratis. Fix chico: quitar el link del login + redirigir `/register` a
+  `/login` (alta solo por invitación). **No** necesita el monorepo. *Seguridad ALTA.*
+- **Activar el cron de emails** (código ya deployado) — en Vercel agregar `CRON_SECRET`,
+  `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`/`RESEND_FROM`. Habilita digest matinal
+  + alerta 72h + `task_overdue` (S4 E7). Corre 11:00 UTC.
 
-## Roadmap de plataforma (God Mode) — post-beta
+### Fase 1 — Lanzar la beta (validar el método)
+*Validar antes de construir el cobro; instrumentar analytics acá da datos para la Fase 4.*
+- **Crear cuenta de Dilio + asignar coach** — `coach_assignments` existe pero vacía;
+  necesita la cuenta de Dilio + el insert.
+- **S10 — Onboarding de 3–5 pilotos** (mentored, gratis → sin billing aún).
+- **Instrumentar PostHog + Sentry** — uso/tiempo/funnels + errores en prod.
+- **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
+  (reusa cron + notificaciones); A3.1 checklist de hábitos del Pre-game.
 
-Panel de super-admin separado + modelo de negocio (créditos/Stripe) + métricas.
-Alcance completo en [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
-Decidido: **monorepo** (`apps/web` + `apps/admin` + `packages/shared`), **misma DB
-Supabase**, **1 crédito = 1 DISC**. Hoy `/register` está abierto (se cierra en A1).
+### Fase 2 — Monetizar (panel god-mode + créditos)
+*Recién acá el cobro. Decidido: monorepo, misma DB Supabase, 1 crédito = 1 DISC.*
+- **A0** — Reestructurar a monorepo (`apps/web` + `apps/admin` + `packages/shared`),
+  2 proyectos Vercel, subdominio admin. *Base técnica.*
+- **A1·adm** — `platform_admins` + `is_platform_admin()`, login admin con MFA,
+  formaliza el cierre de registro, listado de empresas.
+- **A2** — Crear líderes + invitaciones desde admin; editar datos sensibles; CRUD
+  usuarios; alta de coaches; audit log base.
+- **A3** — Créditos (saldo + ledger append-only) + **gating del DISC por créditos** +
+  carga manual/descuentos. *(reemplaza E1 parte 1)*
+- **A4** — Stripe: compra de créditos por el líder + webhooks → ledger + cupones +
+  Stripe Tax. *(reemplaza E1 parte 2)*
 
-| Sprint | Entrega | Cierra |
-|--------|---------|--------|
-| **A0** | Reestructurar a monorepo (workspaces) + 2 proyectos Vercel + subdominio admin. | Base técnica |
-| **A1** | `platform_admins` + `is_platform_admin()`; login admin con MFA; **cerrar `/register`**; listado de empresas. | Hueco de seguridad |
-| **A2** | Crear líderes + invitaciones desde admin; editar datos sensibles; CRUD usuarios; alta de coaches; audit log base. | Operar sin SQL |
-| **A3** | Créditos (saldo + ledger) + **gating del DISC por créditos** + carga manual/descuentos. (reemplaza E1 parte 1) | Negocio enforced |
-| **A4** | Stripe: compra de créditos por el líder + webhooks → ledger + cupones + Stripe Tax. (reemplaza E1 parte 2) | Cobro automático |
-| **A5** | Dashboard de métricas: ingresos/MRR, KPIs de uso, tiempo, país (requiere PostHog antes). | Panel de startup |
-| **A6+** | Enterprise readiness: Sentry, export/borrado GDPR, planes/feature flags, roles internos admin, SOC2/SSO. | Vendible |
+### Fase 3 — Producto profundo (con insumos de Dilio)
+*Agrupa lo bloqueado por material que tiene que pasar Dilio.*
+- **B3+B4** — DISC: las 3 gráficas clásicas (natural/adaptado/combinado). Feature
+  grande, sesión dedicada. *Bloqueado por Dilio (material modelo).*
+- **A3.2** — Meditaciones del Pre-game (365). *Bloqueado por Dilio.*
+- **B2** — Recomendaciones IA personalizadas DISC. *Bloqueado por Dilio (docs maestros).*
+- **C1** — Claridad conceptual / naming LOST. *Bloqueado por Dilio (presentaciones).*
+
+### Fase 4 — Escala y venta (startup vendible)
+*Lo que un comprador/inversor revisa en due diligence.*
+- **A5** — Dashboard de métricas de la startup: ingresos/MRR, KPIs de uso, tiempo,
+  país (con datos de PostHog de la Fase 1).
+- **A6** — Enterprise readiness: export/borrado GDPR, planes/feature flags, roles
+  internos del admin, camino SOC2 / SSO-SAML, leaked-password (requiere Supabase Pro).
 
 ---
 
