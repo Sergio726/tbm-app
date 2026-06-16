@@ -38,6 +38,9 @@ yarn-error.log*
 # backups locales de datos (no subir datos reales del negocio al repo)
 /backups
 
+# dashboards/notas locales privadas (solo para Sebastián, no se publican)
+/_local
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
