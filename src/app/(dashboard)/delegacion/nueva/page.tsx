@@ -38,7 +38,7 @@ export default async function NuevaTareaPage() {
         minHeight: "100vh",
         background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
-        padding: "32px 36px",
+        padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
         color: "#fff",
       }}
     >

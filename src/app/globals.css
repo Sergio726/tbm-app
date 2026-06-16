@@ -77,6 +77,8 @@
 
   html {
     @apply antialiased;
+    /* Evita scroll horizontal accidental en móvil por anchos fijos heredados */
+    overflow-x: hidden;
   }
 
   body {
@@ -84,6 +86,8 @@
     color: var(--text-primary);
     font-family: "Inter", system-ui, sans-serif;
     @apply antialiased;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   /* Scrollbar custom (dark) */
@@ -100,6 +104,25 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
+  }
+}
+
+/* ── Fundaciones móviles (≤ md / 768px) ───────────────────────
+   El shell desktop usa un sidebar fijo de --sidebar-width; en móvil
+   colapsa a 0 (el contenido ocupa todo el ancho) y el sidebar pasa a
+   drawer flotante (ver components/layout/sidebar.tsx). Además los inputs
+   suben a 16px para evitar el zoom-on-focus de iOS. */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+
+  /* iOS hace zoom al enfocar un input con font-size < 16px → forzamos 16px.
+     Esto también neutraliza los fontSize:14 inline de los formularios. */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
   }
 }
 

@@ -50,7 +50,7 @@ export function HeroStrip(props: HeroStripProps) {
   const [hovered, setHovered] = useState<TileKey | null>(null);
 
   return (
-    <div className="flex" style={{ gap: 12, marginBottom: 32 }}>
+    <div className="grid grid-cols-2 md:flex" style={{ gap: 12, marginBottom: 32 }}>
       <CicloTile {...props} hovered={hovered} setHovered={setHovered} />
       <RachaTile {...props} hovered={hovered} setHovered={setHovered} />
       <MultiplicadorTile {...props} hovered={hovered} setHovered={setHovered} />

@@ -835,7 +835,7 @@ export default async function DashboardPage() {
     <div
       className="text-white"
       style={{
-        padding: "32px 40px 60px",
+        padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px) 60px",
         maxWidth: 1600,
         margin: "0 auto",
         width: "100%",

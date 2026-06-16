@@ -58,7 +58,7 @@ export default async function Los5GrandesPage({ searchParams }: PageProps) {
   const tomorrow = isoTomorrow();
 
   return (
-    <div style={{ padding: "32px 40px", color: "#fff", maxWidth: 880 }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 880 }}>
       <Link
         href="/rituales"
         className="inline-flex items-center"

@@ -164,7 +164,7 @@ export default async function RitualesHubPage() {
   };
 
   return (
-    <div style={{ padding: "32px 40px", color: "#fff" }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff" }}>
       <header style={{ marginBottom: 32 }}>
         <div
           className="uppercase"
@@ -225,7 +225,7 @@ export default async function RitualesHubPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))",
           gap: 16,
         }}
       >
