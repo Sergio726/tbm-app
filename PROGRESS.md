@@ -5,7 +5,13 @@
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
 
-**Última actualización:** 2026-06-15 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS — overlay + orbe persistente, cierra el sprint y resuelve el saludo doble). Lo que queda es configuración/operación (ver "Pendientes para beta").
+**Última actualización:** 2026-06-16 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS). Lo que queda es configuración/operación (ver "Pendientes para beta").
+
+> **Novedades 2026-06-16:**
+> - **Pasada mobile-first completa** (no era un sprint): la app pasó de desktop-only a usable en celular — sidebar→drawer con hamburguesa, login responsive, inputs 16px (fin del zoom de iOS), wrappers de página con `clamp()`, HeroStrip 2×2 y tour móvil propio. Desktop quedó idéntico.
+> - **Login en producción arreglado**: la `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en Vercel estaba corrupta (espacio al pegar la JWT) → `UNAUTHORIZED_INVALID_API_KEY`. Se cambió a la publishable key `sb_publishable_...` (corta, a prueba de corrupción).
+> - **Las 5 migraciones ⏳ ya estaban aplicadas** (verificado por MCP el 2026-06-16): existen `process_assets`, `notifications`, `tour_completed`, `coach_assignments`/`coaching_notes`, `multiplicador_diagnostics`. El item #1 de "Pendientes para beta" queda cerrado.
+> - **Advisors Supabase revisados** (2026-06-16): 0 ERROR de seguridad (todas las tablas con RLS). Pendientes solo de hardening/escala — ver "Hardening Supabase (pre-beta)".
 
 ---
 
@@ -54,11 +60,40 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 ## Pendientes para beta
 
-1. **⏳ Aplicar 5 migraciones en Supabase** (SQL Editor, en orden): `migration_sprint12_activos.sql` · `migration_sprint13_notifications.sql` · `migration_sprint14_tour.sql` · `migration_sprint15_super_coach.sql` · `migration_sprint17_multiplicador.sql`. Sin esto: tab Activos y notificaciones tiran error; tour y panel coach no aparecen; el módulo Multiplicador tira error al guardar/leer el diagnóstico.
-2. **Asignar el coach** (después de la migración 15): `insert into coach_assignments (coach_id, company_id) values ('<uuid de Dilio>', '<uuid empresa>');` — el item "Super Coach" aparece solo en el sidebar del coach.
+1. ~~**Aplicar 5 migraciones en Supabase**~~ ✅ **Hecho** (verificado por MCP el 2026-06-16; las tablas/columnas de sprint 12/13/14/15/17 existen en el proyecto `fozhnfxehbbgqaerprgf`).
+2. **Asignar el coach**: `insert into coach_assignments (coach_id, company_id) values ('<uuid de Dilio>', '<uuid empresa>');` — el item "Super Coach" aparece solo en el sidebar del coach. ⏳ Pendiente: la tabla existe pero está vacía; necesita la cuenta de Dilio creada.
 3. **Activar el cron de emails** (código ya deployado): en Vercel → Settings → Environment Variables agregar `CRON_SECRET` (string aleatorio largo), `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Settings → API → service_role) y `RESEND_API_KEY` + `RESEND_FROM` si no están. El cron corre solo a las 11:00 UTC (~6-8am LATAM). Esto también habilita `task_overdue` (S4 E7).
 4. **S9 — Exportación PDF** (~5h) — diagnóstico, Plan 90D, perfil de equipo y resumen semanal. Patrón sugerido: print stylesheets como el informe DISC existente.
 5. **S10 — Beta cerrada** — operativo (seleccionar pilotos, onboarding guiado, analytics Posthog, Sentry).
+
+---
+
+## Hardening Supabase (pre-beta)
+
+Revisión de advisors el **2026-06-16** (vía MCP). **No hay ERRORES** — todas las
+tablas tienen RLS y no hay datos expuestos. Lo siguiente es endurecimiento y
+optimización de escala; **nada bloquea la beta** con el volumen actual.
+
+**Quick-wins de seguridad aplicados** (2026-06-16, migración `hardening_2026_06_security_quickwins`, ver [`supabase/migration_hardening_2026-06.sql`](supabase/migration_hardening_2026-06.sql)):
+- ✅ `function_search_path_mutable`: `set search_path = ''` en `handle_updated_at` y `update_tasks_updated_at`.
+- ✅ `public_bucket_allows_listing`: borrada la policy `"Avatares: lectura pública"` (el bucket es público → las URLs siguen sirviendo, se corta solo el listado).
+- ✅ `handle_new_user` ejecutable como RPC: `revoke execute` de public/anon/authenticated (el trigger sigue disparando).
+
+**Aceptado / no se toca (con motivo):**
+- `auth_company_id`, `auth_is_arquitecto`, `auth_is_coach_of` (`SECURITY DEFINER`): se usan **dentro de las RLS**; revocar EXECUTE las rompería. Exposición nula (solo devuelven company_id/rol del propio caller).
+- `get_disc_assessment`, `submit_disc`: anon-callable **a propósito** (test DISC público por token).
+
+**Pendiente — acción manual del usuario (no es SQL):**
+- ⏳ `auth_leaked_password_protection`: activar el chequeo contra HaveIBeenPwned en Supabase → Authentication → Policies. **Quick win para la beta.**
+
+**Performance (168, todo WARN/INFO — optimización de escala):**
+- `auth_rls_initplan` (70): policies usan `auth.uid()` directo → envolver en `(select auth.uid())` para no reevaluar por fila.
+- `multiple_permissive_policies` (50): varias policies permisivas por tabla/acción/rol.
+- `unindexed_foreign_keys` (34) e `unused_index` (14): índices a agregar/limpiar cuando haya tráfico real.
+
+> Recomendación: atacar los quick wins de seguridad (leaked-password, search_path,
+> bucket avatars, revoke en triggers) antes de abrir la beta; lo de performance,
+> cuando crezca el volumen.
 
 ---
 
@@ -80,11 +115,11 @@ Orden de aplicación en Supabase (ver [`supabase/README.md`](supabase/README.md)
 | 9 | `migration_sprint9_feedback.sql` | S5 — feedbacks |
 | 10 | `migration_sprint10_plan90d.sql` | S6 — rocks + process_assets + leading_indicators |
 | 11 | `migration_sprint11_workbooks.sql` | S7 — workbook_responses + progress |
-| 12 | `migration_sprint12_activos.sql` | S6 — process_assets (Activos del Sistema) · ⏳ aplicar |
-| 13 | `migration_sprint13_notifications.sql` | S14 — notifications · ⏳ aplicar |
-| 14 | `migration_sprint14_tour.sql` | S11 — tour_completed en profiles · ⏳ aplicar |
-| 15 | `migration_sprint15_super_coach.sql` | S9 — coach_assignments + coaching_notes + RLS coach · ⏳ aplicar |
-| 16 | `migration_sprint17_multiplicador.sql` | S17 — multiplicador_diagnostics (M8 ROI de Talento) · ⏳ aplicar |
+| 12 | `migration_sprint12_activos.sql` | S6 — process_assets (Activos del Sistema) · ✅ aplicada (2026-06-16) |
+| 13 | `migration_sprint13_notifications.sql` | S14 — notifications · ✅ aplicada (2026-06-16) |
+| 14 | `migration_sprint14_tour.sql` | S11 — tour_completed en profiles · ✅ aplicada (2026-06-16) |
+| 15 | `migration_sprint15_super_coach.sql` | S9 — coach_assignments + coaching_notes + RLS coach · ✅ aplicada (2026-06-16) |
+| 16 | `migration_sprint17_multiplicador.sql` | S17 — multiplicador_diagnostics (M8 ROI de Talento) · ✅ aplicada (2026-06-16) |
 
 > ⚠️ **Numeración no coincide con sprint del plan** — los archivos se numeraron por orden de creación. Cruzá con esta tabla para saber qué cubre cada uno.
 
