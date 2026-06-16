@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -17,6 +17,8 @@ import {
   LogOut,
   HelpCircle,
   GraduationCap,
+  Menu,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
@@ -73,6 +75,28 @@ export function Sidebar({
   const router = useRouter();
   const { restart: restartTour } = useRestartTour(userId);
   const [signingOut, setSigningOut] = useState(false);
+  // Drawer móvil (< md): el sidebar entra deslizando; en desktop siempre visible.
+  const [open, setOpen] = useState(false);
+
+  // Cerrar el drawer al navegar a otra ruta.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Cerrar con Esc + bloquear el scroll del body mientras el drawer está abierto.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open]);
 
   const handleSignOut = async () => {
     if (signingOut) return;
@@ -88,16 +112,73 @@ export function Sidebar({
   };
 
   return (
-    <aside
-      className="fixed left-0 top-0 z-40 flex h-full flex-col overflow-hidden text-white"
-      style={{
-        width: "var(--sidebar-width)",
-        background:
-          "linear-gradient(180deg, #101627 0%, #0a0e18 60%, #0a0e18 100%)",
-        borderRight: "1px solid rgba(255,255,255,0.05)",
-        fontFamily: "Inter, system-ui, sans-serif",
-      }}
-    >
+    <>
+      {/* ── Barra superior móvil (< md) — logo + hamburguesa ─────── */}
+      <div
+        className="fixed inset-x-0 top-0 z-30 flex h-14 items-center gap-3 px-4 md:hidden"
+        style={{
+          background: "rgba(10,14,24,0.92)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Abrir menú"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-white/80 transition-colors hover:bg-white/10"
+        >
+          <Menu size={20} strokeWidth={1.8} />
+        </button>
+        <div
+          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #5b8aff 0%, #2c5fe6 60%, #1a3ea8 100%)",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: 0.3,
+          }}
+        >
+          TBM
+        </div>
+        <span className="truncate text-sm font-semibold text-white">
+          {companyName ?? "Mi Empresa"}
+        </span>
+      </div>
+
+      {/* ── Overlay del drawer (< md, solo cuando está abierto) ──── */}
+      {open && (
+        <div
+          aria-hidden
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-40 bg-black/60 md:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-full flex-col overflow-hidden text-white transition-transform duration-300 ease-out md:z-40 md:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+        style={{
+          width: 280,
+          maxWidth: "85vw",
+          background:
+            "linear-gradient(180deg, #101627 0%, #0a0e18 60%, #0a0e18 100%)",
+          borderRight: "1px solid rgba(255,255,255,0.05)",
+          fontFamily: "Inter, system-ui, sans-serif",
+        }}
+      >
+        {/* Botón cerrar — solo móvil */}
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label="Cerrar menú"
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:bg-white/10 md:hidden"
+        >
+          <X size={18} strokeWidth={1.8} />
+        </button>
       {/* ── Halos ambientales ─────────────────────────── */}
       <div
         aria-hidden
@@ -379,6 +460,7 @@ export function Sidebar({
           </div>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

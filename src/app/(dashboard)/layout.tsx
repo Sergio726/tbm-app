@@ -77,7 +77,7 @@ export default async function DashboardLayout({
 
       {/* Contenido principal */}
       <main
-        className="min-h-screen"
+        className="min-h-screen pt-14 md:pt-0"
         style={{ marginLeft: "var(--sidebar-width)" }}
       >
         {children}

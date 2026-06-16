@@ -34,7 +34,7 @@ export default async function ReporteSemanalPage() {
 
   if (!report) {
     return (
-      <div style={{ padding: "32px 40px", color: "#fff", maxWidth: 880 }}>
+      <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 880 }}>
         <Link
           href="/rituales/cool-down"
           className="inline-flex items-center"
@@ -70,7 +70,7 @@ export default async function ReporteSemanalPage() {
     total > 0 ? Math.round((n / total) * 100) : 0;
 
   return (
-    <div style={{ padding: "32px 40px", color: "#fff", maxWidth: 880 }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 880 }}>
       <Link
         href="/rituales/cool-down"
         className="inline-flex items-center"
@@ -132,7 +132,7 @@ export default async function ReporteSemanalPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
             gap: 12,
           }}
         >

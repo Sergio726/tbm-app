@@ -81,7 +81,7 @@ const MicrosoftMark = ({ size = 18 }: { size?: number }) => (
 function LeftPanel() {
   return (
     <div
-      className="relative flex flex-col text-white"
+      className="relative hidden flex-col text-white md:flex"
       style={{
         flex: "1 1 50%",
         minWidth: 0,
@@ -639,6 +639,35 @@ function RightPanel() {
         padding: "40px 56px",
       }}
     >
+      {/* Brand compacto — solo móvil (el LeftPanel está oculto en < md) */}
+      <div className="mb-6 flex items-center gap-3 md:hidden">
+        <div
+          className="flex flex-shrink-0 items-center justify-center text-white"
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: 10,
+            background:
+              "linear-gradient(135deg, #5b8aff 0%, #2c5fe6 60%, #1a3ea8 100%)",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: 0.4,
+            boxShadow:
+              "0 8px 24px rgba(91,138,255,0.4), inset 0 1px 0 rgba(255,255,255,0.25)",
+          }}
+        >
+          TBM
+        </div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: -0.2 }}>
+            The Business Multiplier
+          </div>
+          <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.5)" }}>
+            Sistema operativo de tu negocio
+          </div>
+        </div>
+      </div>
+
       {/* Top right: signup hint */}
       <div
         className="flex justify-end"
