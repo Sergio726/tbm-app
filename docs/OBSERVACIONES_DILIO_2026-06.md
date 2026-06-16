@@ -158,6 +158,13 @@ más incisivo en estas definiciones.
 ---
 
 ## E1 · Cobro de tests DISC: créditos + Stripe — ❌ (FEATURE GRANDE)
+
+> **Replanteado (2026-06-16):** E1 ya no es una feature suelta — pasa a ser parte
+> del **roadmap de plataforma A0–A6**. Los créditos (A3) y Stripe (A4) viven ahora
+> en [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](GODMODE_Y_ROADMAP_STARTUP.md), junto con
+> el panel de super-admin que los administra. Modelo confirmado: **1 crédito = 1
+> DISC**.
+
 Dilio: cada test DISC debe ser **pagado**. El sistema de **créditos** debe estar
 **enlazado con Stripe** para que el pago **habilite automáticamente** el acceso.
 

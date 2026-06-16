@@ -4,6 +4,7 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
+> Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 
 **Última actualización:** 2026-06-16 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS). Lo que queda es configuración/operación (ver "Pendientes para beta").
 
@@ -68,6 +69,25 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 ---
 
+## Roadmap de plataforma (God Mode) — post-beta
+
+Panel de super-admin separado + modelo de negocio (créditos/Stripe) + métricas.
+Alcance completo en [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
+Decidido: **monorepo** (`apps/web` + `apps/admin` + `packages/shared`), **misma DB
+Supabase**, **1 crédito = 1 DISC**. Hoy `/register` está abierto (se cierra en A1).
+
+| Sprint | Entrega | Cierra |
+|--------|---------|--------|
+| **A0** | Reestructurar a monorepo (workspaces) + 2 proyectos Vercel + subdominio admin. | Base técnica |
+| **A1** | `platform_admins` + `is_platform_admin()`; login admin con MFA; **cerrar `/register`**; listado de empresas. | Hueco de seguridad |
+| **A2** | Crear líderes + invitaciones desde admin; editar datos sensibles; CRUD usuarios; alta de coaches; audit log base. | Operar sin SQL |
+| **A3** | Créditos (saldo + ledger) + **gating del DISC por créditos** + carga manual/descuentos. (reemplaza E1 parte 1) | Negocio enforced |
+| **A4** | Stripe: compra de créditos por el líder + webhooks → ledger + cupones + Stripe Tax. (reemplaza E1 parte 2) | Cobro automático |
+| **A5** | Dashboard de métricas: ingresos/MRR, KPIs de uso, tiempo, país (requiere PostHog antes). | Panel de startup |
+| **A6+** | Enterprise readiness: Sentry, export/borrado GDPR, planes/feature flags, roles internos admin, SOC2/SSO. | Vendible |
+
+---
+
 ## Hardening Supabase (pre-beta)
 
 Revisión de advisors el **2026-06-16** (vía MCP). **No hay ERRORES** — todas las
@@ -83,8 +103,8 @@ optimización de escala; **nada bloquea la beta** con el volumen actual.
 - `auth_company_id`, `auth_is_arquitecto`, `auth_is_coach_of` (`SECURITY DEFINER`): se usan **dentro de las RLS**; revocar EXECUTE las rompería. Exposición nula (solo devuelven company_id/rol del propio caller).
 - `get_disc_assessment`, `submit_disc`: anon-callable **a propósito** (test DISC público por token).
 
-**Pendiente — acción manual del usuario (no es SQL):**
-- ⏳ `auth_leaked_password_protection`: activar el chequeo contra HaveIBeenPwned en Supabase → Authentication → Policies. **Quick win para la beta.**
+**Diferido — requiere plan pago de Supabase:**
+- ⏳ `auth_leaked_password_protection` (chequeo de contraseñas filtradas contra HaveIBeenPwned): **NO disponible en el plan Free** — necesita Supabase **Pro**. Se deja pendiente hasta upgrade del proyecto. Cuando se contrate Pro: activar en Authentication → Policies (es un toggle, sin código).
 
 **Performance (168, todo WARN/INFO — optimización de escala):**
 - `auth_rls_initplan` (70): policies usan `auth.uid()` directo → envolver en `(select auth.uid())` para no reevaluar por fila.
