@@ -51,7 +51,13 @@ export function TourProvider({
 
     const buildDriver = () =>
       driver({
-        steps: tourStepsForRole(role),
+        // En móvil (drawer cerrado) usamos un flujo que apunta a la hamburguesa
+        // y a contenido visible, no a los ítems del sidebar fuera de pantalla.
+        steps: tourStepsForRole(
+          role,
+          typeof window !== "undefined" &&
+            window.matchMedia("(max-width: 767px)").matches
+        ),
         showProgress: true,
         progressText: "{{current}} de {{total}}",
         nextBtnText: "Siguiente →",

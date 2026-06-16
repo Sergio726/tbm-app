@@ -127,6 +127,7 @@ export function Sidebar({
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Abrir menú"
+          data-tour="mobile-menu"
           className="flex h-10 w-10 items-center justify-center rounded-lg text-white/80 transition-colors hover:bg-white/10"
         >
           <Menu size={20} strokeWidth={1.8} />
