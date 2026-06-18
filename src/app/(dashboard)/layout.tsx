@@ -60,6 +60,7 @@ export default async function DashboardLayout({
     arquitecto: "Arquitecto",
     colaborador: "Colaborador",
     observador: "Observador",
+    coach: "Coach",
   };
 
   return (

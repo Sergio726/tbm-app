@@ -520,7 +520,18 @@ export default async function DashboardPage() {
     .single();
   if (!profile) redirect("/login");
 
-  if (!profile.onboarding_completed) redirect("/onboarding");
+  if (!profile.onboarding_completed) {
+    // Coach dedicado (asignado, sin empresa propia): no hace el onboarding de empresa
+    // ni tiene un dashboard de empresa → lo mandamos directo a su panel Super Coach.
+    if (!profile.company_id) {
+      const { count } = await supabase
+        .from("coach_assignments")
+        .select("id", { count: "exact", head: true })
+        .eq("coach_id", user.id);
+      if ((count ?? 0) > 0) redirect("/super-coach");
+    }
+    redirect("/onboarding");
+  }
 
   const company = (profile as { companies?: { name: string } | null }).companies ?? null;
   const firstName = profile.full_name?.split(" ")[0] ?? "Arquitecto";

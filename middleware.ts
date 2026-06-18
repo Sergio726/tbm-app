@@ -72,6 +72,6 @@ export const config = {
     /*
      * Aplica a todas las rutas EXCEPTO archivos estáticos y API de Supabase
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
   ],
 };
