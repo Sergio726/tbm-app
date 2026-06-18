@@ -89,8 +89,15 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 ### Fase 1 — Lanzar la beta (validar el método)
 *Validar antes de construir el cobro; instrumentar analytics acá da datos para la Fase 4.*
-- **Crear cuenta de Dilio + asignar coach** — `coach_assignments` existe pero vacía;
-  necesita la cuenta de Dilio + el insert.
+- ✅ **Cuenta de Dilio + asignar coach** (2026-06-18) — cuenta de coach dedicada
+  `dilio@stlabs.ar` (`role=coach`, sin empresa) asignada a "The Business Multiplier" vía
+  `coach_assignments`. Code (`b48a980`): un coach sin empresa se rutea a `/super-coach` en
+  vez de caer en `/onboarding`/dashboard vacío; `ROLE_LABEL.coach`. También se creó la
+  cuenta de arquitecto DC Donado (`tbm@stlabs.ar` → The Business Multiplier). **Falta:**
+  sumar pilotos como nuevas asignaciones.
+- 📊 **Tablero de sprints publicado** (fuera de scope de fases) — `_local/sprints-dashboard.html`
+  (master privado) copiado a `public/roadmap-tbm-<token>.html`, servido con URL oculta +
+  `noindex` + badge "en vivo" (reloj local). Middleware excluye `.html` del redirect de auth.
 - **S10 — Onboarding de 3–5 pilotos** (mentored, gratis → sin billing aún).
 - **Instrumentar PostHog + Sentry** — uso/tiempo/funnels + errores en prod.
 - **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
