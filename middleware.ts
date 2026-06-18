@@ -3,7 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 /**
  * Middleware de autenticación.
- * - Rutas públicas: /login, /register — accesibles sin sesión.
+ * - Rutas públicas: /login, /accept-invite, /disc/ — accesibles sin sesión.
+ * - Registro público CERRADO: /register NO es pública → un usuario sin sesión que
+ *   la visite se redirige a /login. El alta es solo por invitación (/accept-invite).
  * - Rutas protegidas: todo lo demás → redirige a /login si no hay sesión.
  * - Si hay sesión y el usuario va a /login o /register → redirige a /dashboard.
  */
@@ -39,7 +41,6 @@ export async function middleware(request: NextRequest) {
   // Rutas públicas
   const isPublicRoute =
     pathname.startsWith("/login") ||
-    pathname.startsWith("/register") ||
     pathname.startsWith("/accept-invite") ||
     pathname.startsWith("/disc/") ||
     pathname.startsWith("/_next") ||

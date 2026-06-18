@@ -73,12 +73,16 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 ### Fase 0 — Tapar huecos (días, no semanas)
 *No depende de nada; se hace en la app actual.*
-- **Cerrar el registro público** — hoy cualquiera entra a `/register` y se hace
-  arquitecto gratis. Fix chico: quitar el link del login + redirigir `/register` a
-  `/login` (alta solo por invitación). **No** necesita el monorepo. *Seguridad ALTA.*
-- **Activar el cron de emails** (código ya deployado) — en Vercel agregar `CRON_SECRET`,
-  `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`/`RESEND_FROM`. Habilita digest matinal
-  + alerta 72h + `task_overdue` (S4 E7). Corre 11:00 UTC.
+- ✅ **Cerrar el registro público** (2026-06-17) — `/register` cerrado en 3 capas:
+  link "Crear cuenta" quitado del login (`login-form.tsx`), `/register/page.tsx`
+  redirige incondicionalmente a `/login`, y `/register` sacada de las rutas públicas
+  del `middleware.ts`. Alta solo por invitación (`/accept-invite`, intacto).
+  `register-form.tsx` se conserva para reuso del admin (Fase 2 / A1·adm). *Seguridad ALTA.*
+- ⏳ **Activar el cron de emails** (código ya deployado, **falta config en Vercel**) —
+  agregar en Vercel Production: `CRON_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`,
+  `RESEND_API_KEY`, `RESEND_FROM`, `NEXT_PUBLIC_APP_URL` (URL de prod). Habilita digest
+  matinal + alerta 72h + `task_overdue` (S4 E7). Corre 11:00 UTC. Nota: `RESEND_FROM`
+  en modo test (`onboarding@resend.dev`) → verificar dominio antes de la beta.
 
 ### Fase 1 — Lanzar la beta (validar el método)
 *Validar antes de construir el cobro; instrumentar analytics acá da datos para la Fase 4.*
