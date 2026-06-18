@@ -38,13 +38,16 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Rutas públicas
+  // Rutas públicas. /api/* se autentican solas (el cron valida CRON_SECRET en el
+  // handler), así que NO deben pasar por el redirect de sesión: sin este carve-out,
+  // el middleware 307-redirige /api/cron/daily a /login en producción (Edge) y el
+  // cron programado de Vercel nunca llega a ejecutarse.
   const isPublicRoute =
     pathname.startsWith("/login") ||
     pathname.startsWith("/accept-invite") ||
     pathname.startsWith("/disc/") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/") ||
     pathname === "/favicon.ico";
 
   // Si no tiene sesión y está en ruta protegida → /login
