@@ -78,11 +78,14 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   redirige incondicionalmente a `/login`, y `/register` sacada de las rutas públicas
   del `middleware.ts`. Alta solo por invitación (`/accept-invite`, intacto).
   `register-form.tsx` se conserva para reuso del admin (Fase 2 / A1·adm). *Seguridad ALTA.*
-- ⏳ **Activar el cron de emails** (código ya deployado, **falta config en Vercel**) —
-  agregar en Vercel Production: `CRON_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`,
-  `RESEND_API_KEY`, `RESEND_FROM`, `NEXT_PUBLIC_APP_URL` (URL de prod). Habilita digest
-  matinal + alerta 72h + `task_overdue` (S4 E7). Corre 11:00 UTC. Nota: `RESEND_FROM`
-  en modo test (`onboarding@resend.dev`) → verificar dominio antes de la beta.
+- ✅ **Activar el cron de emails** (2026-06-17) — env vars seteadas en Vercel Production
+  + **fix de middleware** (`90766b4`): el middleware 307-redirigía `/api/cron/daily` a
+  `/login` en el Edge de Vercel (no traía sesión) → el job nunca corría. Se excluyó
+  `/api/` del redirect de sesión (se autentica con `CRON_SECRET`). Verificado en prod:
+  `GET /api/cron/daily` con bearer → `200 {"ok":true,...}`; sin bearer → `401`. Habilita
+  digest matinal + alerta 72h + `task_overdue` (S4 E7), corre 11:00 UTC. **Modo test:**
+  `RESEND_FROM = onboarding@resend.dev` solo entrega al mail dueño de la cuenta Resend →
+  verificar dominio propio antes de la beta para que lleguen a los líderes.
 
 ### Fase 1 — Lanzar la beta (validar el método)
 *Validar antes de construir el cobro; instrumentar analytics acá da datos para la Fase 4.*
