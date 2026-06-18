@@ -126,6 +126,25 @@
   .hidden { display: none !important; }
   footer { max-width: 1200px; margin: 36px auto 0; font-size: 11px; color: var(--muted-2); border-top: 1px solid var(--border); padding-top: 16px; }
   a { color: var(--blue); }
+
+  /* Indicador "en vivo" */
+  .live {
+    display: inline-flex; align-items: center; gap: 8px; margin: 14px 0 0 10px;
+    font-size: 12px; font-weight: 700; color: var(--green); vertical-align: middle;
+    background: rgba(52,211,153,.10); border: 1px solid rgba(52,211,153,.28);
+    padding: 6px 12px; border-radius: 999px;
+  }
+  .live .ldot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: 0 0 auto;
+    box-shadow: 0 0 0 0 rgba(52,211,153,.6); animation: livepulse 1.8s infinite;
+  }
+  .live .lclock { color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .3px; }
+  @keyframes livepulse {
+    0%   { box-shadow: 0 0 0 0 rgba(52,211,153,.55); }
+    70%  { box-shadow: 0 0 0 7px rgba(52,211,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .live .ldot { animation: none; } }
 </style>
 </head>
 <body>
@@ -138,7 +157,7 @@
       <div class="subtitle">Estado del proyecto, sprint por sprint, + roadmap por fases. Documento privado de trabajo.</div>
     </div>
   </div>
-  <div class="privacy">🔒 Archivo local — no está publicado ni en el repo (en .gitignore). Solo vos lo ves.</div>
+  <div class="privacy">🔗 Publicado con URL oculta + noindex · compartir el link solo con el equipo.</div><span class="live"><span class="ldot"></span>En vivo<span class="lclock" id="live-clock">--:--:--</span></span>
 
   <div class="summary" id="summary"></div>
 </header>
@@ -382,6 +401,15 @@ document.getElementById("footer").innerHTML =
   `Generado el ${new Date().toLocaleDateString("es-AR",{year:"numeric",month:"long",day:"numeric"})} · ` +
   `Fuente: PROGRESS.md, docs/OBSERVACIONES_DILIO_2026-06.md, docs/GODMODE_Y_ROADMAP_STARTUP.md · ` +
   `Tablero interno — publicado con URL oculta + noindex. No compartir el link fuera del equipo.`;
+
+// Reloj en vivo (estilo tiempo real) — hora local del que mira, tick cada segundo.
+(function liveClock(){
+  const el = document.getElementById("live-clock");
+  if (!el) return;
+  const fmt = () => new Date().toLocaleTimeString("es-AR", { hour12:false });
+  el.textContent = fmt();
+  setInterval(() => { el.textContent = fmt(); }, 1000);
+})();
 
 /* ============ INTERACCIÓN ============ */
 document.querySelectorAll(".tab").forEach(tab=>{
