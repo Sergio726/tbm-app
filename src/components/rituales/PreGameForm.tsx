@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
 import { Check, Lock, Activity } from "lucide-react";
 import type { PreGame } from "@/types/database";
 
@@ -68,6 +69,7 @@ export default function PreGameForm({
         return;
       }
       setSavedAt(data?.updated_at ?? new Date().toISOString());
+      capture("pre_game_completed", { physical_activation: physical });
       router.refresh();
     });
   };

@@ -3,6 +3,7 @@
 import { useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
 import { SCORECARD_AREAS, type ScorecardKey } from "@/types/database";
 import {
   Sparkles,
@@ -1173,6 +1174,7 @@ export default function OnboardingPage() {
         .update({ onboarding_completed: true, onboarding_step: 4 })
         .eq("id", user.id);
 
+      capture("onboarding_completed");
       router.push("/dashboard");
     } catch (err: unknown) {
       setError(

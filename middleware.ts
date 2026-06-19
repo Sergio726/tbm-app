@@ -48,6 +48,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/disc/") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/") ||
+    pathname.startsWith("/ingest") ||
     pathname === "/favicon.ico";
 
   // Si no tiene sesión y está en ruta protegida → /login

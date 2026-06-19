@@ -13,6 +13,7 @@ import {
   Check,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
 import { LOS_LEVELS } from "@/lib/disc";
 import { notify } from "@/lib/notifications";
 import { DeadlinePicker } from "./deadline-picker";
@@ -163,6 +164,11 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
         setError(insertError.message);
         return;
       }
+
+      capture("task_delegated", {
+        has_assignee: !!data.assigned_to,
+        los_required: data.los_required ? parseInt(data.los_required) : null,
+      });
 
       // Notificar al colaborador asignado (no bloqueante)
       if (data.assigned_to) {

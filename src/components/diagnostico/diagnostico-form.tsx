@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
 import { SCORECARD_AREAS, type Scorecard, type ScorecardKey } from "@/types/database";
 
 const AREA_ICONS: Record<ScorecardKey, LucideIcon> = {
@@ -73,6 +74,7 @@ export function DiagnosticoForm({
         setError(err.message);
         return;
       }
+      capture("scorecard_saved", { is_baseline: false, has_notes: !!notes.trim() });
       router.push("/dashboard");
       router.refresh();
     });

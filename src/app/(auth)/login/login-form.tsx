@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
 import {
   Mail,
   Lock,
@@ -589,6 +590,8 @@ function RightPanel() {
       return;
     }
 
+    capture("login_succeeded", { method: "email" });
+
     // Marca de login fresco → el dashboard muestra el saludo JARVIS una sola vez (S17.A)
     try {
       localStorage.setItem("tbm:just-logged-in", "1");
@@ -609,6 +612,7 @@ function RightPanel() {
       } catch {
         /* ignore */
       }
+      capture("login_sso_started", { provider });
       const supabase = createClient();
       const { error: ssoErr } = await supabase.auth.signInWithOAuth({
         provider,
