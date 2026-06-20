@@ -18,7 +18,7 @@ type PaletteItem = {
 const MODULES: PaletteItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: "🏠", keywords: ["inicio", "home"] },
   { label: "Rituales", href: "/rituales", icon: "📋", keywords: ["pregame", "warup", "cooldown", "5 grandes"] },
-  { label: "Mi Equipo", href: "/equipo", icon: "👥", keywords: ["disc", "los", "equipo", "matriz"] },
+  { label: "Mi Equipo", href: "/equipo", icon: "👥", keywords: ["disc", "delegacion", "equipo", "matriz", "perfil"] },
   { label: "Delegación", href: "/delegacion", icon: "📤", keywords: ["tareas", "pase", "estafeta", "kanban"] },
   { label: "Feedback S.E.C.", href: "/feedback", icon: "💬", keywords: ["sostener", "elevar", "corregir"] },
   { label: "Plan 90D", href: "/plan-90d", icon: "🎯", keywords: ["rocas", "bos", "ideas", "activos"] },
@@ -61,9 +61,14 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
   const inputRef = useRef<HTMLInputElement>(null);
 
   const byRole = (item: PaletteItem) => !item.role || item.role === userRole;
+  // El colaborador ve "/equipo" como su propia ficha → "Mi Perfil".
+  const relabel = (item: PaletteItem): PaletteItem =>
+    item.href === "/equipo" && userRole !== "arquitecto"
+      ? { ...item, label: "Mi Perfil" }
+      : item;
 
   const sections = useMemo(() => {
-    const mods = MODULES.filter(byRole).filter((m) => matches(m, query));
+    const mods = MODULES.filter(byRole).filter((m) => matches(m, query)).map(relabel);
     const actions = QUICK_ACTIONS.filter(byRole).filter((a) => matches(a, query));
     return { mods, actions, flat: [...mods, ...actions] };
     // eslint-disable-next-line react-hooks/exhaustive-deps

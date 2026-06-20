@@ -286,17 +286,20 @@ export function EquipoClient({
               className="h-1.5 w-1.5 rounded-full"
               style={{ background: "#5b8aff", boxShadow: "0 0 6px #5b8aff" }}
             />
-            Mi Equipo
+            {isArquitecto ? "Mi Equipo" : "Mi Perfil"}
           </div>
           <h1
             className="m-0 text-[34px] font-extrabold text-white"
             style={{ letterSpacing: -0.8 }}
           >
-            Mapa DISC + Delegación del equipo
+            {isArquitecto
+              ? "Mapa DISC + Delegación del equipo"
+              : "Mi perfil DISC + Delegación"}
           </h1>
           <p className="mt-2 text-sm text-white/55">
-            {team.length} {team.length === 1 ? "persona" : "personas"} · perfil de
-            comportamiento, nivel de autonomía y alineación de cada rol.
+            {isArquitecto
+              ? `${team.length} ${team.length === 1 ? "persona" : "personas"} · perfil de comportamiento, nivel de autonomía y alineación de cada rol.`
+              : "Tu perfil de comportamiento, tu nivel de delegación y tu alineación. Solo el Arquitecto puede editarlo."}
           </p>
         </div>
         {isArquitecto && (
@@ -315,28 +318,24 @@ export function EquipoClient({
             Invitar colaborador
           </button>
         )}
-        {!isArquitecto && (
-          <div
-            className="max-w-[320px] rounded-xl px-4 py-3 text-[12px] leading-relaxed text-white/55"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            Tu rol es <span className="font-semibold text-white/80">colaborador</span>. Solo el
-            Arquitecto puede editar el equipo, generar links de test e invitar.
-          </div>
-        )}
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-[22px] lg:grid-cols-[300px_minmax(0,1fr)]">
-        <TeamSidebar
-          team={team}
-          currentUserId={currentUserId}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          isArquitecto={isArquitecto}
-        />
+      <div
+        className={
+          isArquitecto
+            ? "grid grid-cols-1 items-start gap-[22px] lg:grid-cols-[300px_minmax(0,1fr)]"
+            : "grid grid-cols-1 items-start gap-[22px]"
+        }
+      >
+        {isArquitecto && (
+          <TeamSidebar
+            team={team}
+            currentUserId={currentUserId}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            isArquitecto={isArquitecto}
+          />
+        )}
 
         {selected && draft ? (
           <div className="min-w-0">

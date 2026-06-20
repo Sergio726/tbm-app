@@ -53,6 +53,8 @@ interface SidebarProps {
   userStatusLabel?: string;
   userName?: string;
   userRole?: string;
+  /** true si el rol es arquitecto (para relabelar el nav del colaborador). */
+  isArquitecto?: boolean;
   avatarUrl?: string;
   /** true si el usuario tiene empresas asignadas como coach (S9). */
   isCoach?: boolean;
@@ -72,6 +74,7 @@ export function Sidebar({
   userName,
   isCoach,
   userRole,
+  isArquitecto,
   avatarUrl,
 }: SidebarProps) {
   const pathname = usePathname();
@@ -251,7 +254,10 @@ export function Sidebar({
           data-tour="sidebar-nav"
           className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-[14px] py-1.5"
         >
-          {MODULES.map(({ href, label, Icon }) => {
+          {MODULES.map(({ href, label: moduleLabel, Icon }) => {
+            // El colaborador ve "/equipo" como su propia ficha → "Mi Perfil".
+            const label =
+              href === "/equipo" && !isArquitecto ? "Mi Perfil" : moduleLabel;
             const isActive =
               pathname === href ||
               (href !== "/dashboard" && pathname.startsWith(href));

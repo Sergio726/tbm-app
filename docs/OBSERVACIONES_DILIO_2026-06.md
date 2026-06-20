@@ -80,7 +80,7 @@ celular**) incluya:
 
 ## B. DISC y reportes
 
-### B1 · Perfil de rango: solo lo ve el líder — ✅ a nivel seguridad / 🟡 pulido UX
+### B1 · Perfil de rango: solo lo ve el líder — ✅ (seguridad OK + pulido UX hecho 2026-06-20)
 Dilio: el perfil de rango debe verlo **solo el líder**, no el colaborador.
 
 - **Auditado el 2026-06-15 — NO hay fuga de datos.** El RLS está correctamente
@@ -94,13 +94,12 @@ Dilio: el perfil de rango debe verlo **solo el líder**, no el colaborador.
     assessments). No puede ver el perfil DISC/LOS/rango de ningún compañero — ni por
     la pantalla ni por query directa. Refuerza esto `migration_sprint5_roles.sql`,
     que ya corrigió el bug histórico del default `arquitecto`.
-- **Pendiente (solo cosmético, opcional):**
-  - El link **"Mi Equipo"** aparece en el sidebar (`sidebar.tsx:35`) y en el ⌘K
-    (`command-palette.tsx:21`) también para colaboradores, sin gate de rol.
-  - Un colaborador que entra ve un "Mapa DISC + LOS del equipo · 1 jugador" con solo
-    su propia tarjeta. No está roto ni es inseguro, pero la página queda casi vacía.
-  - Opciones: ocultar el ítem para colaboradores, o reconvertir `/equipo` en una
-    vista "Mi perfil DISC" cuando el rol es colaborador.
+- ✅ **Pulido UX hecho (2026-06-20):** `/equipo` se **reconvierte en "Mi Perfil"** para todo
+  rol no-arquitecto (conserva su única auto-vista DISC, en vez de ocultarla). El nav (sidebar
+  + ⌘K) muestra **"Mi Perfil"** para el colaborador; la página adapta header y **oculta el
+  TeamSidebar** (queda su ficha a ancho completo, read-only). El arquitecto no cambia.
+  Archivos: `layout.tsx` (pasa `isArquitecto`), `sidebar.tsx`, `command-palette.tsx`,
+  `equipo/equipo-client.tsx`. Sin tocar RLS/schema.
 
 ### B2 · Recomendaciones personalizadas con IA desde los documentos maestros — ✅ (síntesis enriquecida 2026-06-20)
 Dilio: el sistema debe usar sus **documentos maestros** para hacer un análisis y

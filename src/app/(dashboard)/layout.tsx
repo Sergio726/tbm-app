@@ -73,6 +73,7 @@ export default async function DashboardLayout({
         userInitials={initials}
         userName={profile?.full_name ?? undefined}
         userRole={ROLE_LABEL[profile?.role ?? ""] ?? profile?.role ?? undefined}
+        isArquitecto={profile?.role === "arquitecto"}
         avatarUrl={profile?.avatar_url ?? undefined}
         isCoach={isCoach}
       />
