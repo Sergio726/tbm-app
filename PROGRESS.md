@@ -8,6 +8,10 @@
 
 **Última actualización:** 2026-06-20 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** A1 — recordatorio "armá el próximo ciclo" (Fase 1, quick-win de Dilio). PostHog + Sentry activos en prod. Lo que queda es configuración/operación (ver "Pendientes para beta").
 
+> **Novedades 2026-06-20:**
+> - **Material canónico de Dilio recibido** (Drive "TBM 4": presentaciones S1–S6 + transcripciones) → digerido en [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md), **nueva fuente de verdad del método**. Desbloquea **C1** (LOST: L-Liderazgo/O-Operaciones/S-Sistemas/T-Tiempo) y **B2** (contenido DISC: temores, luz/sombra, roles, cruces). **B3+B4 sigue parcial** (no vino el modelo de las 3 gráficas DISC; "INFORMES DISC" de clientes vacías). **A3.2** sigue bloqueado (WORKBOOKS vacía).
+> - **Divergencias app↔método detectadas** (ver §8 del doc, son tickets): D1 LOS→LOST + "Niveles de Delegación" (no "LOS"); D2 ARQI = **4 pilares** (no "ARQUI"/5); D3 **Multiplicador (S17)** usa los "3 Pecados"+48% que **TBM4 eliminó** (requiere decisión de Dilio); D4 Pre-game vs Los 5 Grandes; D5 ESC vs SEC; D6 arquetipos DISC. **No** implementadas en este pase.
+>
 > **Novedades 2026-06-16:**
 > - **Pasada mobile-first completa** (no era un sprint): la app pasó de desktop-only a usable en celular — sidebar→drawer con hamburguesa, login responsive, inputs 16px (fin del zoom de iOS), wrappers de página con `clamp()`, HeroStrip 2×2 y tour móvil propio. Desktop quedó idéntico.
 > - **Login en producción arreglado**: la `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en Vercel estaba corrupta (espacio al pegar la JWT) → `UNAUTHORIZED_INVALID_API_KEY`. Se cambió a la publishable key `sb_publishable_...` (corta, a prueba de corrupción).

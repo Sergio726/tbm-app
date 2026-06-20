@@ -111,9 +111,17 @@ dar **recomendaciones personalizadas** a cada persona.
   está alimentada con los documentos maestros de Dilio.
 - **Propuesta:** inyectar el conocimiento de Dilio en el prompt/contexto de la IA
   (RAG o contexto curado) para que las recomendaciones reflejen su enfoque.
-- ⛔ **Bloqueado:** requiere que Dilio entregue los documentos maestros.
+- 🟢 **Desbloqueado (2026-06-20):** llegó el material canónico → el contenido DISC
+  (perfiles, %, luz/sombra, temores, roles, cruces) está digerido en
+  [`METODO_TBM_CANONICO.md`](METODO_TBM_CANONICO.md) §4. Ya hay insumo para alimentar el
+  prompt. *(Las gráficas avanzadas de B3+B4 siguen sin modelo — ver abajo.)*
 
-### B3 + B4 · Las 3 gráficas DISC + intensidad centrada en la media — ❌ (FEATURE GRANDE)
+### B3 + B4 · Las 3 gráficas DISC + intensidad centrada en la media — ❌ / ⛔ parcial (FEATURE GRANDE)
+> **2026-06-20:** llegó el material de Dilio (TBM 4) pero **NO** trae el modelo de cálculo
+> de las 3 gráficas clásicas (las subcarpetas "INFORMES DISC" de los clientes están
+> vacías). Sigue **bloqueado en lo técnico**: falta el método para derivar Pública/Núcleo/
+> Espejo desde MÁS/MENOS. Pedir a Dilio un informe DISC de ejemplo + la fórmula.
+
 Dilio quiere las gráficas clásicas DISC:
 - **Temperamento bajo presión** (gráfica Pública / "máscara").
 - **Temperamento en público.**
@@ -145,16 +153,16 @@ Dilio quiere las gráficas clásicas DISC:
 
 ## C. Sistema LOST y claridad conceptual
 
-### C1 · Que el usuario entienda LOST y dónde está parado — 🟡 / ⛔
-Dilio: **LOST (con T)** representa **todo el sistema**, no una parte. El usuario
-debe sentir claramente qué es **L**eadership Strategy, qué es **O**peration System,
-y qué significa cada letra. Dilio está actualizando las presentaciones para ser
-más incisivo en estas definiciones.
+### C1 · Que el usuario entienda LOST y dónde está parado — 🟢 desbloqueado (material recibido)
+Dilio: **LOST (con T)** representa **todo el sistema**, no una parte.
 
-> **Confirmado por Sebas (2026-06-19):** en la app aparece "LOS" donde debería decir
-> **LOST** (metodología). Ticketizado como bug de copy en Sprint 16 Mejora #4
-> (`SPRINTS.md` + `PROGRESS.md` Fase 1) — corregir pronto en UI/tour/docs, sin
-> tocar schema (`los_level`, etc.) hasta unificar naming con Dilio.
+> **Desbloqueado (2026-06-20):** llegó el material canónico. Definiciones oficiales (de las
+> presentaciones, ver [`METODO_TBM_CANONICO.md`](METODO_TBM_CANONICO.md) §1–§2):
+> **L** = Liderazgo estratégico · **O** = Operaciones optimizadas · **S** = Sistemas
+> escalables · **T** = Tiempo multiplicado. Cada presentación abre con un "mapa LOST" que
+> ubica la sesión. Además: los "Niveles LOS" (N1–N5) del app son en realidad los **5
+> Niveles de Delegación** (Cadete→Socio), **no** "LOS" → corregir naming (divergencia D1).
+> Ya se puede construir el barrido LOS→LOST y una vista "mapa del sistema".
 
 - **Hoy:** la metodología está volcada en módulos, pero el **copy/naming** no guía
   explícitamente "estás en esta parte del sistema LOST".

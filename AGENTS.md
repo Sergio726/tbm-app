@@ -26,9 +26,10 @@ Si tu cambio no toca el estado de ningún sprint (refactor, bug fix menor, docs 
 
 Antes de empezar un sprint o tomar una decisión de producto, leer:
 
-- [`docs/SPRINTS.md`](docs/SPRINTS.md) — plan completo S0–S14 + **CHANGELOG v1.1** al inicio con las 18 respuestas oficiales del autor del método (Dilio Donado). El CHANGELOG es la fuente de verdad ante cualquier discrepancia con el plan original.
+- [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md) — **fuente primaria del método** (generación "TBM 4"), digerida del material original de Dilio (presentaciones S1–S6 + transcripciones). **Ante cualquier conflicto sobre el método, este doc manda.** Incluye la tabla de divergencias app↔TBM4 (§8) — léela antes de tocar DISC, ARQI, Multiplicador o el naming LOST.
+- [`docs/SPRINTS.md`](docs/SPRINTS.md) — plan completo S0–S14 + **CHANGELOG v1.1** al inicio con las 18 respuestas oficiales del autor del método (Dilio Donado). El CHANGELOG es la fuente de verdad del **plan**; ante discrepancia de **método**, gana `METODO_TBM_CANONICO.md`.
 - [`docs/SPEC.md`](docs/SPEC.md) — especificación de módulos.
-- [`docs/DISCOVERY.md`](docs/DISCOVERY.md) — base del método TBM.
+- [`docs/DISCOVERY.md`](docs/DISCOVERY.md) — base histórica del método TBM (anterior al material canónico).
 
 ---
 
