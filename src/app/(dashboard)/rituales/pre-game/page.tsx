@@ -4,6 +4,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { isoDate, isoMonday, inSameIsoWeek, humanDate } from "@/lib/dates";
 import { ArrowLeft, Sunrise } from "lucide-react";
 import PreGameForm from "@/components/rituales/PreGameForm";
+import HabitsChecklist from "@/components/rituales/HabitsChecklist";
 
 export default async function PreGamePage() {
   const supabase = await createServerClient();
@@ -58,6 +59,21 @@ export default async function PreGamePage() {
     .order("log_date", { ascending: true });
 
   const completedDates = new Set((history ?? []).map((h) => h.log_date));
+
+  // Hábitos del Pre-game (A3.1): todos (activos + inactivos para el picker) + los hechos hoy
+  const { data: allHabits } = await supabase
+    .from("user_habits")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("sort_order", { ascending: true });
+
+  const { data: habitLogsToday } = await supabase
+    .from("habit_logs")
+    .select("habit_id")
+    .eq("user_id", user.id)
+    .eq("log_date", today);
+
+  const doneToday = (habitLogsToday ?? []).map((l) => l.habit_id);
 
   // Generar la grilla de 30 días (most recent first)
   const days: { date: string; done: boolean; isToday: boolean }[] = [];
@@ -162,6 +178,14 @@ export default async function PreGamePage() {
         }
         marchLockedThisWeek={marchLockedThisWeek}
         marchValue={currentMarch}
+      />
+
+      <HabitsChecklist
+        userId={user.id}
+        companyId={profile.company_id}
+        date={today}
+        allHabits={allHabits ?? []}
+        doneToday={doneToday}
       />
 
       <section style={{ marginTop: 36 }}>

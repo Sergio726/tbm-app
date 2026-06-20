@@ -6,7 +6,7 @@
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 
-**Última actualización:** 2026-06-19 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS). Lo que queda es configuración/operación (ver "Pendientes para beta").
+**Última actualización:** 2026-06-19 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** A3.1 — checklist de hábitos del Pre-game (Fase 1, quick-win de Dilio). Lo que queda es configuración/operación (ver "Pendientes para beta").
 
 > **Novedades 2026-06-16:**
 > - **Pasada mobile-first completa** (no era un sprint): la app pasó de desktop-only a usable en celular — sidebar→drawer con hamburguesa, login responsive, inputs 16px (fin del zoom de iOS), wrappers de página con `clamp()`, HeroStrip 2×2 y tour móvil propio. Desktop quedó idéntico.
@@ -24,7 +24,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 |---|---|---|---|
 | **S0** | Setup & Auth | ✅ | App en Vercel · auth + 2 tipos de usuario (Alumno/Independiente). |
 | **S1** | Onboarding + Dashboard | ✅ | Diagnóstico + Naming v1.1. El pendiente "Dashboard con datos reales" se cerró en S12. |
-| **S2** | Rituales | ✅ | Pre-game · Los 5 Grandes · War Up Realtime · Cool Down + Reporte Semanal automático · Parking Lot · Config. |
+| **S2** | Rituales | ✅ | Pre-game (+ **checklist de hábitos** A3.1: catálogo curado por categorías + hábito propio, marcado de un toque con anillo de progreso, `user_habits`/`habit_logs`) · Los 5 Grandes · War Up Realtime · Cool Down + Reporte Semanal automático · Parking Lot · Config. |
 | **S3** | Mi Equipo (DISC + LOS + Matriz) | ✅ | DISC + LOS + Matriz Autoridad + Cruces Peligrosos · rediseño RPG gamificado. |
 | **S4** | Delegación | ✅ | Wizard Pase de Estafeta (5 puntos) · Kanban · Vista colaborador · Escudo Anti-Boomerang. |
 | **S5** | Feedback S.E.C. | ✅ | Templates S/E/C por perfil DISC · Sesiones Escape · 3 Streaks. |
@@ -107,7 +107,10 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   (crear cuentas + env vars en Vercel + redeploy).** Pasos guardados abajo en
   [**"Pendiente: activar PostHog + Sentry"**](#pendiente-activar-posthog--sentry).
 - **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
-  (reusa cron + notificaciones); A3.1 checklist de hábitos del Pre-game.
+  (reusa cron + notificaciones); ✅ **A3.1 checklist de hábitos del Pre-game** (2026-06-19):
+  catálogo curado por categorías + hábito propio, marcado de un toque (optimista) con anillo
+  de progreso + micro-celebración, mobile-first; tablas `user_habits`/`habit_logs` (RLS por
+  usuario). Las **meditaciones** del Pre-game siguen ⛔ bloqueadas por Dilio (365 meditaciones).
 - 📧 **Email server disponible** *(Sebas, 2026-06-19)* — desbloquea el dominio propio para
   los emails del cron (hoy en modo test `onboarding@resend.dev`). **PENDIENTE: definir
   Camino A (verificar dominio en Resend → cambiar `RESEND_FROM`, sin código) vs Camino B
@@ -230,6 +233,7 @@ Orden de aplicación en Supabase (ver [`supabase/README.md`](supabase/README.md)
 | 14 | `migration_sprint14_tour.sql` | S11 — tour_completed en profiles · ✅ aplicada (2026-06-16) |
 | 15 | `migration_sprint15_super_coach.sql` | S9 — coach_assignments + coaching_notes + RLS coach · ✅ aplicada (2026-06-16) |
 | 16 | `migration_sprint17_multiplicador.sql` | S17 — multiplicador_diagnostics (M8 ROI de Talento) · ✅ aplicada (2026-06-16) |
+| 17 | `migration_sprint18_pregame_habits.sql` | A3.1 — user_habits + habit_logs (checklist de hábitos del Pre-game) · ✅ aplicada (2026-06-19) |
 
 > ⚠️ **Numeración no coincide con sprint del plan** — los archivos se numeraron por orden de creación. Cruzá con esta tabla para saber qué cubre cada uno.
 

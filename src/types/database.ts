@@ -508,6 +508,69 @@ export type Database = {
         }
         Relationships: []
       }
+      user_habits: {
+        Row: {
+          id: string
+          user_id: string
+          company_id: string
+          label: string
+          emoji: string | null
+          category: string | null
+          catalog_key: string | null
+          sort_order: number
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          company_id: string
+          label: string
+          emoji?: string | null
+          category?: string | null
+          catalog_key?: string | null
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          company_id?: string
+          label?: string
+          emoji?: string | null
+          category?: string | null
+          catalog_key?: string | null
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      habit_logs: {
+        Row: {
+          id: string
+          user_id: string
+          habit_id: string
+          log_date: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          habit_id: string
+          log_date?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          habit_id?: string
+          log_date?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       los_5_grandes: {
         Row: {
           id: string
@@ -1665,6 +1728,10 @@ export type WarUpEntry = Database["public"]["Tables"]["war_up_entries"]["Row"];
 export type CoolDown = Database["public"]["Tables"]["cool_downs"]["Row"];
 export type ParkingLotItem = Database["public"]["Tables"]["parking_lot"]["Row"];
 export type WeeklyReport = Database["public"]["Tables"]["weekly_reports"]["Row"];
+
+// A3.1 — Hábitos del Pre-game
+export type UserHabit = Database["public"]["Tables"]["user_habits"]["Row"];
+export type HabitLog = Database["public"]["Tables"]["habit_logs"]["Row"];
 
 export type RitualMode = "daily" | "A" | "B" | "C";
 export type WarUpStatus = "pending" | "active" | "closed";
