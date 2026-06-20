@@ -54,6 +54,13 @@ export default async function EquipoPage() {
 
   const isArquitecto = profile.role === "arquitecto";
 
+  // Saldo de créditos de la empresa (Fase 2 A3) — para el indicador del Arquitecto.
+  const { data: credits } = await supabase
+    .from("company_credits")
+    .select("balance")
+    .eq("company_id", profile.company_id!)
+    .maybeSingle();
+
   return (
     <EquipoClient
       team={(team ?? []) as Profile[]}
@@ -62,6 +69,7 @@ export default async function EquipoPage() {
       isArquitecto={isArquitecto}
       assessments={assessments ?? []}
       authorityMatrix={authorityMatrix ?? null}
+      creditBalance={credits?.balance ?? 0}
     />
   );
 }

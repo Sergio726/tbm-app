@@ -32,6 +32,7 @@ Supabase **sí** llega al proyecto nuevo (apply_migration/execute_sql). Correr *
 | 18 | `migration_sprint17_multiplicador.sql` | **S17 [M8]**: tabla `multiplicador_diagnostics` (Diagnóstico ROI de Talento — Los 3 Pecados, total /36) + RLS por empresa | ⏳ pendiente |
 | 19 | `migration_sprint18_pregame_habits.sql` | **A3.1**: `user_habits` + `habit_logs` (checklist de hábitos del Pre-game) + RLS por usuario | ✅ aplicada (2026-06-19) |
 | 20 | `migration_fase2_platform_admins.sql` | **Fase 2 · A1**: `platform_admins` + `is_platform_admin()` (panel god-mode). Seedear a mano el/los user_id de admin | ✅ aplicada (2026-06-20) |
+| 21 | `migration_fase2_credits.sql` | **Fase 2 · A3**: `company_credits` + `credit_transactions` (ledger) + RPC `generate_disc_link` (gating del DISC) + `grant_credits` (carga, solo platform_admin) | ✅ aplicada (2026-06-20) |
 
 ## Limpieza puntual (no es migración de esquema)
 

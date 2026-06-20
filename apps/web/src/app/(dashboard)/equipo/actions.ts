@@ -271,3 +271,30 @@ export async function sendDiscLinkEmail(input: {
 
   return result.ok ? { ok: true } : { ok: false, error: result.error };
 }
+
+/**
+ * Genera el link de test DISC con gating de créditos (Fase 2 A3). Reemplaza el
+ * INSERT client-side: el descuento del crédito + la creación del token ocurren
+ * atómicamente en la RPC `generate_disc_link` (SECURITY DEFINER). Reusar un
+ * pendiente no cobra; sin créditos → { ok:false, error:'sin_creditos' }.
+ */
+export async function generateDiscLink(
+  profileId: string
+): Promise<{ ok: true; token: string } | { ok: false; error: string }> {
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "no_sesion" };
+
+  const { data, error } = await supabase.rpc("generate_disc_link", {
+    p_profile_id: profileId,
+  });
+  if (error) {
+    console.error("generateDiscLink RPC error", error);
+    return { ok: false, error: "rpc_error" };
+  }
+  const res = (data ?? {}) as { ok?: boolean; token?: string; error?: string };
+  if (res.ok && res.token) return { ok: true, token: res.token };
+  return { ok: false, error: res.error ?? "error" };
+}

@@ -1592,6 +1592,23 @@ export type Database = {
           },
         ]
       }
+      company_credits: {
+        Row: {
+          company_id: string
+          balance: number
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          balance?: number
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1616,6 +1633,10 @@ export type Database = {
           p_disc_icon: string | null
           p_narrative?: string | null
         }
+        Returns: Json
+      }
+      generate_disc_link: {
+        Args: { p_profile_id: string }
         Returns: Json
       }
     }

@@ -6,6 +6,7 @@ import { Send, Trophy, Bell, X, FileText, AlertTriangle } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
 import { normalizeLetters } from "@/lib/disc";
+import { generateDiscLink } from "@/app/(dashboard)/equipo/actions";
 import {
   buildChecklist,
   draftFrom,
@@ -30,6 +31,7 @@ export function EquipoClient({
   isArquitecto,
   assessments,
   authorityMatrix,
+  creditBalance,
 }: {
   team: Profile[];
   currentUserId: string;
@@ -37,6 +39,7 @@ export function EquipoClient({
   isArquitecto: boolean;
   assessments: DiscAssessmentLite[];
   authorityMatrix: AuthorityMatrixRow | null;
+  creditBalance: number;
 }) {
   const router = useRouter();
 
@@ -191,47 +194,20 @@ export function EquipoClient({
     setConfirmRegen(false);
     setGenerating(true);
     try {
-      const supabase = createBrowserClient();
-      // Invalida los tests anteriores NO completados de esta persona: al borrar
-      // la fila, su token deja de resolver (get_disc_assessment → null →
-      // "Link inválido"), evitando dos links de test válidos a la vez. Los tests
-      // ya completados se conservan como historial.
-      const { error: delErr } = await supabase
-        .from("disc_assessments")
-        .delete()
-        .eq("profile_id", selected.id)
-        .neq("status", "completado");
-      if (delErr) throw delErr;
-      const token =
-        (typeof crypto !== "undefined" && crypto.randomUUID
-          ? crypto.randomUUID().replace(/-/g, "")
-          : Math.random().toString(36).slice(2)) +
-        Math.random().toString(36).slice(2);
-      const { error } = await supabase.from("disc_assessments").insert({
-        token,
-        company_id: companyId,
-        profile_id: selected.id,
-        full_name: selected.full_name,
-        cargo: draft?.cargo || selected.cargo || null,
-        created_by: currentUserId,
-        status: "pendiente",
-      });
-      if (error) throw error;
-      // Re-hacer test: dejar el perfil en blanco y en estado "enviado" para
-      // que el nuevo test arranque limpio (decisión: "limpiar de una").
-      const { error: profErr } = await supabase
-        .from("profiles")
-        .update({
-          disc_status: "enviado",
-          disc_letters: null,
-          disc_name: null,
-          disc_icon: null,
-          disc_profile_key: null,
-          disc_scores: null,
-        })
-        .eq("id", selected.id);
-      if (profErr) throw profErr;
-      setFreshToken((m) => ({ ...m, [selected.id]: token }));
+      // Gating de créditos (Fase 2 A3): el descuento del crédito + la creación del
+      // token + el reset del perfil ocurren atómicamente en la RPC server-side
+      // `generate_disc_link` (no salteable desde la consola). Reusar un pendiente
+      // no cobra; sin créditos → aviso, sin crear nada.
+      const res = await generateDiscLink(selected.id);
+      if (!res.ok) {
+        setErrorFlash(
+          res.error === "sin_creditos"
+            ? "La empresa se quedó sin créditos para tests DISC. Cargá créditos para continuar."
+            : "No se pudo generar el link. Intentá de nuevo."
+        );
+        return;
+      }
+      setFreshToken((m) => ({ ...m, [selected.id]: res.token }));
       patch({ disc_letters: "" }); // limpia barras/Luz-Sombra al instante
       router.refresh();
     } catch (e) {
@@ -303,20 +279,42 @@ export function EquipoClient({
           </p>
         </div>
         {isArquitecto && (
-          <button
-            type="button"
-            onClick={() => setInviteOpen(true)}
-            className="inline-flex items-center gap-2.5 rounded-xl border-0 py-3 text-[13.5px] font-semibold text-white transition hover:-translate-y-px"
-            style={{
-              background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-              boxShadow:
-                "0 8px 22px rgba(91,138,255,0.34), inset 0 1px 0 rgba(255,255,255,0.2)",
-              padding: "11px 18px",
-            }}
-          >
-            <Send size={15} strokeWidth={1.9} />
-            Invitar colaborador
-          </button>
+          <div className="flex flex-wrap items-center" style={{ gap: 10 }}>
+            <span
+              title="Créditos disponibles · 1 crédito = 1 test DISC"
+              className="inline-flex items-center"
+              style={{
+                gap: 7,
+                fontSize: 12.5,
+                fontWeight: 600,
+                color: creditBalance > 0 ? "#9bb8ff" : "#fca5a5",
+                background:
+                  creditBalance > 0 ? "rgba(91,138,255,0.10)" : "rgba(248,113,113,0.10)",
+                border:
+                  creditBalance > 0
+                    ? "1px solid rgba(91,138,255,0.25)"
+                    : "1px solid rgba(248,113,113,0.3)",
+                borderRadius: 999,
+                padding: "8px 13px",
+              }}
+            >
+              🎟️ {creditBalance} {creditBalance === 1 ? "crédito" : "créditos"}
+            </span>
+            <button
+              type="button"
+              onClick={() => setInviteOpen(true)}
+              className="inline-flex items-center gap-2.5 rounded-xl border-0 py-3 text-[13.5px] font-semibold text-white transition hover:-translate-y-px"
+              style={{
+                background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
+                boxShadow:
+                  "0 8px 22px rgba(91,138,255,0.34), inset 0 1px 0 rgba(255,255,255,0.2)",
+                padding: "11px 18px",
+              }}
+            >
+              <Send size={15} strokeWidth={1.9} />
+              Invitar colaborador
+            </button>
+          </div>
         )}
       </div>
 

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { GrantForm } from "./grant-form";
 
 export const dynamic = "force-dynamic";
 
@@ -23,12 +24,13 @@ export default async function EmpresasPage() {
     );
   }
 
-  const [{ data: companies }, { data: profiles }] = await Promise.all([
+  const [{ data: companies }, { data: profiles }, { data: credits }] = await Promise.all([
     admin
       .from("companies")
       .select("id, name, plan, owner_id, created_at")
       .order("created_at", { ascending: true }),
     admin.from("profiles").select("id, company_id, role"),
+    admin.from("company_credits").select("company_id, balance"),
   ]);
 
   const countByCompany = new Map<string, number>();
@@ -36,6 +38,10 @@ export default async function EmpresasPage() {
     if (p.company_id) {
       countByCompany.set(p.company_id, (countByCompany.get(p.company_id) ?? 0) + 1);
     }
+  }
+  const balanceByCompany = new Map<string, number>();
+  for (const c of credits ?? []) {
+    balanceByCompany.set(c.company_id, c.balance);
   }
 
   const rows = companies ?? [];
@@ -82,7 +88,14 @@ export default async function EmpresasPage() {
                   <td style={{ ...td, fontWeight: 600 }}>{c.name}</td>
                   <td style={td}>{c.plan ?? "—"}</td>
                   <td style={td}>{countByCompany.get(c.id) ?? 0}</td>
-                  <td style={{ ...td, color: "var(--muted)" }}>—{/* A3 */}</td>
+                  <td style={td}>
+                    <div className="flex flex-wrap items-center" style={{ gap: 10 }}>
+                      <span style={{ fontWeight: 700, minWidth: 24 }}>
+                        {balanceByCompany.get(c.id) ?? 0}
+                      </span>
+                      <GrantForm companyId={c.id} />
+                    </div>
+                  </td>
                   <td style={{ ...td, color: "var(--muted)" }}>
                     {c.created_at ? new Date(c.created_at).toLocaleDateString("es-AR") : "—"}
                   </td>
@@ -93,7 +106,8 @@ export default async function EmpresasPage() {
         </table>
       </div>
       <p style={{ fontSize: 11.5, color: "var(--muted)", marginTop: 12 }}>
-        Saldo de créditos se activa en A3 (motor de créditos). Por ahora muestra —.
+        1 crédito = 1 test DISC. Cargá créditos por empresa (queda en el ledger con motivo).
+        Usá un número negativo para ajustar/descontar.
       </p>
     </div>
   );

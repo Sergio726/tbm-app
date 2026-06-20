@@ -98,12 +98,51 @@ export type Database = {
         };
         Relationships: [];
       };
+      company_credits: {
+        Row: { company_id: string; balance: number; updated_at: string };
+        Insert: { company_id: string; balance?: number; updated_at?: string };
+        Update: { balance?: number; updated_at?: string };
+        Relationships: [];
+      };
+      credit_transactions: {
+        Row: {
+          id: string;
+          company_id: string;
+          delta: number;
+          type: string;
+          reason: string | null;
+          actor_id: string | null;
+          ref: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id: string;
+          delta: number;
+          type: string;
+          reason?: string | null;
+          actor_id?: string | null;
+          ref?: string | null;
+          created_at?: string;
+        };
+        Update: { reason?: string | null };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
       is_platform_admin: {
         Args: Record<string, never>;
         Returns: boolean;
+      };
+      grant_credits: {
+        Args: {
+          p_company_id: string;
+          p_amount: number;
+          p_reason?: string | null;
+          p_type?: string;
+        };
+        Returns: Json;
       };
     };
     Enums: Record<string, never>;

@@ -158,8 +158,13 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
   usuarios; alta de coaches; audit log base.
 - **A2** — Crear líderes + invitaciones desde admin; editar datos sensibles; CRUD
   usuarios; alta de coaches; audit log base.
-- **A3** — Créditos (saldo + ledger append-only) + **gating del DISC por créditos** +
-  carga manual/descuentos. *(reemplaza E1 parte 1)*
+- ✅ **A3 — Motor de créditos + gating** (migración `fase2_credits`): `company_credits`
+  (saldo) + `credit_transactions` (ledger append-only) + RPC **`generate_disc_link`**
+  (gating atómico: descuenta 1 crédito al generar el link DISC; reusar pendiente no cobra;
+  sin créditos → bloquea) que **reemplaza el INSERT client-side** + RPC **`grant_credits`**
+  (carga/regalo, solo platform_admin). Web: server action `generateDiscLink` + chip de saldo
+  en `/equipo` + aviso "sin créditos". Admin: saldo por empresa + form "Cargar créditos".
+  STLabs seedeada con 25 (beta). Builds verdes. ⏳ E2E runtime pendiente (necesita sesión).
 - **A4** — Stripe: compra de créditos por el líder + webhooks → ledger + cupones +
   Stripe Tax. *(reemplaza E1 parte 2)*
 
