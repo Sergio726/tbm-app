@@ -6,7 +6,7 @@
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 
-**Última actualización:** 2026-06-16 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS). Lo que queda es configuración/operación (ver "Pendientes para beta").
+**Última actualización:** 2026-06-19 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS). Lo que queda es configuración/operación (ver "Pendientes para beta").
 
 > **Novedades 2026-06-16:**
 > - **Pasada mobile-first completa** (no era un sprint): la app pasó de desktop-only a usable en celular — sidebar→drawer con hamburguesa, login responsive, inputs 16px (fin del zoom de iOS), wrappers de página con `clamp()`, HeroStrip 2×2 y tour móvil propio. Desktop quedó idéntico.
@@ -98,10 +98,26 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 - 📊 **Tablero de sprints publicado** (fuera de scope de fases) — `_local/sprints-dashboard.html`
   (master privado) copiado a `public/roadmap-tbm-<token>.html`, servido con URL oculta +
   `noindex` + badge "en vivo" (reloj local). Middleware excluye `.html` del redirect de auth.
-- **S10 — Onboarding de 3–5 pilotos** (mentored, gratis → sin billing aún).
-- **Instrumentar PostHog + Sentry** — uso/tiempo/funnels + errores en prod.
+- **S10 — Onboarding de 3–5 pilotos** (mentored, gratis → sin billing aún). *(Demo:
+  `tbm@stlabs.ar` / "The Business Multiplier" NO cuenta como piloto; pilotos reales se
+  crean al arrancar la beta. Con coach + arquitecto + 1 colaborador alcanza para validar.)*
+- 🟡 **Instrumentar PostHog + Sentry** — **código HECHO y deployado** (`984c2b8`), inerte
+  sin keys (gateado por env, build verificado). Provider + pageviews + identify (sin PII) +
+  10 eventos del funnel + Sentry (instrumentation + global-error). **PENDIENTE: activar
+  (crear cuentas + env vars en Vercel + redeploy).** Pasos guardados abajo en
+  [**"Pendiente: activar PostHog + Sentry"**](#pendiente-activar-posthog--sentry).
 - **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
   (reusa cron + notificaciones); A3.1 checklist de hábitos del Pre-game.
+- 📧 **Email server disponible** *(Sebas, 2026-06-19)* — desbloquea el dominio propio para
+  los emails del cron (hoy en modo test `onboarding@resend.dev`). **PENDIENTE: definir
+  Camino A (verificar dominio en Resend → cambiar `RESEND_FROM`, sin código) vs Camino B
+  (reescribir `email.ts` a SMTP propio con nodemailer).** Falta confirmar dominio/proveedor.
+- 🐛 **S16 Mejora #4 — Naming LOS → LOST** *(confirmado por Sebas 2026-06-19)* —
+  la metodología es **LOST** (con T), no "LOS". Bug de copy en UI/tour/docs que
+  confunde el marco completo con los niveles de autonomía N1–N5. **Corregir pronto:**
+  barrido de textos visibles al usuario; **no** renombrar `los_level` / tablas SQL
+  hasta definir naming canónico con Dilio. Detalle: [`docs/SPRINTS.md`](docs/SPRINTS.md)
+  → Sprint 16, Mejora #4.
 
 ### Fase 2 — Monetizar (panel god-mode + créditos)
 *Recién acá el cobro. Decidido: monorepo, misma DB Supabase, 1 crédito = 1 DISC.*
@@ -122,7 +138,9 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   grande, sesión dedicada. *Bloqueado por Dilio (material modelo).*
 - **A3.2** — Meditaciones del Pre-game (365). *Bloqueado por Dilio.*
 - **B2** — Recomendaciones IA personalizadas DISC. *Bloqueado por Dilio (docs maestros).*
-- **C1** — Claridad conceptual / naming LOST. *Bloqueado por Dilio (presentaciones).*
+- **C1** — Claridad conceptual / naming LOST. *Mapa visual del sistema bloqueado por
+  Dilio (presentaciones).* El barrido de copy **LOS → LOST** en UI ya está ticketizado
+  como S16 Mejora #4 (quick-win, sin bloqueo).
 
 ### Fase 4 — Escala y venta (startup vendible)
 *Lo que un comprador/inversor revisa en due diligence.*
@@ -130,6 +148,33 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   país (con datos de PostHog de la Fase 1).
 - **A6** — Enterprise readiness: export/borrado GDPR, planes/feature flags, roles
   internos del admin, camino SOC2 / SSO-SAML, leaked-password (requiere Supabase Pro).
+
+---
+
+## Pendiente: activar PostHog + Sentry
+
+> Código ya implementado y deployado (`984c2b8`), **inerte sin keys**. Esto es solo la
+> activación operativa: crear las cuentas y cargar env vars en Vercel + redeploy.
+> Las vars están documentadas en `.env.local.example`.
+
+**PostHog (analítica):**
+1. Cuenta free en posthog.com → elegir región (US/EU).
+2. Project Settings → **Project API Key** (`phc_...`).
+3. Host: US `https://us.i.posthog.com` / EU `https://eu.i.posthog.com`.
+4. Vercel (Production): `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`.
+5. **Redeploy** (las `NEXT_PUBLIC_*` se inyectan en build).
+6. Verificar: app → PostHog → Live events (`$pageview` + eventos; persona con role/company_id).
+   *Tip: poner la key solo en Vercel (prod), no en `.env.local`, para no ensuciar con datos de dev.*
+
+**Sentry (errores):**
+1. Cuenta free en sentry.io → nuevo proyecto **Next.js** → copiar **DSN**.
+2. Anotar **org slug** + **project slug**; (opcional) **Auth token** (scope `project:releases`) para source maps.
+3. Vercel (Production): `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`.
+4. **Redeploy.** Los SDK solo reportan en `NODE_ENV=production` → verificar en prod (forzar un error → Sentry Issues).
+
+**Email server / dominio propio (cron):** ver bullet 📧 en Fase 1. Camino A (verificar
+dominio en Resend → `RESEND_FROM`, sin código) vs Camino B (SMTP propio, reescribir
+`src/lib/email.ts`). Falta que Sebas confirme dominio + proveedor.
 
 ---
 
