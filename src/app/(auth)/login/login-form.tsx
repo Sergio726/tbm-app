@@ -6,9 +6,9 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
 import {
   Mail,
   Lock,
@@ -590,6 +590,8 @@ function RightPanel() {
       return;
     }
 
+    capture("login_succeeded", { method: "email" });
+
     // Marca de login fresco → el dashboard muestra el saludo JARVIS una sola vez (S17.A)
     try {
       localStorage.setItem("tbm:just-logged-in", "1");
@@ -610,6 +612,7 @@ function RightPanel() {
       } catch {
         /* ignore */
       }
+      capture("login_sso_started", { provider });
       const supabase = createClient();
       const { error: ssoErr } = await supabase.auth.signInWithOAuth({
         provider,
@@ -668,27 +671,7 @@ function RightPanel() {
         </div>
       </div>
 
-      {/* Top right: signup hint */}
-      <div
-        className="flex justify-end"
-        style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}
-      >
-        ¿Sos nuevo?{" "}
-        <Link
-          href="/register"
-          className="hover:opacity-80"
-          style={{
-            marginLeft: 6,
-            color: "#9fb9ff",
-            textDecoration: "none",
-            fontWeight: 500,
-            borderBottom: "1px solid rgba(159,185,255,0.3)",
-            paddingBottom: 1,
-          }}
-        >
-          Crear cuenta
-        </Link>
-      </div>
+      {/* Alta solo por invitación: el registro público está cerrado. */}
 
       <div
         className="flex flex-col"

@@ -42,25 +42,27 @@ sprint, como parte del ecosistema de trabajo.
 Principio de diseño transversal, no una tarea cerrable. Se aplica en cada mejora
 de UX. No se documenta como item de backlog con estado.
 
-### A3 · Pre-game: meditaciones + hábitos en checklist + mobile-first — ❌ / ⛔
+### A3 · Pre-game: meditaciones + hábitos en checklist + mobile-first — 🟡 (pieza 1 ✅ / pieza 2 ⛔)
 Dilio quiere que el Pre-game (ritual matutino, se hace al levantarse **desde el
 celular**) incluya:
 - **Meditaciones** — Dilio está escribiendo **365 meditaciones de autoliderazgo**.
 - **Hábitos sugeridos** (gym, meditar, tomar agua, no comer azúcar en la mañana…).
   El usuario **no hace todos**: elige algunos (5–10) y los marca como checklist.
 
-- **Hoy:** el Pre-game (`src/app/(dashboard)/rituales/pre-game/page.tsx`) tiene
-  Big Wins personales + Marcha de 20 Millas + activación física + notas. **No** hay
-  meditaciones ni checklist de hábitos.
-- **Propuesta, en 2 piezas:**
-  1. **Checklist de hábitos** (implementable ya): catálogo de hábitos sugeridos +
-     selección del usuario (5–10) + marcado diario. Nueva tabla
-     (`pre_game_habits` / `user_habits`) + UI de checklist. Reusa la racha de
-     Pre-game existente.
+- **Estado, en 2 piezas:**
+  1. ✅ **Checklist de hábitos (A3.1, hecho 2026-06-19):** sección "Hábitos de hoy"
+     en el Pre-game (`HabitsChecklist.tsx` + `HabitsPicker.tsx`, catálogo en
+     `src/lib/habits.ts`). Catálogo curado por categorías (movimiento/mente/cuerpo/
+     nutrición) **+ hábito propio**; el usuario elige hasta 10 y los marca de **un
+     toque** (optimista, sin botón guardar) con **anillo de progreso del día** y
+     micro-celebración al completar todos. Tablas `user_habits` + `habit_logs` (RLS
+     por usuario, soft-remove con `is_active`). Mobile-first (chips grandes, sheet a
+     pantalla completa, inputs 16px).
   2. **Meditaciones del día** — ⛔ **bloqueado**: requiere que Dilio entregue las
      365 meditaciones (formato/estructura a definir: texto, audio, rotación diaria).
 - **Crítico (Dilio insiste):** esta sección debe estar **optimizada para móvil**.
-  Revisar el layout del Pre-game con enfoque mobile-first.
+  El checklist se construyó mobile-first; al sumar las meditaciones, revisar el
+  layout completo del Pre-game.
 
 ### A4 · Parking lot + interfaz más práctica — ✅ base / 🟡 pulido
 - **Hoy:** el Parking Lot existe (S2, `/rituales/parking-lot`).
@@ -147,6 +149,11 @@ debe sentir claramente qué es **L**eadership Strategy, qué es **O**peration Sy
 y qué significa cada letra. Dilio está actualizando las presentaciones para ser
 más incisivo en estas definiciones.
 
+> **Confirmado por Sebas (2026-06-19):** en la app aparece "LOS" donde debería decir
+> **LOST** (metodología). Ticketizado como bug de copy en Sprint 16 Mejora #4
+> (`SPRINTS.md` + `PROGRESS.md` Fase 1) — corregir pronto en UI/tour/docs, sin
+> tocar schema (`los_level`, etc.) hasta unificar naming con Dilio.
+
 - **Hoy:** la metodología está volcada en módulos, pero el **copy/naming** no guía
   explícitamente "estás en esta parte del sistema LOST".
 - **Propuesta:** alinear naming, copy y, posiblemente, una vista de "mapa del
@@ -194,8 +201,8 @@ Dilio: cada test DISC debe ser **pagado**. El sistema de **créditos** debe esta
 ## Resumen ejecutable (qué se puede arrancar ya, sin esperar a Dilio)
 
 1. **A1** — Recordatorio de "armá el próximo ciclo" (reusa cron + notificaciones).
-2. **A3.1** — Checklist de hábitos del Pre-game (sin las meditaciones) + pasada
-   mobile-first.
+2. ✅ **A3.1** — Checklist de hábitos del Pre-game (sin las meditaciones) + pasada
+   mobile-first. **Hecho 2026-06-19.**
 3. **B1** — Auditoría de permisos: colaborador no ve el perfil de rango del equipo.
 4. **E1** — Andamiaje de créditos + Stripe (la parte técnica; los precios después).
 5. **B3+B4** — Arrancar el rediseño del motor DISC para las 3 gráficas (feature

@@ -3,7 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 /**
  * Middleware de autenticación.
- * - Rutas públicas: /login, /register — accesibles sin sesión.
+ * - Rutas públicas: /login, /accept-invite, /disc/ — accesibles sin sesión.
+ * - Registro público CERRADO: /register NO es pública → un usuario sin sesión que
+ *   la visite se redirige a /login. El alta es solo por invitación (/accept-invite).
  * - Rutas protegidas: todo lo demás → redirige a /login si no hay sesión.
  * - Si hay sesión y el usuario va a /login o /register → redirige a /dashboard.
  */
@@ -36,14 +38,18 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Rutas públicas
+  // Rutas públicas. /api/* se autentican solas (el cron valida CRON_SECRET en el
+  // handler), así que NO deben pasar por el redirect de sesión: sin este carve-out,
+  // el middleware 307-redirige /api/cron/daily a /login en producción (Edge) y el
+  // cron programado de Vercel nunca llega a ejecutarse.
   const isPublicRoute =
     pathname.startsWith("/login") ||
-    pathname.startsWith("/register") ||
+    pathname.startsWith("/auth/confirm") ||
     pathname.startsWith("/accept-invite") ||
     pathname.startsWith("/disc/") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/ingest") ||
     pathname === "/favicon.ico";
 
   // Si no tiene sesión y está en ruta protegida → /login
@@ -68,6 +74,6 @@ export const config = {
     /*
      * Aplica a todas las rutas EXCEPTO archivos estáticos y API de Supabase
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
   ],
 };

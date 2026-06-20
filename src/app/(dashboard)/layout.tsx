@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/layout/sidebar";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { TourProvider } from "@/components/layout/tour-provider";
+import { PostHogIdentify } from "@/components/analytics/posthog-identify";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
@@ -60,6 +61,7 @@ export default async function DashboardLayout({
     arquitecto: "Arquitecto",
     colaborador: "Colaborador",
     observador: "Observador",
+    coach: "Coach",
   };
 
   return (
@@ -91,6 +93,13 @@ export default async function DashboardLayout({
         userId={user.id}
         role={profile?.role ?? null}
         tourCompleted={tourCompleted}
+      />
+
+      {/* Analítica: identifica al usuario en PostHog (sin PII) */}
+      <PostHogIdentify
+        userId={user.id}
+        role={profile?.role ?? null}
+        companyId={profile?.company_id ?? null}
       />
     </div>
   );

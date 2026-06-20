@@ -6,6 +6,7 @@ import { WORD_GROUPS, TOTAL_GROUPS, type DiscAnswer, type DiscDim } from "@/lib/
 import { DISC_DIMENSIONS, DISC_COLORS } from "@/lib/disc";
 import { wordDefinition } from "@/lib/disc-words";
 import { submitDisc, type SubmitDiscResult } from "@/app/disc/[token]/actions";
+import { capture } from "@/lib/analytics";
 import { DiscResult } from "./disc-result";
 
 const DIM_ORDER: DiscDim[] = ["D", "I", "S", "C"];
@@ -161,6 +162,7 @@ export function DiscTest({
       );
       return;
     }
+    capture("disc_submitted", { profile_key: res.profileKey, letters: res.letters });
     setDone(res);
     setPhase("done");
   }

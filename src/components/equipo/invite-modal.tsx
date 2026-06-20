@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Send, X, Check } from "lucide-react";
-import { createBrowserClient } from "@/lib/supabase/client";
+import { sendTeamInvite } from "@/app/(dashboard)/equipo/actions";
 import { TextInput } from "./primitives";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function InviteModal({
   companyId,
-  invitedBy,
   onClose,
   onDone,
 }: {
@@ -22,6 +21,7 @@ export function InviteModal({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [manualLink, setManualLink] = useState("");
 
   // Cerrar con Escape (accesibilidad de modal).
   useEffect(() => {
@@ -41,54 +41,27 @@ export function InviteModal({
     setSending(true);
     setError("");
     try {
-      const supabase = createBrowserClient();
-
-      // Evitar invitaciones duplicadas: si ya existe una para este email en la
-      // empresa, no se inserta otra (se reenvía el link igual).
-      const { data: existingRows } = await supabase
-        .from("invitations")
-        .select("id")
-        .eq("company_id", companyId)
-        .eq("email", value)
-        .limit(1);
-      const existingId = existingRows?.[0]?.id ?? null;
-
-      let insertedId: string | null = null;
-      if (!existingId) {
-        const { data: inserted, error: invErr } = await supabase
-          .from("invitations")
-          .insert({
-            company_id: companyId,
-            invited_by: invitedBy,
-            email: value,
-            role: "colaborador",
-          })
-          .select("id")
-          .single();
-        if (invErr) throw invErr;
-        insertedId = inserted?.id ?? null;
-      }
-
-      const { error: otpErr } = await supabase.auth.signInWithOtp({
+      const result = await sendTeamInvite({
         email: value,
-        options: {
-          emailRedirectTo: `${window.location.origin}/accept-invite?company=${companyId}`,
-        },
+        companyId,
+        origin: window.location.origin,
       });
-      if (otpErr) {
-        // Rollback: si recién creamos la invitación y el email falló, borrarla
-        // para no dejar una invitación huérfana sin email enviado.
-        if (insertedId) {
-          await supabase.from("invitations").delete().eq("id", insertedId);
-        }
-        throw otpErr;
-      }
+      if (!result.ok) throw new Error(result.error);
 
+      if (result.via === "manual") {
+        setManualLink(result.link);
+      }
       setSent(true);
-      setTimeout(onDone, 1200);
+      if (result.via === "email") {
+        setTimeout(onDone, 1200);
+      }
     } catch (e) {
       console.error("Error invitando:", e);
-      setError("No se pudo enviar la invitación. Revisá el email e intentá de nuevo.");
+      setError(
+        e instanceof Error
+          ? e.message
+          : "No se pudo enviar la invitación. Revisá el email e intentá de nuevo."
+      );
     } finally {
       setSending(false);
     }
@@ -113,7 +86,7 @@ export function InviteModal({
               Invitar colaborador
             </h3>
             <p className="mt-1 text-[12.5px] text-white/50">
-              Le llega un email con un link mágico para unirse a tu equipo.
+              Le llega un email con un link para unirse a tu equipo.
             </p>
           </div>
           <button
@@ -127,9 +100,38 @@ export function InviteModal({
         </div>
 
         {sent ? (
-          <div className="flex items-center gap-2 py-2 text-[13.5px] text-[#34d399]">
-            <Check size={16} /> Invitación enviada a {email.trim()}.
-          </div>
+          manualLink ? (
+            <div className="space-y-3 py-2">
+              <p className="text-[13px] text-amber-200/90">
+                No pudimos enviar el email automáticamente. Copiá este link y
+                compartilo con {email.trim()} (WhatsApp, etc.):
+              </p>
+              <textarea
+                readOnly
+                value={manualLink}
+                rows={3}
+                className="w-full rounded-lg border border-white/10 bg-black/20 p-2 text-[11px] text-white/80"
+              />
+              <button
+                type="button"
+                onClick={() => navigator.clipboard.writeText(manualLink)}
+                className="w-full rounded-[10px] border border-white/15 px-3 py-2.5 text-[13px] font-medium text-white hover:bg-white/5"
+              >
+                Copiar link
+              </button>
+              <button
+                type="button"
+                onClick={onDone}
+                className="w-full rounded-[10px] px-3 py-2.5 text-[13px] text-white/50 hover:text-white"
+              >
+                Listo
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 py-2 text-[13.5px] text-[#34d399]">
+              <Check size={16} /> Invitación enviada a {email.trim()}.
+            </div>
+          )
         ) : (
           <>
             <TextInput

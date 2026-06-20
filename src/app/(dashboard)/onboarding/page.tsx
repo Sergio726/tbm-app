@@ -3,6 +3,8 @@
 import { useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
+import { sendTeamInvite } from "@/app/(dashboard)/equipo/actions";
 import { SCORECARD_AREAS, type ScorecardKey } from "@/types/database";
 import {
   Sparkles,
@@ -1151,20 +1153,14 @@ export default function OnboardingPage() {
 
       // 3. Enviar invitaciones
       for (const email of inviteEmails) {
-        await supabase.from("invitations").insert({
-          company_id: companyId,
-          invited_by: user.id,
+        const result = await sendTeamInvite({
           email,
-          role: "colaborador",
+          companyId,
+          origin: window.location.origin,
         });
-
-        await supabase.auth.signInWithOtp({
-          email,
-          options: {
-            // Dominio actual (automático): funciona en local, preview y prod sin tocar env vars.
-            emailRedirectTo: `${window.location.origin}/accept-invite?company=${companyId}`,
-          },
-        });
+        if (!result.ok) {
+          throw new Error(result.error);
+        }
       }
 
       // 4. Marcar onboarding completado
@@ -1173,6 +1169,7 @@ export default function OnboardingPage() {
         .update({ onboarding_completed: true, onboarding_step: 4 })
         .eq("id", user.id);
 
+      capture("onboarding_completed");
       router.push("/dashboard");
     } catch (err: unknown) {
       setError(

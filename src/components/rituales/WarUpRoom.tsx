@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
 import {
   Play,
   Square,
@@ -131,6 +132,7 @@ export default function WarUpRoom({
       }
       setWarUp(data);
       setEntries([]);
+      capture("war_up_started");
 
       // Notificar a todo el equipo que la sala está abierta (no bloqueante)
       const recipients = teamProfiles.filter((p) => p.id !== userId);
@@ -169,6 +171,7 @@ export default function WarUpRoom({
       if (err) {
         setError(err.message);
       } else {
+        capture("war_up_closed", { entries_count: entries.length });
         setWarUp((curr) => (curr ? { ...curr, status: "closed", ended_at: new Date().toISOString() } : curr));
         router.refresh();
       }

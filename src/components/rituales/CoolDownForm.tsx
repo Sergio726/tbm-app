@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { capture } from "@/lib/analytics";
 import { Check, Sparkles } from "lucide-react";
 import type { CoolDown } from "@/types/database";
 import { maybeGenerateWeeklyReport } from "@/lib/rituales/weekly-report";
@@ -69,6 +70,11 @@ export default function CoolDownForm({
         return;
       }
       setSavedAt(data?.updated_at ?? new Date().toISOString());
+      capture("cool_down_saved", {
+        is_friday: isFriday,
+        has_reality_check: !!reality.trim(),
+        has_next_day: !!nextDay.trim(),
+      });
 
       if (isFriday) {
         const { generated, error: reportError } = await maybeGenerateWeeklyReport(
@@ -83,6 +89,7 @@ export default function CoolDownForm({
           );
         } else if (generated) {
           setReportGenerated(true);
+          capture("weekly_report_generated");
         }
       }
 

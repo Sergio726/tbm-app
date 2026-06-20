@@ -6,7 +6,7 @@
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 
-**Última actualización:** 2026-06-16 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** S17.D (bienvenida cinemática JARVIS). Lo que queda es configuración/operación (ver "Pendientes para beta").
+**Última actualización:** 2026-06-19 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** A3.1 — checklist de hábitos del Pre-game (Fase 1, quick-win de Dilio). Lo que queda es configuración/operación (ver "Pendientes para beta").
 
 > **Novedades 2026-06-16:**
 > - **Pasada mobile-first completa** (no era un sprint): la app pasó de desktop-only a usable en celular — sidebar→drawer con hamburguesa, login responsive, inputs 16px (fin del zoom de iOS), wrappers de página con `clamp()`, HeroStrip 2×2 y tour móvil propio. Desktop quedó idéntico.
@@ -24,7 +24,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 |---|---|---|---|
 | **S0** | Setup & Auth | ✅ | App en Vercel · auth + 2 tipos de usuario (Alumno/Independiente). |
 | **S1** | Onboarding + Dashboard | ✅ | Diagnóstico + Naming v1.1. El pendiente "Dashboard con datos reales" se cerró en S12. |
-| **S2** | Rituales | ✅ | Pre-game · Los 5 Grandes · War Up Realtime · Cool Down + Reporte Semanal automático · Parking Lot · Config. |
+| **S2** | Rituales | ✅ | Pre-game (+ **checklist de hábitos** A3.1: catálogo curado por categorías + hábito propio, marcado de un toque con anillo de progreso, `user_habits`/`habit_logs`) · Los 5 Grandes · War Up Realtime · Cool Down + Reporte Semanal automático · Parking Lot · Config. |
 | **S3** | Mi Equipo (DISC + LOS + Matriz) | ✅ | DISC + LOS + Matriz Autoridad + Cruces Peligrosos · rediseño RPG gamificado. |
 | **S4** | Delegación | ✅ | Wizard Pase de Estafeta (5 puntos) · Kanban · Vista colaborador · Escudo Anti-Boomerang. |
 | **S5** | Feedback S.E.C. | ✅ | Templates S/E/C por perfil DISC · Sesiones Escape · 3 Streaks. |
@@ -73,21 +73,54 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 
 ### Fase 0 — Tapar huecos (días, no semanas)
 *No depende de nada; se hace en la app actual.*
-- **Cerrar el registro público** — hoy cualquiera entra a `/register` y se hace
-  arquitecto gratis. Fix chico: quitar el link del login + redirigir `/register` a
-  `/login` (alta solo por invitación). **No** necesita el monorepo. *Seguridad ALTA.*
-- **Activar el cron de emails** (código ya deployado) — en Vercel agregar `CRON_SECRET`,
-  `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`/`RESEND_FROM`. Habilita digest matinal
-  + alerta 72h + `task_overdue` (S4 E7). Corre 11:00 UTC.
+- ✅ **Cerrar el registro público** (2026-06-17) — `/register` cerrado en 3 capas:
+  link "Crear cuenta" quitado del login (`login-form.tsx`), `/register/page.tsx`
+  redirige incondicionalmente a `/login`, y `/register` sacada de las rutas públicas
+  del `middleware.ts`. Alta solo por invitación (`/accept-invite`, intacto).
+  `register-form.tsx` se conserva para reuso del admin (Fase 2 / A1·adm). *Seguridad ALTA.*
+- ✅ **Activar el cron de emails** (2026-06-17) — env vars seteadas en Vercel Production
+  + **fix de middleware** (`90766b4`): el middleware 307-redirigía `/api/cron/daily` a
+  `/login` en el Edge de Vercel (no traía sesión) → el job nunca corría. Se excluyó
+  `/api/` del redirect de sesión (se autentica con `CRON_SECRET`). Verificado en prod:
+  `GET /api/cron/daily` con bearer → `200 {"ok":true,...}`; sin bearer → `401`. Habilita
+  digest matinal + alerta 72h + `task_overdue` (S4 E7), corre 11:00 UTC. **Modo test:**
+  `RESEND_FROM = onboarding@resend.dev` solo entrega al mail dueño de la cuenta Resend →
+  verificar dominio propio antes de la beta para que lleguen a los líderes.
 
 ### Fase 1 — Lanzar la beta (validar el método)
 *Validar antes de construir el cobro; instrumentar analytics acá da datos para la Fase 4.*
-- **Crear cuenta de Dilio + asignar coach** — `coach_assignments` existe pero vacía;
-  necesita la cuenta de Dilio + el insert.
-- **S10 — Onboarding de 3–5 pilotos** (mentored, gratis → sin billing aún).
-- **Instrumentar PostHog + Sentry** — uso/tiempo/funnels + errores en prod.
+- ✅ **Cuenta de Dilio + asignar coach** (2026-06-18) — cuenta de coach dedicada
+  `dilio@stlabs.ar` (`role=coach`, sin empresa) asignada a "The Business Multiplier" vía
+  `coach_assignments`. Code (`b48a980`): un coach sin empresa se rutea a `/super-coach` en
+  vez de caer en `/onboarding`/dashboard vacío; `ROLE_LABEL.coach`. También se creó la
+  cuenta de arquitecto DC Donado (`tbm@stlabs.ar` → The Business Multiplier). **Falta:**
+  sumar pilotos como nuevas asignaciones.
+- 📊 **Tablero de sprints publicado** (fuera de scope de fases) — `_local/sprints-dashboard.html`
+  (master privado) copiado a `public/roadmap-tbm-<token>.html`, servido con URL oculta +
+  `noindex` + badge "en vivo" (reloj local). Middleware excluye `.html` del redirect de auth.
+- **S10 — Onboarding de 3–5 pilotos** (mentored, gratis → sin billing aún). *(Demo:
+  `tbm@stlabs.ar` / "The Business Multiplier" NO cuenta como piloto; pilotos reales se
+  crean al arrancar la beta. Con coach + arquitecto + 1 colaborador alcanza para validar.)*
+- 🟡 **Instrumentar PostHog + Sentry** — **código HECHO y deployado** (`984c2b8`), inerte
+  sin keys (gateado por env, build verificado). Provider + pageviews + identify (sin PII) +
+  10 eventos del funnel + Sentry (instrumentation + global-error). **PENDIENTE: activar
+  (crear cuentas + env vars en Vercel + redeploy).** Pasos guardados abajo en
+  [**"Pendiente: activar PostHog + Sentry"**](#pendiente-activar-posthog--sentry).
 - **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
-  (reusa cron + notificaciones); A3.1 checklist de hábitos del Pre-game.
+  (reusa cron + notificaciones); ✅ **A3.1 checklist de hábitos del Pre-game** (2026-06-19):
+  catálogo curado por categorías + hábito propio, marcado de un toque (optimista) con anillo
+  de progreso + micro-celebración, mobile-first; tablas `user_habits`/`habit_logs` (RLS por
+  usuario). Las **meditaciones** del Pre-game siguen ⛔ bloqueadas por Dilio (365 meditaciones).
+- 📧 **Email server disponible** *(Sebas, 2026-06-19)* — desbloquea el dominio propio para
+  los emails del cron (hoy en modo test `onboarding@resend.dev`). **PENDIENTE: definir
+  Camino A (verificar dominio en Resend → cambiar `RESEND_FROM`, sin código) vs Camino B
+  (reescribir `email.ts` a SMTP propio con nodemailer).** Falta confirmar dominio/proveedor.
+- 🐛 **S16 Mejora #4 — Naming LOS → LOST** *(confirmado por Sebas 2026-06-19)* —
+  la metodología es **LOST** (con T), no "LOS". Bug de copy en UI/tour/docs que
+  confunde el marco completo con los niveles de autonomía N1–N5. **Corregir pronto:**
+  barrido de textos visibles al usuario; **no** renombrar `los_level` / tablas SQL
+  hasta definir naming canónico con Dilio. Detalle: [`docs/SPRINTS.md`](docs/SPRINTS.md)
+  → Sprint 16, Mejora #4.
 
 ### Fase 2 — Monetizar (panel god-mode + créditos)
 *Recién acá el cobro. Decidido: monorepo, misma DB Supabase, 1 crédito = 1 DISC.*
@@ -108,7 +141,9 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   grande, sesión dedicada. *Bloqueado por Dilio (material modelo).*
 - **A3.2** — Meditaciones del Pre-game (365). *Bloqueado por Dilio.*
 - **B2** — Recomendaciones IA personalizadas DISC. *Bloqueado por Dilio (docs maestros).*
-- **C1** — Claridad conceptual / naming LOST. *Bloqueado por Dilio (presentaciones).*
+- **C1** — Claridad conceptual / naming LOST. *Mapa visual del sistema bloqueado por
+  Dilio (presentaciones).* El barrido de copy **LOS → LOST** en UI ya está ticketizado
+  como S16 Mejora #4 (quick-win, sin bloqueo).
 
 ### Fase 4 — Escala y venta (startup vendible)
 *Lo que un comprador/inversor revisa en due diligence.*
@@ -116,6 +151,33 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   país (con datos de PostHog de la Fase 1).
 - **A6** — Enterprise readiness: export/borrado GDPR, planes/feature flags, roles
   internos del admin, camino SOC2 / SSO-SAML, leaked-password (requiere Supabase Pro).
+
+---
+
+## Pendiente: activar PostHog + Sentry
+
+> Código ya implementado y deployado (`984c2b8`), **inerte sin keys**. Esto es solo la
+> activación operativa: crear las cuentas y cargar env vars en Vercel + redeploy.
+> Las vars están documentadas en `.env.local.example`.
+
+**PostHog (analítica):**
+1. Cuenta free en posthog.com → elegir región (US/EU).
+2. Project Settings → **Project API Key** (`phc_...`).
+3. Host: US `https://us.i.posthog.com` / EU `https://eu.i.posthog.com`.
+4. Vercel (Production): `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`.
+5. **Redeploy** (las `NEXT_PUBLIC_*` se inyectan en build).
+6. Verificar: app → PostHog → Live events (`$pageview` + eventos; persona con role/company_id).
+   *Tip: poner la key solo en Vercel (prod), no en `.env.local`, para no ensuciar con datos de dev.*
+
+**Sentry (errores):**
+1. Cuenta free en sentry.io → nuevo proyecto **Next.js** → copiar **DSN**.
+2. Anotar **org slug** + **project slug**; (opcional) **Auth token** (scope `project:releases`) para source maps.
+3. Vercel (Production): `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`.
+4. **Redeploy.** Los SDK solo reportan en `NODE_ENV=production` → verificar en prod (forzar un error → Sentry Issues).
+
+**Email server / dominio propio (cron):** ver bullet 📧 en Fase 1. Camino A (verificar
+dominio en Resend → `RESEND_FROM`, sin código) vs Camino B (SMTP propio, reescribir
+`src/lib/email.ts`). Falta que Sebas confirme dominio + proveedor.
 
 ---
 
@@ -171,6 +233,7 @@ Orden de aplicación en Supabase (ver [`supabase/README.md`](supabase/README.md)
 | 14 | `migration_sprint14_tour.sql` | S11 — tour_completed en profiles · ✅ aplicada (2026-06-16) |
 | 15 | `migration_sprint15_super_coach.sql` | S9 — coach_assignments + coaching_notes + RLS coach · ✅ aplicada (2026-06-16) |
 | 16 | `migration_sprint17_multiplicador.sql` | S17 — multiplicador_diagnostics (M8 ROI de Talento) · ✅ aplicada (2026-06-16) |
+| 17 | `migration_sprint18_pregame_habits.sql` | A3.1 — user_habits + habit_logs (checklist de hábitos del Pre-game) · ✅ aplicada (2026-06-19) |
 
 > ⚠️ **Numeración no coincide con sprint del plan** — los archivos se numeraron por orden de creación. Cruzá con esta tabla para saber qué cubre cada uno.
 

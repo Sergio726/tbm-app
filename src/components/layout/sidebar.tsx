@@ -22,6 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { resetAnalytics } from "@/lib/analytics";
 import { useRestartTour } from "@/hooks/use-restart-tour";
 
 // ── Módulos TBM ──────────────────────────────────────────────
@@ -102,6 +103,7 @@ export function Sidebar({
     if (signingOut) return;
     setSigningOut(true);
     try {
+      resetAnalytics();
       const supabase = createBrowserClient();
       await supabase.auth.signOut();
       router.push("/login");

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>TBM — Tablero de Sprints (privado)</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --panel: #111827;
+    --panel-2: #161f33;
+    --border: rgba(255,255,255,0.08);
+    --text: rgba(255,255,255,0.92);
+    --muted: rgba(255,255,255,0.55);
+    --muted-2: rgba(255,255,255,0.40);
+    --blue: #5b8aff;
+    --blue-d: #2c5fe6;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --gray: #6b7280;
+    --purple: #a78bfa;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: radial-gradient(1200px 600px at 50% -10%, #16203a 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55;
+    min-height: 100vh;
+    padding: 32px clamp(16px, 4vw, 56px) 80px;
+  }
+  header.page { max-width: 1200px; margin: 0 auto 28px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand .dot {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--blue), var(--blue-d));
+    box-shadow: 0 0 24px rgba(91,138,255,0.5);
+    flex: 0 0 auto;
+  }
+  h1 { font-size: clamp(20px, 3vw, 28px); margin: 0; font-weight: 800; letter-spacing: -0.02em; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .privacy {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 14px; font-size: 12px; color: var(--muted-2);
+    background: var(--panel); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 999px;
+  }
+
+  /* Resumen */
+  .summary { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px auto 0; max-width: 1200px; }
+  .stat {
+    flex: 1 1 150px; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px;
+  }
+  .stat .n { font-size: 24px; font-weight: 800; }
+  .stat .l { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 28px auto 18px; max-width: 1200px; }
+  .tab {
+    background: var(--panel); border: 1px solid var(--border); color: var(--muted);
+    padding: 9px 16px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600;
+    transition: all .15s ease;
+  }
+  .tab:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+  .tab.active { background: linear-gradient(135deg, var(--blue), var(--blue-d)); color: #fff; border-color: transparent; }
+
+  /* Filtros de estado */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 auto 22px; max-width: 1200px; }
+  .chip {
+    font-size: 12px; padding: 5px 11px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    transition: all .15s ease; user-select: none;
+  }
+  .chip:hover { color: var(--text); }
+  .chip.active { background: rgba(255,255,255,0.08); color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+  /* Grid de cards */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; max-width: 1200px; margin: 0 auto; }
+  .card {
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 140%);
+    border: 1px solid var(--border); border-radius: 16px; padding: 18px 18px 16px;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--accent, var(--gray));
+  }
+  .card .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .card .code { font-size: 12px; font-weight: 700; color: var(--accent, var(--muted)); letter-spacing: .04em; }
+  .card h3 { font-size: 16px; margin: 2px 0 0; font-weight: 700; letter-spacing: -0.01em; }
+  .badge {
+    flex: 0 0 auto; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.done   { background: rgba(52,211,153,.14); color: var(--green); }
+  .badge.partial{ background: rgba(251,191,36,.14); color: var(--yellow); }
+  .badge.pending{ background: rgba(248,113,113,.14); color: var(--red); }
+  .badge.ops    { background: rgba(107,114,128,.18); color: #c4c9d4; }
+  .badge.next   { background: rgba(167,139,250,.16); color: var(--purple); }
+  .card .notes { font-size: 13px; color: var(--muted); margin-top: 12px; }
+  .card .meta { font-size: 11px; color: var(--muted-2); margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .card .tasklist { margin: 10px 0 0; padding: 0; list-style: none; }
+  .card .tasklist li { font-size: 12.5px; color: var(--muted); padding: 3px 0 3px 18px; position: relative; }
+  .card .tasklist li::before { content: "▸"; position: absolute; left: 2px; color: var(--accent, var(--muted-2)); }
+
+  /* Roadmap por fases */
+  .phase { max-width: 1200px; margin: 0 auto 22px; }
+  .phase-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .phase-num {
+    width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center;
+    font-weight: 800; font-size: 16px; flex: 0 0 auto; color: #fff;
+  }
+  .phase-title { font-size: 17px; font-weight: 800; margin: 0; }
+  .phase-why { font-size: 12.5px; color: var(--muted); margin: 1px 0 0; }
+
+  .note-box {
+    max-width: 1200px; margin: 0 auto 24px; background: rgba(251,191,36,.08);
+    border: 1px solid rgba(251,191,36,.25); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: #f5d98a;
+  }
+  .note-box b { color: var(--yellow); }
+
+  .hidden { display: none !important; }
+  footer { max-width: 1200px; margin: 36px auto 0; font-size: 11px; color: var(--muted-2); border-top: 1px solid var(--border); padding-top: 16px; }
+  a { color: var(--blue); }
+
+  /* Indicador "en vivo" */
+  .live {
+    display: inline-flex; align-items: center; gap: 8px; margin: 14px 0 0 10px;
+    font-size: 12px; font-weight: 700; color: var(--green); vertical-align: middle;
+    background: rgba(52,211,153,.10); border: 1px solid rgba(52,211,153,.28);
+    padding: 6px 12px; border-radius: 999px;
+  }
+  .live .ldot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: 0 0 auto;
+    box-shadow: 0 0 0 0 rgba(52,211,153,.6); animation: livepulse 1.8s infinite;
+  }
+  .live .lclock { color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .3px; }
+  @keyframes livepulse {
+    0%   { box-shadow: 0 0 0 0 rgba(52,211,153,.55); }
+    70%  { box-shadow: 0 0 0 7px rgba(52,211,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .live .ldot { animation: none; } }
+</style>
+</head>
+<body>
+
+<header class="page">
+  <div class="brand">
+    <div class="dot"></div>
+    <div>
+      <h1>The Business Multiplier — Tablero de Sprints</h1>
+      <div class="subtitle">Estado del proyecto, sprint por sprint, + roadmap por fases. Documento privado de trabajo.</div>
+    </div>
+  </div>
+  <div class="privacy">🔗 Publicado con URL oculta + noindex · compartir el link solo con el equipo.</div><span class="live"><span class="ldot"></span>En vivo<span class="lclock" id="live-clock">--:--:--</span></span>
+
+  <div class="summary" id="summary"></div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-view="entregado">✅ Entregado (S0–S17)</div>
+  <div class="tab" data-view="roadmap">🚀 Roadmap por fases (lo que viene)</div>
+</div>
+
+<!-- VISTA: ENTREGADO -->
+<section id="view-entregado">
+  <div class="note-box">
+    <b>Lectura rápida:</b> todo el <b>código</b> de S0–S17 está implementado y la <b>Fase 0 está cerrada</b>
+    (registro público cerrado + cron de emails activo en prod). En curso: <b>Fase 1</b> (lanzar la beta).
+    Mirá la pestaña "Roadmap por fases".
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid-sprints"></div>
+</section>
+
+<!-- VISTA: ROADMAP -->
+<section id="view-roadmap" class="hidden">
+  <div class="note-box">
+    <b>Idea central:</b> primero tapar huecos (Fase 0), después <b>validar con la beta</b> (Fase 1),
+    recién ahí <b>monetizar</b> con el panel god-mode + créditos (Fase 2). Lo que depende de material de Dilio
+    va junto en la Fase 3. Escala y "startup vendible" al final (Fase 4).
+  </div>
+  <div id="phases"></div>
+</section>
+
+<footer id="footer"></footer>
+
+<script>
+/* ============ DATOS ============ */
+// Estados: done | partial | pending | ops
+const ACCENT = { done:"#34d399", partial:"#fbbf24", pending:"#f87171", ops:"#6b7280", next:"#a78bfa" };
+const BADGE_TXT = { done:"✅ Completo", partial:"🟡 Parcial", pending:"❌ Pendiente", ops:"🚫 Operativo", next:"🔜 Próximo" };
+
+const SPRINTS = [
+  { code:"S0", title:"Setup & Auth", status:"done",
+    notes:"App en Vercel · auth + 2 tipos de usuario (Alumno TBM / Independiente).",
+    tasks:["Next.js + Tailwind + Supabase + Vercel","RLS por empresa","Trigger auto-profile","Login / register / logout"] },
+  { code:"S1", title:"Onboarding + Dashboard", status:"done",
+    notes:"Diagnóstico Organizacional TBM (8 áreas) + semáforos. Naming v1.1. El 'dashboard con datos reales' se cerró en S12.",
+    tasks:["Onboarding 4 pantallas","Semáforo de 8 áreas","KPIs de la semana","Invitar colaboradores"] },
+  { code:"S2", title:"Rituales", status:"done",
+    notes:"Ciclo diario completo.",
+    tasks:["Los 5 Grandes (nocturno)","Pre-game personal","War Up en vivo (Realtime)","Cool Down + Reporte Semanal auto","Parking Lot · Config Modo A/B/C"] },
+  { code:"S3", title:"Mi Equipo (DISC + LOS + Matriz)", status:"done",
+    notes:"Mapa vivo del equipo. Rediseño RPG gamificado.",
+    tasks:["Perfil DISC + Luz/Sombra","Niveles LOS N1→N5","Matriz de Autoridad","Detector de Cruces Peligrosos"] },
+  { code:"S4", title:"Delegación (Pase de Estafeta)", status:"done",
+    notes:"Delegación con validación real — sin los 5 puntos no se guarda.",
+    tasks:["Wizard 5 puntos","Escudo Anti-Boomerang","Alerta 72h","Kanban + vista colaborador"] },
+  { code:"S5", title:"Feedback S.E.C.", status:"done",
+    notes:"Feedback estructurado, guardado y medible.",
+    tasks:["Templates S/E/C por perfil DISC","Historial + balance","Sesiones de Escape (3 Streaks)"] },
+  { code:"S6", title:"Plan 90D + BOS + Activos", status:"done",
+    notes:"Planificación estratégica + Leading Indicators + repositorio de procesos.",
+    tasks:["Rocas trimestrales","Leading Indicators + semáforo","Parqueadero de Ideas (Día 91)","Filtro 70% + Disagree&Commit","Activos del Sistema","Indicador YoY + ciclo continuo"] },
+  { code:"S7", title:"Workbooks S1–S4", status:"done",
+    notes:"Primeras 4 sesiones digitalizadas que alimentan los módulos.",
+    tasks:["Engine de workbooks","Desbloqueo híbrido (7 días o avance anticipado)","S1 Diagnóstico → S4 Neurobiología"] },
+  { code:"S8", title:"Workbooks S5–S8", status:"done",
+    notes:"Programa completo digitalizado + Mi Programa.",
+    tasks:["S5 Multiplicación → S8 Plan 90D","16 ejercicios + counter_tracker","Comparativa Día 1 vs Hoy"] },
+  { code:"S9", title:"Polish + Exportación + Super Coach", status:"done",
+    notes:"App lista para beta. Incluye exportación PDF (corrige el item duplicado de 'pendientes').",
+    tasks:["Panel Super Coach (3 capas, solo lectura)","Emails cron /api/cron/daily (inerte hasta env vars)","Exportación PDF /export/{diagnostico,plan-90d,equipo,semana}"] },
+  { code:"S10", title:"Beta cerrada", status:"ops",
+    notes:"Tarea operativa, fuera de código. Se ejecuta en la Fase 1 del roadmap.",
+    tasks:["Seleccionar 3–5 pilotos (mentored)","Onboarding guiado","Feedback semanal","Modelo comercial [N4]"] },
+  { code:"S11", title:"Tour guiado", status:"done",
+    notes:"Onboarding interactivo con driver.js, flujos por rol + tour móvil propio.",
+    tasks:["tour-steps por rol","TourProvider auto-arranque","'Ver tour de nuevo'","data-tour en sidebar/semáforos"] },
+  { code:"S12", title:"Dashboard 100% funcional", status:"done",
+    notes:"Se eliminó todo el hardcoding del dashboard.",
+    tasks:["Re-evaluación de diagnóstico","Tendencia histórica real","Rituales de hoy con estado real","Hero Strip con datos reales"] },
+  { code:"S13", title:"Hero Strip interactivo", status:"done",
+    notes:"Las 4 tiles del dashboard con interacción.",
+    tasks:["Tiles clickeables + tooltips","Racha 7 días + mejor racha","Multiplicador proxy (fase A)","Panel de energía por miembro"] },
+  { code:"S14", title:"Búsqueda ⌘K + Notificaciones", status:"done",
+    notes:"Navegación rápida + campana funcional.",
+    tasks:["Command Palette (⌘K)","Tabla notifications + badge + panel","Eventos: task_assigned/blocked/done, war_up_started","Pendiente menor: task_overdue (cron)"] },
+  { code:"S15", title:"Cierre Migración Supabase", status:"done",
+    notes:"Proyecto nuevo en prod (fozhnfxehbbgqaerprgf) + SMTP propio.",
+    tasks:["Proyecto nuevo + recovery tooling","SMTP propio","Prueba real de colaborador"] },
+  { code:"S16", title:"Mejoras y Correcciones (Mi Equipo)", status:"done",
+    notes:"19 bugs resueltos del módulo Mi Equipo.",
+    tasks:["4 ALTA","9 MEDIA","6 BAJA"] },
+  { code:"S17", title:"Multiplicador (M8) + JARVIS + Re-tour", status:"done",
+    notes:"Última pieza cerrada del código.",
+    tasks:["17.C Multiplicador real (ROI de Talento)","17.A Saludo JARVIS en login","17.B Re-tour desde ⌘K","17.D Bienvenida cinemática JARVIS","⏳ diferido: retos interactivos del Multiplicador"] },
+];
+
+const PHASES = [
+  { num:"0", color:"#f87171", title:"Fase 0 — Tapar huecos (días, no semanas)",
+    why:"Seguridad/negocio ya. No depende de nada, se hace en la app actual.",
+    items:[
+      { code:"SEG-1", title:"Cerrar el registro público", status:"done",
+        notes:"✅ Cerrado en 3 capas: link 'Crear cuenta' fuera del login, /register redirige a /login, y /register fuera de las rutas públicas del middleware. Alta solo por invitación (/accept-invite). El form se conserva para reuso del admin (Fase 2).",
+        meta:["Hecho","Seguridad ALTA"] },
+      { code:"OPS-1", title:"Activar el cron de emails", status:"done",
+        notes:"✅ Env vars seteadas en Vercel + fix de middleware (el Edge 307-redirigía /api/cron a /login → el job nunca corría). Verificado en prod: 200 {ok:true}. Habilita digest matinal + alerta 72h + task_overdue. Nota: Resend en modo test → falta dominio propio para que los emails lleguen a terceros.",
+        meta:["Hecho","Verificado en prod"] },
+    ] },
+  { num:"1", color:"#5b8aff", title:"Fase 1 — Lanzar la beta (validar el método)",
+    why:"Validás que sirve antes de construir el cobro. Instrumentar analytics acá da datos para las métricas futuras.",
+    items:[
+      { code:"OPS-2", title:"Crear cuenta de Dilio + asignar coach", status:"partial",
+        notes:"🟡 EN CURSO. Cuenta de coach dedicada (role=coach) asignada a 'The Business Multiplier' vía coach_assignments + ruteo de coach al panel /super-coach. La cuenta de arquitecto DC Donado (tbm@stlabs.ar) ya existe. Faltan los pilotos para sumar más asignaciones.",
+        meta:["En curso"] },
+      { code:"S10", title:"Onboarding de 3–5 pilotos", status:"next",
+        notes:"Alumnos mentored de Dilio. Onboarding guiado + feedback semanal. (Son gratis → no necesitan billing todavía.)",
+        meta:["Operativo"] },
+      { code:"OBS-1", title:"Instrumentar PostHog + Sentry", status:"next",
+        notes:"PostHog = uso/tiempo/funnels (alimenta la Fase 4). Sentry = errores en prod. Adelantado a propósito para tener histórico.",
+        meta:["~1 sprint"] },
+      { code:"A1", title:"Quick-wins de Dilio sin bloqueo", status:"next",
+        notes:"A1 recordatorio de 'armá el próximo ciclo' (reusa cron + notificaciones). A3.1 checklist de hábitos del Pre-game.",
+        meta:["chico/medio"] },
+    ] },
+  { num:"2", color:"#a78bfa", title:"Fase 2 — Monetizar (panel god-mode + créditos)",
+    why:"Recién acá el cobro, después de validar demanda. 1 crédito = 1 DISC.",
+    items:[
+      { code:"A0", title:"Reestructurar a monorepo", status:"next",
+        notes:"apps/web + apps/admin + packages/shared. 2 proyectos Vercel, subdominio admin. Base técnica del god-mode.",
+        meta:["Base técnica"] },
+      { code:"A1·adm", title:"Fundación admin", status:"next",
+        notes:"Tabla platform_admins + is_platform_admin(); login admin con MFA; formaliza el cierre de registro; listado de empresas.",
+        meta:["Seguridad"] },
+      { code:"A2", title:"Gestión de usuarios/empresas", status:"next",
+        notes:"Crear líderes + invitaciones desde el admin; editar datos sensibles; CRUD usuarios; alta de coaches; audit log base.",
+        meta:["Operar sin SQL"] },
+      { code:"A3", title:"Motor de créditos + gating DISC", status:"next",
+        notes:"Saldo + ledger append-only; el DISC consume crédito; carga manual/descuentos desde admin; UX de saldo bajo.",
+        meta:["Negocio enforced"] },
+      { code:"A4", title:"Stripe", status:"next",
+        notes:"El líder compra créditos desde su panel; webhooks → ledger; cupones; Stripe Tax.",
+        meta:["Cobro automático"] },
+    ] },
+  { num:"3", color:"#fbbf24", title:"Fase 3 — Producto profundo (con insumos de Dilio)",
+    why:"Agrupa lo que depende de material que tiene que pasar Dilio. Arranca cuando llegue.",
+    items:[
+      { code:"B3+B4", title:"DISC: las 3 gráficas clásicas", status:"next",
+        notes:"Perfil natural / adaptado / combinado. Feature grande — conviene una sesión dedicada. Necesita el material modelo de Dilio para validar el motor.",
+        meta:["Feature grande","Bloqueado por Dilio"] },
+      { code:"A3.2", title:"Meditaciones del Pre-game", status:"next",
+        notes:"Las 365 meditaciones de autoliderazgo.",
+        meta:["Bloqueado por Dilio"] },
+      { code:"B2", title:"Recomendaciones IA personalizadas (DISC)", status:"next",
+        notes:"Requiere los documentos maestros DISC.",
+        meta:["Bloqueado por Dilio"] },
+      { code:"C1", title:"Claridad conceptual / naming LOST", status:"next",
+        notes:"Requiere las presentaciones LOST actualizadas y unificadas.",
+        meta:["Bloqueado por Dilio"] },
+    ] },
+  { num:"4", color:"#34d399", title:"Fase 4 — Escala y venta (startup vendible)",
+    why:"Lo que un comprador/inversor revisa en due diligence. Tiene sentido al final.",
+    items:[
+      { code:"A5", title:"Dashboard de métricas de la startup", status:"next",
+        notes:"Ingresos/MRR, KPIs de uso (DAU/WAU/MAU), tiempo en app, segmentación por país. Ya con datos de PostHog (Fase 1).",
+        meta:["Panel de startup"] },
+      { code:"A6", title:"Enterprise / acquisition readiness", status:"next",
+        notes:"Export + borrado GDPR, planes/feature flags, roles internos del admin, camino SOC2 / SSO-SAML, leaked-password (requiere Supabase Pro).",
+        meta:["Vendible"] },
+    ] },
+];
+
+/* ============ RENDER ============ */
+function cardHTML(s) {
+  const acc = ACCENT[s.status] || ACCENT.ops;
+  const tasks = (s.tasks||[]).map(t => `<li>${t}</li>`).join("");
+  const meta = (s.meta||[]).map(m => `<span>• ${m}</span>`).join("");
+  return `<div class="card" data-status="${s.status}" style="--accent:${acc}">
+    <div class="top">
+      <div>
+        <div class="code">${s.code}</div>
+        <h3>${s.title}</h3>
+      </div>
+      <span class="badge ${s.status}">${BADGE_TXT[s.status]}</span>
+    </div>
+    ${s.notes ? `<div class="notes">${s.notes}</div>` : ""}
+    ${tasks ? `<ul class="tasklist">${tasks}</ul>` : ""}
+    ${meta ? `<div class="meta">${meta}</div>` : ""}
+  </div>`;
+}
+
+// Resumen
+(function renderSummary(){
+  const counts = SPRINTS.reduce((a,s)=>{a[s.status]=(a[s.status]||0)+1;return a;},{});
+  const total = SPRINTS.length;
+  const html = [
+    `<div class="stat"><div class="n">${total}</div><div class="l">Sprints totales</div></div>`,
+    `<div class="stat"><div class="n" style="color:var(--green)">${counts.done||0}</div><div class="l">✅ Completos (código)</div></div>`,
+    `<div class="stat"><div class="n" style="color:var(--gray)">${counts.ops||0}</div><div class="l">🚫 Operativos (beta)</div></div>`,
+    `<div class="stat"><div class="n" style="color:var(--purple)">5</div><div class="l">🚀 Fases por delante</div></div>`,
+  ].join("");
+  document.getElementById("summary").innerHTML = html;
+})();
+
+// Filtros
+const STATUSES = [
+  { k:"all", t:"Todos" },
+  { k:"done", t:"✅ Completos" },
+  { k:"partial", t:"🟡 Parciales" },
+  { k:"pending", t:"❌ Pendientes" },
+  { k:"ops", t:"🚫 Operativos" },
+];
+(function renderFilters(){
+  document.getElementById("filters").innerHTML =
+    STATUSES.map((f,i)=>`<span class="chip ${i===0?'active':''}" data-k="${f.k}">${f.t}</span>`).join("");
+})();
+
+// Sprints
+function renderSprints(filter){
+  const list = filter==="all" ? SPRINTS : SPRINTS.filter(s=>s.status===filter);
+  document.getElementById("grid-sprints").innerHTML = list.map(cardHTML).join("") ||
+    `<div style="color:var(--muted)">No hay sprints con ese estado.</div>`;
+}
+renderSprints("all");
+
+// Fases
+(function renderPhases(){
+  document.getElementById("phases").innerHTML = PHASES.map(p => `
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num" style="background:${p.color}">${p.num}</div>
+        <div>
+          <p class="phase-title">${p.title}</p>
+          <p class="phase-why">${p.why}</p>
+        </div>
+      </div>
+      <div class="grid">${p.items.map(cardHTML).join("")}</div>
+    </div>
+  `).join("");
+})();
+
+// Footer
+document.getElementById("footer").innerHTML =
+  `Generado el ${new Date().toLocaleDateString("es-AR",{year:"numeric",month:"long",day:"numeric"})} · ` +
+  `Fuente: PROGRESS.md, docs/OBSERVACIONES_DILIO_2026-06.md, docs/GODMODE_Y_ROADMAP_STARTUP.md · ` +
+  `Tablero interno — publicado con URL oculta + noindex. No compartir el link fuera del equipo.`;
+
+// Reloj en vivo (estilo tiempo real) — hora local del que mira, tick cada segundo.
+(function liveClock(){
+  const el = document.getElementById("live-clock");
+  if (!el) return;
+  const fmt = () => new Date().toLocaleTimeString("es-AR", { hour12:false });
+  el.textContent = fmt();
+  setInterval(() => { el.textContent = fmt(); }, 1000);
+})();
+
+/* ============ INTERACCIÓN ============ */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    const v = tab.dataset.view;
+    document.getElementById("view-entregado").classList.toggle("hidden", v!=="entregado");
+    document.getElementById("view-roadmap").classList.toggle("hidden", v!=="roadmap");
+  });
+});
+document.getElementById("filters").addEventListener("click",(e)=>{
+  const chip = e.target.closest(".chip"); if(!chip) return;
+  document.querySelectorAll("#filters .chip").forEach(c=>c.classList.remove("active"));
+  chip.classList.add("active");
+  renderSprints(chip.dataset.k);
+});
+</script>
+</body>
+</html>
