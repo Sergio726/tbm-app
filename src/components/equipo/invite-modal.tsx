@@ -22,6 +22,7 @@ export function InviteModal({
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
   const [manualLink, setManualLink] = useState("");
+  const [manualReason, setManualReason] = useState("");
 
   // Cerrar con Escape (accesibilidad de modal).
   useEffect(() => {
@@ -50,6 +51,7 @@ export function InviteModal({
 
       if (result.via === "manual") {
         setManualLink(result.link);
+        setManualReason(result.reason ?? "");
       }
       setSent(true);
       if (result.via === "email") {
@@ -106,6 +108,11 @@ export function InviteModal({
                 No pudimos enviar el email automáticamente. Copiá este link y
                 compartilo con {email.trim()} (WhatsApp, etc.):
               </p>
+              {manualReason && (
+                <p className="text-[11px] text-red-300/90 leading-relaxed">
+                  Motivo: {manualReason}
+                </p>
+              )}
               <textarea
                 readOnly
                 value={manualLink}

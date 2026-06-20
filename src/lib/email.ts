@@ -9,6 +9,11 @@ const API_URL = "https://api.resend.com/emails";
 
 export type SendEmailResult = { ok: true; id?: string } | { ok: false; error: string };
 
+/** Hay API key y remitente configurados (puede ser modo prueba @resend.dev). */
+export function hasResendConfigured(): boolean {
+  return !!(process.env.RESEND_API_KEY && process.env.RESEND_FROM);
+}
+
 /** Resend en modo prueba (@resend.dev) solo entrega al dueño de la cuenta. */
 export function canSendExternalEmail(): boolean {
   const apiKey = process.env.RESEND_API_KEY;
@@ -54,7 +59,14 @@ export async function sendEmail(input: {
     if (!res.ok) {
       const detail = await res.text().catch(() => "");
       console.error("email: Resend respondió", res.status, detail);
-      // Mensajes típicos: dominio sin verificar, destinatario no permitido en modo test.
+      try {
+        const parsed = JSON.parse(detail) as { message?: string };
+        if (parsed.message) {
+          return { ok: false, error: parsed.message };
+        }
+      } catch {
+        // respuesta no JSON
+      }
       return { ok: false, error: "No se pudo enviar el email. Revisá la configuración de Resend." };
     }
 
