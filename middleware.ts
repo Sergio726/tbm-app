@@ -44,6 +44,7 @@ export async function middleware(request: NextRequest) {
   // cron programado de Vercel nunca llega a ejecutarse.
   const isPublicRoute =
     pathname.startsWith("/login") ||
+    pathname.startsWith("/auth/confirm") ||
     pathname.startsWith("/accept-invite") ||
     pathname.startsWith("/disc/") ||
     pathname.startsWith("/_next") ||

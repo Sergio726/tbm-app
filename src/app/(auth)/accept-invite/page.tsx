@@ -25,11 +25,18 @@ function AcceptInviteContent() {
   const supabase = createBrowserClient();
 
   const companyId = searchParams.get("company");
+  const linkError = searchParams.get("error");
 
   const [fullName, setFullName] = useState("");
   const [cargo, setCargo] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [hasSession, setHasSession] = useState(false);
+  const [error, setError] = useState(
+    linkError === "invalid_link"
+      ? "El link de invitación expiró o ya fue usado. Pedile al Arquitecto que te reinvite."
+      : ""
+  );
   const [companyName, setCompanyName] = useState("");
   const [signOutNeeded, setSignOutNeeded] = useState(false);
 
@@ -50,6 +57,25 @@ function AcceptInviteContent() {
         });
     }
   }, [companyId, supabase]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkSession() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!cancelled) {
+        setHasSession(!!user);
+        setCheckingSession(false);
+      }
+    }
+
+    checkSession();
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +98,11 @@ function AcceptInviteContent() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) throw new Error("No hay sesión activa. Revisá el link del email.");
+      if (!user) {
+        throw new Error(
+          "No hay sesión activa. Abrí el link del email en este mismo dispositivo y navegador."
+        );
+      }
 
       // 1. No degradar a un Arquitecto / dueño de empresa que abrió el link
       //    en su propia sesión (caso clásico: el invitante clickea el link).
@@ -140,6 +170,14 @@ function AcceptInviteContent() {
     }
   };
 
+  if (checkingSession) {
+    return (
+      <div className="text-center text-tbm-text-secondary p-8">
+        Verificando tu invitación…
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -155,6 +193,13 @@ function AcceptInviteContent() {
           </p>
         )}
       </div>
+
+      {!hasSession && !error && (
+        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm">
+          Para continuar, abrí el link que te llegó por email. Si ya lo abriste
+          y ves este mensaje, pedile al Arquitecto que te reenvíe la invitación.
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -202,8 +247,8 @@ function AcceptInviteContent() {
 
         <button
           type="submit"
-          disabled={loading || signOutNeeded}
-          className="tbm-btn-primary w-full"
+          disabled={loading || signOutNeeded || !hasSession}
+          className="tbm-btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
