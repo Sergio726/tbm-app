@@ -109,11 +109,10 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
     cargadas en Vercel (Production+Preview); el deploy de prod posterior ya las horneó →
     capturando `$pageview` + eventos del funnel. Falta solo verificar Live events en el dashboard.
   - ✅ **Sentry ACTIVO (2026-06-20)** — org `tbm-0c`, proyecto `javascript-nextjs` (US).
-    `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_ORG` + `SENTRY_PROJECT` + `SENTRY_AUTH_TOKEN` cargadas en
-    Vercel (Production) y horneadas vía redeploy (`tbm-mpsugkx0f`). Reporta solo en
-    `NODE_ENV=production`. **Verificar:** forzar un error en prod → debe aparecer en Sentry →
-    Issues. *(Si los stacks salen minificados, revisar el `SENTRY_AUTH_TOKEN` — el provisto es
-    corto/atípico; solo afecta la subida de source maps, no el reporte de errores.)*
+    `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_ORG` + `SENTRY_PROJECT` + `SENTRY_AUTH_TOKEN` (`sntrys_…`
+    válido, scope releases) en Vercel (Production), horneadas vía redeploy (`tbm-ghtd38yb1`) →
+    sube source maps en el build. Reporta solo en `NODE_ENV=production`. **Verificar:** forzar
+    un error en prod → debe aparecer en Sentry → Issues con stacktrace legible.
 - **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
   (reusa cron + notificaciones); ✅ **A3.1 checklist de hábitos del Pre-game** (2026-06-19):
   catálogo curado por categorías + hábito propio, marcado de un toque (optimista) con anillo
