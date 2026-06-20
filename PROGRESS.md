@@ -133,12 +133,12 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   los emails del cron (hoy en modo test `onboarding@resend.dev`). **PENDIENTE: definir
   Camino A (verificar dominio en Resend → cambiar `RESEND_FROM`, sin código) vs Camino B
   (reescribir `email.ts` a SMTP propio con nodemailer).** Falta confirmar dominio/proveedor.
-- 🐛 **S16 Mejora #4 — Naming LOS → LOST** *(confirmado por Sebas 2026-06-19)* —
-  la metodología es **LOST** (con T), no "LOS". Bug de copy en UI/tour/docs que
-  confunde el marco completo con los niveles de autonomía N1–N5. **Corregir pronto:**
-  barrido de textos visibles al usuario; **no** renombrar `los_level` / tablas SQL
-  hasta definir naming canónico con Dilio. Detalle: [`docs/SPRINTS.md`](docs/SPRINTS.md)
-  → Sprint 16, Mejora #4.
+- ✅ **S16 Mejora #4 — Naming LOS → LOST / ARQI** *(copy hecho 2026-06-20)* — barrido
+  D1+D2 del copy visible: "Nivel LOS"→**"Nivel de Delegación"** (Cadete→Socio, el término
+  canónico de Dilio) en UI/tour/workbooks/export, y "A.R.Q.U.I."→**"ARQI"** (4 pilares).
+  Type-check + build verdes. **Diferido** (no en este pase): renombrar identificadores/SQL
+  (`LOS_LEVELS`, `los_level`) y surfacear "LOST" como nombre del sistema (eso es **C1**, un
+  feature aparte). Detalle de divergencias: [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md) §8.
 
 ### Fase 2 — Monetizar (panel god-mode + créditos)
 *Recién acá el cobro. Decidido: monorepo, misma DB Supabase, 1 crédito = 1 DISC.*

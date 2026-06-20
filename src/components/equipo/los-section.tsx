@@ -25,7 +25,7 @@ export function LosSection({
       icon={<Gauge size={18} strokeWidth={1.9} />}
       iconColor="#5b8aff"
       accent="#5b8aff"
-      title="Nivel LOS · ruta de autonomía"
+      title="Nivel de Delegación · ruta de autonomía"
       sub="Cuánta autonomía maneja hoy (N1 ejecuta → N5 socio) y la meta a la que querés llevarlo."
       badge={
         jump > 0 ? (

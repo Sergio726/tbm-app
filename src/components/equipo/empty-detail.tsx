@@ -18,7 +18,7 @@ export function EmptyDetail() {
       <p style={{ fontSize: 14 }}>Tu equipo todavía no tiene miembros.</p>
       <p style={{ fontSize: 12.5, marginTop: 6, maxWidth: 360 }}>
         Usá &quot;Invitar colaborador&quot;. Cuando acepten, vas a poder mapear su perfil
-        DISC y nivel LOS aquí.
+        DISC y nivel de delegación aquí.
       </p>
     </div>
   );

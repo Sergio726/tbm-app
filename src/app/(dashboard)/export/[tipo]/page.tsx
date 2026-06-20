@@ -32,7 +32,7 @@ const TIPOS = {
   },
   equipo: {
     title: "Perfil del equipo",
-    subtitle: "DISC · niveles LOS · número único por rol",
+    subtitle: "DISC · niveles de delegación · número único por rol",
     back: "/equipo",
   },
   semana: {

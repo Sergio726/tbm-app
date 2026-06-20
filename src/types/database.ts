@@ -1850,7 +1850,7 @@ export const MULTIPLICADOR_TOOLS = [
   {
     emoji: "✅",
     label: "Definición de «Hecho»",
-    mecanica: "Antes de delegar: formato exacto + fecha/hora + criterios de calidad (A.R.Q.U.I.).",
+    mecanica: "Antes de delegar: formato exacto + fecha/hora + criterios de calidad (ARQI).",
     reto: "Definir el «Hecho» de la próxima delegación.",
   },
 ] as const;

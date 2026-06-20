@@ -199,7 +199,7 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
         onChange={(v) => patch(currentStep.key, v)}
       />
 
-      {/* Selector de asignado + nivel LOS (solo en paso 5) */}
+      {/* Selector de asignado + nivel de delegación (solo en paso 5) */}
       {step === 5 && (
         <AssigneeSelector
           team={team}
@@ -602,7 +602,7 @@ function AssigneeSelector({
         )}
       </div>
 
-      {/* Nivel LOS requerido */}
+      {/* Nivel de Delegación requerido */}
       <div>
         <div className="mb-3">
           <label
@@ -615,7 +615,7 @@ function AssigneeSelector({
               marginBottom: 4,
             }}
           >
-            Nivel LOS mínimo requerido
+            Nivel de delegación mínimo requerido
           </label>
           <p style={{ fontSize: 12, color: "rgba(255,255,255,0.38)" }}>
             Elegí la autonomía mínima que necesita la persona para completar esta tarea.

@@ -46,7 +46,7 @@ const ARQUITECTO_STEPS: DriveStep[] = [
     popover: {
       title: "El mapa de tu gente",
       description:
-        "Acá vive el DISC y el nivel LOS de cada colaborador. Conocer a tu equipo es la base para delegar mejor.",
+        "Acá vive el DISC y el nivel de delegación de cada colaborador. Conocer a tu equipo es la base para delegar mejor.",
       side: "right",
       align: "start",
     },

@@ -292,7 +292,7 @@ export function EquipoClient({
             className="m-0 text-[34px] font-extrabold text-white"
             style={{ letterSpacing: -0.8 }}
           >
-            Mapa DISC + LOS del equipo
+            Mapa DISC + Delegación del equipo
           </h1>
           <p className="mt-2 text-sm text-white/55">
             {team.length} {team.length === 1 ? "persona" : "personas"} · perfil de

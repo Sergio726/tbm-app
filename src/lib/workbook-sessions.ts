@@ -84,7 +84,7 @@ export const SESSIONS: SessionDef[] = [
             "Cada persona sabe exactamente qué se espera de ella",
             "Tengo procesos documentados para las actividades críticas",
             "Puedo irme de vacaciones 2 semanas sin que todo se detenga",
-            "Mis líderes tienen su nivel de autoridad (LOS) definido",
+            "Mis líderes tienen su nivel de delegación definido",
             "Hago check-ins regulares sin micro-management",
             "Mi equipo viene con soluciones, no solo con problemas",
             "Las métricas de cada área están definidas y se miden semanalmente",
@@ -339,7 +339,7 @@ export const SESSIONS: SessionDef[] = [
     number: 6,
     title: "Delegación",
     subtitle:
-      "Pasá del 'yo lo hago más rápido' al sistema que multiplica tu capacidad — la Regla del 70% y los Niveles LOS",
+      "Pasá del 'yo lo hago más rápido' al sistema que multiplica tu capacidad — la Regla del 70% y los Niveles de Delegación",
     exercises: [
       {
         key: "s6_regla_70",
@@ -360,17 +360,17 @@ export const SESSIONS: SessionDef[] = [
       },
       {
         key: "s6_niveles_los",
-        title: "Niveles LOS por colaborador · mapa de autonomía",
+        title: "Niveles de Delegación por colaborador · mapa de autonomía",
         description:
-          "Para cada persona del equipo, definí su nivel LOS actual y el meta. Los cambios alimentan el módulo Mi Equipo (M3).",
+          "Para cada persona del equipo, definí su nivel de delegación actual y el meta. Los cambios alimentan el módulo Mi Equipo (M3).",
         type: "checklist",
         integration: "profiles_state",
         data: {
           items: [
-            "Tengo identificado el nivel LOS actual de cada persona",
-            "Cada persona conoce su propio nivel LOS y la meta",
+            "Tengo identificado el nivel de delegación actual de cada persona",
+            "Cada persona conoce su propio nivel de delegación y la meta",
             "El criterio para subir de nivel está escrito y es objetivo",
-            "Reviso los niveles LOS al menos cada trimestre",
+            "Reviso los niveles de delegación al menos cada trimestre",
             "Cuando alguien sube de nivel, lo comunico al equipo",
             "Tengo planes individuales de desarrollo por persona",
           ],
@@ -434,7 +434,7 @@ export const SESSIONS: SessionDef[] = [
             "LI #2 — eficiencia operativa (ej: tareas cerradas en SLA, defectos / 100)",
             "LI #3 — salud del equipo (ej: % rituales completados, energía promedio)",
             "LI #4 — flujo financiero (ej: cuentas por cobrar < 30 días, % margen)",
-            "LI #5 — desarrollo de talento (ej: feedbacks S/E/C dados, niveles LOS subidos)",
+            "LI #5 — desarrollo de talento (ej: feedbacks S/E/C dados, niveles de delegación subidos)",
           ],
         },
       },

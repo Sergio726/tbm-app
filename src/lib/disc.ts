@@ -192,7 +192,7 @@ export function systemProfile(raw: string | null | undefined): { icon: string; n
   );
 }
 
-// ── Niveles LOS (S6 — confirmado por Dilio I5) ───────────────
+// ── Niveles de Delegación (N1–N5, S6 — confirmado por Dilio I5) ───────────────
 export type LosDef = { level: number; name: string; desc: string };
 export const LOS_LEVELS: LosDef[] = [
   { level: 1, name: "Cadete", desc: "Ejecuta exactamente lo indicado. No improvisa." },

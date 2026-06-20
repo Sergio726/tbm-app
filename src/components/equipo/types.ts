@@ -112,7 +112,7 @@ export function buildChecklist(draft: Draft): ChecklistItem[] {
     },
     {
       key: "los",
-      label: "Nivel LOS y meta",
+      label: "Nivel de Delegación y meta",
       done:
         draft.los_target != null &&
         draft.los_target >= draft.los_level &&
