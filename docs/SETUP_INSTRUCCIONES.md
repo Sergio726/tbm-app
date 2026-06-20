@@ -101,10 +101,25 @@ En Supabase Dashboard → **SQL Editor** → **New query**:
 
 En Supabase Dashboard → **Authentication → URL Configuration**:
 
-- **Site URL**: `http://localhost:3000`
+- **Site URL**: `http://localhost:3000` (prod: `https://tbm-app-seven.vercel.app`)
 - **Redirect URLs** (agregar):
+  - `http://localhost:3000/auth/confirm`
   - `http://localhost:3000/accept-invite`
   - `http://localhost:3000/dashboard`
+  - (prod) `https://tbm-app-seven.vercel.app/auth/confirm`
+  - (prod) `https://tbm-app-seven.vercel.app/accept-invite`
+
+### Plantilla Magic Link (invitaciones de colaboradores)
+
+En **Authentication → Email Templates → Magic Link**, reemplazá el cuerpo por:
+
+```html
+<h2>Te invitaron al equipo</h2>
+<p>Hacé clic para confirmar tu email y unirte:</p>
+<p><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}">Unirme al equipo</a></p>
+```
+
+Sin este cambio, el email llega pero el colaborador puede ver "No hay sesión activa" al abrir el link en el celular.
 
 ---
 
