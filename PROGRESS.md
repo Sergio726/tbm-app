@@ -6,7 +6,7 @@
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 
-**Última actualización:** 2026-06-19 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** A3.1 — checklist de hábitos del Pre-game (Fase 1, quick-win de Dilio). Lo que queda es configuración/operación (ver "Pendientes para beta").
+**Última actualización:** 2026-06-20 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** A1 — recordatorio "armá el próximo ciclo" (Fase 1, quick-win de Dilio). PostHog + Sentry activos en prod. Lo que queda es configuración/operación (ver "Pendientes para beta").
 
 > **Novedades 2026-06-16:**
 > - **Pasada mobile-first completa** (no era un sprint): la app pasó de desktop-only a usable en celular — sidebar→drawer con hamburguesa, login responsive, inputs 16px (fin del zoom de iOS), wrappers de página con `clamp()`, HeroStrip 2×2 y tour móvil propio. Desktop quedó idéntico.
@@ -113,11 +113,18 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
     válido, scope releases) en Vercel (Production), horneadas vía redeploy (`tbm-ghtd38yb1`) →
     sube source maps en el build. Reporta solo en `NODE_ENV=production`. **Verificar:** forzar
     un error en prod → debe aparecer en Sentry → Issues con stacktrace legible.
-- **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
-  (reusa cron + notificaciones); ✅ **A3.1 checklist de hábitos del Pre-game** (2026-06-19):
-  catálogo curado por categorías + hábito propio, marcado de un toque (optimista) con anillo
-  de progreso + micro-celebración, mobile-first; tablas `user_habits`/`habit_logs` (RLS por
-  usuario). Las **meditaciones** del Pre-game siguen ⛔ bloqueadas por Dilio (365 meditaciones).
+- **Quick-wins de Dilio sin bloqueo**
+  - ✅ **A1 recordatorio "armá el próximo ciclo"** (2026-06-20): bloque nuevo en el cron
+    diario (`/api/cron/daily`) que avisa al/los Arquitecto(s) cuando quedan ≤30 días del
+    ciclo 90D (ancla = `created_at` del scorecard baseline, misma fórmula que el Hero Strip),
+    notificación in-app (`type: cycle_reminder`) + email, **una vez por ciclo** (dedup 60d).
+    Sin tabla nueva. Verificado E2E local (no-dispara día 31 · dispara a 30 días · dedup ·
+    datos restaurados). *(Decisión: aviso único a 30 días, solo arquitecto; secuencia 30/15/7
+    queda como extensión futura.)*
+  - ✅ **A3.1 checklist de hábitos del Pre-game** (2026-06-19):
+    catálogo curado por categorías + hábito propio, marcado de un toque (optimista) con anillo
+    de progreso + micro-celebración, mobile-first; tablas `user_habits`/`habit_logs` (RLS por
+    usuario). Las **meditaciones** del Pre-game siguen ⛔ bloqueadas por Dilio (365 meditaciones).
 - 📧 **Email server disponible** *(Sebas, 2026-06-19)* — desbloquea el dominio propio para
   los emails del cron (hoy en modo test `onboarding@resend.dev`). **PENDIENTE: definir
   Camino A (verificar dominio en Resend → cambiar `RESEND_FROM`, sin código) vs Camino B

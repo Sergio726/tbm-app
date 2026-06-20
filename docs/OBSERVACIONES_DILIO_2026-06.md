@@ -26,17 +26,19 @@ este round de feedback; cuando una pieza se cierra, marcarla acá y reflejarla e
 
 ## A. Metodología, rituales y experiencia de usuario
 
-### A1 · Recordatorio anticipado de "armá el próximo ciclo" — ❌
+### A1 · Recordatorio anticipado de "armá el próximo ciclo" — ✅ (2026-06-20)
 Dilio: el sistema debe **recordar 30 días antes** que hay que armar el siguiente
 sprint, como parte del ecosistema de trabajo.
 
-- **Hoy:** existe el ciclo continuo 90D (S6) y el cron diario de emails (S9), pero
-  ningún recordatorio anticipado de planificación.
-- **Propuesta:** evento programado a `fecha_fin_ciclo − 30 días` que dispare
-  notificación in-app (tabla `notifications`, S14) + email (cron `daily`, S9).
-  Reusa infra existente; es de bajo costo.
-- **Definir con Dilio:** ¿30 días fijos o configurable? ¿un solo aviso o secuencia
-  (30/15/7 días)?
+- **Hecho:** bloque nuevo en el cron diario (`src/app/api/cron/daily/route.ts`) que,
+  por empresa, calcula el día del ciclo 90D desde el `created_at` del scorecard baseline
+  (misma fórmula que el Hero Strip del dashboard) y, cuando quedan **≤30 días**, avisa
+  al/los **Arquitecto(s)**: notificación in-app (`type: cycle_reminder`, ícono 🗓️) +
+  email, con CTA a `/plan-90d`. **Una sola vez por ciclo** (dedup 60 días). No requirió
+  tabla nueva. Verificado E2E (no-dispara mid-ciclo · dispara a 30 días · dedup).
+- **Decisión tomada (Sebas, 2026-06-20):** 30 días **fijo**, **un solo aviso**, solo al
+  Arquitecto. La **secuencia 30/15/7** y el umbral configurable quedan como extensión
+  futura si Dilio lo pide.
 
 ### A2 · "Que fluya" / practicidad — 🟡 (principio, no feature)
 Principio de diseño transversal, no una tarea cerrable. Se aplica en cada mejora
@@ -200,7 +202,8 @@ Dilio: cada test DISC debe ser **pagado**. El sistema de **créditos** debe esta
 
 ## Resumen ejecutable (qué se puede arrancar ya, sin esperar a Dilio)
 
-1. **A1** — Recordatorio de "armá el próximo ciclo" (reusa cron + notificaciones).
+1. ✅ **A1** — Recordatorio de "armá el próximo ciclo" (reusa cron + notificaciones).
+   **Hecho 2026-06-20.**
 2. ✅ **A3.1** — Checklist de hábitos del Pre-game (sin las meditaciones) + pasada
    mobile-first. **Hecho 2026-06-19.**
 3. **B1** — Auditoría de permisos: colaborador no ve el perfil de rango del equipo.

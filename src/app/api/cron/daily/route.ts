@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
   const now = new Date();
   const cutoff72h = new Date(now.getTime() - 72 * 3_600_000).toISOString();
-  const stats = { companies: 0, overdueNotifs: 0, emails: 0 };
+  const stats = { companies: 0, overdueNotifs: 0, emails: 0, cycleReminders: 0 };
 
   const { data: companies } = await supabase
     .from("companies")
@@ -196,6 +196,84 @@ export async function GET(request: Request) {
       // Dedup futura: nada que guardar — el digest se arma on the fly,
       // y el cron corre una sola vez al día.
       void nameById;
+    }
+
+    // ── C. "Armá el próximo ciclo" — 30 días antes del fin del ciclo 90D ──
+    // El ciclo es a nivel empresa, anclado al created_at del scorecard baseline
+    // (misma fórmula que el Hero Strip del dashboard). Avisa una vez por ciclo
+    // cuando quedan ≤30 días. Solo al/los Arquitecto(s).
+    if (arquitectos.length > 0) {
+      const { data: scs } = await supabase
+        .from("scorecards")
+        .select("created_at, is_baseline")
+        .eq("company_id", company.id)
+        .order("created_at", { ascending: true });
+      const baseline =
+        (scs ?? []).find((s) => s.is_baseline) ?? (scs ?? [])[0] ?? null;
+
+      if (baseline?.created_at) {
+        const baselineDate = baseline.created_at.split("T")[0]; // YYYY-MM-DD
+        const daysSinceStart = Math.floor(
+          (Date.parse(`${todayLocal}T00:00:00Z`) -
+            Date.parse(`${baselineDate}T00:00:00Z`)) /
+            86_400_000
+        );
+
+        if (daysSinceStart >= 0) {
+          const dayInProgram = daysSinceStart + 1;
+          const dayInCycle = ((dayInProgram - 1) % 90) + 1;
+          const daysRemaining = 90 - dayInCycle;
+
+          if (daysRemaining <= 30) {
+            // Dedup: una sola vez por ciclo (ventana de 60 días — el próximo
+            // día-60 cae 90 días después, así que no sangra al ciclo siguiente).
+            const sixtyDaysAgo = new Date(
+              now.getTime() - 60 * 86_400_000
+            ).toISOString();
+            const { count: alreadyCycle } = await supabase
+              .from("notifications")
+              .select("id", { count: "exact", head: true })
+              .eq("company_id", company.id)
+              .eq("type", "cycle_reminder")
+              .gte("created_at", sixtyDaysAgo);
+
+            if ((alreadyCycle ?? 0) === 0) {
+              const title = "Tu ciclo de 90 días termina pronto";
+              const body = `Quedan ${daysRemaining} días (Día ${dayInCycle}/90). Empezá a armar las Rocas del próximo ciclo.`;
+
+              await supabase.from("notifications").insert(
+                arquitectos.map((arq) => ({
+                  company_id: company.id,
+                  user_id: arq.id,
+                  type: "cycle_reminder",
+                  title,
+                  body,
+                  href: "/plan-90d",
+                }))
+              );
+              stats.cycleReminders += arquitectos.length;
+
+              for (const arq of arquitectos) {
+                if (!arq.email) continue;
+                const r = await sendEmail({
+                  to: arq.email,
+                  subject: `🗓️ Armá tu próximo ciclo de 90 días — ${company.name}`,
+                  html: simpleEmail({
+                    title: `Faltan ${daysRemaining} días para cerrar tu ciclo`,
+                    lines: [
+                      `Hola ${arq.full_name?.split(" ")[0] ?? "Arquitecto"},`,
+                      `Estás en el <strong>Día ${dayInCycle} de 90</strong> de tu ciclo actual.`,
+                      `Es momento de empezar a <strong>armar las Rocas del próximo ciclo</strong> para no perder ritmo cuando este termine.`,
+                    ],
+                    cta: { label: "Planear el próximo ciclo", path: "/plan-90d" },
+                  }),
+                });
+                if (r.ok) stats.emails++;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
