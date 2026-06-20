@@ -147,6 +147,11 @@ debe sentir claramente qué es **L**eadership Strategy, qué es **O**peration Sy
 y qué significa cada letra. Dilio está actualizando las presentaciones para ser
 más incisivo en estas definiciones.
 
+> **Confirmado por Sebas (2026-06-19):** en la app aparece "LOS" donde debería decir
+> **LOST** (metodología). Ticketizado como bug de copy en Sprint 16 Mejora #4
+> (`SPRINTS.md` + `PROGRESS.md` Fase 1) — corregir pronto en UI/tour/docs, sin
+> tocar schema (`los_level`, etc.) hasta unificar naming con Dilio.
+
 - **Hoy:** la metodología está volcada en módulos, pero el **copy/naming** no guía
   explícitamente "estás en esta parte del sistema LOST".
 - **Propuesta:** alinear naming, copy y, posiblemente, una vista de "mapa del

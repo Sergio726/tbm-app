@@ -2033,6 +2033,32 @@ Contexto completo en `docs/RECOVERY_SUPABASE.md`.
 
 ---
 
+### Mejora #4 — Naming incorrecto: "LOS" vs metodología **LOST** *(Añadido 2026-06-19)*
+
+**Síntoma reportado**
+> En la app y la documentación se usa **"LOS"** como si fuera el nombre de la metodología, pero el marco correcto es **LOST** (con T): Liderazgo · Operaciones · Sistemas · Tiempo.
+
+**Causa**
+- Confusión entre dos conceptos distintos:
+  1. **LOST** — el sistema/metodología completo (4 pilares).
+  2. **Niveles LOS** (N1–N5) — escala de autonomía del colaborador (Cadete → Socio), herramienta dentro del sistema.
+- El copy de la UI mezcla ambos y en varios lugares "LOS" suena a metodología, no a nivel de autonomía.
+
+**Alcance sugerido (corregir pronto)**
+- **Sí tocar (copy visible):** textos de UI, tour (`tour-steps.ts`), títulos de pantalla, exports, workbooks y docs donde "LOS" signifique la metodología → cambiar a **LOST**.
+- **Revisar caso a caso:** etiquetas "Nivel LOS" / "Mapa DISC + LOS" — dejar claro que es autonomía (N1–N5), no el marco LOST; evaluar renombrar a algo menos ambiguo cuando Dilio confirme.
+- **No tocar en esta pasada:** columnas/tablas/código (`los_level`, `LOS_LEVELS`, `los_5_grandes`) — requieren decisión de naming + posible migración SQL.
+
+**Archivos típicos afectados**
+- `src/lib/tour-steps.ts`, `src/components/equipo/equipo-client.tsx`, `src/components/equipo/los-section.tsx`, `src/lib/workbook-sessions.ts`, `docs/MODULO_DISC.md`, referencias en `SPRINTS.md` / `PROGRESS.md`.
+
+**Relación con otros ítems**
+- Amplía **C1** de [`OBSERVACIONES_DILIO_2026-06.md`](OBSERVACIONES_DILIO_2026-06.md) (mapa del sistema LOST). El barrido de copy de esta mejora **no depende** de las presentaciones de Dilio; el mapa visual completo sí.
+
+**Estado:** 🐛 Documentado — **corregir pronto** (prioridad copy/UI, sin cambios de schema)
+
+---
+
 ## SPRINT 17 — Multiplicador (M8) + Bienvenida "JARVIS" + Re-acceso al Onboarding *(Implementado 2026-06-14)*
 **Estado:** ✅ Implementado  
 **Objetivo:** Convertir el ítem "Multiplicador" del sidebar (hoy un redirect muerto) en el módulo real M8, que cada inicio de sesión se sienta personal y "vivo" (estilo asistente de Iron Man), y resolver que el tour de onboarding hoy queda inaccesible una vez completado.
