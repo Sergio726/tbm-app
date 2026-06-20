@@ -350,9 +350,14 @@ function cardHTML(s) {
 (function renderSummary(){
   const counts = SPRINTS.reduce((a,s)=>{a[s.status]=(a[s.status]||0)+1;return a;},{});
   const total = SPRINTS.length;
+  const phaseItems = PHASES.flatMap(p => p.items);
+  const phaseDone = phaseItems.filter(i => i.status === "done").length;
+  const totalDone = (counts.done||0) + phaseDone;
   const html = [
     `<div class="stat"><div class="n">${total}</div><div class="l">Sprints totales</div></div>`,
-    `<div class="stat"><div class="n" style="color:var(--green)">${counts.done||0}</div><div class="l">✅ Completos (código)</div></div>`,
+    `<div class="stat"><div class="n" style="color:var(--green)">${counts.done||0}</div><div class="l">✅ Sprints completos (código)</div></div>`,
+    `<div class="stat"><div class="n" style="color:var(--green)">${phaseDone}</div><div class="l">✅ Ítems de roadmap hechos</div></div>`,
+    `<div class="stat"><div class="n" style="color:var(--green)">${totalDone}</div><div class="l">✅ Total entregado (código + roadmap)</div></div>`,
     `<div class="stat"><div class="n" style="color:var(--gray)">${counts.ops||0}</div><div class="l">🚫 Operativos (beta)</div></div>`,
     `<div class="stat"><div class="n" style="color:var(--purple)">5</div><div class="l">🚀 Fases por delante</div></div>`,
   ].join("");
