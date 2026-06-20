@@ -13,6 +13,7 @@ import {
   BookOpen,
   Zap,
   LineChart,
+  Compass,
   Bell,
   LogOut,
   HelpCircle,
@@ -40,6 +41,7 @@ const MODULES: ModuleItem[] = [
   { label: "Feedback S.E.C.", href: "/feedback", Icon: MessageSquare },
   { label: "Plan 90D", href: "/plan-90d", Icon: Target },
   { label: "Workbooks", href: "/workbooks", Icon: BookOpen },
+  { label: "Sistema LOST", href: "/sistema", Icon: Compass },
   { label: "Multiplicador", href: "/multiplicador", Icon: Zap },
   { label: "Diagnósticos", href: "/diagnosticos", Icon: LineChart },
 ];

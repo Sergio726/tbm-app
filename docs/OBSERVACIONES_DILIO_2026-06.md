@@ -153,8 +153,15 @@ Dilio quiere las gráficas clásicas DISC:
 
 ## C. Sistema LOST y claridad conceptual
 
-### C1 · Que el usuario entienda LOST y dónde está parado — 🟢 desbloqueado (material recibido)
+### C1 · Que el usuario entienda LOST y dónde está parado — ✅ (mapa LOST hecho 2026-06-20)
 Dilio: **LOST (con T)** representa **todo el sistema**, no una parte.
+
+> **Hecho (2026-06-20):** nueva página **`/sistema` ("Sistema LOST")** en el sidebar
+> (`src/app/(dashboard)/sistema/page.tsx` + `src/lib/lost.ts`): tira L-O-S-T + las 4
+> dimensiones con su definición canónica, cada una listando sus módulos como links
+> navegables, y header "Día X de 90 · Ciclo N" (reusa el cómputo del baseline). Abierta a
+> todos los roles. Junto con el barrido D1/D2, cierra C1. *(El mapa se ancla a los módulos
+> del app, no a las 8 sesiones de Dilio — esas no coinciden 1:1.)*
 
 > **Desbloqueado (2026-06-20):** llegó el material canónico. Definiciones oficiales (de las
 > presentaciones, ver [`METODO_TBM_CANONICO.md`](METODO_TBM_CANONICO.md) §1–§2):
