@@ -141,12 +141,21 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   (`LOS_LEVELS`, `los_level`) y surfacear "LOST" como nombre del sistema (eso es **C1**, un
   feature aparte). Detalle de divergencias: [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md) §8.
 
-### Fase 2 — Monetizar (panel god-mode + créditos)
-*Recién acá el cobro. Decidido: monorepo, misma DB Supabase, 1 crédito = 1 DISC.*
-- **A0** — Reestructurar a monorepo (`apps/web` + `apps/admin` + `packages/shared`),
-  2 proyectos Vercel, subdominio admin. *Base técnica.*
-- **A1·adm** — `platform_admins` + `is_platform_admin()`, login admin con MFA,
-  formaliza el cierre de registro, listado de empresas.
+### Fase 2 — Monetizar (panel god-mode + créditos) · EN CURSO en rama `fase2`
+*Recién acá el cobro. Decidido: monorepo, misma DB Supabase, 1 crédito = 1 DISC. Beta:
+**regalar créditos** (carga manual), Stripe después. Crédito se descuenta al **generar el link
+DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fase2-monetizacion`.*
+- ✅ **A0 — Monorepo** (`bff037f`): app movida a `apps/web` + npm workspaces; `packages/shared`
+  (tipos) y `apps/admin` se sumaron en A1. Web buildea verde desde el workspace. ⚠️ **antes de
+  mergear a `main`: cambiar Root Directory del proyecto Vercel a `apps/web`** (lo hace Sebas).
+- ✅ **A1 — Fundación admin**: tabla `platform_admins` + `is_platform_admin()` (`SECURITY DEFINER`,
+  RLS, migración `fase2_platform_admins` aplicada; Sebas seedeado superadmin). App **`apps/admin`**
+  nueva (Next, subdominio): login Supabase + middleware + guard de panel (`is_platform_admin`) +
+  **listado read-only de empresas** (saldo de créditos = — hasta A3). `packages/shared` con el
+  `Database` subset. Builds verdes. **MFA diferido** (hardening A6). Falta crear el proyecto Vercel
+  del admin (subdominio).
+- **A2** — Crear líderes + invitaciones desde admin; editar datos sensibles; CRUD
+  usuarios; alta de coaches; audit log base.
 - **A2** — Crear líderes + invitaciones desde admin; editar datos sensibles; CRUD
   usuarios; alta de coaches; audit log base.
 - **A3** — Créditos (saldo + ledger append-only) + **gating del DISC por créditos** +
