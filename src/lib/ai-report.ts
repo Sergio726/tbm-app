@@ -8,6 +8,12 @@
 
 import { DISC_PROFILES_FULL, type DiscScores, type DiscSegments } from "./disc-evaluator";
 import { DISC_FACTORS, primaryLetter, type DiscLetter } from "./disc";
+import {
+  TBM_DISC_CANON,
+  TBM_DISC_CRUCES,
+  TBM_METHOD_FRAMING,
+  type DiscCanonLetter,
+} from "./tbm-disc-context";
 
 export type DiscNarrativeInput = {
   fullName: string | null;
@@ -31,6 +37,19 @@ export async function generateDiscNarrative(input: DiscNarrativeInput): Promise<
   const primary = primaryLetter(input.letters) as DiscLetter | null;
   const factor = primary ? DISC_FACTORS[primary] : null;
 
+  // Método canónico de Dilio (TBM 4) — letra primaria y secundaria.
+  const isCanonLetter = (l: string): l is DiscCanonLetter =>
+    l === "D" || l === "I" || l === "S" || l === "C";
+  const secondaryChar = (input.letters ?? "")[1] ?? null;
+  const tbmCanon = {
+    primaria: primary && isCanonLetter(primary) ? TBM_DISC_CANON[primary] : null,
+    secundaria:
+      secondaryChar && isCanonLetter(secondaryChar) && secondaryChar !== primary
+        ? TBM_DISC_CANON[secondaryChar]
+        : null,
+    cruces: TBM_DISC_CRUCES,
+  };
+
   // Material canónico que el modelo DEBE respetar (no inventar rasgos nuevos).
   const canon = {
     nombre: input.fullName ?? "la persona",
@@ -48,11 +67,15 @@ export async function generateDiscNarrative(input: DiscNarrativeInput): Promise<
     mas_eficaz: profile.mas_eficaz,
     luz: factor?.luz ?? [],
     sombra: factor?.sombra ?? [],
+    // Marco canónico de Dilio (arquetipo, temor, rol ideal, luz/sombra por letra).
+    tbm: tbmCanon,
   };
 
   const system = [
     "Sos un coach de liderazgo del método The Business Multiplier (TBM) de Dilio Donado.",
     "Escribís síntesis DISC personalizadas, cálidas y profesionales, en español neutro con voseo rioplatense, dirigidas a la persona evaluada (segunda persona, 'vos').",
+    "",
+    TBM_METHOD_FRAMING,
     "",
     "REGLAS ESTRICTAS:",
     "1) Usá EXCLUSIVAMENTE la información canónica provista (perfil, factor, puntajes). No inventes rasgos, anécdotas, datos ni diagnósticos nuevos.",
@@ -65,9 +88,9 @@ export async function generateDiscNarrative(input: DiscNarrativeInput): Promise<
     "Escribí una síntesis personalizada del perfil DISC de esta persona, en prosa fluida (sin títulos, sin viñetas, sin emojis), de 2 a 3 párrafos y ~160–200 palabras en total.",
     "",
     "Seguí este hilo, integrándolo con naturalidad:",
-    "1. Abrí describiendo su estilo dominante combinando su letra primaria y secundaria (cómo tiende a operar).",
-    "2. Lo que aporta a un equipo desde ese estilo.",
-    "3. Un punto a cuidar (su sombra) planteado como oportunidad, no como defecto.",
+    "1. Abrí describiendo su estilo dominante combinando su letra primaria y secundaria (cómo tiende a operar). Apoyate en el arquetipo TBM del bloque 'tbm' (p. ej. motor, combustible, chasis, sensor) sin nombrarlo como etiqueta técnica.",
+    "2. Lo que aporta a un equipo desde ese estilo (su función en el sistema).",
+    "3. Un punto a cuidar (su sombra) planteado como oportunidad, no como defecto. Si ayuda, mencioná con tacto el temor que la dispara (campo 'temor' del bloque 'tbm') como la palanca para sostener su mejor versión.",
     "4. Un cierre alentador orientado a su crecimiento (su 'PRIME').",
     "",
     "Si hay nombre, podés dirigirte a la persona por su nombre una vez. Devolvé SOLO la síntesis, sin preámbulos ni comentarios.",

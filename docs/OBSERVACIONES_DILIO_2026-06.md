@@ -102,19 +102,22 @@ Dilio: el perfil de rango debe verlo **solo el líder**, no el colaborador.
   - Opciones: ocultar el ítem para colaboradores, o reconvertir `/equipo` en una
     vista "Mi perfil DISC" cuando el rol es colaborador.
 
-### B2 · Recomendaciones personalizadas con IA desde los documentos maestros — 🟡 / ⛔
+### B2 · Recomendaciones personalizadas con IA desde los documentos maestros — ✅ (síntesis enriquecida 2026-06-20)
 Dilio: el sistema debe usar sus **documentos maestros** para hacer un análisis y
 dar **recomendaciones personalizadas** a cada persona.
 
 - **Hoy:** ya hay síntesis narrativa con IA (`src/lib/ai-report.ts`,
-  `generateDiscNarrative`), gateada por `ANTHROPIC_API_KEY` y cacheada. Pero **no**
-  está alimentada con los documentos maestros de Dilio.
-- **Propuesta:** inyectar el conocimiento de Dilio en el prompt/contexto de la IA
-  (RAG o contexto curado) para que las recomendaciones reflejen su enfoque.
-- 🟢 **Desbloqueado (2026-06-20):** llegó el material canónico → el contenido DISC
-  (perfiles, %, luz/sombra, temores, roles, cruces) está digerido en
-  [`METODO_TBM_CANONICO.md`](METODO_TBM_CANONICO.md) §4. Ya hay insumo para alimentar el
-  prompt. *(Las gráficas avanzadas de B3+B4 siguen sin modelo — ver abajo.)*
+  `generateDiscNarrative`), gateada por `ANTHROPIC_API_KEY` y cacheada.
+- ✅ **Hecho (2026-06-20):** se inyectó el **método canónico de Dilio** en el prompt —
+  nuevo `src/lib/tbm-disc-context.ts` (`TBM_DISC_CANON` con arquetipo/%/temor/rol/luz/
+  sombra por letra desde [`METODO_TBM_CANONICO.md`](METODO_TBM_CANONICO.md) §4, cruces, y
+  `TBM_METHOD_FRAMING` con el encuadre "líder rentable / luz = madurez emocional / DISC ≠
+  inteligencia / el temor dispara la sombra"). La síntesis ahora "habla" TBM, apoyándose en
+  el arquetipo y el temor canónicos (no en el `DISC_FACTORS` del app, que diverge — ver D6).
+- ⚙️ **Activar:** la IA sigue **inerte hasta cargar `ANTHROPIC_API_KEY` en Vercel**
+  (operativo, igual que PostHog/Sentry). Sin la key, el informe muestra todo menos la card
+  "Síntesis personalizada". Para síntesis más ricas: `DISC_AI_MODEL=claude-opus-4-8`.
+- *(Las gráficas avanzadas de B3+B4 siguen sin modelo — ver abajo.)*
 
 ### B3 + B4 · Las 3 gráficas DISC + intensidad centrada en la media — ❌ / ⛔ parcial (FEATURE GRANDE)
 > **2026-06-20:** llegó el material de Dilio (TBM 4) pero **NO** trae el modelo de cálculo
