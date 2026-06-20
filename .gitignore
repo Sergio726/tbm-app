@@ -1,5 +1,5 @@
-# dependencies
-/node_modules
+# dependencies (monorepo: ignorar en cualquier workspace)
+node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -11,12 +11,12 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# next.js (cualquier workspace)
+.next/
+out/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store

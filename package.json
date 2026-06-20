@@ -1,41 +1,17 @@
 {
-  "name": "tbm-app",
-  "version": "0.1.0",
+  "name": "tbm-monorepo",
   "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@sentry/nextjs": "^10.58.0",
-    "@supabase/ssr": "^0.10.3",
-    "@supabase/supabase-js": "^2.106.1",
-    "clsx": "^2.1.1",
-    "driver.js": "^1.4.0",
-    "lucide-react": "^0.400.0",
-    "motion": "^12.40.0",
-    "next": "16.2.6",
-    "posthog-js": "^1.390.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "tailwind-merge": "^2.4.0"
-  },
-  "overrides": {
-    "postcss": "^8.5.10"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.0",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "autoprefixer": "^10.4.19",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "16.2.6",
-    "postcss": "^8.5.10",
-    "tailwindcss": "^3.4.4",
-    "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.5.0"
+    "dev": "npm run dev -w tbm-app",
+    "build": "npm run build -w tbm-app",
+    "start": "npm run start -w tbm-app",
+    "type-check": "npm run type-check -w tbm-app",
+    "build:web": "npm run build -w tbm-app",
+    "dev:web": "npm run dev -w tbm-app"
   }
 }

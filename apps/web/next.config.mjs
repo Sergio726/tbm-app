@@ -12,11 +12,14 @@ const POSTHOG_ASSETS_HOST = POSTHOG_HOST.replace(
   "-assets.i.posthog.com"
 );
 
+// Root del monorepo (dos niveles arriba: apps/web → tbm-app/). Es donde viven
+// el package-lock.json + workspaces; Turbopack lo necesita explícito para trazar
+// bien los archivos del workspace (si no, infiere mal la raíz y falla el build).
+const MONOREPO_ROOT = path.join(__dirname, "..", "..");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Fijar el root del workspace a este proyecto: hay un package-lock.json en la
-  // carpeta padre que hace que Turbopack infiera mal la raíz (warning en build).
-  turbopack: { root: __dirname },
+  turbopack: { root: MONOREPO_ROOT },
 
   // Reverse-proxy de PostHog (la ingesta sale por el mismo dominio).
   skipTrailingSlashRedirect: true,
