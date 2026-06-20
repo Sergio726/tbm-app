@@ -2,7 +2,7 @@
 
 import { createServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, canSendExternalEmail } from "@/lib/email";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -96,14 +96,63 @@ export async function sendTeamInvite(input: {
     }
   }
 
-  const admin = createAdminClient();
-  if (!admin) {
-    return { ok: false, error: "Configuración del servidor incompleta." };
+  const nextPath = `/accept-invite?company=${input.companyId}`;
+  const redirectTo = `${input.origin}${nextPath}`;
+
+  // 1) Resend con dominio verificado → email en español + link cross-device (token_hash).
+  if (canSendExternalEmail()) {
+    const admin = createAdminClient();
+    if (!admin) {
+      return { ok: false, error: "Configuración del servidor incompleta." };
+    }
+
+    const confirmBase = `${input.origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`;
+    const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
+      type: "magiclink",
+      email,
+      options: { redirectTo: confirmBase },
+    });
+
+    if (linkErr || !linkData?.properties?.hashed_token) {
+      console.error("sendTeamInvite: generateLink", linkErr);
+      return { ok: false, error: "No se pudo generar el link de invitación." };
+    }
+
+    const inviteLink = `${input.origin}/auth/confirm?token_hash=${encodeURIComponent(linkData.properties.hashed_token)}&type=magiclink&next=${encodeURIComponent(nextPath)}`;
+
+    const emailResult = await sendEmail({
+      to: email,
+      subject: `Te invitaron a ${companyName} — The Business Multiplier`,
+      html: buildInviteHtml({ link: inviteLink, companyName }),
+    });
+
+    if (emailResult.ok) return { ok: true, via: "email" };
+    console.error("sendTeamInvite: Resend falló", emailResult.error);
   }
 
-  const nextPath = `/accept-invite?company=${input.companyId}`;
-  const confirmBase = `${input.origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`;
+  // 2) Supabase Auth → email automático a cualquier destinatario.
+  //    Requiere plantilla Magic Link con token_hash (ver docs/SETUP_INSTRUCCIONES.md).
+  const { error: otpErr } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: true,
+      emailRedirectTo: redirectTo,
+    },
+  });
 
+  if (!otpErr) {
+    return { ok: true, via: "email" };
+  }
+
+  console.error("sendTeamInvite: signInWithOtp falló", otpErr.message);
+
+  // 3) Último recurso: link manual (generateLink + token_hash).
+  const admin = createAdminClient();
+  if (!admin) {
+    return { ok: false, error: otpErr.message || "No se pudo enviar la invitación." };
+  }
+
+  const confirmBase = `${input.origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`;
   const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
     type: "magiclink",
     email,
@@ -111,32 +160,11 @@ export async function sendTeamInvite(input: {
   });
 
   if (linkErr || !linkData?.properties?.hashed_token) {
-    console.error("sendTeamInvite: generateLink", linkErr);
-    return { ok: false, error: "No se pudo generar el link de invitación." };
+    return { ok: false, error: otpErr.message || "No se pudo enviar la invitación." };
   }
 
-  const tokenHash = linkData.properties.hashed_token;
-  const inviteLink = `${input.origin}/auth/confirm?token_hash=${encodeURIComponent(tokenHash)}&type=magiclink&next=${encodeURIComponent(nextPath)}`;
+  const inviteLink = `${input.origin}/auth/confirm?token_hash=${encodeURIComponent(linkData.properties.hashed_token)}&type=magiclink&next=${encodeURIComponent(nextPath)}`;
 
-  const emailResult = await sendEmail({
-    to: email,
-    subject: `Te invitaron a ${companyName} — The Business Multiplier`,
-    html: buildInviteHtml({ link: inviteLink, companyName }),
-  });
-
-  if (emailResult.ok) return { ok: true, via: "email" };
-
-  // Resend no configurado o dominio sin verificar: devolver link para compartir manualmente.
-  const { error: otpErr } = await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: `${input.origin}${nextPath}` },
-  });
-
-  if (!otpErr) {
-    return { ok: true, via: "email" };
-  }
-
-  console.error("sendTeamInvite: Resend y OTP fallaron", emailResult.error, otpErr);
   return {
     ok: true,
     via: "manual",

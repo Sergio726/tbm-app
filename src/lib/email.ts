@@ -9,6 +9,13 @@ const API_URL = "https://api.resend.com/emails";
 
 export type SendEmailResult = { ok: true; id?: string } | { ok: false; error: string };
 
+/** Resend en modo prueba (@resend.dev) solo entrega al dueño de la cuenta. */
+export function canSendExternalEmail(): boolean {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM ?? "";
+  return !!apiKey && !!from && !from.includes("@resend.dev");
+}
+
 export async function sendEmail(input: {
   to: string;
   subject: string;

@@ -103,9 +103,14 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   crean al arrancar la beta. Con coach + arquitecto + 1 colaborador alcanza para validar.)*
 - 🟡 **Instrumentar PostHog + Sentry** — **código HECHO y deployado** (`984c2b8`), inerte
   sin keys (gateado por env, build verificado). Provider + pageviews + identify (sin PII) +
-  10 eventos del funnel + Sentry (instrumentation + global-error). **PENDIENTE: activar
-  (crear cuentas + env vars en Vercel + redeploy).** Pasos guardados abajo en
-  [**"Pendiente: activar PostHog + Sentry"**](#pendiente-activar-posthog--sentry).
+  10 eventos del funnel + Sentry (instrumentation + global-error).
+  - ✅ **PostHog ACTIVO (2026-06-20)** — proyecto US `478424` (cuenta
+    `sebastian.soporte.tbm@gmail.com`). `NEXT_PUBLIC_POSTHOG_KEY` + `NEXT_PUBLIC_POSTHOG_HOST`
+    cargadas en Vercel (Production+Preview); el deploy de prod posterior ya las horneó →
+    capturando `$pageview` + eventos del funnel. Falta solo verificar Live events en el dashboard.
+  - ⏳ **Sentry PENDIENTE** — crear cuenta + `NEXT_PUBLIC_SENTRY_DSN`/`SENTRY_ORG`/`SENTRY_PROJECT`
+    (+ `SENTRY_AUTH_TOKEN` opcional) en Vercel + redeploy. Pasos en
+    [**"Pendiente: activar PostHog + Sentry"**](#pendiente-activar-posthog--sentry).
 - **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
   (reusa cron + notificaciones); ✅ **A3.1 checklist de hábitos del Pre-game** (2026-06-19):
   catálogo curado por categorías + hábito propio, marcado de un toque (optimista) con anillo
@@ -160,7 +165,9 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 > activación operativa: crear las cuentas y cargar env vars en Vercel + redeploy.
 > Las vars están documentadas en `.env.local.example`.
 
-**PostHog (analítica):**
+**PostHog (analítica):** ✅ **HECHO (2026-06-20)** — proyecto US `478424`, vars cargadas en
+Vercel (Production+Preview) y horneadas en el deploy de prod. Solo resta que Sebas confirme
+los Live events en https://us.posthog.com/project/478424. Pasos originales (referencia):
 1. Cuenta free en posthog.com → elegir región (US/EU).
 2. Project Settings → **Project API Key** (`phc_...`).
 3. Host: US `https://us.i.posthog.com` / EU `https://eu.i.posthog.com`.
