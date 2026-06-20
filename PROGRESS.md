@@ -101,16 +101,19 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 - **S10 — Onboarding de 3–5 pilotos** (mentored, gratis → sin billing aún). *(Demo:
   `tbm@stlabs.ar` / "The Business Multiplier" NO cuenta como piloto; pilotos reales se
   crean al arrancar la beta. Con coach + arquitecto + 1 colaborador alcanza para validar.)*
-- 🟡 **Instrumentar PostHog + Sentry** — **código HECHO y deployado** (`984c2b8`), inerte
-  sin keys (gateado por env, build verificado). Provider + pageviews + identify (sin PII) +
-  10 eventos del funnel + Sentry (instrumentation + global-error).
+- ✅ **Instrumentar PostHog + Sentry** — código (`984c2b8`) + **ambos activos en prod
+  (2026-06-20)**. Provider + pageviews + identify (sin PII) + 10 eventos del funnel + Sentry
+  (instrumentation + global-error).
   - ✅ **PostHog ACTIVO (2026-06-20)** — proyecto US `478424` (cuenta
     `sebastian.soporte.tbm@gmail.com`). `NEXT_PUBLIC_POSTHOG_KEY` + `NEXT_PUBLIC_POSTHOG_HOST`
     cargadas en Vercel (Production+Preview); el deploy de prod posterior ya las horneó →
     capturando `$pageview` + eventos del funnel. Falta solo verificar Live events en el dashboard.
-  - ⏳ **Sentry PENDIENTE** — crear cuenta + `NEXT_PUBLIC_SENTRY_DSN`/`SENTRY_ORG`/`SENTRY_PROJECT`
-    (+ `SENTRY_AUTH_TOKEN` opcional) en Vercel + redeploy. Pasos en
-    [**"Pendiente: activar PostHog + Sentry"**](#pendiente-activar-posthog--sentry).
+  - ✅ **Sentry ACTIVO (2026-06-20)** — org `tbm-0c`, proyecto `javascript-nextjs` (US).
+    `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_ORG` + `SENTRY_PROJECT` + `SENTRY_AUTH_TOKEN` cargadas en
+    Vercel (Production) y horneadas vía redeploy (`tbm-mpsugkx0f`). Reporta solo en
+    `NODE_ENV=production`. **Verificar:** forzar un error en prod → debe aparecer en Sentry →
+    Issues. *(Si los stacks salen minificados, revisar el `SENTRY_AUTH_TOKEN` — el provisto es
+    corto/atípico; solo afecta la subida de source maps, no el reporte de errores.)*
 - **Quick-wins de Dilio sin bloqueo** — A1 recordatorio de "armá el próximo ciclo"
   (reusa cron + notificaciones); ✅ **A3.1 checklist de hábitos del Pre-game** (2026-06-19):
   catálogo curado por categorías + hábito propio, marcado de un toque (optimista) con anillo
@@ -176,7 +179,9 @@ los Live events en https://us.posthog.com/project/478424. Pasos originales (refe
 6. Verificar: app → PostHog → Live events (`$pageview` + eventos; persona con role/company_id).
    *Tip: poner la key solo en Vercel (prod), no en `.env.local`, para no ensuciar con datos de dev.*
 
-**Sentry (errores):**
+**Sentry (errores):** ✅ **HECHO (2026-06-20)** — org `tbm-0c` / proyecto `javascript-nextjs`,
+4 vars en Vercel (Production) + redeploy. Solo resta forzar un error en prod y confirmarlo en
+Sentry → Issues. Pasos originales (referencia):
 1. Cuenta free en sentry.io → nuevo proyecto **Next.js** → copiar **DSN**.
 2. Anotar **org slug** + **project slug**; (opcional) **Auth token** (scope `project:releases`) para source maps.
 3. Vercel (Production): `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`.
