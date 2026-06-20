@@ -170,9 +170,9 @@
 <!-- VISTA: ENTREGADO -->
 <section id="view-entregado">
   <div class="note-box">
-    <b>Lectura rápida:</b> todo el <b>código</b> de S0–S17 está implementado y la <b>Fase 0 está cerrada</b>
-    (registro público cerrado + cron de emails activo en prod). En curso: <b>Fase 1</b> (lanzar la beta).
-    Mirá la pestaña "Roadmap por fases".
+    <b>Lectura rápida:</b> todo el <b>código</b> de S0–S17 está implementado y la <b>Fase 0 está cerrada</b>.
+    <b>Fase 1</b> (beta) avanzada: <b>PostHog + Sentry activos en prod</b> y los <b>quick-wins de Dilio (A1 + A3.1)</b> hechos.
+    Falta sumar los pilotos. Mirá la pestaña "Roadmap por fases".
   </div>
   <div class="filters" id="filters"></div>
   <div class="grid" id="grid-sprints"></div>
@@ -273,12 +273,12 @@ const PHASES = [
       { code:"S10", title:"Onboarding de 3–5 pilotos", status:"next",
         notes:"Alumnos mentored de Dilio. Onboarding guiado + feedback semanal. (Son gratis → no necesitan billing todavía.)",
         meta:["Operativo"] },
-      { code:"OBS-1", title:"Instrumentar PostHog + Sentry", status:"next",
-        notes:"PostHog = uso/tiempo/funnels (alimenta la Fase 4). Sentry = errores en prod. Adelantado a propósito para tener histórico.",
-        meta:["~1 sprint"] },
-      { code:"A1", title:"Quick-wins de Dilio sin bloqueo", status:"next",
-        notes:"A1 recordatorio de 'armá el próximo ciclo' (reusa cron + notificaciones). A3.1 checklist de hábitos del Pre-game.",
-        meta:["chico/medio"] },
+      { code:"OBS-1", title:"Instrumentar PostHog + Sentry", status:"done",
+        notes:"✅ Ambos activos en prod (jun-2026). PostHog (proyecto US 478424) captura pageviews + 10 eventos del funnel + identify sin PII. Sentry (org tbm-0c) reporta errores con source maps. Env vars en Vercel + deploy. Da histórico de uso para la Fase 4.",
+        meta:["Hecho","Activo en prod"] },
+      { code:"A1·A3.1", title:"Quick-wins de Dilio sin bloqueo", status:"done",
+        notes:"✅ A1 — recordatorio 'armá el próximo ciclo' a 30 días del fin del ciclo 90D (bloque en el cron diario: notif in-app + email, una vez por ciclo). ✅ A3.1 — checklist de hábitos del Pre-game (catálogo curado + hábito propio, marcado de un toque, mobile-first). Las meditaciones del Pre-game quedan bloqueadas por Dilio → Fase 3.",
+        meta:["Hecho"] },
     ] },
   { num:"2", color:"#a78bfa", title:"Fase 2 — Monetizar (panel god-mode + créditos)",
     why:"Recién acá el cobro, después de validar demanda. 1 crédito = 1 DISC.",
