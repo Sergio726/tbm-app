@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, Menu, X } from "lucide-react";
+import { LayoutDashboard, Building2, ScrollText, Menu, X } from "lucide-react";
 import { LogoutButton } from "@/app/(panel)/logout-button";
 
 const NAV = [
   { href: "/", label: "Inicio", icon: LayoutDashboard, exact: true },
   { href: "/empresas", label: "Empresas", icon: Building2, exact: false },
+  { href: "/auditoria", label: "Auditoría", icon: ScrollText, exact: false },
 ];
 
 function Brand() {
