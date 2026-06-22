@@ -164,7 +164,12 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
   si falla) → UI `/empresas/nueva` que muestra **email + contraseña una sola vez** (botón copiar).
   Tabla `audit_log` (RLS sin policy, solo service-role) registra `create_lider` y `grant_credits`.
   Acceso por contraseña temporal porque el email está en modo test. Builds verdes.
-  - **A2.2 (follow-up)** — editar datos sensibles, suspender, CRUD usuarios, alta de coaches desde UI.
+- ✅ **A2.2 — Gestión de empresas desde el admin** (`/empresas/[id]`): página de detalle (líder +
+  equipo + ledger de créditos + **audit_log** en pantalla) · **editar** empresa/líder (nombre,
+  sector, cargo, email vía `auth.admin.updateUserById`) · **suspender/reactivar** (migración
+  `companies.status` + guard en el dashboard web → pantalla "Cuenta suspendida") · **alta de
+  coaches** desde UI (`addCoachToCompany`: crea con contraseña temporal o reusa usuario + 
+  `coach_assignments`). Todo auditado. Builds verdes.
 - ✅ **Admin UI · pulido leve** (`ca2f93f`): botón **Cerrar sesión** (client `LogoutButton`:
   `signOut` → `/login`) + header con avatar de inicial + email truncado. **Frontend avanzado del
   admin** (rediseño/sidebar/theming) queda para sesión dedicada.
