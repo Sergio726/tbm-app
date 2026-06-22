@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getProvider, AIError, type ChatMessage, type ProviderId } from "@/lib/ai";
+import { buildJarvisContext } from "@/lib/jarvis-context";
+import { TBM_METHOD_FRAMING } from "@/lib/tbm-disc-context";
 
 const DEFAULT_SYSTEM =
   "Sos JARVIS, el asistente del método The Business Multiplier (TBM) de Dilio Donado. Ayudás a " +
@@ -39,20 +41,16 @@ export async function sendJarvisMessage(history: ChatMessage[]): Promise<JarvisR
   const { data: key } = await admin.rpc("ai_get_api_key");
   if (!key) return { ok: false, error: "sin_config" };
 
-  // Contexto TBM mínimo (el rico —equipo/DISC/tareas— es S18.3).
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, role, companies(name)")
-    .eq("id", user.id)
-    .single();
-  const firstName = (profile?.full_name ?? "").split(" ")[0] || "el usuario";
-  const role = profile?.role ?? "colaborador";
-  const companyName = (profile?.companies as { name: string } | null)?.name ?? "su empresa";
-
+  // Contexto TBM rico (equipo + DISC + cruces + tareas + áreas críticas).
+  const context = await buildJarvisContext(user.id);
   const system = [
     cfg.system_prompt?.trim() || DEFAULT_SYSTEM,
     "",
-    `Contexto del usuario — Nombre: ${firstName} · Rol: ${role} · Empresa: ${companyName}.`,
+    TBM_METHOD_FRAMING,
+    "",
+    "CONTEXTO ACTUAL (datos reales de la empresa del usuario):",
+    context,
+    "",
     "No inventes datos del equipo, tareas ni métricas que no estén en este contexto; si te faltan, pedilos o aclaralo.",
   ].join("\n");
 
