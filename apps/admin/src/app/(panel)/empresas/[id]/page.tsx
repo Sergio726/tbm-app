@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { GrantForm } from "../grant-form";
+import { EditCompanyForm } from "./edit-company-form";
 
 export const dynamic = "force-dynamic";
 
@@ -92,17 +93,32 @@ export default async function EmpresaDetailPage({
         </div>
       </div>
 
-      {/* Líder */}
+      {/* Líder + edición */}
       <Section title="Líder (arquitecto)">
-        {lider ? (
-          <div style={{ fontSize: 13.5 }}>
-            <strong>{lider.full_name || "Sin nombre"}</strong>
-            {lider.cargo ? <span style={{ color: "var(--muted)" }}> · {lider.cargo}</span> : null}
-            <div style={{ color: "var(--muted)", marginTop: 2 }}>{lider.email}</div>
-          </div>
-        ) : (
-          <p style={{ fontSize: 13, color: "var(--muted)" }}>Esta empresa no tiene líder asignado.</p>
-        )}
+        <div className="flex items-start justify-between" style={{ gap: 16, marginBottom: 14 }}>
+          {lider ? (
+            <div style={{ fontSize: 13.5 }}>
+              <strong>{lider.full_name || "Sin nombre"}</strong>
+              {lider.cargo ? <span style={{ color: "var(--muted)" }}> · {lider.cargo}</span> : null}
+              <div style={{ color: "var(--muted)", marginTop: 2 }}>{lider.email}</div>
+            </div>
+          ) : (
+            <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
+              Esta empresa no tiene líder asignado.
+            </p>
+          )}
+        </div>
+        <EditCompanyForm
+          companyId={company.id}
+          initial={{
+            name: company.name,
+            sector: company.sector ?? "",
+            liderUserId: lider?.id ?? null,
+            liderFullName: lider?.full_name ?? "",
+            liderCargo: lider?.cargo ?? "",
+            liderEmail: lider?.email ?? "",
+          }}
+        />
       </Section>
 
       {/* Miembros */}

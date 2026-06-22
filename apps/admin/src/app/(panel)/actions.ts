@@ -146,3 +146,103 @@ export async function createLiderAndCompany(input: {
   revalidatePath("/empresas");
   return { ok: true, email, tempPassword, companyId };
 }
+
+/**
+ * Edita datos de la empresa (nombre, sector) y de su líder (nombre, cargo, email).
+ * El cambio de email toca auth (`updateUserById`) → se hace primero por ser lo más
+ * propenso a fallar; si falla, no se commitea nada más. Registra en audit_log.
+ */
+export async function updateCompanyDetails(input: {
+  companyId: string;
+  name: string;
+  sector?: string;
+  liderUserId?: string | null;
+  liderFullName?: string;
+  liderCargo?: string;
+  liderEmail?: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "no_sesion" };
+  const { data: isAdmin } = await supabase.rpc("is_platform_admin");
+  if (!isAdmin) return { ok: false, error: "no_autorizado" };
+
+  const name = input.name.trim();
+  if (!name) return { ok: false, error: "nombre_requerido" };
+
+  const admin = createAdminClient();
+  if (!admin) return { ok: false, error: "sin_service_role" };
+
+  // Estado previo (para el audit).
+  const { data: before } = await admin
+    .from("companies")
+    .select("name, sector")
+    .eq("id", input.companyId)
+    .maybeSingle();
+
+  let liderBefore: { full_name: string | null; cargo: string | null; email: string | null } | null =
+    null;
+  if (input.liderUserId) {
+    const { data } = await admin
+      .from("profiles")
+      .select("full_name, cargo, email")
+      .eq("id", input.liderUserId)
+      .maybeSingle();
+    liderBefore = data ?? null;
+  }
+
+  // 1. Email del líder (auth) — lo más frágil primero.
+  const newEmail = input.liderEmail?.trim().toLowerCase();
+  if (input.liderUserId && newEmail && newEmail !== liderBefore?.email) {
+    const { error: emailErr } = await admin.auth.admin.updateUserById(input.liderUserId, {
+      email: newEmail,
+      email_confirm: true,
+    });
+    if (emailErr) {
+      return {
+        ok: false,
+        error: /already|registered|exists|duplicate/i.test(emailErr.message) ? "email_existe" : "email_error",
+      };
+    }
+  }
+
+  // 2. Empresa.
+  await admin.from("companies").update({ name, sector: input.sector?.trim() || null }).eq("id", input.companyId);
+
+  // 3. Perfil del líder.
+  if (input.liderUserId) {
+    await admin
+      .from("profiles")
+      .update({
+        full_name: input.liderFullName?.trim() || null,
+        cargo: input.liderCargo?.trim() || null,
+        ...(newEmail ? { email: newEmail } : {}),
+      })
+      .eq("id", input.liderUserId);
+  }
+
+  // 4. Audit.
+  await admin.from("audit_log").insert({
+    actor_id: user.id,
+    action: "edit_company",
+    target_type: "company",
+    target_id: input.companyId,
+    before: { company: before, lider: liderBefore },
+    after: {
+      company: { name, sector: input.sector?.trim() || null },
+      lider: input.liderUserId
+        ? {
+            full_name: input.liderFullName?.trim() || null,
+            cargo: input.liderCargo?.trim() || null,
+            email: newEmail ?? liderBefore?.email ?? null,
+          }
+        : null,
+    },
+  });
+
+  revalidatePath("/empresas");
+  revalidatePath(`/empresas/${input.companyId}`);
+  return { ok: true };
+}
