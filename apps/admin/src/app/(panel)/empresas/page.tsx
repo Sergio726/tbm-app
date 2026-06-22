@@ -101,7 +101,11 @@ export default async function EmpresasPage() {
             ) : (
               rows.map((c) => (
                 <tr key={c.id} style={{ borderTop: "1px solid var(--border)" }}>
-                  <td style={{ ...td, fontWeight: 600 }}>{c.name}</td>
+                  <td style={{ ...td, fontWeight: 600 }}>
+                    <Link href={`/empresas/${c.id}`} style={{ color: "#9bb8ff" }}>
+                      {c.name}
+                    </Link>
+                  </td>
                   <td style={td}>{c.plan ?? "—"}</td>
                   <td style={td}>{countByCompany.get(c.id) ?? 0}</td>
                   <td style={td}>
