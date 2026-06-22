@@ -6,6 +6,7 @@ import { GrantForm } from "../grant-form";
 import { EditCompanyForm } from "./edit-company-form";
 import { StatusToggle } from "./status-toggle";
 import { CoachesPanel } from "./coaches-panel";
+import { PageHeader, Card, SectionTitle } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -86,27 +87,28 @@ export default async function EmpresaDetailPage({
     : { data: [] as { id: string; full_name: string | null; email: string | null }[] };
 
   return (
-    <div style={{ maxWidth: 920 }}>
-      <Link href="/empresas" style={{ fontSize: 12.5, color: "var(--muted)" }}>
-        ← Empresas
-      </Link>
-      <div className="flex items-center justify-between" style={{ gap: 16, margin: "10px 0 22px" }}>
-        <div>
-          <div className="flex items-center" style={{ gap: 12 }}>
-            <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>{company.name}</h1>
+    <div>
+      <PageHeader
+        back={
+          <Link href="/empresas" style={{ fontSize: 12.5, color: "var(--muted)" }}>
+            ← Empresas
+          </Link>
+        }
+        title={company.name}
+        subtitle={`${company.sector || "Sin sector"} · plan ${company.plan ?? "—"} · alta ${
+          company.created_at ? new Date(company.created_at).toLocaleDateString("es-AR") : "—"
+        }`}
+        actions={
+          <>
             <StatusToggle companyId={company.id} initialStatus={company.status} />
-          </div>
-          <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
-            {company.sector || "Sin sector"} · plan {company.plan ?? "—"} · alta{" "}
-            {company.created_at ? new Date(company.created_at).toLocaleDateString("es-AR") : "—"}
-          </p>
-        </div>
-        <div className="flex items-center" style={{ gap: 12 }}>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>Créditos</span>
-          <span style={{ fontSize: 20, fontWeight: 800 }}>{balance}</span>
-          <GrantForm companyId={company.id} />
-        </div>
-      </div>
+            <div className="flex items-center" style={{ gap: 10 }}>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>Créditos</span>
+              <span style={{ fontSize: 20, fontWeight: 800 }}>{balance}</span>
+              <GrantForm companyId={company.id} />
+            </div>
+          </>
+        }
+      />
 
       {/* Líder + edición */}
       <Section title="Líder (arquitecto)">
@@ -201,12 +203,8 @@ export default async function EmpresaDetailPage({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ marginBottom: 26 }}>
-      <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#9bb8ff", marginBottom: 10 }}>
-        {title}
-      </h2>
-      <div style={{ border: "1px solid var(--border)", borderRadius: 14, background: "var(--panel)", padding: 16, overflow: "hidden" }}>
-        {children}
-      </div>
+      <SectionTitle>{title}</SectionTitle>
+      <Card style={{ padding: 16, overflow: "hidden" }}>{children}</Card>
     </section>
   );
 }
