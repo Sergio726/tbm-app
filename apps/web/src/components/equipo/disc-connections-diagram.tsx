@@ -49,6 +49,8 @@ export function DiscConnectionsDiagram({
         {EDGES.map((e) => {
           const [x1, y1] = pt(e.a);
           const [x2, y2] = pt(e.b);
+          // Modo referencia (sin equipo): todas las aristas visibles parejas.
+          // Modo equipo: resalta las parejas presentes y atenúa el resto.
           const present = presentPairs?.has(pairKey(e.a, e.b)) ?? false;
           const color = e.kind === "natural" ? NATURAL : CRUZADO;
           return (
@@ -59,8 +61,8 @@ export function DiscConnectionsDiagram({
               x2={x2}
               y2={y2}
               stroke={color}
-              strokeWidth={present ? 2.5 : 1.5}
-              strokeOpacity={present ? 0.95 : 0.3}
+              strokeWidth={presentPairs ? (present ? 2.5 : 1.5) : 2}
+              strokeOpacity={presentPairs ? (present ? 0.95 : 0.3) : 0.8}
               strokeDasharray={e.kind === "cruzado" ? "5 4" : undefined}
               strokeLinecap="round"
             />

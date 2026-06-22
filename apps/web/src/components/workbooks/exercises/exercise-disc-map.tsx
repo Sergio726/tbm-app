@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { normalizeLetters, DISC_COLORS } from "@/lib/disc";
+import { normalizeLetters, DISC_COLORS, presentPairKeys } from "@/lib/disc";
 import type { Profile } from "@/types/database";
+import { DiscConnectionsDiagram } from "@/components/equipo/disc-connections-diagram";
 
 type TeamMember = Pick<Profile, "id" | "full_name" | "cargo" | "disc_letters" | "disc_state">;
 
@@ -45,8 +46,24 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
     return DISC_COLORS[first] ?? "#5b8aff";
   };
 
+  const presentPairs = presentPairKeys(members);
+
   return (
     <div className="space-y-3">
+      {/* Referencia: conexiones y fricciones DISC (canónico §4 / Sesión 2). */}
+      <div
+        className="rounded-xl border p-4"
+        style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}
+      >
+        <p className="mb-1 text-sm font-semibold text-white">Conexiones y fricciones del equipo</p>
+        <p className="mb-3 text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+          Primero el quién, luego el qué. El perímetro une perfiles que conectan naturalmente; las
+          diagonales punteadas (D↔S · I↔C) son temperamentos cruzados que requieren acordar cómo
+          comunicarse. A medida que cargás las letras, se resaltan las parejas presentes.
+        </p>
+        <DiscConnectionsDiagram presentPairs={presentPairs} size={188} />
+      </div>
+
       {team.length === 0 && (
         <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
           No hay miembros del equipo registrados.
