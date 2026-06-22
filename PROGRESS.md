@@ -156,8 +156,8 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
   RLS, migración `fase2_platform_admins` aplicada; Sebas seedeado superadmin). App **`apps/admin`**
   nueva (Next, subdominio): login Supabase + middleware + guard de panel (`is_platform_admin`) +
   **listado read-only de empresas** (saldo de créditos = — hasta A3). `packages/shared` con el
-  `Database` subset. Builds verdes. **MFA diferido** (hardening A6). Falta crear el proyecto Vercel
-  del admin (subdominio).
+  `Database` subset. Builds verdes. **MFA diferido** (hardening A6). Proyecto Vercel del admin ya
+  creado y live (`tbm-app-admin`); falta solo un **subdominio propio** más prolijo (opcional).
 - ✅ **A2 — Alta de líder/empresa desde el admin + audit log** (migración `fase2_audit_log`):
   acción server `createLiderAndCompany` (service-role: `createUser` con **contraseña temporal** +
   `email_confirm`, crea empresa, promueve profile a `arquitecto`, créditos iniciales opc., rollback
@@ -165,6 +165,9 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
   Tabla `audit_log` (RLS sin policy, solo service-role) registra `create_lider` y `grant_credits`.
   Acceso por contraseña temporal porque el email está en modo test. Builds verdes.
   - **A2.2 (follow-up)** — editar datos sensibles, suspender, CRUD usuarios, alta de coaches desde UI.
+- ✅ **Admin UI · pulido leve** (`ca2f93f`): botón **Cerrar sesión** (client `LogoutButton`:
+  `signOut` → `/login`) + header con avatar de inicial + email truncado. **Frontend avanzado del
+  admin** (rediseño/sidebar/theming) queda para sesión dedicada.
 - ✅ **A3 — Motor de créditos + gating** (migración `fase2_credits`): `company_credits`
   (saldo) + `credit_transactions` (ledger append-only) + RPC **`generate_disc_link`**
   (gating atómico: descuenta 1 crédito al generar el link DISC; reusar pendiente no cobra;
