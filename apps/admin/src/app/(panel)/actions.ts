@@ -285,3 +285,129 @@ export async function setCompanyStatus(
   revalidatePath(`/empresas/${companyId}`);
   return { ok: true, status };
 }
+
+/**
+ * Asigna un coach a una empresa. Si ya existe un usuario con ese email, lo usa;
+ * si no, crea uno nuevo (rol coach, contraseña temporal). Evita asignaciones
+ * duplicadas. Registra en audit_log. Devuelve la contraseña solo si creó al usuario.
+ */
+export async function addCoachToCompany(input: {
+  companyId: string;
+  fullName: string;
+  email: string;
+}): Promise<
+  | { ok: true; created: boolean; email: string; tempPassword?: string }
+  | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "no_sesion" };
+  const { data: isAdmin } = await supabase.rpc("is_platform_admin");
+  if (!isAdmin) return { ok: false, error: "no_autorizado" };
+
+  const fullName = input.fullName.trim();
+  const email = input.email.trim().toLowerCase();
+  if (!email) return { ok: false, error: "email_requerido" };
+
+  const admin = createAdminClient();
+  if (!admin) return { ok: false, error: "sin_service_role" };
+
+  // ¿Ya existe un usuario con ese email? (lo buscamos por profile)
+  const { data: existing } = await admin
+    .from("profiles")
+    .select("id, full_name")
+    .eq("email", email)
+    .maybeSingle();
+
+  let coachId: string;
+  let created = false;
+  let tempPassword: string | undefined;
+
+  if (existing) {
+    coachId = existing.id;
+  } else {
+    tempPassword = `${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}Aa1!`;
+    const { data: createdUser, error: createErr } = await admin.auth.admin.createUser({
+      email,
+      password: tempPassword,
+      email_confirm: true,
+      user_metadata: { full_name: fullName },
+    });
+    if (createErr || !createdUser?.user) {
+      return {
+        ok: false,
+        error: /already|registered|exists|duplicate/i.test(createErr?.message ?? "")
+          ? "email_existe"
+          : "create_user_error",
+      };
+    }
+    coachId = createdUser.user.id;
+    created = true;
+    // Coach: rol 'coach', sin empresa propia (coachea empresas vía coach_assignments).
+    await admin
+      .from("profiles")
+      .update({ role: "coach", full_name: fullName || null, company_id: null })
+      .eq("id", coachId);
+  }
+
+  // Evitar duplicado de asignación.
+  const { data: dup } = await admin
+    .from("coach_assignments")
+    .select("id")
+    .eq("coach_id", coachId)
+    .eq("company_id", input.companyId)
+    .maybeSingle();
+  if (!dup) {
+    const { error: assignErr } = await admin
+      .from("coach_assignments")
+      .insert({ coach_id: coachId, company_id: input.companyId });
+    if (assignErr) return { ok: false, error: "assign_error" };
+  }
+
+  await admin.from("audit_log").insert({
+    actor_id: user.id,
+    action: "assign_coach",
+    target_type: "company",
+    target_id: input.companyId,
+    after: { coach_email: email, created },
+  });
+
+  revalidatePath(`/empresas/${input.companyId}`);
+  return { ok: true, created, email, tempPassword };
+}
+
+/** Quita la asignación de un coach a una empresa (no borra al usuario). */
+export async function removeCoachFromCompany(
+  companyId: string,
+  coachId: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "no_sesion" };
+  const { data: isAdmin } = await supabase.rpc("is_platform_admin");
+  if (!isAdmin) return { ok: false, error: "no_autorizado" };
+
+  const admin = createAdminClient();
+  if (!admin) return { ok: false, error: "sin_service_role" };
+
+  await admin
+    .from("coach_assignments")
+    .delete()
+    .eq("coach_id", coachId)
+    .eq("company_id", companyId);
+
+  await admin.from("audit_log").insert({
+    actor_id: user.id,
+    action: "unassign_coach",
+    target_type: "company",
+    target_id: companyId,
+    after: { coach_id: coachId },
+  });
+
+  revalidatePath(`/empresas/${companyId}`);
+  return { ok: true };
+}

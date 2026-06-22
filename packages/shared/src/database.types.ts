@@ -140,6 +140,12 @@ export type Database = {
         Update: { reason?: string | null };
         Relationships: [];
       };
+      coach_assignments: {
+        Row: { id: string; coach_id: string; company_id: string; created_at: string | null };
+        Insert: { id?: string; coach_id: string; company_id: string; created_at?: string | null };
+        Update: { coach_id?: string; company_id?: string };
+        Relationships: [];
+      };
       audit_log: {
         Row: {
           id: string;

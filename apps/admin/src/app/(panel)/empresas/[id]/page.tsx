@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { GrantForm } from "../grant-form";
 import { EditCompanyForm } from "./edit-company-form";
 import { StatusToggle } from "./status-toggle";
+import { CoachesPanel } from "./coaches-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,16 @@ export default async function EmpresaDetailPage({
   const lider = members.find((m) => m.id === company.owner_id) ?? null;
   const balance = credits?.balance ?? 0;
 
+  // Coaches asignados a esta empresa.
+  const { data: assigns } = await admin
+    .from("coach_assignments")
+    .select("coach_id")
+    .eq("company_id", id);
+  const coachIds = (assigns ?? []).map((a) => a.coach_id);
+  const { data: coachProfiles } = coachIds.length
+    ? await admin.from("profiles").select("id, full_name, email").in("id", coachIds)
+    : { data: [] as { id: string; full_name: string | null; email: string | null }[] };
+
   return (
     <div style={{ maxWidth: 920 }}>
       <Link href="/empresas" style={{ fontSize: 12.5, color: "var(--muted)" }}>
@@ -138,6 +149,11 @@ export default async function EmpresaDetailPage({
             </tr>
           ))}
         </Table>
+      </Section>
+
+      {/* Coaches */}
+      <Section title="Coaches asignados">
+        <CoachesPanel companyId={company.id} initialCoaches={coachProfiles ?? []} />
       </Section>
 
       {/* Ledger de créditos */}
