@@ -1,0 +1,84 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getProvider, type ChatMessage, type ProviderId } from "@/lib/ai";
+import { buildJarvisContext } from "@/lib/jarvis-context";
+import { TBM_METHOD_FRAMING } from "@/lib/tbm-disc-context";
+
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
+const DEFAULT_SYSTEM =
+  "Sos JARVIS, el asistente del método The Business Multiplier (TBM) de Dilio Donado. Ayudás a " +
+  "líderes a multiplicar su negocio con el talento correcto en el sistema correcto. Respondés en " +
+  "español rioplatense (voseo), claro y concreto, con la voz del método (LOST, ARQI, delegación, " +
+  "DISC). No inventás datos del equipo o la empresa: usás solo el contexto provisto.";
+
+/** Chat de JARVIS en streaming (S18.3). Devuelve texto plano token a token. */
+export async function POST(req: Request) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "no_sesion" }, { status: 401 });
+
+  const admin = createAdminClient();
+  if (!admin) return NextResponse.json({ error: "sin_config" }, { status: 503 });
+
+  const { data: cfg } = await admin
+    .from("ai_config")
+    .select("enabled, provider, model, system_prompt, temperature")
+    .eq("scope", "platform")
+    .maybeSingle();
+  if (!cfg || !cfg.enabled) return NextResponse.json({ error: "disabled" }, { status: 503 });
+
+  const adapter = getProvider(cfg.provider as ProviderId);
+  if (!adapter?.chatStream) {
+    return NextResponse.json({ error: "provider_no_implementado" }, { status: 503 });
+  }
+
+  const { data: key } = await admin.rpc("ai_get_api_key");
+  if (!key) return NextResponse.json({ error: "sin_config" }, { status: 503 });
+
+  const body = (await req.json().catch(() => ({}))) as { messages?: ChatMessage[] };
+  const history = Array.isArray(body.messages) ? body.messages : [];
+
+  const context = await buildJarvisContext(user.id);
+  const system = [
+    cfg.system_prompt?.trim() || DEFAULT_SYSTEM,
+    "",
+    TBM_METHOD_FRAMING,
+    "",
+    "CONTEXTO ACTUAL (datos reales de la empresa del usuario):",
+    context,
+    "",
+    "No inventes datos del equipo, tareas ni métricas que no estén en este contexto; si te faltan, pedilos o aclaralo.",
+  ].join("\n");
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: system },
+    ...history.filter((m) => m.role !== "system").slice(-10),
+  ];
+
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        for await (const token of adapter.chatStream!(
+          { model: cfg.model, messages, maxTokens: 800, temperature: cfg.temperature ?? 0.7 },
+          key
+        )) {
+          controller.enqueue(encoder.encode(token));
+        }
+      } catch {
+        controller.enqueue(encoder.encode("\n\n[No pude completar la respuesta. Probá de nuevo.]"));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+  });
+}

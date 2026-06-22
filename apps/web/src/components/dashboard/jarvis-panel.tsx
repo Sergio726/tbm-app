@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { JarvisCore } from "./jarvis-core";
-import { sendJarvisMessage } from "@/app/(dashboard)/jarvis/actions";
 import type { ChatMessage } from "@/lib/ai";
 
 const ERRORS: Record<string, string> = {
@@ -53,14 +52,52 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
     setPending(true);
 
     const history: ChatMessage[] = next.map((m) => ({ role: m.role, content: m.content }));
-    const r = await sendJarvisMessage(history);
-    setPending(false);
-    if (r.ok) {
-      setMessages((prev) => [...prev, { role: "assistant", content: r.reply }]);
-    } else {
+    try {
+      const res = await fetch("/api/jarvis", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ messages: history }),
+      });
+
+      if (!res.ok || !res.body) {
+        const j = (await res.json().catch(() => ({}))) as { error?: string };
+        setPending(false);
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: ERRORS[j.error ?? ""] ?? "No pude responder.", error: true },
+        ]);
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      let started = false;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        if (!started) {
+          started = true;
+          setPending(false);
+          setMessages((prev) => [...prev, { role: "assistant", content: acc }]);
+        } else {
+          setMessages((prev) => {
+            const copy = [...prev];
+            copy[copy.length - 1] = { role: "assistant", content: acc };
+            return copy;
+          });
+        }
+      }
+      if (!started) {
+        setPending(false);
+        setMessages((prev) => [...prev, { role: "assistant", content: "(sin respuesta)" }]);
+      }
+    } catch {
+      setPending(false);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: ERRORS[r.error] ?? "No pude responder.", error: true },
+        { role: "assistant", content: "No pude responder ahora mismo. Probá de nuevo.", error: true },
       ]);
     }
   };
