@@ -140,6 +140,45 @@ export type Database = {
         Update: { reason?: string | null };
         Relationships: [];
       };
+      ai_config: {
+        Row: {
+          id: string;
+          scope: string;
+          company_id: string | null;
+          provider: string;
+          model: string;
+          api_key_ref: string | null;
+          system_prompt: string | null;
+          temperature: number;
+          enabled: boolean;
+          updated_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          scope?: string;
+          company_id?: string | null;
+          provider?: string;
+          model?: string;
+          api_key_ref?: string | null;
+          system_prompt?: string | null;
+          temperature?: number;
+          enabled?: boolean;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          provider?: string;
+          model?: string;
+          api_key_ref?: string | null;
+          system_prompt?: string | null;
+          temperature?: number;
+          enabled?: boolean;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       coach_assignments: {
         Row: { id: string; coach_id: string; company_id: string; created_at: string | null };
         Insert: { id?: string; coach_id: string; company_id: string; created_at?: string | null };
@@ -185,6 +224,14 @@ export type Database = {
           p_type?: string;
         };
         Returns: Json;
+      };
+      ai_set_api_key: {
+        Args: { p_secret: string };
+        Returns: string;
+      };
+      ai_get_api_key: {
+        Args: Record<string, never>;
+        Returns: string;
       };
     };
     Enums: Record<string, never>;

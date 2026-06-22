@@ -35,6 +35,7 @@ Supabase **sí** llega al proyecto nuevo (apply_migration/execute_sql). Correr *
 | 21 | `migration_fase2_credits.sql` | **Fase 2 · A3**: `company_credits` + `credit_transactions` (ledger) + RPC `generate_disc_link` (gating del DISC) + `grant_credits` (carga, solo platform_admin) | ✅ aplicada (2026-06-20) |
 | 22 | `migration_fase2_audit_log.sql` | **Fase 2 · A2**: `audit_log` (acciones del panel god-mode: alta de líder, carga de créditos). RLS sin policy → solo service-role | ✅ aplicada (2026-06-22) |
 | 23 | `migration_fase2_company_status.sql` | **Fase 2 · A2.2**: `companies.status` (active/suspended) + `suspended_at` + check. Empresa suspendida → bloqueada en el dashboard web | ✅ aplicada (2026-06-22) |
+| 24 | `migration_jarvis_ai_config.sql` | **JARVIS · S18.1**: `ai_config` (proveedor/modelo/system prompt) + wrappers de Vault `ai_set_api_key`/`ai_get_api_key` (SECURITY DEFINER, solo service-role) para la API key cifrada | ✅ aplicada (2026-06-22) |
 
 ## Limpieza puntual (no es migración de esquema)
 
