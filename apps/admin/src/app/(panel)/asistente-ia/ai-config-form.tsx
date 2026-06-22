@@ -33,11 +33,27 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
   const [testing, startTest] = useTransition();
 
   const meta = providerMeta(provider);
+  // Modo "otro modelo": activo si el modelo actual no está en la lista curada del proveedor.
+  const [customModel, setCustomModel] = useState(
+    () => !modelsFor(initial.provider).some((m) => m.id === initial.model)
+  );
 
   const onProvider = (id: ProviderId) => {
     setProvider(id);
     const first = modelsFor(id)[0]?.id;
     if (first) setModel(first);
+    setCustomModel(false);
+  };
+
+  const CUSTOM = "__custom__";
+  const onModelSelect = (value: string) => {
+    if (value === CUSTOM) {
+      setCustomModel(true);
+      setModel("");
+    } else {
+      setCustomModel(false);
+      setModel(value);
+    }
   };
 
   const save = (e: React.FormEvent) => {
@@ -88,32 +104,32 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
           </select>
         </Field>
         <Field label="Modelo">
-          {meta?.allowCustomModel ? (
-            <>
-              <input
-                className="adm-input"
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                list="or-models"
-                placeholder="anthropic/claude-3.5-haiku"
-                spellCheck={false}
-              />
-              <datalist id="or-models">
-                {modelsFor(provider).map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.label}
-                  </option>
-                ))}
-              </datalist>
-            </>
-          ) : (
-            <select className="adm-input" value={model} onChange={(e) => setModel(e.target.value)}>
-              {modelsFor(provider).map((m) => (
-                <option key={m.id} value={m.id} style={{ background: "#111827" }}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
+          <select
+            className="adm-input"
+            value={customModel ? CUSTOM : model}
+            onChange={(e) => onModelSelect(e.target.value)}
+          >
+            {modelsFor(provider).map((m) => (
+              <option key={m.id} value={m.id} style={{ background: "#111827" }}>
+                {m.label}
+              </option>
+            ))}
+            {meta?.allowCustomModel && (
+              <option value={CUSTOM} style={{ background: "#111827" }}>
+                ✏️ Otro modelo…
+              </option>
+            )}
+          </select>
+          {customModel && (
+            <input
+              className="adm-input"
+              style={{ marginTop: 8 }}
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              placeholder="slug, ej. openai/gpt-4o"
+              spellCheck={false}
+              autoFocus
+            />
           )}
         </Field>
       </div>
