@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { LogoutButton } from "./logout-button";
+import { AdminSidebar } from "@/components/admin-sidebar";
 
 export const dynamic = "force-dynamic";
 
@@ -62,55 +62,14 @@ export default async function PanelLayout({
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      <header
-        className="flex items-center justify-between"
+      <AdminSidebar userEmail={user.email ?? null} />
+      <main
         style={{
-          padding: "14px clamp(16px, 4vw, 40px)",
-          borderBottom: "1px solid var(--border)",
-          gap: 16,
+          marginLeft: "var(--sidebar-w)",
+          padding: "clamp(22px, 3.5vw, 40px) clamp(20px, 4vw, 48px) 64px",
         }}
       >
-        <div className="flex items-center" style={{ gap: 16 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.2, color: "var(--accent)" }}>
-            TBM · GOD MODE
-          </span>
-          <nav className="flex items-center" style={{ gap: 14, fontSize: 13.5 }}>
-            <Link href="/empresas" style={{ color: "var(--text)" }}>
-              Empresas
-            </Link>
-          </nav>
-        </div>
-        <div className="flex items-center" style={{ gap: 12 }}>
-          <div className="flex items-center" style={{ gap: 9 }}>
-            <span
-              className="flex items-center justify-center"
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: "50%",
-                background: "rgba(91,138,255,0.18)",
-                border: "1px solid rgba(91,138,255,0.35)",
-                color: "#9bb8ff",
-                fontSize: 12.5,
-                fontWeight: 700,
-                textTransform: "uppercase",
-              }}
-              aria-hidden="true"
-            >
-              {(user.email ?? "?").charAt(0)}
-            </span>
-            <span
-              style={{ fontSize: 12.5, color: "var(--muted)", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-              title={user.email ?? undefined}
-            >
-              {user.email}
-            </span>
-          </div>
-          <LogoutButton />
-        </div>
-      </header>
-      <main style={{ padding: "clamp(20px, 4vw, 36px) clamp(16px, 4vw, 40px) 60px", maxWidth: 1200, margin: "0 auto" }}>
-        {children}
+        <div style={{ maxWidth: 1080, margin: "0 auto" }}>{children}</div>
       </main>
     </div>
   );
