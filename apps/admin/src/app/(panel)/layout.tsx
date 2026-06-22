@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { LogoutButton } from "./logout-button";
 
 export const dynamic = "force-dynamic";
 
@@ -79,7 +80,34 @@ export default async function PanelLayout({
             </Link>
           </nav>
         </div>
-        <span style={{ fontSize: 12, color: "var(--muted)" }}>{user.email}</span>
+        <div className="flex items-center" style={{ gap: 12 }}>
+          <div className="flex items-center" style={{ gap: 9 }}>
+            <span
+              className="flex items-center justify-center"
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: "50%",
+                background: "rgba(91,138,255,0.18)",
+                border: "1px solid rgba(91,138,255,0.35)",
+                color: "#9bb8ff",
+                fontSize: 12.5,
+                fontWeight: 700,
+                textTransform: "uppercase",
+              }}
+              aria-hidden="true"
+            >
+              {(user.email ?? "?").charAt(0)}
+            </span>
+            <span
+              style={{ fontSize: 12.5, color: "var(--muted)", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+              title={user.email ?? undefined}
+            >
+              {user.email}
+            </span>
+          </div>
+          <LogoutButton />
+        </div>
       </header>
       <main style={{ padding: "clamp(20px, 4vw, 36px) clamp(16px, 4vw, 40px) 60px", maxWidth: 1200, margin: "0 auto" }}>
         {children}
