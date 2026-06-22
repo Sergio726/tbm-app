@@ -151,7 +151,13 @@ Dilio quiere las gráficas clásicas DISC:
 - **Opcional:** refuerzos menores (recordatorio si el test queda a medias, nudge en
   el dashboard si falta completarlo).
 
-### B6 · Diagrama "Conexiones y fricciones DISC" — 🟡 Parcial (reglas en código, sin UI ni detector par-a-par)
+### B6 · Diagrama "Conexiones y fricciones DISC" — ✅ Hecho (2026-06-22)
+
+> **Implementado (`5e7a583`):** rombo SVG en Mi Equipo ("Salud del equipo") con perímetro sólido
+> (conexión natural) + diagonales punteadas (cruzado), `detectPairCrossings` con `TBM_DISC_CRUCES`
+> como fuente de verdad y alertas par-a-par entre miembros (el caso C+3I ahora dispara). Las
+> heurísticas de composición quedan como señal secundaria. Follow-up menor: copy canónico (D6) +
+> rombo educativo en test/workbook (componente ya reutilizable). Spec en `SPEC.md` §M3.
 
 > **NO es B3+B4.** B3+B4 son las **3 gráficas de intensidad** (Pública/Núcleo/Espejo, eje
 > centrado en la media) y siguen bloqueadas por falta de fórmula. **B6 es el diagrama

@@ -236,8 +236,10 @@ le resultan cruzados); sección educativa del rombo (test/resultado o workbook S
 - [ ] Copy alineado a nombres canónicos: **D=Dominante, I=Influyente, S=Seguro, C=Pensador**
       (ver divergencia D6 de naming).
 
-**Estado:** ❌ **Pendiente** (UI del rombo + lógica par-a-par). Datos/reglas ya existen en código
-(`TBM_DISC_CRUCES`) y en el canónico §4; falta el componente visual y el detector par-a-par.
+**Estado:** ✅ **Hecho (2026-06-22, `5e7a583`).** Rombo `disc-connections-diagram.tsx` + lógica
+par-a-par en `lib/disc` (`detectPairCrossings`/`discPairRelation`/`presentPairKeys`) con
+`TBM_DISC_CRUCES` como fuente de verdad, integrado en "Salud del equipo". El caso C+3I dispara.
+*Follow-up menor:* copy canónico (D6) y rombo educativo en test/workbook S2 (componente reutilizable).
 
 #### Escáner de Sombras (Sesión 3)
 - Tabla: Nombre + Perfil DISC + Luz/Sombra + Temor activo + "¿Qué activé como líder?"

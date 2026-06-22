@@ -182,12 +182,14 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
 *Agrupa lo bloqueado por material que tiene que pasar Dilio.*
 - **B3+B4** — DISC: las 3 gráficas clásicas (natural/adaptado/combinado). Feature
   grande, sesión dedicada. *Bloqueado por Dilio (material modelo).*
-- **B6 — Diagrama "Conexiones y fricciones DISC"** (Mi Equipo). **NO bloqueado** (material
-  S2 ya llegó; distinto de B3+B4). Rombo D/I/S/C con conexiones naturales (D↔C·I↔S·S↔C·I↔D)
-  y cruces (D↔S·I↔C) + alertas par-a-par entre miembros. **~4–6h:** componente SVG del rombo
-  + refactor `detectDangerousCrossings()` para usar `TBM_DISC_CRUCES` como fuente de verdad
-  (heurísticas de composición quedan secundarias) + integración en `/equipo`. Spec: `SPEC.md`
-  §M3 "Mapa de Conexiones y Fricciones DISC". Dep.: alinear copy a nombres canónicos (D6).
+- ✅ **B6 — Diagrama "Conexiones y fricciones DISC"** (`5e7a583`, Mi Equipo): rombo SVG
+  (`disc-connections-diagram`) con perímetro sólido (conexiones naturales D↔C·I↔S·S↔C·I↔D) y
+  diagonales punteadas (cruces D↔S·I↔C), resalta pares presentes. Lógica par-a-par en `lib/disc`
+  (`detectPairCrossings`/`discPairRelation`/`presentPairKeys`) con **`TBM_DISC_CRUCES` como fuente
+  de verdad**; el caso **C director + 3 I ahora dispara alerta** (antes no). La sección "Salud del
+  equipo" muestra diagrama + cruces par-a-par + composición (secundaria). Builds verdes. *Distinto
+  de B3+B4.* **Follow-up (D6):** alinear copy fino a nombres canónicos; rombo educativo en
+  test/workbook S2 (componente ya reutilizable).
 - **A3.2** — Meditaciones del Pre-game (365). *Bloqueado por Dilio.*
 - **B2** — Recomendaciones IA personalizadas DISC. *Bloqueado por Dilio (docs maestros).*
 - **C1** — Claridad conceptual / naming LOST. *Mapa visual del sistema bloqueado por
