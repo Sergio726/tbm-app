@@ -63,12 +63,7 @@ export default async function PanelLayout({
   return (
     <div style={{ minHeight: "100vh" }}>
       <AdminSidebar userEmail={user.email ?? null} />
-      <main
-        style={{
-          marginLeft: "var(--sidebar-w)",
-          padding: "clamp(22px, 3.5vw, 40px) clamp(20px, 4vw, 48px) 64px",
-        }}
-      >
+      <main className="md:ml-[var(--sidebar-w)] pt-[72px] md:pt-10 px-5 md:px-12 pb-16">
         <div style={{ maxWidth: 1080, margin: "0 auto" }}>{children}</div>
       </main>
     </div>
