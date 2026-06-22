@@ -141,7 +141,7 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   (`LOS_LEVELS`, `los_level`) y surfacear "LOST" como nombre del sistema (eso es **C1**, un
   feature aparte). Detalle de divergencias: [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md) §8.
 
-### Fase 2 — Monetizar (panel god-mode + créditos) · EN CURSO (A0/A1/A3 en `main` + deployados)
+### Fase 2 — Monetizar (panel god-mode + créditos) · EN CURSO (A0/A1/A2/A3 en `main` + deployados)
 > **Deploy 2026-06-20:** `fase2` mergeado a `main`. Vercel **web** repuntado a Root Directory
 > `apps/web` (prod live, 200). Proyecto Vercel **admin** nuevo (`tbm-app-admin`, Root Directory
 > `apps/admin`) live en `https://tbm-app-admin.vercel.app` (login + guard OK). Pendiente: subdominio
@@ -158,10 +158,13 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
   **listado read-only de empresas** (saldo de créditos = — hasta A3). `packages/shared` con el
   `Database` subset. Builds verdes. **MFA diferido** (hardening A6). Falta crear el proyecto Vercel
   del admin (subdominio).
-- **A2** — Crear líderes + invitaciones desde admin; editar datos sensibles; CRUD
-  usuarios; alta de coaches; audit log base.
-- **A2** — Crear líderes + invitaciones desde admin; editar datos sensibles; CRUD
-  usuarios; alta de coaches; audit log base.
+- ✅ **A2 — Alta de líder/empresa desde el admin + audit log** (migración `fase2_audit_log`):
+  acción server `createLiderAndCompany` (service-role: `createUser` con **contraseña temporal** +
+  `email_confirm`, crea empresa, promueve profile a `arquitecto`, créditos iniciales opc., rollback
+  si falla) → UI `/empresas/nueva` que muestra **email + contraseña una sola vez** (botón copiar).
+  Tabla `audit_log` (RLS sin policy, solo service-role) registra `create_lider` y `grant_credits`.
+  Acceso por contraseña temporal porque el email está en modo test. Builds verdes.
+  - **A2.2 (follow-up)** — editar datos sensibles, suspender, CRUD usuarios, alta de coaches desde UI.
 - ✅ **A3 — Motor de créditos + gating** (migración `fase2_credits`): `company_credits`
   (saldo) + `credit_transactions` (ledger append-only) + RPC **`generate_disc_link`**
   (gating atómico: descuenta 1 crédito al generar el link DISC; reusar pendiente no cobra;

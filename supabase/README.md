@@ -33,6 +33,7 @@ Supabase **sí** llega al proyecto nuevo (apply_migration/execute_sql). Correr *
 | 19 | `migration_sprint18_pregame_habits.sql` | **A3.1**: `user_habits` + `habit_logs` (checklist de hábitos del Pre-game) + RLS por usuario | ✅ aplicada (2026-06-19) |
 | 20 | `migration_fase2_platform_admins.sql` | **Fase 2 · A1**: `platform_admins` + `is_platform_admin()` (panel god-mode). Seedear a mano el/los user_id de admin | ✅ aplicada (2026-06-20) |
 | 21 | `migration_fase2_credits.sql` | **Fase 2 · A3**: `company_credits` + `credit_transactions` (ledger) + RPC `generate_disc_link` (gating del DISC) + `grant_credits` (carga, solo platform_admin) | ✅ aplicada (2026-06-20) |
+| 22 | `migration_fase2_audit_log.sql` | **Fase 2 · A2**: `audit_log` (acciones del panel god-mode: alta de líder, carga de créditos). RLS sin policy → solo service-role | ✅ aplicada (2026-06-22) |
 
 ## Limpieza puntual (no es migración de esquema)
 

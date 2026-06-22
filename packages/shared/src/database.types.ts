@@ -59,7 +59,9 @@ export type Database = {
           full_name: string | null;
           email: string | null;
           role: string | null;
+          cargo: string | null;
           disc_status: string | null;
+          onboarding_completed: boolean | null;
           created_at: string | null;
         };
         Insert: {
@@ -68,7 +70,9 @@ export type Database = {
           full_name?: string | null;
           email?: string | null;
           role?: string | null;
+          cargo?: string | null;
           disc_status?: string | null;
+          onboarding_completed?: boolean | null;
           created_at?: string | null;
         };
         Update: {
@@ -76,7 +80,9 @@ export type Database = {
           full_name?: string | null;
           email?: string | null;
           role?: string | null;
+          cargo?: string | null;
           disc_status?: string | null;
+          onboarding_completed?: boolean | null;
         };
         Relationships: [];
       };
@@ -126,6 +132,30 @@ export type Database = {
           created_at?: string;
         };
         Update: { reason?: string | null };
+        Relationships: [];
+      };
+      audit_log: {
+        Row: {
+          id: string;
+          actor_id: string | null;
+          action: string;
+          target_type: string | null;
+          target_id: string | null;
+          before: Json | null;
+          after: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          actor_id?: string | null;
+          action: string;
+          target_type?: string | null;
+          target_id?: string | null;
+          before?: Json | null;
+          after?: Json | null;
+          created_at?: string;
+        };
+        Update: { action?: string };
         Relationships: [];
       };
     };

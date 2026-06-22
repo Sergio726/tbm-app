@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -55,6 +56,21 @@ export default async function EmpresasPage() {
             {rows.length} {rows.length === 1 ? "empresa" : "empresas"} en la plataforma.
           </p>
         </div>
+        <Link
+          href="/empresas/nueva"
+          style={{
+            padding: "9px 16px",
+            borderRadius: 10,
+            background: "rgba(91,138,255,0.18)",
+            border: "1px solid rgba(91,138,255,0.35)",
+            color: "#9bb8ff",
+            fontSize: 13.5,
+            fontWeight: 700,
+            whiteSpace: "nowrap",
+          }}
+        >
+          + Nueva empresa
+        </Link>
       </div>
 
       <div
