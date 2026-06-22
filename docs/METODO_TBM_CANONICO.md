@@ -261,6 +261,11 @@ perfil.
   "INFORMES DISC" de los clientes están **vacías**. Sigue **parcialmente bloqueado**.
 - **A3.2 (meditaciones del Pre-game):** la carpeta WORKBOOKS está **vacía** — las 365
   meditaciones aún no llegaron.
+- **Diagrama "Conexiones y fricciones DISC" (B6):** *no es un gap de Dilio* — el material y
+  las reglas **sí están** (§4 + `TBM_DISC_CRUCES`). Es un gap **de la app**: falta el componente
+  visual del rombo y la detección **par-a-par** entre miembros (hoy `detectDangerousCrossings()`
+  solo evalúa composición). Especificado en `SPEC.md` §M3. Distinto del gap **B3+B4** (3 gráficas
+  de intensidad), que sí sigue bloqueado por falta de fórmula.
 
 ---
 

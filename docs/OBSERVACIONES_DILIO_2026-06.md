@@ -151,6 +151,30 @@ Dilio quiere las gráficas clásicas DISC:
 - **Opcional:** refuerzos menores (recordatorio si el test queda a medias, nudge en
   el dashboard si falta completarlo).
 
+### B6 · Diagrama "Conexiones y fricciones DISC" — 🟡 Parcial (reglas en código, sin UI ni detector par-a-par)
+
+> **NO es B3+B4.** B3+B4 son las **3 gráficas de intensidad** (Pública/Núcleo/Espejo, eje
+> centrado en la media) y siguen bloqueadas por falta de fórmula. **B6 es el diagrama
+> relacional** (rombo de pares + alertas par-a-par). El **material de Dilio para esta pieza
+> YA llegó** (presentación S2 / infografía de la Sesión 2): **no está bloqueado por insumos**.
+
+Diagrama de la Sesión 2: rombo **D arriba · I derecha · S abajo · C izquierda**, con
+**conexiones naturales** (sólidas: D↔C · I↔S · S↔C · I↔D) y **temperamentos cruzados**
+(punteadas: D↔S · I↔C). Frase del método: *"Primero el quién. Luego el qué."* Ejemplo de
+advertencia: director **C** + tres **I** = reto de comunicación permanente (cruce I↔C).
+
+- **Hoy (parcial):** las reglas correctas ya viven en `src/lib/tbm-disc-context.ts`
+  (`TBM_DISC_CRUCES`) y en [`METODO_TBM_CANONICO.md`](METODO_TBM_CANONICO.md) §4; `ai-report.ts`
+  ya las inyecta en el prompt de síntesis IA. **Falta** el componente visual del rombo y la
+  **detección par-a-par** entre personas.
+- **Incorrecto:** `detectDangerousCrossings()` (`src/lib/disc.ts`) usa **heurísticas de
+  composición** (homogéneo, ≥2 D sin S, ≥2 I sin C, todo S/C), **no** los pares oficiales →
+  el caso C+3I **no dispara** alerta hoy.
+- **Propuesta:** componente SVG del rombo + refactor del detector para usar `TBM_DISC_CRUCES`
+  como fuente de verdad (heurísticas de composición quedan como reglas secundarias) +
+  integración en `/equipo`. Especificado en `SPEC.md` §M3 → "Mapa de Conexiones y Fricciones
+  DISC". **Desbloqueado** (no espera a Dilio).
+
 ---
 
 ## C. Sistema LOST y claridad conceptual
@@ -215,6 +239,10 @@ Dilio: cada test DISC debe ser **pagado**. El sistema de **créditos** debe esta
 | Modelo/material de las **3 gráficas DISC** clásicas | B3+B4 (validar el motor) |
 | Definición de **precios/paquetes** de créditos | E1 (Stripe) |
 
+> **B6 (diagrama Conexiones y fricciones DISC) NO está en esta lista a propósito:** su material
+> (presentación/infografía de la Sesión 2) **ya llegó** y las reglas están en el canónico §4 +
+> `TBM_DISC_CRUCES`. Es trabajo de implementación (UI + detector par-a-par), no de insumos.
+
 ---
 
 ## Resumen ejecutable (qué se puede arrancar ya, sin esperar a Dilio)
@@ -227,6 +255,8 @@ Dilio: cada test DISC debe ser **pagado**. El sistema de **créditos** debe esta
 4. **E1** — Andamiaje de créditos + Stripe (la parte técnica; los precios después).
 5. **B3+B4** — Arrancar el rediseño del motor DISC para las 3 gráficas (feature
    grande, conviene una sesión dedicada).
+6. **B6** — Diagrama Conexiones y fricciones DISC (rombo + alertas par-a-par con
+   `TBM_DISC_CRUCES`). **Desbloqueado** (material S2 ya llegó). ~4–6h.
 
 > Lo demás (A3.2 meditaciones, B2 IA con docs, C1 LOST) queda **a la espera de los
 > insumos de Dilio**.

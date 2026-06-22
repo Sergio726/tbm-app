@@ -177,10 +177,67 @@ La app tiene **8 módulos** que espejean la progresión del programa TBM:
 - Los límites son configurables por empresa y visibles para todo el equipo
 - Cuando se crea una tarea con costo asociado → la app indica automáticamente qué nivel aplica
 
-#### Detector de Cruces Peligrosos
-- La app identifica automáticamente si hay perfiles mal combinados
-- Ej: Pensador (C) liderando Influyentes (I) sin herramientas → alerta amarilla
-- Sugerencia de corrección
+#### Mapa de Conexiones y Fricciones DISC
+
+> Fuente canónica: [`METODO_TBM_CANONICO.md`](METODO_TBM_CANONICO.md) §4 (Sesión 2) y la
+> constante `TBM_DISC_CRUCES` en `src/lib/tbm-disc-context.ts`. **No confundir con B3+B4**
+> (las 3 gráficas clásicas de intensidad: Pública/Núcleo/Espejo) — eso es otra feature,
+> bloqueada por falta de fórmula. Esto es el **diagrama relacional + alertas par-a-par**.
+
+**Propósito:** ayudar al Arquitecto a diseñar el equipo desde el temperamento ("Primero el
+quién. Luego el qué."). Muestra qué perfiles conectan naturalmente y qué pares son cruzados
+(requieren trabajo de comunicación), y alerta cuando esos cruces aparecen entre personas reales
+del equipo.
+
+**Diagrama de referencia (rombo):** D arriba · I derecha · S abajo · C izquierda.
+- **Conexión natural** → líneas sólidas en el perímetro.
+- **Temperamento cruzado** → líneas punteadas en las diagonales.
+
+**Reglas oficiales de pares:**
+
+| Tipo | Pares | Severidad |
+|------|-------|-----------|
+| Buena conexión natural | D↔C · I↔S · S↔C · I↔D | 🟢 verde / informativo (opcional) |
+| Temperamentos cruzados (requieren trabajo) | D↔S · I↔C | 🟡 amarillo / atención |
+
+**Comportamiento esperado de la app:**
+- Mostrar el **diagrama de referencia** (rombo con leyenda) en Mi Equipo — panel "Salud del
+  equipo" / educativo. También puede aparecer como sección educativa en el resultado del test
+  y, si aplica, en el workbook de S2.
+- Con **≥2 miembros con DISC cargado**: detectar **pares cruzados entre personas** (ej. líder
+  **C** + miembro **I** = cruce I↔C) usando `TBM_DISC_CRUCES` como **fuente de verdad**.
+- Mostrar **alerta con severidad** (cruzado = amarillo; conexión natural = verde/informativo
+  opcional) y una **sugerencia alineada al método**: diseño de equipo y protocolo de
+  comunicación entre esos perfiles — **no** microgestión del perfil individual.
+- **Ejemplo de advertencia del método:** equipo de ventas con director **Pensador (C)** y tres
+  **Influyentes (I)** → reto de comunicación permanente (I↔C es cruce). Hoy este caso **no
+  dispara** alerta.
+
+**Relación con la lógica actual (`detectDangerousCrossings()` en `src/lib/disc.ts`):** hoy usa
+**heurísticas de composición** del equipo (equipo homogéneo; ≥2 D sin S; ≥2 I sin C; todo S/C
+sin D/I), **no** los pares oficiales. Al implementar:
+- **Fuente de verdad nueva:** los pares de `TBM_DISC_CRUCES` (detección par-a-par entre personas).
+- **Se mantienen como reglas secundarias de composición:** "equipo homogéneo", "≥2 D sin S",
+  "≥2 I sin C", "todo S/C sin motor" (siguen siendo lecturas válidas de salud del equipo).
+- **Se complementa, no se borra:** el detector pasa a emitir dos familias de señales —
+  *cruces par-a-par* (nuevo, canónico) + *composición* (existente, secundario).
+
+**Dónde se muestra:** vista Mi Equipo (panel "Salud del equipo"); ficha individual (qué perfiles
+le resultan cruzados); sección educativa del rombo (test/resultado o workbook S2).
+
+**Criterios de aceptación:**
+- [ ] Componente visual del **rombo** (D arriba / I derecha / S abajo / C izquierda) con líneas
+      sólidas (conexión natural) y punteadas (cruzados) + leyenda.
+- [ ] `detectDangerousCrossings()` (o su sucesor) detecta **pares cruzados entre personas reales**
+      según `TBM_DISC_CRUCES` (el caso **C director + 3 I dispara alerta amarilla**).
+- [ ] Las reglas de composición existentes se conservan como señales secundarias, documentadas.
+- [ ] Cada alerta trae **severidad** + **sugerencia de método** (diseño de equipo / comunicación,
+      no microgestión).
+- [ ] Copy alineado a nombres canónicos: **D=Dominante, I=Influyente, S=Seguro, C=Pensador**
+      (ver divergencia D6 de naming).
+
+**Estado:** ❌ **Pendiente** (UI del rombo + lógica par-a-par). Datos/reglas ya existen en código
+(`TBM_DISC_CRUCES`) y en el canónico §4; falta el componente visual y el detector par-a-par.
 
 #### Escáner de Sombras (Sesión 3)
 - Tabla: Nombre + Perfil DISC + Luz/Sombra + Temor activo + "¿Qué activé como líder?"
