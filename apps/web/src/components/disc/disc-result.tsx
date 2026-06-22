@@ -276,8 +276,8 @@ export function DiscResult({
 
       {/* Referencia: sobre el modelo */}
       <p className="text-xs text-tbm-text-muted leading-relaxed text-center px-2 tbm-rise" style={{ animationDelay: "490ms" }}>
-        El modelo DISC describe 4 estilos de comportamiento (Dominancia, Influencia, Estabilidad y
-        Cumplimiento). Es una herramienta de autoconocimiento para trabajar mejor en equipo, no un
+        El modelo DISC describe 4 estilos de comportamiento (Dominante, Influyente, Seguro y
+        Pensador). Es una herramienta de autoconocimiento para trabajar mejor en equipo, no un
         diagnóstico ni una medida de capacidad.
       </p>
     </div>

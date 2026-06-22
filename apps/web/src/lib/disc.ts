@@ -16,7 +16,8 @@ export const DISC_COLORS: Record<DiscLetter, string> = {
   C: "#5b8aff", // azul
 };
 
-// ── Significado de cada dimensión DISC ───────────────────────
+// ── Nombre canónico de cada estilo DISC (TBM 4 de Dilio) ─────
+// Nombres del método: D=Dominante, I=Influyente, S=Seguro, C=Pensador.
 // Pensado para explicar el modelo a quien NO lo conoce (intro del test,
 // glosario del resultado). Cada letra responde una pregunta del comportamiento.
 export const DISC_DIMENSIONS: Record<
@@ -24,22 +25,22 @@ export const DISC_DIMENSIONS: Record<
   { name: string; question: string; plain: string }
 > = {
   D: {
-    name: "Dominancia",
+    name: "Dominante",
     question: "¿Cómo enfrentás problemas y desafíos?",
     plain: "Empuje, decisión y foco en resultados.",
   },
   I: {
-    name: "Influencia",
+    name: "Influyente",
     question: "¿Cómo te relacionás e influís en los demás?",
     plain: "Comunicación, entusiasmo y conexión con la gente.",
   },
   S: {
-    name: "Estabilidad",
+    name: "Seguro",
     question: "¿Cómo respondés al ritmo y a los cambios?",
     plain: "Constancia, paciencia y trabajo sostenido.",
   },
   C: {
-    name: "Cumplimiento",
+    name: "Pensador",
     question: "¿Cómo respondés a las reglas y al detalle?",
     plain: "Precisión, análisis y calidad.",
   },
@@ -76,7 +77,7 @@ export const DISC_FACTORS: Record<DiscLetter, DiscFactor> = {
       "Cruza la línea entre liderar y controlar",
       "Impaciente con quien no sigue su ritmo",
     ],
-    temor: "Perder posición, influencia o autoridad. Que lo perciban como débil.",
+    temor: "Abuso de confianza — sentirse usado sin reconocimiento.",
     underPressure: "Se endurece: más dominante, confrontativo, menos paciente.",
     howToManage: "No confrontes de frente; señalá el impacto de su conducta en el resultado.",
   },
@@ -95,7 +96,7 @@ export const DISC_FACTORS: Record<DiscLetter, DiscFactor> = {
       "Disperso, le cuesta el detalle y el seguimiento",
       "Busca aprobación por encima del resultado",
     ],
-    temor: "El rechazo social. Perder reconocimiento o ser ignorado.",
+    temor: "El rechazo — sentirse ignorado o minimizado.",
     underPressure: "Habla más, se dispersa y evita el conflicto con humor.",
     howToManage: "Reconocé en público; aterrizá sus ideas en compromisos concretos y medibles.",
   },
@@ -114,7 +115,7 @@ export const DISC_FACTORS: Record<DiscLetter, DiscFactor> = {
       "Prefiere lo conocido aunque el contexto pida evolucionar",
       "Se cierra en su proceso, parece distante",
     ],
-    temor: "Cambios abruptos. Perder el control sobre lo aprendido.",
+    temor: "La no aprobación — la inestabilidad lo paraliza.",
     underPressure: "Mantiene la disciplina pero se cierra; por dentro busca estabilidad.",
     howToManage: "Dale estructura y tiempo para adaptarse; anticipá los cambios con claridad.",
   },
@@ -133,7 +134,7 @@ export const DISC_FACTORS: Record<DiscLetter, DiscFactor> = {
       "Confunde excelencia con perfección",
       "No toma postura clara frente al equipo",
     ],
-    temor: "Tomar decisiones incorrectas o con información incompleta.",
+    temor: "La crítica sin fundamento — lo cierra y deja de aportar.",
     underPressure: "Intensifica el análisis: busca más datos y validación antes de actuar.",
     howToManage: "Pedile una recomendación concreta con plazo; valorá su criterio explícitamente.",
   },
@@ -317,16 +318,16 @@ export function detectDangerousCrossings(
 
   if (count.D >= 2 && count.S === 0) {
     out.push({
-      titulo: "Dominancia sin Estabilidad",
-      detalle: `Hay ${count.D} perfiles D y ningún S. El equipo acelera, pero nadie sostiene los procesos ni cuida el ritmo.`,
+      titulo: "Dominantes sin un Seguro",
+      detalle: `Hay ${count.D} perfiles Dominantes (D) y ningún Seguro (S). El equipo acelera, pero nadie sostiene los procesos ni cuida el ritmo.`,
       sugerencia: "Sumá o desarrollá un perfil S, o asigná a un D el rol explícito de cuidar el ritmo y el clima.",
       severity: "alta",
     });
   }
   if (count.I >= 2 && count.C === 0) {
     out.push({
-      titulo: "Influencia sin Cumplimiento",
-      detalle: `Hay ${count.I} perfiles I y ningún C. Mucha energía e ideas, poco detalle, control de calidad y seguimiento.`,
+      titulo: "Influyentes sin un Pensador",
+      detalle: `Hay ${count.I} perfiles Influyentes (I) y ningún Pensador (C). Mucha energía e ideas, poco detalle, control de calidad y seguimiento.`,
       sugerencia: "Asigná la revisión de detalle/calidad a alguien, o sumá un perfil C que aterrice y controle.",
       severity: "alta",
     });
@@ -334,7 +335,7 @@ export function detectDangerousCrossings(
   if (count.D === 0 && count.I === 0 && count.S + count.C >= 2) {
     out.push({
       titulo: "Sin Motor ni Combustible",
-      detalle: "El equipo es todo Estabilidad/Cumplimiento, sin Dominancia (empuje) ni Influencia (impulso). Riesgo de parálisis o de evitar decisiones.",
+      detalle: "El equipo es todo Seguro/Pensador, sin Dominantes (empuje) ni Influyentes (impulso). Riesgo de parálisis o de evitar decisiones.",
       sugerencia: "Definí quién toma decisiones rápidas y quién impulsa, o sumá un perfil D/I.",
       severity: "media",
     });

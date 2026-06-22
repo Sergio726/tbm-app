@@ -155,6 +155,6 @@ export function archetypeFor(rawLetters: string | null | undefined): Archetype {
     name: sys.name,
     emoji: sys.icon,
     primary,
-    desc: `Dominante: ${dim.name} — ${dim.plain}`,
+    desc: `Estilo dominante: ${dim.name} — ${dim.plain}`,
   };
 }

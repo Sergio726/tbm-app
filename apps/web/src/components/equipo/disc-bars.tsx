@@ -4,10 +4,10 @@ import { DISC_COLORS, DISC_FACTORS, type DiscLetter } from "@/lib/disc";
 import { MONO } from "./types";
 
 const ATTRS: { key: DiscLetter; name: string }[] = [
-  { key: "D", name: "Dominancia" },
-  { key: "I", name: "Influencia" },
-  { key: "S", name: "Estabilidad" },
-  { key: "C", name: "Cumplimiento" },
+  { key: "D", name: "Dominante" },
+  { key: "I", name: "Influyente" },
+  { key: "S", name: "Seguro" },
+  { key: "C", name: "Pensador" },
 ];
 
 export function DiscBars({

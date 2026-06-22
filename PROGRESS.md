@@ -205,8 +205,12 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
   (`detectPairCrossings`/`discPairRelation`/`presentPairKeys`) con **`TBM_DISC_CRUCES` como fuente
   de verdad**; el caso **C director + 3 I ahora dispara alerta** (antes no). La sección "Salud del
   equipo" muestra diagrama + cruces par-a-par + composición (secundaria). Builds verdes. *Distinto
-  de B3+B4.* **Follow-up (D6):** alinear copy fino a nombres canónicos; rombo educativo en
-  test/workbook S2 (componente ya reutilizable).
+  de B3+B4.* ✅ **Follow-up D6 hecho** (rombo educativo en workbook S2 `f8afed7`; naming canónico abajo).
+- ✅ **D6 — Naming DISC canónico** (`apps/web`): `DISC_DIMENSIONS` y todas las superficies usan
+  **Dominante/Influyente/Seguro/Pensador** (antes Dominancia/Influencia/Estabilidad/Cumplimiento);
+  temores alineados al canónico; metáforas y % ya canónicos. Test + resultado + Mi Equipo
+  (`disc-bars`, `disc-section`, `member-report-modal`) + alertas de composición. **Se mantiene** el
+  set de 16 arquetipos. Cierra la divergencia D6 del canónico §8.
 - **A3.2** — Meditaciones del Pre-game (365). *Bloqueado por Dilio.*
 - **B2** — Recomendaciones IA personalizadas DISC. *Bloqueado por Dilio (docs maestros).*
 - **C1** — Claridad conceptual / naming LOST. *Mapa visual del sistema bloqueado por
