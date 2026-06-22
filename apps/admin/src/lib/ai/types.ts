@@ -2,7 +2,7 @@
 // La app nunca habla con un SDK concreto: cada proveedor implementa AIProvider.
 // En S18.2 esto se promueve a packages/shared cuando la web necesite el chat.
 
-export type ProviderId = "anthropic" | "openai" | "google" | "deepseek";
+export type ProviderId = "openrouter" | "anthropic" | "openai" | "google" | "deepseek";
 
 export type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 

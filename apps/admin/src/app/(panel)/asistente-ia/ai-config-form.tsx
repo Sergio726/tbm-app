@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { PROVIDERS, type ProviderId } from "@/lib/ai";
+import { PROVIDERS, providerMeta, type ProviderId } from "@/lib/ai";
 import { saveAiConfig, testAiConnection, type AiConfigView } from "./actions";
 
 const ERRORS: Record<string, string> = {
@@ -31,6 +31,8 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
   const [test, setTest] = useState<{ ok: boolean; text: string } | null>(null);
   const [saving, startSave] = useTransition();
   const [testing, startTest] = useTransition();
+
+  const meta = providerMeta(provider);
 
   const onProvider = (id: ProviderId) => {
     setProvider(id);
@@ -86,15 +88,38 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
           </select>
         </Field>
         <Field label="Modelo">
-          <select className="adm-input" value={model} onChange={(e) => setModel(e.target.value)}>
-            {modelsFor(provider).map((m) => (
-              <option key={m.id} value={m.id} style={{ background: "#111827" }}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+          {meta?.allowCustomModel ? (
+            <>
+              <input
+                className="adm-input"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                list="or-models"
+                placeholder="anthropic/claude-3.5-haiku"
+                spellCheck={false}
+              />
+              <datalist id="or-models">
+                {modelsFor(provider).map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.label}
+                  </option>
+                ))}
+              </datalist>
+            </>
+          ) : (
+            <select className="adm-input" value={model} onChange={(e) => setModel(e.target.value)}>
+              {modelsFor(provider).map((m) => (
+                <option key={m.id} value={m.id} style={{ background: "#111827" }}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          )}
         </Field>
       </div>
+      {meta?.hint && (
+        <p style={{ fontSize: 11.5, color: "var(--faint)", margin: "-6px 0 0" }}>{meta.hint}</p>
+      )}
 
       <Field label={hasKey ? "API key (cargada — dejá vacío para no cambiarla)" : "API key"}>
         <input

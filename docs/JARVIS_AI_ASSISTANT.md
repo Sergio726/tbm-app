@@ -77,16 +77,16 @@ export function getProvider(id: AIProvider["id"]): AIProvider;
 
 ### 3.2 Proveedores soportados
 
-| Proveedor | Modelos (ejemplos, configurables) | SDK / acceso | Notas |
+| Proveedor | Modelos | Acceso | Notas |
 |---|---|---|---|
-| **Anthropic (Claude)** | `claude-opus-4-8` (calidad), `claude-haiku-4-5` (costo) | `@anthropic-ai/sdk` o raw fetch (ya usado en `ai-report.ts`) | **Default recomendado** (stack actual, mejor para el método) |
-| **OpenAI (ChatGPT)** | GPT-4o / serie o (configurable) | `openai` SDK o REST | Amplia adopción |
-| **Google (Gemini)** | Gemini 2.x (configurable) | REST `generativelanguage` | Buen costo/contexto |
-| **DeepSeek** | `deepseek-chat`, `deepseek-reasoner` | REST compatible OpenAI | Bajo costo |
+| **OpenRouter (multi-LLM)** ✅ | toda la gama por slug (`anthropic/claude-…`, `openai/gpt-4o`, `google/gemini-2.5-pro`, `deepseek/deepseek-chat`, `meta-llama/…`) | **un endpoint** compatible OpenAI + **una key** | **Vía recomendada (S18.1b)** — una sola integración destraba todos los modelos |
+| **Anthropic (Claude)** ✅ | `claude-opus-4-8`, `claude-sonnet-4-6`, `claude-haiku-4-5` | raw fetch (patrón `ai-report.ts`) | Opción **directa** (sin intermediario), se mantiene |
 
-> **Recomendación**: arrancar con **Claude** como default (es lo que ya usamos y el que mejor
-> sostiene el tono del método), con la abstracción lista para los demás. La elección final es del
-> admin (Sebas) desde el panel.
+> **Decisión (2026-06-22):** se adopta **OpenRouter como vía recomendada** para multi-LLM — un
+> endpoint + una key dan acceso a Claude/GPT/Gemini/DeepSeek/Llama eligiendo el modelo por slug.
+> **Reemplaza los adapters directos de OpenAI/Gemini/DeepSeek** que estaban planeados para S18.4
+> (ya no hacen falta). Se conserva el adapter **Anthropic directo** como alternativa. El admin
+> elige proveedor + modelo + key desde el panel.
 
 ### 3.3 Dónde corre (seguridad de ejecución)
 
@@ -214,10 +214,11 @@ La IA cuesta por token. Opciones (a decidir, §11):
 
 | Fase | Alcance | Entregable |
 |---|---|---|
-| **S18.1 — Cimientos** | Capa de abstracción `ai/` + adapter **Anthropic** + esquema `ai_config` + Vault + sección admin "Asistente IA" (cargar key/modelo, probar conexión) | Config funcional, sin chat aún |
+| **S18.1 — Cimientos** ✅ | Capa de abstracción `ai/` + adapter **Anthropic** + esquema `ai_config` + Vault + sección admin "Asistente IA" (cargar key/modelo, probar conexión) | Config funcional, sin chat aún |
+| **S18.1b — OpenRouter** ✅ | Adapter **OpenRouter** (un endpoint/una key → toda la gama de LLMs por slug) + modelo libre en el admin | Multi-LLM ya disponible |
 | **S18.2 — Chat básico** | Endpoint server + panel slide-over desde el orbe (accesible) + respuesta **no-streaming** con contexto TBM mínimo | JARVIS responde |
 | **S18.3 — Streaming + contexto rico** | SSE token a token + inyección completa (equipo/DISC/tareas/rituales) + prompts sugeridos | Experiencia "real" |
-| **S18.4 — Multi-proveedor** | Adapters **OpenAI, Gemini, DeepSeek** + selector en admin + failover | Proveedor elegible |
+| **S18.4 — (absorbido por S18.1b)** | ~~Adapters OpenAI/Gemini/DeepSeek directos~~ → cubiertos por OpenRouter. Failover entre modelos queda para una fase posterior | — |
 | **S18.5 — Acciones (tool use)** | JARVIS ejecuta: crear tarea, generar link DISC, armar reporte semanal (function calling) | Asistente que *hace* |
 | **S18.6 — Historial + costos** | Persistencia de conversaciones + `ai_usage` + gating/rate-limit | Producción sostenible |
 

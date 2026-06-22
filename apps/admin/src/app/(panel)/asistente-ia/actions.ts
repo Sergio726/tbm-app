@@ -44,8 +44,8 @@ export async function getAiConfig(): Promise<AiConfigView | null> {
 
   if (!data) {
     return {
-      provider: "anthropic",
-      model: "claude-haiku-4-5",
+      provider: "openrouter",
+      model: "anthropic/claude-3.5-haiku",
       systemPrompt: DEFAULT_SYSTEM_PROMPT,
       temperature: 0.7,
       enabled: false,
@@ -144,8 +144,8 @@ export async function testAiConnection(): Promise<
     .eq("scope", "platform")
     .maybeSingle();
 
-  const provider = (cfg?.provider ?? "anthropic") as ProviderId;
-  const model = cfg?.model ?? "claude-haiku-4-5";
+  const provider = (cfg?.provider ?? "openrouter") as ProviderId;
+  const model = cfg?.model ?? "anthropic/claude-3.5-haiku";
 
   const adapter = getProvider(provider);
   if (!adapter) return { ok: false, error: "provider_no_implementado" };
