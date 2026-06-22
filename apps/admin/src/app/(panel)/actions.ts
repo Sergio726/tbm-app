@@ -246,3 +246,42 @@ export async function updateCompanyDetails(input: {
   revalidatePath(`/empresas/${input.companyId}`);
   return { ok: true };
 }
+
+/**
+ * Suspende o reactiva una empresa. Suspendida → sus usuarios quedan bloqueados en
+ * el dashboard de la web (guard del layout). Registra en audit_log.
+ */
+export async function setCompanyStatus(
+  companyId: string,
+  suspend: boolean
+): Promise<{ ok: true; status: string } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "no_sesion" };
+  const { data: isAdmin } = await supabase.rpc("is_platform_admin");
+  if (!isAdmin) return { ok: false, error: "no_autorizado" };
+
+  const admin = createAdminClient();
+  if (!admin) return { ok: false, error: "sin_service_role" };
+
+  const status = suspend ? "suspended" : "active";
+  const { error } = await admin
+    .from("companies")
+    .update({ status, suspended_at: suspend ? new Date().toISOString() : null })
+    .eq("id", companyId);
+  if (error) return { ok: false, error: "update_error" };
+
+  await admin.from("audit_log").insert({
+    actor_id: user.id,
+    action: suspend ? "suspend_company" : "reactivate_company",
+    target_type: "company",
+    target_id: companyId,
+    after: { status },
+  });
+
+  revalidatePath("/empresas");
+  revalidatePath(`/empresas/${companyId}`);
+  return { ok: true, status };
+}

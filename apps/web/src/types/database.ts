@@ -18,6 +18,8 @@ export type Database = {
           plan: string | null
           sector: string | null
           settings: Json | null
+          status: string
+          suspended_at: string | null
           team_size: number | null
           updated_at: string | null
         }
@@ -29,6 +31,8 @@ export type Database = {
           plan?: string | null
           sector?: string | null
           settings?: Json | null
+          status?: string
+          suspended_at?: string | null
           team_size?: number | null
           updated_at?: string | null
         }
@@ -40,6 +44,8 @@ export type Database = {
           plan?: string | null
           sector?: string | null
           settings?: Json | null
+          status?: string
+          suspended_at?: string | null
           team_size?: number | null
           updated_at?: string | null
         }

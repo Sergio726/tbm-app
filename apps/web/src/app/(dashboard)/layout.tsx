@@ -5,6 +5,21 @@ import { TourProvider } from "@/components/layout/tour-provider";
 import { PostHogIdentify } from "@/components/analytics/posthog-identify";
 import { redirect } from "next/navigation";
 
+function SuspendedScreen() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-tbm-bg p-6">
+      <div className="max-w-md rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
+        <div className="mb-3 text-3xl">⏸️</div>
+        <h1 className="mb-2 text-lg font-bold text-white">Cuenta suspendida</h1>
+        <p className="text-sm leading-relaxed text-white/55">
+          El acceso de tu empresa está temporalmente suspendido. Si creés que es un error,
+          contactá al equipo de The Business Multiplier para reactivarlo.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -34,6 +49,23 @@ export default async function DashboardLayout({
     if (!tourErr) tourCompleted = tourRow?.tour_completed ?? false;
   } catch {
     /* columna inexistente → sin tour */
+  }
+
+  // Guard de suspensión (A2.2): si la empresa del usuario está suspendida, se
+  // bloquea el acceso a la app. Query resiliente — si la columna no existe aún, no rompe.
+  if (profile?.company_id) {
+    try {
+      const { data: comp, error: compErr } = await supabase
+        .from("companies")
+        .select("status")
+        .eq("id", profile.company_id)
+        .single();
+      if (!compErr && comp?.status === "suspended") {
+        return <SuspendedScreen />;
+      }
+    } catch {
+      /* columna inexistente → sin bloqueo */
+    }
   }
 
   // Panel Super Coach (S9): visible solo si tiene empresas asignadas.

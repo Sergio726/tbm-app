@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { GrantForm } from "../grant-form";
 import { EditCompanyForm } from "./edit-company-form";
+import { StatusToggle } from "./status-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,7 @@ export default async function EmpresaDetailPage({
 
   const { data: company } = await admin
     .from("companies")
-    .select("id, name, sector, plan, owner_id, created_at")
+    .select("id, name, sector, plan, status, owner_id, created_at")
     .eq("id", id)
     .maybeSingle();
   if (!company) notFound();
@@ -80,7 +81,10 @@ export default async function EmpresaDetailPage({
       </Link>
       <div className="flex items-center justify-between" style={{ gap: 16, margin: "10px 0 22px" }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>{company.name}</h1>
+          <div className="flex items-center" style={{ gap: 12 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>{company.name}</h1>
+            <StatusToggle companyId={company.id} initialStatus={company.status} />
+          </div>
           <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
             {company.sector || "Sin sector"} · plan {company.plan ?? "—"} · alta{" "}
             {company.created_at ? new Date(company.created_at).toLocaleDateString("es-AR") : "—"}
