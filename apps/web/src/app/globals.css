@@ -362,6 +362,16 @@ input.tbm-range:focus {
 }
 .jarvis-caret { animation: jarvis-caret 1s steps(1) infinite; }
 
+/* Panel de chat JARVIS (S18.2) — entra deslizando desde la derecha */
+@keyframes jarvis-panel-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+.jarvis-panel-in { animation: jarvis-panel-in 240ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .jarvis-panel-in { animation: none; }
+}
+
 /* ── Tour guiado (S11) — popover de driver.js con el design system ── */
 .driver-popover {
   background: #111827 !important;

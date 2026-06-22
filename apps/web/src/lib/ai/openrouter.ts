@@ -1,0 +1,45 @@
+// Adapter OpenRouter (multi-LLM). Copia de apps/admin/src/lib/ai/openrouter.ts.
+
+import { AIError, type AIProvider, type ChatOptions } from "./types";
+
+const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+export const openrouterProvider: AIProvider = {
+  id: "openrouter",
+  async chat(opts: ChatOptions, apiKey: string): Promise<string> {
+    const messages = opts.messages.map((m) => ({ role: m.role, content: m.content }));
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${apiKey}`,
+          "HTTP-Referer": "https://tbm-app-seven.vercel.app",
+          "X-Title": "The Business Multiplier",
+        },
+        body: JSON.stringify({
+          model: opts.model,
+          max_tokens: opts.maxTokens ?? 1024,
+          temperature: opts.temperature ?? 0.7,
+          messages,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        throw new AIError(res.status, body || `HTTP ${res.status}`);
+      }
+
+      const data = (await res.json()) as {
+        choices?: { message?: { content?: string } }[];
+      };
+      return (data.choices?.[0]?.message?.content ?? "").trim();
+    } finally {
+      clearTimeout(timeout);
+    }
+  },
+};

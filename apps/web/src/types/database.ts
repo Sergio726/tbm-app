@@ -1615,6 +1615,40 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_config: {
+        Row: {
+          id: string
+          scope: string
+          company_id: string | null
+          provider: string
+          model: string
+          api_key_ref: string | null
+          system_prompt: string | null
+          temperature: number
+          enabled: boolean
+          updated_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          scope?: string
+          company_id?: string | null
+          provider?: string
+          model?: string
+          api_key_ref?: string | null
+          system_prompt?: string | null
+          temperature?: number
+          enabled?: boolean
+          updated_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          provider?: string
+          model?: string
+          enabled?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1644,6 +1678,10 @@ export type Database = {
       generate_disc_link: {
         Args: { p_profile_id: string }
         Returns: Json
+      }
+      ai_get_api_key: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
     }
     Enums: {
