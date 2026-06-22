@@ -141,7 +141,11 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   (`LOS_LEVELS`, `los_level`) y surfacear "LOST" como nombre del sistema (eso es **C1**, un
   feature aparte). Detalle de divergencias: [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md) §8.
 
-### Fase 2 — Monetizar (panel god-mode + créditos) · EN CURSO en rama `fase2`
+### Fase 2 — Monetizar (panel god-mode + créditos) · EN CURSO (A0/A1/A3 en `main` + deployados)
+> **Deploy 2026-06-20:** `fase2` mergeado a `main`. Vercel **web** repuntado a Root Directory
+> `apps/web` (prod live, 200). Proyecto Vercel **admin** nuevo (`tbm-app-admin`, Root Directory
+> `apps/admin`) live en `https://tbm-app-admin.vercel.app` (login + guard OK). Pendiente: subdominio
+> propio para el admin + verificación E2E del gating de créditos con sesión real.
 *Recién acá el cobro. Decidido: monorepo, misma DB Supabase, 1 crédito = 1 DISC. Beta:
 **regalar créditos** (carga manual), Stripe después. Crédito se descuenta al **generar el link
 DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fase2-monetizacion`.*
