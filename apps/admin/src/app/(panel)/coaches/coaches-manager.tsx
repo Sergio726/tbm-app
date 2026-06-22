@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Users } from "lucide-react";
+import { EmptyState } from "@/components/ui";
 import { addCoachToCompany, removeCoachFromCompany } from "../actions";
 
 export type CoachRow = {
@@ -113,7 +115,13 @@ export function CoachesManager({
 
       {/* Listado */}
       {coaches.length === 0 ? (
-        <p style={{ fontSize: 13, color: "var(--muted)" }}>Todavía no hay coaches.</p>
+        <div className="adm-card">
+          <EmptyState
+            icon={<Users size={26} strokeWidth={1.5} />}
+            title="Todavía no hay coaches"
+            hint="Asigná uno a una empresa con el formulario de arriba."
+          />
+        </div>
       ) : (
         <div className="flex flex-col" style={{ gap: 12 }}>
           {coaches.map((c) => (

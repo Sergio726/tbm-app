@@ -6,7 +6,8 @@ import { GrantForm } from "../grant-form";
 import { EditCompanyForm } from "./edit-company-form";
 import { StatusToggle } from "./status-toggle";
 import { CoachesPanel } from "./coaches-panel";
-import { PageHeader, Card, SectionTitle } from "@/components/ui";
+import { Users, Coins, ScrollText } from "lucide-react";
+import { PageHeader, Card, SectionTitle, EmptyState } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -140,17 +141,21 @@ export default async function EmpresaDetailPage({
 
       {/* Miembros */}
       <Section title={`Equipo (${members.length})`}>
-        <Table head={["Nombre", "Email", "Rol", "Cargo", "DISC"]}>
-          {members.map((m) => (
-            <tr key={m.id} style={{ borderTop: "1px solid var(--border)" }}>
-              <td style={td}>{m.full_name || "—"}</td>
-              <td style={{ ...td, color: "var(--muted)" }}>{m.email || "—"}</td>
-              <td style={td}>{m.role ?? "—"}</td>
-              <td style={td}>{m.cargo ?? "—"}</td>
-              <td style={td}>{m.disc_status ?? "—"}</td>
-            </tr>
-          ))}
-        </Table>
+        {members.length === 0 ? (
+          <EmptyState icon={<Users size={24} strokeWidth={1.5} />} title="Sin miembros todavía" />
+        ) : (
+          <Table head={["Nombre", "Email", "Rol", "Cargo", "DISC"]}>
+            {members.map((m) => (
+              <tr key={m.id} style={{ borderTop: "1px solid var(--border)" }}>
+                <td style={td}>{m.full_name || "—"}</td>
+                <td style={{ ...td, color: "var(--muted)" }}>{m.email || "—"}</td>
+                <td style={td}>{m.role ?? "—"}</td>
+                <td style={td}>{m.cargo ?? "—"}</td>
+                <td style={td}>{m.disc_status ?? "—"}</td>
+              </tr>
+            ))}
+          </Table>
+        )}
       </Section>
 
       {/* Coaches */}
@@ -174,7 +179,7 @@ export default async function EmpresaDetailPage({
             ))}
           </Table>
         ) : (
-          <p style={{ fontSize: 13, color: "var(--muted)" }}>Sin movimientos.</p>
+          <EmptyState icon={<Coins size={24} strokeWidth={1.5} />} title="Sin movimientos de créditos" />
         )}
       </Section>
 
@@ -193,7 +198,7 @@ export default async function EmpresaDetailPage({
             ))}
           </Table>
         ) : (
-          <p style={{ fontSize: 13, color: "var(--muted)" }}>Sin acciones registradas.</p>
+          <EmptyState icon={<ScrollText size={24} strokeWidth={1.5} />} title="Sin acciones registradas" />
         )}
       </Section>
     </div>
@@ -215,7 +220,7 @@ function Table({ head, children }: { head: string[]; children: React.ReactNode }
       <thead>
         <tr style={{ color: "var(--muted)", textAlign: "left" }}>
           {head.map((h) => (
-            <th key={h} style={{ padding: "6px 10px", fontWeight: 600 }}>
+            <th key={h} scope="col" style={{ padding: "6px 10px", fontWeight: 600 }}>
               {h}
             </th>
           ))}

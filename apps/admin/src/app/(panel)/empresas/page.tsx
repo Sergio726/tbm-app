@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { PageHeader, Card, Badge } from "@/components/ui";
+import { Building2 } from "lucide-react";
+import { PageHeader, Card, Badge, EmptyState } from "@/components/ui";
 import { GrantForm } from "./grant-form";
 
 export const dynamic = "force-dynamic";
@@ -60,19 +61,23 @@ export default async function EmpresasPage() {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.03)", color: "var(--muted)", textAlign: "left" }}>
-              <th style={th}>Empresa</th>
-              <th style={th}>Estado</th>
-              <th style={th}>Plan</th>
-              <th style={th}>Usuarios</th>
-              <th style={th}>Créditos</th>
-              <th style={th}>Alta</th>
+              <th scope="col" style={th}>Empresa</th>
+              <th scope="col" style={th}>Estado</th>
+              <th scope="col" style={th}>Plan</th>
+              <th scope="col" style={th}>Usuarios</th>
+              <th scope="col" style={th}>Créditos</th>
+              <th scope="col" style={th}>Alta</th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ ...td, color: "var(--muted)" }}>
-                  Todavía no hay empresas.
+                <td colSpan={6} style={{ padding: 0 }}>
+                  <EmptyState
+                    icon={<Building2 size={26} strokeWidth={1.5} />}
+                    title="Todavía no hay empresas"
+                    hint="Creá la primera con “+ Nueva empresa”."
+                  />
                 </td>
               </tr>
             ) : (

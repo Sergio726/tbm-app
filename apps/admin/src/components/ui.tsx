@@ -98,6 +98,57 @@ export function StatCard({
   );
 }
 
+export function EmptyState({
+  icon,
+  title,
+  hint,
+}: {
+  icon?: ReactNode;
+  title: string;
+  hint?: ReactNode;
+}) {
+  return (
+    <div
+      className="flex flex-col items-center justify-center text-center"
+      style={{ gap: 6, padding: "30px 16px" }}
+    >
+      {icon ? <div style={{ color: "var(--faint)", marginBottom: 2 }}>{icon}</div> : null}
+      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--muted)" }}>{title}</div>
+      {hint ? <div style={{ fontSize: 12.5, color: "var(--faint)", maxWidth: 360 }}>{hint}</div> : null}
+    </div>
+  );
+}
+
+export function Skeleton({
+  w = "100%",
+  h = 14,
+  radius = 8,
+  style,
+}: {
+  w?: number | string;
+  h?: number | string;
+  radius?: number;
+  style?: CSSProperties;
+}) {
+  return (
+    <div
+      className="adm-skeleton"
+      style={{ width: w, height: h, borderRadius: radius, ...style }}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function SkeletonText({ lines = 3 }: { lines?: number }) {
+  return (
+    <div className="flex flex-col" style={{ gap: 8 }}>
+      {Array.from({ length: lines }).map((_, i) => (
+        <Skeleton key={i} h={12} w={i === lines - 1 ? "60%" : "100%"} />
+      ))}
+    </div>
+  );
+}
+
 export function SectionTitle({ children }: { children: ReactNode }) {
   return (
     <h2

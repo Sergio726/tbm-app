@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { PageHeader, Card, Badge, type Tone } from "@/components/ui";
+import { ScrollText } from "lucide-react";
+import { PageHeader, Card, Badge, EmptyState, type Tone } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -112,17 +113,21 @@ export default async function AuditoriaPage({
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.03)", color: "var(--muted)", textAlign: "left" }}>
-              <th style={th}>Fecha</th>
-              <th style={th}>Acción</th>
-              <th style={th}>Empresa</th>
-              <th style={th}>Detalle</th>
+              <th scope="col" style={th}>Fecha</th>
+              <th scope="col" style={th}>Acción</th>
+              <th scope="col" style={th}>Empresa</th>
+              <th scope="col" style={th}>Detalle</th>
             </tr>
           </thead>
           <tbody>
             {(rows ?? []).length === 0 ? (
               <tr>
-                <td colSpan={4} style={{ ...td, color: "var(--muted)" }}>
-                  Sin acciones para este filtro.
+                <td colSpan={4} style={{ padding: 0 }}>
+                  <EmptyState
+                    icon={<ScrollText size={26} strokeWidth={1.5} />}
+                    title="Sin acciones para este filtro"
+                    hint="Las acciones del panel (altas, créditos, suspensiones, coaches) aparecen acá."
+                  />
                 </td>
               </tr>
             ) : (

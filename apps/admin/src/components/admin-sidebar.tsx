@@ -125,6 +125,7 @@ export function AdminSidebar({ userEmail }: { userEmail: string | null }) {
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={active ? "page" : undefined}
                 className="flex items-center"
                 style={{
                   gap: 10,
