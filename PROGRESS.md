@@ -171,8 +171,20 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
   coaches** desde UI (`addCoachToCompany`: crea con contraseña temporal o reusa usuario + 
   `coach_assignments`). Todo auditado. Builds verdes.
 - ✅ **Admin UI · pulido leve** (`ca2f93f`): botón **Cerrar sesión** (client `LogoutButton`:
-  `signOut` → `/login`) + header con avatar de inicial + email truncado. **Frontend avanzado del
-  admin** (rediseño/sidebar/theming) queda para sesión dedicada.
+  `signOut` → `/login`) + header con avatar de inicial + email truncado.
+- ✅ **Frontend avanzado del admin — rediseño completo (E1–E5)** (`c2e43a9`…`d3503fd`):
+  - **Base** (`c2e43a9`): tokens enriquecidos + primitivas (`.adm-card/.adm-input/.adm-btn`) en
+    `globals.css`; **kit de UI** server-safe (`components/ui.tsx`: PageHeader, Card, StatCard,
+    Badge, SectionTitle, EmptyState, Skeleton); **sidebar lateral** (`AdminSidebar`) con nav de
+    estado activo; **dashboard de inicio** con métricas (empresas/créditos/líderes/coaches) +
+    últimas acciones.
+  - **E1** (`a2d16ea`): detalle + "nueva empresa" uniformados con el kit.
+  - **E2** (`22b1e0d`): sidebar **responsive** (topbar + drawer mobile con overlay).
+  - **E3** (`b0c94a1`): página global **`/auditoria`** (audit_log filtrable + paginado).
+  - **E4** (`2942ea2`): página global **`/coaches`** (lista + asignar/quitar centralizado).
+  - **E5** (`d3503fd`): `loading.tsx` skeletons por ruta + empty states + foco/hover + a11y
+    (`aria-current`, `scope=col`, `prefers-reduced-motion`).
+  - Sidebar final: **Inicio · Empresas · Coaches · Auditoría**. Builds verdes, deployado.
 - ✅ **A3 — Motor de créditos + gating** (migración `fase2_credits`): `company_credits`
   (saldo) + `credit_transactions` (ledger append-only) + RPC **`generate_disc_link`**
   (gating atómico: descuenta 1 crédito al generar el link DISC; reusar pendiente no cobra;
