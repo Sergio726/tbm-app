@@ -4,6 +4,7 @@
 // =============================================================
 
 import { DISC_PROFILES_FULL, type DiscProfile } from "./disc-evaluator";
+import { TBM_DISC_CRUCES } from "./tbm-disc-context";
 
 export type DiscLetter = "D" | "I" | "S" | "C";
 
@@ -339,6 +340,109 @@ export function detectDangerousCrossings(
     });
   }
   return out;
+}
+
+// ── Conexiones y fricciones DISC (B6) — relación PAR-A-PAR ───
+// Canónico §4 / Sesión 2. Fuente de verdad: `TBM_DISC_CRUCES` (tbm-disc-context).
+// Conexión natural: D↔C · I↔S · S↔C · I↔D · | Cruzado (requiere trabajo): D↔S · I↔C.
+// Distinto de `detectDangerousCrossings()` (composición agregada del equipo).
+
+const PAIR_ORDER: DiscLetter[] = ["D", "I", "S", "C"];
+
+// Clave NO ordenada de un par de letras (orden canónico D,I,S,C). Ej: ("C","I") → "IC".
+export function pairKey(a: DiscLetter, b: DiscLetter): string {
+  return PAIR_ORDER.indexOf(a) <= PAIR_ORDER.indexOf(b) ? `${a}${b}` : `${b}${a}`;
+}
+
+// Parsea los strings "D↔S" de TBM_DISC_CRUCES a un set de claves no ordenadas.
+function parseCrucePairs(list: readonly string[]): Set<string> {
+  const out = new Set<string>();
+  for (const s of list) {
+    const ls = (s.toUpperCase().replace(/[^DISC]/g, "").split("") as DiscLetter[]);
+    if (ls.length === 2) out.add(pairKey(ls[0], ls[1]));
+  }
+  return out;
+}
+const CRUZADOS = parseCrucePairs(TBM_DISC_CRUCES.cruzados);
+
+export type PairRelation = "natural" | "cruzado";
+
+// Relación entre dos estilos primarios. Mismo estilo = sin fricción de temperamento.
+export function discPairRelation(a: DiscLetter, b: DiscLetter): PairRelation {
+  if (a === b) return "natural";
+  return CRUZADOS.has(pairKey(a, b)) ? "cruzado" : "natural";
+}
+
+// Copy del método por tipo de cruce (la fricción y cómo diseñarla, no microgestión).
+export const DISC_CRUCE_INFO: Record<string, { friccion: string; sugerencia: string }> = {
+  DS: {
+    friccion:
+      "El D empuja por velocidad y cambio; el S necesita estabilidad y tiempo para adaptarse. El ritmo del D activa la resistencia del S.",
+    sugerencia:
+      "Acordá un ritmo de cambio explícito: el D anticipa el porqué y da plazos; el S confirma qué necesita para sostener el proceso. Evitá cambios bruscos.",
+  },
+  IC: {
+    friccion:
+      "El I comunica con energía y visión general; el C pide datos, detalle y precisión. La espontaneidad del I choca con el rigor del C.",
+    sugerencia:
+      "Definí un protocolo: el I trae la idea con un mínimo de datos; el C revisa con criterios y plazo claros. Reconocé ambos aportes, no microgestiones.",
+  },
+};
+
+export type PairCrossing = {
+  pair: string; // clave canónica "IC"
+  pairLabel: string; // "I↔C"
+  names: string; // "Ana ↔ Beto"
+  detalle: string;
+  sugerencia: string;
+  severity: "media";
+};
+
+// Detecta cruces de temperamento CRUZADO entre personas reales del equipo.
+// (El caso "director C + varios I" produce una alerta por cada par C↔I.)
+export function detectPairCrossings(
+  members: { full_name: string | null; disc_letters: string | null }[]
+): PairCrossing[] {
+  const withDisc = members
+    .map((m) => ({
+      name: m.full_name?.trim() || "Sin nombre",
+      letter: primaryLetter(m.disc_letters),
+    }))
+    .filter((m): m is { name: string; letter: DiscLetter } => m.letter != null);
+
+  const out: PairCrossing[] = [];
+  for (let i = 0; i < withDisc.length; i++) {
+    for (let j = i + 1; j < withDisc.length; j++) {
+      const A = withDisc[i];
+      const B = withDisc[j];
+      if (discPairRelation(A.letter, B.letter) !== "cruzado") continue;
+      const key = pairKey(A.letter, B.letter);
+      const info = DISC_CRUCE_INFO[key];
+      out.push({
+        pair: key,
+        pairLabel: `${key[0]}↔${key[1]}`,
+        names: `${A.name} ↔ ${B.name}`,
+        detalle: info?.friccion ?? "Temperamentos cruzados: requieren trabajo de comunicación.",
+        sugerencia: info?.sugerencia ?? "Acordá un protocolo de comunicación entre ambos perfiles.",
+        severity: "media",
+      });
+    }
+  }
+  return out;
+}
+
+// Pares de estilos distintos presentes en el equipo (para resaltar en el diagrama).
+export function presentPairKeys(members: { disc_letters: string | null }[]): Set<string> {
+  const letters = members
+    .map((m) => primaryLetter(m.disc_letters))
+    .filter((l): l is DiscLetter => l != null);
+  const set = new Set<string>();
+  for (let i = 0; i < letters.length; i++) {
+    for (let j = i + 1; j < letters.length; j++) {
+      if (letters[i] !== letters[j]) set.add(pairKey(letters[i], letters[j]));
+    }
+  }
+  return set;
 }
 
 // ── Perfiles canónicos del evaluador (fuente de verdad) ──────
