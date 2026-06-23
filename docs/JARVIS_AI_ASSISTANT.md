@@ -239,6 +239,9 @@ La IA cuesta por token. Opciones (a decidir, §11):
    partir de `buildBriefing` + tendencias, en vez de plantillas fijas.
 4. **RAG sobre datos propios** — embeddings de los workbooks, reportes y notas de coaching de la
    empresa (pgvector en Supabase) para respuestas **fundamentadas en su propia operación**.
+   → ✅ **RAG R1 hecho (2026-06-22):** corpus **global del método** indexado (102 chunks, 8 docs)
+   con `gte-small` (Edge Function `embed`, 384 dims, gratis) + `knowledge_chunks`/`match_knowledge`;
+   `/api/jarvis` recupera e inyecta. **R2 pendiente:** material **por empresa** (workbooks/PDFs/Drive).
 5. **Modo coach** — para coaches: "¿qué empresa necesita atención esta semana?" mirando scorecards
    y áreas en rojo de sus asignadas.
 6. **Voz** — input por micrófono y/o respuesta hablada (el chime de bienvenida ya marca el tono

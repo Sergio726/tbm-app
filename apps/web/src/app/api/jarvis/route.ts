@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getProvider, type ChatMessage, type ProviderId } from "@/lib/ai";
 import { buildJarvisContext } from "@/lib/jarvis-context";
+import { retrieveKnowledge } from "@/lib/jarvis-retrieval";
 import { TBM_METHOD_FRAMING } from "@/lib/tbm-disc-context";
 
 export const dynamic = "force-dynamic";
@@ -43,7 +44,20 @@ export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as { messages?: ChatMessage[] };
   const history = Array.isArray(body.messages) ? body.messages : [];
 
-  const context = await buildJarvisContext(user.id);
+  const lastUser = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
+  const [context, knowledge] = await Promise.all([
+    buildJarvisContext(user.id),
+    retrieveKnowledge(lastUser),
+  ]);
+
+  const knowledgeBlock = knowledge.length
+    ? [
+        "",
+        "MATERIAL DE REFERENCIA DEL MÉTODO (fragmentos de la investigación; citá la fuente entre [corchetes] si lo usás; no inventes fuera de esto):",
+        ...knowledge.map((k) => `[${k.source}] ${k.content}`),
+      ]
+    : [];
+
   const system = [
     cfg.system_prompt?.trim() || DEFAULT_SYSTEM,
     "",
@@ -51,6 +65,7 @@ export async function POST(req: Request) {
     "",
     "CONTEXTO ACTUAL (datos reales de la empresa del usuario):",
     context,
+    ...knowledgeBlock,
     "",
     "No inventes datos del equipo, tareas ni métricas que no estén en este contexto; si te faltan, pedilos o aclaralo.",
   ].join("\n");

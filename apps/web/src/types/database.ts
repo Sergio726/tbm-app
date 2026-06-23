@@ -1615,6 +1615,30 @@ export type Database = {
         }
         Relationships: []
       }
+      knowledge_chunks: {
+        Row: {
+          id: string
+          scope: string
+          company_id: string | null
+          source: string
+          title: string | null
+          chunk_index: number
+          content: string
+          embedding: string | null
+          created_at: string
+        }
+        Insert: {
+          scope?: string
+          company_id?: string | null
+          source: string
+          title?: string | null
+          chunk_index?: number
+          content: string
+          embedding?: string | null
+        }
+        Update: { content?: string }
+        Relationships: []
+      }
       ai_config: {
         Row: {
           id: string
@@ -1682,6 +1706,10 @@ export type Database = {
       ai_get_api_key: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      match_knowledge: {
+        Args: { query_embedding: string; match_count?: number; p_company_id?: string | null }
+        Returns: { source: string; title: string | null; content: string; similarity: number }[]
       }
     }
     Enums: {
