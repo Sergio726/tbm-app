@@ -368,8 +368,20 @@ input.tbm-range:focus {
   to   { transform: translateX(0); }
 }
 .jarvis-panel-in { animation: jarvis-panel-in 240ms ease-out; }
+
+/* Cursor de streaming (parpadea) */
+.jarvis-cursor {
+  display: inline-block;
+  color: #9fb9ff;
+  animation: jarvis-caret 1s steps(1) infinite;
+}
+/* Botón copiar — visible al pasar el mouse sobre el mensaje */
+.jarvis-copy { opacity: 0; transition: opacity 0.15s ease; }
+.jarvis-msg:hover .jarvis-copy { opacity: 1; }
+
 @media (prefers-reduced-motion: reduce) {
-  .jarvis-panel-in { animation: none; }
+  .jarvis-panel-in,
+  .jarvis-cursor { animation: none; }
 }
 
 /* ── Tour guiado (S11) — popover de driver.js con el design system ── */

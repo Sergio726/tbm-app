@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { JarvisCore } from "./jarvis-core";
 import type { ChatMessage } from "@/lib/ai";
 
@@ -17,6 +17,7 @@ const SUGGESTIONS = [
   "¿A quién debería delegar según el DISC de mi equipo?",
   "Resumime en qué enfocarme esta semana.",
   "¿Cómo lidero mejor a un perfil Dominante?",
+  "¿Qué es el sistema LOST?",
 ];
 
 type Msg = { role: "user" | "assistant"; content: string; error?: boolean };
@@ -24,9 +25,12 @@ type Msg = { role: "user" | "assistant"; content: string; error?: boolean };
 export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
-  const [pending, setPending] = useState(false);
+  const [pending, setPending] = useState(false); // esperando el primer token
+  const [streaming, setStreaming] = useState(false); // recibiendo tokens
+  const [copied, setCopied] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -42,21 +46,39 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, pending]);
 
+  const autosize = () => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  };
+
+  const stop = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setPending(false);
+    setStreaming(false);
+  };
+
   const send = async (text: string) => {
     const content = text.trim();
-    if (!content || pending) return;
-    const userMsg: Msg = { role: "user", content };
-    const next = [...messages, userMsg];
+    if (!content || pending || streaming) return;
+    const next: Msg[] = [...messages, { role: "user", content }];
     setMessages(next);
     setInput("");
+    setTimeout(autosize, 0);
     setPending(true);
 
     const history: ChatMessage[] = next.map((m) => ({ role: m.role, content: m.content }));
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
     try {
       const res = await fetch("/api/jarvis", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ messages: history }),
+        signal: ctrl.signal,
       });
 
       if (!res.ok || !res.body) {
@@ -80,6 +102,7 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
         if (!started) {
           started = true;
           setPending(false);
+          setStreaming(true);
           setMessages((prev) => [...prev, { role: "assistant", content: acc }]);
         } else {
           setMessages((prev) => {
@@ -90,29 +113,38 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
         }
       }
       if (!started) {
-        setPending(false);
         setMessages((prev) => [...prev, { role: "assistant", content: "(sin respuesta)" }]);
       }
-    } catch {
+    } catch (e) {
+      if ((e as Error)?.name !== "AbortError") {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: "No pude responder ahora mismo. Probá de nuevo.", error: true },
+        ]);
+      }
+    } finally {
       setPending(false);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "No pude responder ahora mismo. Probá de nuevo.", error: true },
-      ]);
+      setStreaming(false);
+      abortRef.current = null;
     }
+  };
+
+  const copy = (text: string, i: number) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(i);
+      setTimeout(() => setCopied((c) => (c === i ? null : c)), 1500);
+    });
   };
 
   if (!open) return null;
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={onClose}
         style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 80 }}
         aria-hidden
       />
-      {/* Panel */}
       <aside
         role="dialog"
         aria-label="Asistente JARVIS"
@@ -122,7 +154,7 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
           top: 0,
           right: 0,
           bottom: 0,
-          width: "min(420px, 100vw)",
+          width: "min(440px, 100vw)",
           background: "#0b1220",
           borderLeft: "1px solid rgba(255,255,255,0.08)",
           zIndex: 81,
@@ -143,14 +175,25 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Asistente · beta</div>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar"
-            style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.55)", cursor: "pointer", fontSize: 20, lineHeight: 1 }}
-          >
-            ×
-          </button>
+          <div className="flex items-center" style={{ gap: 4 }}>
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  stop();
+                  setMessages([]);
+                }}
+                aria-label="Nueva conversación"
+                title="Nueva conversación"
+                style={iconBtn}
+              >
+                ＋
+              </button>
+            )}
+            <button type="button" onClick={onClose} aria-label="Cerrar" style={{ ...iconBtn, fontSize: 20 }}>
+              ×
+            </button>
+          </div>
         </div>
 
         {/* Mensajes */}
@@ -158,64 +201,79 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
           {messages.length === 0 ? (
             <div className="flex flex-col" style={{ gap: 10 }}>
               <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
-                Soy tu asistente del método TBM. Preguntame sobre tu equipo, delegación o cómo
+                Soy tu asistente del método TBM. Preguntame sobre tu equipo, delegación, DISC o cómo
                 multiplicar tu negocio.
               </p>
               {SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => send(s)}
-                  style={{
-                    textAlign: "left",
-                    padding: "10px 12px",
-                    borderRadius: 12,
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    color: "rgba(255,255,255,0.8)",
-                    fontSize: 13,
-                    cursor: "pointer",
-                  }}
-                >
+                <button key={s} type="button" onClick={() => send(s)} style={chip}>
                   {s}
                 </button>
               ))}
             </div>
           ) : (
-            <div className="flex flex-col" style={{ gap: 12 }}>
-              {messages.map((m, i) => (
-                <div
-                  key={i}
-                  style={{
-                    alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-                    maxWidth: "85%",
-                    padding: "10px 13px",
-                    borderRadius: 14,
-                    fontSize: 13.5,
-                    lineHeight: 1.55,
-                    whiteSpace: "pre-wrap",
-                    background:
-                      m.role === "user"
-                        ? "rgba(91,138,255,0.2)"
-                        : m.error
-                          ? "rgba(248,113,113,0.12)"
-                          : "rgba(255,255,255,0.05)",
-                    border: `1px solid ${
-                      m.role === "user"
-                        ? "rgba(91,138,255,0.35)"
-                        : m.error
-                          ? "rgba(248,113,113,0.3)"
-                          : "rgba(255,255,255,0.08)"
-                    }`,
-                    color: m.error ? "#fca5a5" : "rgba(255,255,255,0.92)",
-                  }}
-                >
-                  {m.content}
-                </div>
-              ))}
+            <div className="flex flex-col" style={{ gap: 14 }}>
+              {messages.map((m, i) => {
+                const isLast = i === messages.length - 1;
+                const showCursor = streaming && isLast && m.role === "assistant";
+                return (
+                  <div
+                    key={i}
+                    className="jarvis-msg group flex flex-col"
+                    style={{ alignItems: m.role === "user" ? "flex-end" : "flex-start", gap: 4 }}
+                  >
+                    <div
+                      style={{
+                        maxWidth: "88%",
+                        padding: "10px 13px",
+                        borderRadius: 14,
+                        fontSize: 13.5,
+                        lineHeight: 1.6,
+                        background:
+                          m.role === "user"
+                            ? "rgba(91,138,255,0.2)"
+                            : m.error
+                              ? "rgba(248,113,113,0.12)"
+                              : "rgba(255,255,255,0.05)",
+                        border: `1px solid ${
+                          m.role === "user"
+                            ? "rgba(91,138,255,0.35)"
+                            : m.error
+                              ? "rgba(248,113,113,0.3)"
+                              : "rgba(255,255,255,0.08)"
+                        }`,
+                        color: m.error ? "#fca5a5" : "rgba(255,255,255,0.92)",
+                      }}
+                    >
+                      {m.role === "assistant" && !m.error ? (
+                        <MarkdownLite text={m.content} />
+                      ) : (
+                        <span style={{ whiteSpace: "pre-wrap" }}>{m.content}</span>
+                      )}
+                      {showCursor && <span className="jarvis-cursor">▍</span>}
+                    </div>
+                    {m.role === "assistant" && !m.error && m.content && !showCursor && (
+                      <button
+                        type="button"
+                        onClick={() => copy(m.content, i)}
+                        className="jarvis-copy"
+                        style={{
+                          fontSize: 11,
+                          color: "rgba(255,255,255,0.4)",
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "0 4px",
+                        }}
+                      >
+                        {copied === i ? "✓ copiado" : "copiar"}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
               {pending && (
                 <div style={{ alignSelf: "flex-start", fontSize: 12.5, color: "rgba(255,255,255,0.45)" }}>
-                  JARVIS está pensando…
+                  <span className="jarvis-cursor">▍</span> JARVIS está pensando…
                 </div>
               )}
             </div>
@@ -234,7 +292,10 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
             <textarea
               ref={inputRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value);
+                autosize();
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -252,30 +313,137 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
                 color: "#fff",
                 padding: "10px 12px",
                 fontSize: 13.5,
+                lineHeight: 1.4,
                 maxHeight: 120,
                 outline: "none",
               }}
             />
-            <button
-              type="submit"
-              disabled={pending || !input.trim()}
-              style={{
-                padding: "10px 14px",
-                borderRadius: 12,
-                background: "rgba(91,138,255,0.22)",
-                border: "1px solid rgba(91,138,255,0.4)",
-                color: "#9bb8ff",
-                fontSize: 13.5,
-                fontWeight: 700,
-                cursor: pending || !input.trim() ? "not-allowed" : "pointer",
-                opacity: pending || !input.trim() ? 0.5 : 1,
-              }}
-            >
-              Enviar
-            </button>
+            {streaming || pending ? (
+              <button type="button" onClick={stop} style={{ ...sendBtn, background: "rgba(248,113,113,0.18)", border: "1px solid rgba(248,113,113,0.4)", color: "#fca5a5" }}>
+                Parar
+              </button>
+            ) : (
+              <button type="submit" disabled={!input.trim()} style={{ ...sendBtn, opacity: input.trim() ? 1 : 0.5, cursor: input.trim() ? "pointer" : "not-allowed" }}>
+                Enviar
+              </button>
+            )}
+          </div>
+          <div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.3)", marginTop: 6, textAlign: "center" }}>
+            JARVIS puede equivocarse. Verificá lo importante. · Enter envía · Shift+Enter salto de línea
           </div>
         </form>
       </aside>
     </>
   );
 }
+
+// ── Markdown liviano (sin dependencias) — bold, italic, code, listas, headings ──
+function MarkdownLite({ text }: { text: string }) {
+  const lines = text.split("\n");
+  const blocks: ReactNode[] = [];
+  let list: { ordered: boolean; items: string[] } | null = null;
+
+  const flushList = () => {
+    if (!list) return;
+    const Tag = list.ordered ? "ol" : "ul";
+    blocks.push(
+      <Tag key={`l${blocks.length}`} style={{ margin: "4px 0", paddingLeft: 20 }}>
+        {list.items.map((it, j) => (
+          <li key={j} style={{ margin: "2px 0" }}>
+            {inline(it)}
+          </li>
+        ))}
+      </Tag>
+    );
+    list = null;
+  };
+
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    const bullet = line.match(/^\s*[-*]\s+(.*)$/);
+    const ordered = line.match(/^\s*\d+[.)]\s+(.*)$/);
+    const heading = line.match(/^#{1,4}\s+(.*)$/);
+
+    if (bullet) {
+      if (!list || list.ordered) flushList();
+      list = list ?? { ordered: false, items: [] };
+      list.items.push(bullet[1]);
+    } else if (ordered) {
+      if (!list || !list.ordered) flushList();
+      list = list ?? { ordered: true, items: [] };
+      list.items.push(ordered[1]);
+    } else if (heading) {
+      flushList();
+      blocks.push(
+        <div key={`h${blocks.length}`} style={{ fontWeight: 700, margin: "6px 0 2px" }}>
+          {inline(heading[1])}
+        </div>
+      );
+    } else if (line.trim() === "") {
+      flushList();
+    } else {
+      flushList();
+      blocks.push(
+        <p key={`p${blocks.length}`} style={{ margin: "4px 0" }}>
+          {inline(line)}
+        </p>
+      );
+    }
+  }
+  flushList();
+  return <div>{blocks}</div>;
+}
+
+// Inline: **bold**, *italic*/_italic_, `code`.
+function inline(text: string): ReactNode[] {
+  const out: ReactNode[] = [];
+  const re = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*|_[^_]+_)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let k = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) out.push(text.slice(last, m.index));
+    const tok = m[0];
+    if (tok.startsWith("**")) out.push(<strong key={k++}>{tok.slice(2, -2)}</strong>);
+    else if (tok.startsWith("`"))
+      out.push(
+        <code key={k++} style={{ background: "rgba(255,255,255,0.1)", borderRadius: 4, padding: "1px 5px", fontSize: 12.5 }}>
+          {tok.slice(1, -1)}
+        </code>
+      );
+    else out.push(<em key={k++}>{tok.slice(1, -1)}</em>);
+    last = m.index + tok.length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+
+const iconBtn: React.CSSProperties = {
+  background: "transparent",
+  border: "none",
+  color: "rgba(255,255,255,0.55)",
+  cursor: "pointer",
+  fontSize: 16,
+  lineHeight: 1,
+  padding: "4px 8px",
+  borderRadius: 8,
+};
+const chip: React.CSSProperties = {
+  textAlign: "left",
+  padding: "10px 12px",
+  borderRadius: 12,
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  color: "rgba(255,255,255,0.8)",
+  fontSize: 13,
+  cursor: "pointer",
+};
+const sendBtn: React.CSSProperties = {
+  padding: "10px 14px",
+  borderRadius: 12,
+  background: "rgba(91,138,255,0.22)",
+  border: "1px solid rgba(91,138,255,0.4)",
+  color: "#9bb8ff",
+  fontSize: 13.5,
+  fontWeight: 700,
+};

@@ -267,6 +267,26 @@ La IA cuesta por token. Opciones (a decidir, §11):
 - **Config global vs por-empresa**: ¿beta 100% plataforma, o ya dejamos BYOK por empresa?
 - **Almacenamiento de la key**: ¿Vault (recomendado) o env-vars por proveedor para el MVP?
 
+---
+
+## 12. Pendientes (snapshot 2026-06-22)
+
+Hecho: **S18.1** (config + Vault), **S18.1b** (OpenRouter multi-LLM), **S18.2** (chat),
+**S18.3** (streaming + contexto rico), **RAG R1** (corpus del método, 102 chunks).
+
+**Pendiente:**
+- **UX del chat** — mejorar el panel (markdown, cursor de streaming, copiar, nueva conversación,
+  auto-resize). *(en curso)*
+- **RAG R2** — material **por empresa**: workbooks completados, informes DISC en PDF, y el material
+  de **Google Drive TBM4** (presentaciones/transcripciones) → upload + parsing + scope `company`.
+- **S18.5 — Tool use** — que JARVIS *actúe*: crear tareas (Pase de Estafeta), generar link DISC,
+  armar reporte semanal (function calling).
+- **S18.6 — Historial + costos** — persistir conversaciones (`ai_conversations`/`ai_messages`),
+  `ai_usage` + rate-limit / gating.
+- **Deuda técnica** — unificar la capa `lib/ai/` (admin + web) en `packages/shared`.
+- **Otras ideas (§10):** modo coach, voz, router de costo, failover entre modelos, biblioteca de
+  prompts, telemetría.
+
 > Relacionado: [[METODO_TBM_CANONICO]] · `lib/tbm-disc-context.ts` · `lib/ai-report.ts` ·
 > `components/dashboard/jarvis-*`. Backlog: este doc cubre **S17 → S18** (el orbe ya anticipaba
 > este asistente).
