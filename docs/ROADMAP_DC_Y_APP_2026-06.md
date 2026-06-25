@@ -132,8 +132,51 @@ service-role, verificar la service-role key del web en prod. + **deuda:** unific
 
 ---
 
+## 2·B — Pulido pre-beta (UX / calidad) — *9 puntos*
+
+Frentes de pulido que pesan especialmente porque define la **primera impresión** de los pilotos.
+No son features nuevas: es calidad. Agrupados por urgencia.
+
+### Críticos para la beta (activación / primera impresión)
+1. **Onboarding del piloto, end-to-end.** Hoy el acceso es por **contraseña temporal manual**
+   (email en modo test) → clunky, y los primeros 5 minutos definen si el piloto se queda. Pulir:
+   pantalla de bienvenida clara, **forzar cambio de contraseña** en el primer login, "primeros 3
+   pasos", y que **DC guíe** el arranque (en vez del tour estático). *Alta.*
+2. **Empty states + "primera acción" en los módulos del web.** El piloto entra a **Equipo /
+   Delegación / Plan 90D vacíos** sin saber qué hacer; cada pantalla vacía necesita un CTA claro
+   ("Cargá tu primer colaborador", "Creá tu primera Roca"). (En el admin ya está, en el web no.)
+   Es lo que más mueve la activación. *Alta.*
+3. **Mobile del web app.** Los pilotos van a abrir desde el **celular**. El admin quedó responsive
+   (E2), pero el producto no se auditó mobile-first (dashboard + módulos). *Alta.*
+
+### Confianza / calidad percibida
+4. **Estados de carga + performance del dashboard.** El dashboard hace **muchas queries** (~15
+   `.from()`); se siente lento y sin skeletons → paralelizar consultas + agregar skeletons. *Media.*
+5. **Manejo de errores amigable** en el web (toasts / fallbacks) — que nada "se rompa feo" ante un
+   fallo de red/RLS. *Media.*
+6. **Hardening de seguridad pre-beta.** Los advisors muestran funciones `SECURITY DEFINER`
+   ejecutables por anon/authenticated y **leaked-password protection apagada**; repaso de RLS por
+   tabla antes de meter datos reales de empresas. *Media/Alta.*
+
+### Coherencia / marca
+7. **Vista de créditos del líder.** Hoy solo ve un **chip de saldo**; no entiende qué es un crédito
+   ni cómo conseguir más. Para la beta de "regalamos créditos", debe ser claro (saldo + historial +
+   cómo pedir más). *Media.*
+8. **Experiencia del test DISC público** (`/disc/[token]`). Lo ven **personas que no son usuarios**
+   (los evaluados) → cara visible de la marca; pulir esa pantalla. *Media.*
+9. **Unificar el design system** admin ↔ web (hoy dos lenguajes visuales) + cerrar **C1**
+   (surfacear "LOST" como sistema en el copy, ya casi). *Baja/Media.*
+
+> **Top 3 antes de abrir la beta:** #1 (onboarding del piloto), #2 (empty states / primera acción),
+> #3 (mobile) — deciden si un piloto se engancha o abandona el primer día. #4–#6 entran en una
+> "pasada de hardening pre-beta".
+
+---
+
 ## 3. Priorización sugerida (próximos pasos)
 
+0. **Pulido pre-beta** (§2·B): top 3 — onboarding del piloto, empty states/primera acción, mobile.
+   Condiciona la apertura de la beta; va en paralelo a lo de abajo.
 1. **DC-9** (fixes QA — quick wins) + **DC-1** (DC global) → DC usable en serio en toda la app.
 2. **DC-2** (personalización desde super-admin) → control sin tocar código.
 3. **DC-3** (acciones / tool use) → el salto a copiloto; arrancar con 2–3 tools (crear tarea,
