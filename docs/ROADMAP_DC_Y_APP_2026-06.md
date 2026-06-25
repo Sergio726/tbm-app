@@ -1,0 +1,151 @@
+# Roadmap — Evolución de DC + mejoras de la app (2026-06-25)
+
+> Documento de **proyección** (no es backlog cerrado ni código). Reúne lo pendiente de los
+> sprints + ideas nuevas, con foco en **DC** (el asistente). Para retomar y priorizar.
+> Relacionado: [`JARVIS_AI_ASSISTANT.md`](JARVIS_AI_ASSISTANT.md) (diseño técnico), `SPEC.md` §M10,
+> [`JARVIS_QA_2026-06-22.md`](JARVIS_QA_2026-06-22.md) (bugs).
+
+---
+
+## 0. Dónde estamos (resumen)
+
+**Hecho:** beta operativa (god-mode + créditos), Mi Equipo + DISC (B6, D6), y **DC** funcional:
+config multi-LLM por OpenRouter desde el admin, chat con streaming, contexto real del equipo,
+RAG sobre el método (corpus curado), UX del panel legible.
+
+**Pendiente del backlog previo:**
+- **Fase 2:** A4 Stripe *(post-beta)* · verificación E2E del flujo de créditos *(manual)* · fixes del QA de DC.
+- **Fase 3 (bloqueado por Dilio):** B3+B4 (3 gráficas DISC de intensidad) · A3.2 (365 meditaciones) · C1 (mapa visual LOST).
+- **Fase 4 (venta):** A5 (dashboard de métricas de la startup) · A6 (enterprise readiness: GDPR, planes, SOC2/SSO).
+
+---
+
+## 1. DC: de chat a **copiloto agéntico** (foco principal)
+
+Visión: DC deja de ser un chat en una sola pantalla y se convierte en un **asistente omnipresente
+que entiende el contexto, ejecuta acciones y acompaña** el método. Epics ordenados por valor/madurez:
+
+### DC-1 · DC global (omnipresente) — *alta prioridad, bajo riesgo*
+**Problema:** hoy el orbe vive solo en el header del dashboard; en el resto de las ventanas no se
+puede hablar con DC.
+**Propuesta:** un **launcher flotante** (botón/orbe fijo abajo a la derecha) disponible en **todo
+el `(dashboard)` layout**, no solo en el home. El panel de chat se abre desde cualquier página.
+- **Context-aware por pantalla:** DC sabe en qué módulo está el usuario (equipo, delegación,
+  rituales, plan 90D) y ajusta sugerencias ("estás en Delegación: ¿armamos un Pase de Estafeta?").
+- Integrar también con el **Command Palette (⌘K)**: una acción "Preguntar a DC".
+- Técnico: mover el montaje del orbe/panel del `<h1>` del dashboard al **layout** (`(dashboard)/
+  layout.tsx`) como launcher global; pasar la ruta/módulo actual al contexto.
+
+### DC-2 · Personalización desde el super-admin — *alta prioridad*
+Hoy el admin configura proveedor/modelo/key/system-prompt/temperatura. Ampliar a **personalización
+de la "persona" de DC**:
+- **Nombre e identidad** (ya es "DC", pero editable), **tono/voz** (formal/cercano/directo),
+  **avatar/color del orbe**.
+- **Prompts sugeridos** editables (los chips del panel).
+- **Features on/off** (RAG, acciones, voz) por flag.
+- **Mensaje de bienvenida** del panel.
+- **Post-beta:** persona/config **por empresa** (cada piloto con su DC), e idioma.
+- Técnico: ampliar `ai_config` (campos `persona`, `tone`, `suggested_prompts jsonb`, `features
+  jsonb`, `welcome`) + UI en la sección "Asistente IA"; el route arma el system con esos campos.
+
+### DC-3 · Acciones en la app (tool use) — *el salto a "copiloto"* — *alta prioridad, media complejidad*
+DC no solo responde: **hace**. Function calling / tool use. Catálogo inicial de herramientas
+(todas con **confirmación** antes de ejecutar, y respetando permisos/rol):
+- **Crear tarea** (Pase de Estafeta, con los 5 puntos) y asignarla.
+- **Generar link DISC** para un colaborador (consume crédito) / invitar colaborador.
+- **Agendar/marcar ritual** (War Up, Cool Down, Pre-game).
+- **Cargar feedback S.E.C.** sugerido por DISC.
+- **Crear/actualizar Rocas** (Plan 90D) y leading indicators.
+- **Actualizar scorecard** / registrar energía.
+- **Resumen/insight on-demand:** "armá el reporte semanal", "¿quién está en sombra?".
+- Técnico: extender la interfaz `AIProvider` con `tools` (OpenRouter soporta function calling
+  estilo OpenAI para modelos compatibles); un **registry de herramientas server-side** que mapea
+  cada tool a un server action existente (reusar `equipo/actions`, `generateDiscLink`, etc.);
+  **bucle de tool use** (modelo pide tool → ejecutamos → devolvemos resultado → continúa).
+  Gate de confirmación en el panel para acciones que escriben.
+
+### DC-4 · Integración Claude Code / Agent SDK — *visión, planificar* — *media/alta complejidad*
+Llevar DC-3 a un **agente real multi-paso** usando el **Claude Agent SDK** (o el patrón de
+"managed agents"): DC planifica y ejecuta flujos completos ("onboardea a este nuevo colaborador":
+crea perfil → genera link DISC → agenda ritual → arma su mapa de rol), con loop gestionado,
+memoria de la conversación y herramientas. Dos lecturas (documentar ambas):
+- **(a) Producto — "Claude Code para tu negocio":** DC como agente que opera la app por el usuario
+  (el norte de DC-3 escalado). Requiere proveedor con tool use robusto (Claude/Anthropic
+  directo o vía OpenRouter) y un runtime de agente (Agent SDK / loop propio).
+- **(b) Desarrollo:** usar Claude Code (la herramienta) en el flujo de desarrollo del repo
+  (ya se viene usando para construir esto).
+- **Decisión abierta:** ¿agente "managed" (Anthropic hostea el loop) vs **loop propio** server-side
+  (más control, encaja con el stack actual y multi-proveedor)? Recomendado: **loop propio** sobre
+  la abstracción `lib/ai` para no atarse a un solo proveedor.
+
+### DC-5 · RAG R2 — conocimiento por empresa — *media prioridad*
+Sumar al corpus global (método) el **material por empresa**: workbooks completados, informes DISC
+en PDF, notas de coaching, y el material de **Google Drive TBM4** (presentaciones/transcripciones).
+Requiere: upload + parsing (PDF→texto), scope `company` (ya soportado en `knowledge_chunks`),
+y un re-ingest. Resultado: DC responde fundamentado en la operación real de cada empresa.
+
+### DC-6 · Historial, costos y control — *necesario antes de escalar*
+- **Historial** persistente (`ai_conversations` / `ai_messages`) para retomar conversaciones.
+- **`ai_usage`** (tokens por empresa/usuario) + **rate-limit** y, post-beta, **presupuesto/gating**
+  (créditos IA separados o por plan).
+- **Router de costo:** consultas simples → modelo barato; complejas → premium.
+
+### DC-7 · Proactividad — *diferenciador*
+DC **inicia** en vez de solo responder: briefing diario generado por IA, nudges contextuales
+("hace 5 días que no movés esta tarea"), alertas de equipo (alguien en sombra), check-in semanal.
+Encaja con el cron existente y las notificaciones.
+
+### DC-8 · Voz y modo coach — *exploratorio*
+- **Voz:** input por micrófono / respuesta hablada (la identidad "asistente" ya lo invita).
+- **Modo coach:** para coaches, insights cross-empresa de sus asignadas ("¿qué empresa necesita
+  atención esta semana?").
+
+### DC-9 · Fixes de calidad (del QA) — *quick wins*
+Del [`JARVIS_QA_2026-06-22.md`](JARVIS_QA_2026-06-22.md): doble `layoutId` del orbe (parpadeo),
+temperatura 0 imposible, "activar" sin key, focus-trap del panel, restringir la Edge `embed` a
+service-role, verificar la service-role key del web en prod. + **deuda:** unificar `lib/ai/`
+(admin+web) en `packages/shared`.
+
+---
+
+## 2. Mejoras generales de la app (más allá de DC)
+
+### Monetización y escala
+- **A4 — Stripe** (post-beta): compra de créditos por el líder + webhooks + cupones + Stripe Tax.
+- **A5 — Dashboard de métricas de la startup** (admin): MRR/ingresos, uso, retención, embudo de la
+  beta (con datos de PostHog ya activo).
+- **A6 — Enterprise readiness:** export/borrado GDPR, planes/feature-flags, roles internos del
+  admin, camino SOC2 / SSO-SAML, leaked-password (Supabase Pro).
+
+### Producto (desbloqueado, sin Dilio)
+- **PWA / mobile:** instalable, push notifications nativas, offline básico de rituales.
+- **Onboarding guiado por DC** (en vez del tour estático): DC acompaña los primeros pasos.
+- **Reportes generados por IA:** reporte semanal, resumen de DISC del equipo, plan de acción.
+- **Búsqueda semántica** en toda la app (reutiliza el RAG / pgvector).
+- **Integraciones:** WhatsApp/Slack (notificaciones y "preguntale a DC"), Google Calendar (rituales).
+- **White-label / branding por empresa** (para vender a consultoras además de Dilio).
+
+### Bloqueado por Dilio (Fase 3)
+- **B3+B4** — 3 gráficas DISC de intensidad (Pública/Núcleo/Espejo): falta la fórmula/modelo.
+- **A3.2** — 365 meditaciones del Pre-game: falta el material.
+- **C1** — mapa visual del sistema LOST: falta la presentación unificada.
+
+---
+
+## 3. Priorización sugerida (próximos pasos)
+
+1. **DC-9** (fixes QA — quick wins) + **DC-1** (DC global) → DC usable en serio en toda la app.
+2. **DC-2** (personalización desde super-admin) → control sin tocar código.
+3. **DC-3** (acciones / tool use) → el salto a copiloto; arrancar con 2–3 tools (crear tarea,
+   generar link DISC, reporte semanal) con confirmación.
+4. **DC-6** (historial + costos) → antes de abrir a más empresas.
+5. **DC-5** (RAG R2) + **DC-7** (proactividad) → profundidad.
+6. **DC-4** (agente/Claude Agent SDK) → cuando DC-3 esté maduro.
+7. En paralelo, según beta: **A4 Stripe**, **A5 métricas**.
+
+## 4. Decisiones abiertas (para Sebas)
+- **Tool use:** ¿confirmación siempre antes de escribir, o "autopilot" para acciones reversibles?
+- **Agente:** ¿loop propio (recomendado, multi-proveedor) vs managed agents de Anthropic?
+- **Costos de IA:** ¿la plataforma los absorbe (como créditos) o gating desde DC-6?
+- **Personalización:** ¿una sola persona de DC global, o por empresa desde el día 1?
+- **"Claude Code" se refiere a:** ¿DC-como-agente-en-la-app (a), o usar Claude Code en el dev (b)?
