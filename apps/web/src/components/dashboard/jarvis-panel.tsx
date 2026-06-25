@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { JarvisCore } from "./jarvis-core";
 import type { ChatMessage } from "@/lib/ai";
 
@@ -136,9 +137,9 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
     });
   };
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <>
       <div
         onClick={onClose}
@@ -159,6 +160,12 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
           borderLeft: "1px solid rgba(255,255,255,0.08)",
           zIndex: 81,
           boxShadow: "-20px 0 60px rgba(0,0,0,0.5)",
+          // Reset de herencia (el orbe vive dentro de un <h1> bold): texto normal.
+          fontWeight: 400,
+          fontSize: 14,
+          letterSpacing: "normal",
+          lineHeight: 1.5,
+          color: "rgba(255,255,255,0.92)",
         }}
       >
         {/* Header */}
@@ -214,36 +221,47 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
             <div className="flex flex-col" style={{ gap: 14 }}>
               {messages.map((m, i) => {
                 const isLast = i === messages.length - 1;
+                const isUser = m.role === "user";
                 const showCursor = streaming && isLast && m.role === "assistant";
+                const bubbleStyle: React.CSSProperties = isUser
+                  ? {
+                      maxWidth: "85%",
+                      padding: "9px 13px",
+                      borderRadius: 14,
+                      fontSize: 14,
+                      lineHeight: 1.55,
+                      background: "rgba(91,138,255,0.18)",
+                      border: "1px solid rgba(91,138,255,0.32)",
+                      color: "rgba(255,255,255,0.95)",
+                      whiteSpace: "pre-wrap",
+                    }
+                  : m.error
+                    ? {
+                        maxWidth: "94%",
+                        padding: "9px 13px",
+                        borderRadius: 12,
+                        fontSize: 14,
+                        lineHeight: 1.55,
+                        background: "rgba(248,113,113,0.1)",
+                        border: "1px solid rgba(248,113,113,0.28)",
+                        color: "#fca5a5",
+                        whiteSpace: "pre-wrap",
+                      }
+                    : {
+                        // Asistente: estilo "documento" (sin burbuja) para leer cómodo.
+                        maxWidth: "100%",
+                        padding: 0,
+                        fontSize: 15,
+                        lineHeight: 1.65,
+                        color: "rgba(255,255,255,0.9)",
+                      };
                 return (
                   <div
                     key={i}
                     className="jarvis-msg group flex flex-col"
-                    style={{ alignItems: m.role === "user" ? "flex-end" : "flex-start", gap: 4 }}
+                    style={{ alignItems: isUser ? "flex-end" : "flex-start", gap: 4, width: "100%" }}
                   >
-                    <div
-                      style={{
-                        maxWidth: "88%",
-                        padding: "10px 13px",
-                        borderRadius: 14,
-                        fontSize: 13.5,
-                        lineHeight: 1.6,
-                        background:
-                          m.role === "user"
-                            ? "rgba(91,138,255,0.2)"
-                            : m.error
-                              ? "rgba(248,113,113,0.12)"
-                              : "rgba(255,255,255,0.05)",
-                        border: `1px solid ${
-                          m.role === "user"
-                            ? "rgba(91,138,255,0.35)"
-                            : m.error
-                              ? "rgba(248,113,113,0.3)"
-                              : "rgba(255,255,255,0.08)"
-                        }`,
-                        color: m.error ? "#fca5a5" : "rgba(255,255,255,0.92)",
-                      }}
-                    >
+                    <div style={bubbleStyle}>
                       {m.role === "assistant" && !m.error ? (
                         <MarkdownLite text={m.content} />
                       ) : (
@@ -333,7 +351,8 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
           </div>
         </form>
       </aside>
-    </>
+    </>,
+    document.body
   );
 }
 
@@ -347,9 +366,9 @@ function MarkdownLite({ text }: { text: string }) {
     if (!list) return;
     const Tag = list.ordered ? "ol" : "ul";
     blocks.push(
-      <Tag key={`l${blocks.length}`} style={{ margin: "4px 0", paddingLeft: 20 }}>
+      <Tag key={`l${blocks.length}`} style={{ margin: "6px 0", paddingLeft: 18 }}>
         {list.items.map((it, j) => (
-          <li key={j} style={{ margin: "2px 0" }}>
+          <li key={j} style={{ margin: "3px 0", lineHeight: 1.55 }}>
             {inline(it)}
           </li>
         ))}
@@ -375,7 +394,7 @@ function MarkdownLite({ text }: { text: string }) {
     } else if (heading) {
       flushList();
       blocks.push(
-        <div key={`h${blocks.length}`} style={{ fontWeight: 700, margin: "6px 0 2px" }}>
+        <div key={`h${blocks.length}`} style={{ fontWeight: 600, fontSize: 15, margin: "10px 0 2px", color: "#fff" }}>
           {inline(heading[1])}
         </div>
       );
@@ -384,7 +403,7 @@ function MarkdownLite({ text }: { text: string }) {
     } else {
       flushList();
       blocks.push(
-        <p key={`p${blocks.length}`} style={{ margin: "4px 0" }}>
+        <p key={`p${blocks.length}`} style={{ margin: "0 0 8px" }}>
           {inline(line)}
         </p>
       );
@@ -404,7 +423,12 @@ function inline(text: string): ReactNode[] {
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) out.push(text.slice(last, m.index));
     const tok = m[0];
-    if (tok.startsWith("**")) out.push(<strong key={k++}>{tok.slice(2, -2)}</strong>);
+    if (tok.startsWith("**"))
+      out.push(
+        <strong key={k++} style={{ fontWeight: 600, color: "#fff" }}>
+          {tok.slice(2, -2)}
+        </strong>
+      );
     else if (tok.startsWith("`"))
       out.push(
         <code key={k++} style={{ background: "rgba(255,255,255,0.1)", borderRadius: 4, padding: "1px 5px", fontSize: 12.5 }}>
