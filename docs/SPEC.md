@@ -456,6 +456,60 @@ Antes del diagnóstico formal, el Arquitecto responde una sola pregunta brutal:
 
 ---
 
+### M10 — JARVIS (Asistente IA)
+
+> Diseño técnico completo: [`JARVIS_AI_ASSISTANT.md`](JARVIS_AI_ASSISTANT.md). Acá va el
+> comportamiento de producto. Estado: chat funcional con streaming + RAG sobre el método (S18.3 /
+> RAG R1). Multi-LLM por **OpenRouter**, configurable desde el panel admin.
+
+**Propósito:** un asistente conversacional que ayuda al líder a aplicar el método TBM a su negocio
+real — entiende su equipo (DISC, cruces), sus tareas, sus áreas críticas y la metodología, y
+responde fundamentado en eso.
+
+**Dónde vive (descubribilidad):**
+- Un **orbe azul** ("JARVIS") en el header del dashboard, junto al nombre del usuario.
+- Como el usuario no necesariamente sabe qué es, el orbe tiene un **anillo de atención que pulsa
+  cada ~7 s** (mientras el chat está cerrado) y, la **primera vez**, un hint de bienvenida
+  ("👋 Soy JARVIS, tu asistente…"). Al tocarlo se abre un **panel de chat** (slide-over).
+
+**Comportamiento de respuesta (reglas obligatorias, inyectadas siempre):**
+1. **Brevedad** — respuestas cortas y al grano (2–4 frases). Nada de respuestas largas o listados
+   extensos salvo que el usuario lo pida.
+2. **Cierre con pregunta** — termina SIEMPRE con UNA pregunta breve para descubrir qué necesita
+   realmente el usuario y continuar la conversación.
+3. **Solo su dominio** — responde únicamente sobre método TBM, liderazgo, equipos, delegación,
+   DISC, productividad del líder y el negocio del usuario. Fuera de eso (ej. recetas, deportes,
+   trivia) **declina con amabilidad y reencauza** — no responde off-topic.
+4. **Formato sobrio** — texto plano y natural; negritas con mucha moderación (1–2 términos), nunca
+   frases enteras en negrita.
+5. **Naming canónico** — usa siempre LOST (no "LOS"), "Niveles de Delegación" (no "LOS"), ARQI.
+6. **No inventa** — solo usa el contexto real provisto (equipo/tareas/método); si le falta un
+   dato, lo pide.
+
+**UX del panel:** markdown liviano, respuesta en **streaming** (token a token) con cursor, botón
+**Parar**, **copiar** respuesta, **nueva conversación**, textarea que crece, prompts sugeridos,
+disclaimer ("puede equivocarse, verificá lo importante"). Cierra con Esc / × / click afuera.
+
+**Configuración (panel admin · god-mode):** proveedor (OpenRouter recomendado / Anthropic), modelo,
+API key (cifrada en Vault), system prompt base, temperatura, activar/desactivar, "probar conexión".
+
+**Conocimiento (RAG):** corpus **curado** del método (canónico + material primario de Dilio)
+indexado con embeddings `gte-small`; en cada pregunta recupera los fragmentos relevantes y los
+inyecta. Pendiente: material **por empresa** (workbooks/informes DISC/Drive) — ver R2.
+
+**Criterios de aceptación:**
+- [ ] El orbe se nota (pulso periódico + hint primera vez) y abre el chat al tocarlo.
+- [ ] Respuestas breves que terminan en una pregunta.
+- [ ] Rechaza pedidos off-topic y reencauza al método/negocio.
+- [ ] Sin exceso de negritas; naming canónico (LOST, Niveles de Delegación, ARQI).
+- [ ] Usa datos reales del equipo/empresa y cita el método cuando corresponde.
+
+**Pendiente (mejoras futuras):** tool use (que JARVIS *actúe*: crear tareas, generar link DISC),
+historial persistente + control de costos, RAG por empresa, modo coach, voz. Ver
+`JARVIS_AI_ASSISTANT.md` §12.
+
+---
+
 ## 4. FLUJOS DE USUARIO CLAVE
 
 ### Flujo 1 — Onboarding (Primera vez)

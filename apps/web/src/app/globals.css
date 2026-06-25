@@ -379,6 +379,28 @@ input.tbm-range:focus {
 .jarvis-copy { opacity: 0; transition: opacity 0.15s ease; }
 .jarvis-msg:hover .jarvis-copy { opacity: 1; }
 
+/* Anillo de atención del orbe — pulsa cada ~7s para que el usuario lo descubra */
+@keyframes jarvis-attention {
+  0%   { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+  4%   { opacity: 0.7; }
+  18%  { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+}
+.jarvis-attention {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(96, 165, 250, 0.75);
+  pointer-events: none;
+  animation: jarvis-attention 7s ease-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .jarvis-attention { animation: none; display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .jarvis-panel-in,
   .jarvis-cursor { animation: none; }
