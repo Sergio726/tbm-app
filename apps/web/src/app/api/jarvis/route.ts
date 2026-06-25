@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   const knowledgeBlock = knowledge.length
     ? [
         "",
-        "MATERIAL DE REFERENCIA DEL MÉTODO (fragmentos de la investigación; citá la fuente entre [corchetes] si lo usás; no inventes fuera de esto):",
+        "MATERIAL DE REFERENCIA DEL MÉTODO (fragmentos de la investigación; citá la fuente entre [corchetes] si lo usás; no inventes fuera de esto). OJO: el material puede traer rótulos viejos (ej. 'LOS'); aplicá SIEMPRE los nombres canónicos indicados arriba:",
         ...knowledge.map((k) => `[${k.source}] ${k.content}`),
       ]
     : [];

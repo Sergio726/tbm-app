@@ -11,16 +11,14 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// Corpus del método/investigación (NO la spec/sprints de la app).
+// Corpus CURADO: solo el método canónico + material primario de Dilio.
+// Se EXCLUYEN los docs históricos de proceso/descubrimiento (HALLAZGOS_*, WORKBOOK_DELTA,
+// DISC_HALLAZGOS) que arrastran naming desactualizado y contradicciones ya resueltas.
 const DOCS = [
-  "METODO_TBM_CANONICO.md",
-  "MODULO_DISC.md",
-  "DISC_HALLAZGOS.md",
-  "HALLAZGOS_FASE1.md",
-  "HALLAZGOS_BORRADOR_DILIO.md",
-  "RESPUESTAS_DILIO.md",
-  "Visión de app TBM - Dilio V2.md",
-  "WORKBOOK_DELTA.md",
+  "METODO_TBM_CANONICO.md", // digest canónico (fuente de verdad)
+  "MODULO_DISC.md", // referencia DISC
+  "Visión de app TBM - Dilio V2.md", // visión de Dilio
+  "RESPUESTAS_DILIO.md", // respuestas directas de Dilio
 ];
 
 // gte-small tope ~512 tokens → chunks chicos (~1400 chars ≈ ~350 tokens).
@@ -90,6 +88,10 @@ function rest(url, serviceKey) {
     authorization: `Bearer ${serviceKey}`,
   };
   return {
+    async delAllGlobal() {
+      const res = await fetch(`${base}?scope=eq.global`, { method: "DELETE", headers });
+      if (!res.ok) throw new Error(`delete-all ${res.status}: ${await res.text().catch(() => "")}`);
+    },
     async del(source) {
       const q = `scope=eq.global&source=eq.${encodeURIComponent(source)}`;
       const res = await fetch(`${base}?${q}`, { method: "DELETE", headers });
@@ -115,6 +117,10 @@ async function main() {
     process.exit(1);
   }
   const db = rest(url, serviceKey);
+
+  // Limpieza total del corpus global → elimina chunks de docs ya removidos de la lista.
+  await db.delAllGlobal();
+  console.log("· corpus global limpiado");
 
   let total = 0;
   for (const file of DOCS) {

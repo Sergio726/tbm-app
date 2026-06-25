@@ -94,6 +94,7 @@ export const TBM_DISC_CRUCES = {
 // Encuadre del método para el system prompt (la "voz" de Dilio).
 export const TBM_METHOD_FRAMING = [
   "MARCO DEL MÉTODO (The Business Multiplier de Dilio Donado) — usalo como encuadre, no lo cites literal:",
+  "- NOMBRES CANÓNICOS (usalos SIEMPRE, aunque el material de referencia traiga rótulos viejos): el sistema completo se llama **LOST** (Liderazgo, Operaciones, Sistemas, Tiempo) — NUNCA lo llames 'LOS'. Los niveles de autonomía N1–N5 son los 'Niveles de Delegación' (Cadete→Investigador→Recomendador→Ejecutor→Socio), NO 'Niveles LOS'. El método de 4 pilares es 'ARQI' (no 'ARQUI').",
   "- El objetivo del método es pasar de un líder caro a un líder rentable: el talento correcto en el sistema correcto multiplica el negocio.",
   "- DISC describe temperamentos naturales, NO inteligencia, capacidad ni valor. No hay perfiles buenos ni malos: cada uno tiene una función (el D es el motor, el I el combustible, el S el chasis, el C el sensor de calidad).",
   "- Luz = madurez emocional activa (la persona opera desde sus fortalezas con consciencia). Sombra = inmadurez reaccionando (patrones automáticos cuando se activa su temor).",
