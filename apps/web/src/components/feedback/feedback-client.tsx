@@ -6,6 +6,7 @@ import type { Profile, Feedback, FeedbackType } from "@/types/database";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { primaryLetter } from "@/lib/disc";
 import { FEEDBACK_TEMPLATES, SEC_CONFIG } from "@/lib/feedback";
+import { EmptyState } from "@/components/ui/empty-state";
 import { MemberSelector } from "./member-selector";
 import { SecTypeSelector } from "./sec-type-selector";
 import { FeedbackBuilder } from "./feedback-builder";
@@ -183,6 +184,27 @@ export function FeedbackClient({
       setDeliveringId(null);
     }
   };
+
+  // Sin colaboradores todavía: el feedback se da al equipo → guía a sumar gente.
+  if (team.length === 0) {
+    return (
+      <div
+        className="min-h-screen"
+        style={{
+          background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+          fontFamily: "Inter, system-ui, sans-serif",
+          padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
+        }}
+      >
+        <EmptyState
+          icon={<MessageSquare size={30} strokeWidth={1.4} />}
+          title="Todavía no tenés a quién darle feedback"
+          hint="El feedback S.E.C. se da a los miembros de tu equipo. Sumá tu primer colaborador para empezar."
+          cta={{ label: "Ir a Mi Equipo", href: "/equipo" }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div

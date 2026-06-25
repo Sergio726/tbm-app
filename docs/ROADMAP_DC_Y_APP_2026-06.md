@@ -138,14 +138,16 @@ Frentes de pulido que pesan especialmente porque define la **primera impresión*
 No son features nuevas: es calidad. Agrupados por urgencia.
 
 ### Críticos para la beta (activación / primera impresión)
-1. **Onboarding del piloto, end-to-end.** Hoy el acceso es por **contraseña temporal manual**
+1. ✅ **Onboarding del piloto, end-to-end** *(hecho 2026-06-25)*: guard en middleware fuerza al
+   arquitecto sin `onboarding_completed` a `/onboarding` (loop-safe) + gate de **cambio de
+   contraseña** temporal antes del wizard (`must_change_password` en metadata). Hoy el acceso es por **contraseña temporal manual**
    (email en modo test) → clunky, y los primeros 5 minutos definen si el piloto se queda. Pulir:
    pantalla de bienvenida clara, **forzar cambio de contraseña** en el primer login, "primeros 3
    pasos", y que **DC guíe** el arranque (en vez del tour estático). *Alta.*
-2. **Empty states + "primera acción" en los módulos del web.** El piloto entra a **Equipo /
-   Delegación / Plan 90D vacíos** sin saber qué hacer; cada pantalla vacía necesita un CTA claro
-   ("Cargá tu primer colaborador", "Creá tu primera Roca"). (En el admin ya está, en el web no.)
-   Es lo que más mueve la activación. *Alta.*
+2. ✅/🟡 **Empty states + "primera acción"** *(parcial, 2026-06-25)*: se creó `EmptyState` web
+   (`components/ui/empty-state.tsx`). Al revisar, **Equipo / Delegación / Plan 90D ya tenían** empty
+   states con CTA. Se agregó el faltante real: **Feedback** (sin colaboradores → CTA "Ir a Mi
+   Equipo"). Pendiente menor: revisar empties de módulos secundarios (Diagnósticos, Workbooks).
 3. **Mobile del web app.** Los pilotos van a abrir desde el **celular**. El admin quedó responsive
    (E2), pero el producto no se auditó mobile-first (dashboard + módulos). *Alta.*
 
