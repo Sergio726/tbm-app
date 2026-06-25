@@ -1,6 +1,9 @@
 # JARVIS — Asistente IA (S18) · Documento de diseño
 
-> Estado: **diseño / no implementado**. Esta nota define la arquitectura del asistente IA real,
+> **Nombre visible:** el asistente se llama **DC** (rebautizado 2026-06-25). "JARVIS" queda como
+> nombre interno/código del subsistema (este doc, archivos `jarvis-*`, ruta `/api/jarvis`).
+>
+> Estado: **diseño / no implementado** (histórico). Esta nota define la arquitectura del asistente IA real,
 > multi-proveedor y configurable desde el panel admin. La implementación se hará por fases
 > (ver §9). Fecha: 2026-06-22.
 

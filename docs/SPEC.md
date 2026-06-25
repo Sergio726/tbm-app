@@ -456,7 +456,10 @@ Antes del diagnóstico formal, el Arquitecto responde una sola pregunta brutal:
 
 ---
 
-### M10 — JARVIS (Asistente IA)
+### M10 — DC (Asistente IA)
+
+> **Nombre:** el asistente se llama **DC** (nombre visible). "JARVIS" quedó como nombre interno/
+> código del subsistema (archivos, componentes, ruta `/api/jarvis`).
 
 > Diseño técnico completo: [`JARVIS_AI_ASSISTANT.md`](JARVIS_AI_ASSISTANT.md). Acá va el
 > comportamiento de producto. Estado: chat funcional con streaming + RAG sobre el método (S18.3 /
@@ -467,10 +470,10 @@ real — entiende su equipo (DISC, cruces), sus tareas, sus áreas críticas y l
 responde fundamentado en eso.
 
 **Dónde vive (descubribilidad):**
-- Un **orbe azul** ("JARVIS") en el header del dashboard, junto al nombre del usuario.
+- Un **orbe azul** ("DC") en el header del dashboard, junto al nombre del usuario.
 - Como el usuario no necesariamente sabe qué es, el orbe tiene un **anillo de atención que pulsa
   cada ~7 s** (mientras el chat está cerrado) y, la **primera vez**, un hint de bienvenida
-  ("👋 Soy JARVIS, tu asistente…"). Al tocarlo se abre un **panel de chat** (slide-over).
+  ("👋 Soy DC, tu asistente…"). Al tocarlo se abre un **panel de chat** (slide-over).
 
 **Comportamiento de respuesta (reglas obligatorias, inyectadas siempre):**
 1. **Brevedad** — respuestas cortas y al grano (2–4 frases). Nada de respuestas largas o listados
@@ -504,7 +507,7 @@ inyecta. Pendiente: material **por empresa** (workbooks/informes DISC/Drive) —
 - [ ] Sin exceso de negritas; naming canónico (LOST, Niveles de Delegación, ARQI).
 - [ ] Usa datos reales del equipo/empresa y cita el método cuando corresponde.
 
-**Pendiente (mejoras futuras):** tool use (que JARVIS *actúe*: crear tareas, generar link DISC),
+**Pendiente (mejoras futuras):** tool use (que DC *actúe*: crear tareas, generar link DISC),
 historial persistente + control de costos, RAG por empresa, modo coach, voz. Ver
 `JARVIS_AI_ASSISTANT.md` §12.
 

@@ -21,7 +21,7 @@ export default async function AsistenteIaPage() {
     <div style={{ maxWidth: 720 }}>
       <PageHeader
         title="Asistente IA"
-        subtitle="Configurá el proveedor, el modelo y la API key de JARVIS. La key se guarda cifrada (Vault) y no se vuelve a mostrar."
+        subtitle="Configurá el proveedor, el modelo y la API key de DC. La key se guarda cifrada (Vault) y no se vuelve a mostrar."
       />
       {config ? (
         <Card>

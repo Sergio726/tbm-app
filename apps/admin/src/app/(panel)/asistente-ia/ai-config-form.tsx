@@ -148,7 +148,7 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
         />
       </Field>
 
-      <Field label="System prompt (la “voz” de JARVIS)">
+      <Field label="System prompt (la “voz” de DC)">
         <textarea
           className="adm-input"
           rows={5}

@@ -58,7 +58,7 @@ export function JarvisHeaderOrb() {
           onClick={openPanel}
           onMouseEnter={() => setTip(true)}
           onMouseLeave={() => setTip(false)}
-          aria-label="Abrir asistente JARVIS"
+          aria-label="Abrir asistente DC"
           className="relative inline-flex items-center"
           style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
         >
@@ -79,8 +79,8 @@ export function JarvisHeaderOrb() {
             }}
           >
             {hint
-              ? "👋 Soy JARVIS, tu asistente del método. Tocame para hacerme una pregunta sobre tu equipo o tu negocio."
-              : "Asistente JARVIS"}
+              ? "👋 Soy DC, tu asistente del método. Tocame para hacerme una pregunta sobre tu equipo o tu negocio."
+              : "Asistente DC"}
           </span>
         )}
       </span>

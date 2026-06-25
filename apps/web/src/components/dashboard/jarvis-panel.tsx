@@ -148,7 +148,7 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
       />
       <aside
         role="dialog"
-        aria-label="Asistente JARVIS"
+        aria-label="Asistente DC"
         className="jarvis-panel-in flex flex-col"
         style={{
           position: "fixed",
@@ -178,7 +178,7 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
               <JarvisCore size={24} />
             </span>
             <div style={{ lineHeight: 1.15 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>JARVIS</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>DC</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Asistente · beta</div>
             </div>
           </div>
@@ -291,7 +291,7 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
               })}
               {pending && (
                 <div style={{ alignSelf: "flex-start", fontSize: 12.5, color: "rgba(255,255,255,0.45)" }}>
-                  <span className="jarvis-cursor">▍</span> JARVIS está pensando…
+                  <span className="jarvis-cursor">▍</span> DC está pensando…
                 </div>
               )}
             </div>
@@ -347,7 +347,7 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
             )}
           </div>
           <div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.3)", marginTop: 6, textAlign: "center" }}>
-            JARVIS puede equivocarse. Verificá lo importante. · Enter envía · Shift+Enter salto de línea
+            DC puede equivocarse. Verificá lo importante. · Enter envía · Shift+Enter salto de línea
           </div>
         </form>
       </aside>
