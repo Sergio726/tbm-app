@@ -88,7 +88,7 @@ export async function createLiderAndCompany(input: {
     email,
     password: tempPassword,
     email_confirm: true,
-    user_metadata: { full_name: fullName },
+    user_metadata: { full_name: fullName, must_change_password: true },
   });
   if (createErr || !created?.user) {
     const msg = createErr?.message ?? "";

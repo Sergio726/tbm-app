@@ -66,6 +66,27 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(dashboardUrl);
   }
 
+  // Gate de onboarding: un arquitecto que NO completó el setup (ej. líder creado
+  // desde el admin con contraseña temporal) se fuerza a /onboarding. Se excluye
+  // /onboarding (evita loop) y /cuenta (por si necesita la cuenta). Loop-safe.
+  if (
+    user &&
+    !isPublicRoute &&
+    pathname !== "/onboarding" &&
+    !pathname.startsWith("/cuenta")
+  ) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role, onboarding_completed")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (profile?.role === "arquitecto" && profile.onboarding_completed === false) {
+      const onboardingUrl = request.nextUrl.clone();
+      onboardingUrl.pathname = "/onboarding";
+      return NextResponse.redirect(onboardingUrl);
+    }
+  }
+
   return supabaseResponse;
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { capture } from "@/lib/analytics";
@@ -1058,11 +1058,143 @@ function Step4Equipo({
 }
 
 // =============================================================
+// Gate de contraseña (primer acceso del líder creado desde el admin)
+// =============================================================
+function SetPasswordGate({
+  supabase,
+  onDone,
+}: {
+  supabase: ReturnType<typeof createBrowserClient>;
+  onDone: () => void;
+}) {
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pw.length < 8) {
+      setErr("La contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+    if (pw !== pw2) {
+      setErr("Las contraseñas no coinciden.");
+      return;
+    }
+    setLoading(true);
+    setErr("");
+    const { error } = await supabase.auth.updateUser({ password: pw });
+    if (error) {
+      setErr("No se pudo actualizar la contraseña. Probá de nuevo.");
+      setLoading(false);
+      return;
+    }
+    await supabase.auth.updateUser({ data: { must_change_password: false } });
+    setLoading(false);
+    onDone();
+  };
+
+  const input: CSSProperties = {
+    width: "100%",
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: 10,
+    color: "#fff",
+    padding: "12px 14px",
+    fontSize: 15,
+    outline: "none",
+  };
+
+  return (
+    <div
+      className="flex min-h-screen flex-col items-center justify-center text-white"
+      style={{
+        background:
+          "radial-gradient(circle at 20% 0%, rgba(91,138,255,0.06), transparent 50%), #0a0e1a",
+        fontFamily: "Inter, system-ui, sans-serif",
+        padding: "40px 24px",
+      }}
+    >
+      <div
+        className="w-full"
+        style={{
+          maxWidth: 420,
+          background: "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+          border: "1px solid rgba(255,255,255,0.07)",
+          borderRadius: 18,
+          padding: "32px 32px 28px",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.4)",
+        }}
+      >
+        <div className="flex items-center" style={{ gap: 10, marginBottom: 6 }}>
+          <Sparkles size={18} strokeWidth={2} color="#5b8aff" />
+          <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1.4, color: "#5b8aff" }}>
+            BIENVENIDO/A
+          </span>
+        </div>
+        <h1 style={{ fontSize: 22, fontWeight: 700, margin: "4px 0 6px", letterSpacing: -0.3 }}>
+          Creá tu contraseña
+        </h1>
+        <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.55)", lineHeight: 1.5, marginBottom: 22 }}>
+          Entraste con una contraseña temporal. Definí una propia para asegurar tu cuenta.
+        </p>
+        <form onSubmit={submit} className="flex flex-col" style={{ gap: 12 }}>
+          <input
+            type="password"
+            value={pw}
+            onChange={(e) => setPw(e.target.value)}
+            placeholder="Nueva contraseña (mín. 8)"
+            autoComplete="new-password"
+            style={input}
+          />
+          <input
+            type="password"
+            value={pw2}
+            onChange={(e) => setPw2(e.target.value)}
+            placeholder="Repetí la contraseña"
+            autoComplete="new-password"
+            style={input}
+          />
+          {err && <p style={{ color: "#fca5a5", fontSize: 12.5, margin: 0 }}>{err}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              marginTop: 4,
+              padding: "12px",
+              borderRadius: 11,
+              background: loading ? "rgba(255,255,255,0.06)" : "linear-gradient(180deg, #4f86ff, #2c5fe6)",
+              color: "#fff",
+              border: "none",
+              fontSize: 14.5,
+              fontWeight: 600,
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "Guardando…" : "Continuar"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================
 // Página
 // =============================================================
 export default function OnboardingPage() {
   const router = useRouter();
   const supabase = createBrowserClient();
+
+  // Gate de contraseña: el líder creado desde el admin entra con una temporal y
+  // user_metadata.must_change_password=true → primero crea su contraseña real.
+  const [needsPassword, setNeedsPassword] = useState<boolean | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setNeedsPassword(user?.user_metadata?.must_change_password === true);
+    });
+  }, [supabase]);
 
   const [step, setStep] = useState(1);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -1182,6 +1314,12 @@ export default function OnboardingPage() {
 
   const isLast = step === STEPS.length;
   const current = STEPS.find((s) => s.id === step)!;
+
+  // Mientras resolvemos el flag, no parpadear; si necesita contraseña, el gate primero.
+  if (needsPassword === null) return null;
+  if (needsPassword) {
+    return <SetPasswordGate supabase={supabase} onDone={() => setNeedsPassword(false)} />;
+  }
 
   return (
     <div
