@@ -25,16 +25,19 @@ RAG sobre el método (corpus curado), UX del panel legible.
 Visión: DC deja de ser un chat en una sola pantalla y se convierte en un **asistente omnipresente
 que entiende el contexto, ejecuta acciones y acompaña** el método. Epics ordenados por valor/madurez:
 
-### DC-1 · DC global (omnipresente) — *alta prioridad, bajo riesgo*
-**Problema:** hoy el orbe vive solo en el header del dashboard; en el resto de las ventanas no se
-puede hablar con DC.
-**Propuesta:** un **launcher flotante** (botón/orbe fijo abajo a la derecha) disponible en **todo
-el `(dashboard)` layout**, no solo en el home. El panel de chat se abre desde cualquier página.
-- **Context-aware por pantalla:** DC sabe en qué módulo está el usuario (equipo, delegación,
-  rituales, plan 90D) y ajusta sugerencias ("estás en Delegación: ¿armamos un Pase de Estafeta?").
-- Integrar también con el **Command Palette (⌘K)**: una acción "Preguntar a DC".
-- Técnico: mover el montaje del orbe/panel del `<h1>` del dashboard al **layout** (`(dashboard)/
-  layout.tsx`) como launcher global; pasar la ruta/módulo actual al contexto.
+### DC-1 · DC global (omnipresente) — ✅ **hecho (2026-06-26)**
+**Problema (resuelto):** el orbe vivía solo en el header del dashboard; en el resto de las ventanas
+no se podía hablar con DC.
+**Implementado:** `DcLauncher` (`components/dashboard/dc-launcher.tsx`) — **launcher flotante** fijo
+abajo a la derecha, montado en el **layout `(dashboard)`** → disponible en **todas** las pantallas.
+Hereda el anillo de atención + hint de primera vez del viejo header orb (borrado). Es el "hogar
+persistente" del orbe con `layoutId`: la bienvenida cinemática vuela el orbe hasta el launcher.
+- ✅ **Context-aware por pantalla:** deriva el módulo de la ruta (`usePathname` → `moduleFromPath`)
+  y lo manda en el body a `/api/jarvis`; el route inyecta "PANTALLA ACTUAL: …" al system para que DC
+  ajuste sugerencias.
+- ✅ Coordinación de fase robusta: el store arrancaba en "pending" y solo la película (en el
+  dashboard) lo resolvía → en otras pantallas el launcher toma la fase tras 120ms si nadie la resolvió.
+- **Pendiente menor (no bloqueante):** acción "Preguntar a DC" en el **Command Palette (⌘K)**.
 
 ### DC-2 · Personalización desde el super-admin — *alta prioridad*
 Hoy el admin configura proveedor/modelo/key/system-prompt/temperatura. Ampliar a **personalización
@@ -100,10 +103,11 @@ Encaja con el cron existente y las notificaciones.
 - **Modo coach:** para coaches, insights cross-empresa de sus asignadas ("¿qué empresa necesita
   atención esta semana?").
 
-### DC-9 · Fixes de calidad (del QA) — *quick wins*
-Del [`JARVIS_QA_2026-06-22.md`](JARVIS_QA_2026-06-22.md): doble `layoutId` del orbe (parpadeo),
-temperatura 0 imposible, "activar" sin key, focus-trap del panel, restringir la Edge `embed` a
-service-role, verificar la service-role key del web en prod. + **deuda:** unificar `lib/ai/`
+### DC-9 · Fixes de calidad (del QA) — 🟡 **mayoría hecho (2026-06-26)**
+Del [`JARVIS_QA_2026-06-22.md`](JARVIS_QA_2026-06-22.md): ✅ doble `layoutId` del orbe (parpadeo),
+✅ temperatura 0 imposible, ✅ "activar" sin key, ✅ focus-trap del panel. **Diferido:** restringir
+la Edge `embed` a service-role (riesgo de romper el RAG en prod según formato de la key). **De
+Sebas (prod):** verificar la service-role key del web (#9/#10). + **deuda:** unificar `lib/ai/`
 (admin+web) en `packages/shared`.
 
 ---
@@ -179,8 +183,9 @@ No son features nuevas: es calidad. Agrupados por urgencia.
 
 0. **Pulido pre-beta** (§2·B): top 3 — onboarding del piloto, empty states/primera acción, mobile.
    Condiciona la apertura de la beta; va en paralelo a lo de abajo.
-1. **DC-9** (fixes QA — quick wins) + **DC-1** (DC global) → DC usable en serio en toda la app.
-2. **DC-2** (personalización desde super-admin) → control sin tocar código.
+1. ✅ **DC-9** (fixes QA — quick wins) + ✅ **DC-1** (DC global) *(hecho 2026-06-26)* → DC usable en
+   toda la app. **Sigue:** **DC-2**.
+2. **DC-2** (personalización desde super-admin) → control sin tocar código. *(próximo)*
 3. **DC-3** (acciones / tool use) → el salto a copiloto; arrancar con 2–3 tools (crear tarea,
    generar link DISC, reporte semanal) con confirmación.
 4. **DC-6** (historial + costos) → antes de abrir a más empresas.

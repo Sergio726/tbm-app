@@ -23,7 +23,16 @@ const SUGGESTIONS = [
 
 type Msg = { role: "user" | "assistant"; content: string; error?: boolean };
 
-export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function JarvisPanel({
+  open,
+  onClose,
+  moduleLabel,
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** Pantalla/módulo actual del usuario (DC-1: context-aware). */
+  moduleLabel?: string;
+}) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false); // esperando el primer token
@@ -31,12 +40,33 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
   const [copied, setCopied] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      // Focus-trap (a11y): el Tab no debe escaparse al contenido de atrás.
+      if (e.key === "Tab" && panelRef.current) {
+        const focusables = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && active === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     setTimeout(() => inputRef.current?.focus(), 80);
@@ -78,7 +108,7 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
       const res = await fetch("/api/jarvis", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify({ messages: history, module: moduleLabel }),
         signal: ctrl.signal,
       });
 
@@ -147,7 +177,9 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
         aria-hidden
       />
       <aside
+        ref={panelRef}
         role="dialog"
+        aria-modal="true"
         aria-label="Asistente DC"
         className="jarvis-panel-in flex flex-col"
         style={{
@@ -175,7 +207,8 @@ export function JarvisPanel({ open, onClose }: { open: boolean; onClose: () => v
         >
           <div className="flex items-center" style={{ gap: 10 }}>
             <span style={{ position: "relative", width: 24, height: 24 }}>
-              <JarvisCore size={24} />
+              {/* Orbe plano (sin layoutId): el orbe "vivo" lo posee el launcher. */}
+              <JarvisCore size={24} plain />
             </span>
             <div style={{ lineHeight: 1.15 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>DC</div>

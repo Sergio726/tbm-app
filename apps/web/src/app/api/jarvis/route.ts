@@ -50,8 +50,14 @@ export async function POST(req: Request) {
   const { data: key } = await admin.rpc("ai_get_api_key");
   if (!key) return NextResponse.json({ error: "sin_config" }, { status: 503 });
 
-  const body = (await req.json().catch(() => ({}))) as { messages?: ChatMessage[] };
+  const body = (await req.json().catch(() => ({}))) as {
+    messages?: ChatMessage[];
+    module?: string;
+  };
   const history = Array.isArray(body.messages) ? body.messages : [];
+  // DC-1: pantalla actual del usuario (context-aware). Sanitizada y acotada.
+  const moduleLabel =
+    typeof body.module === "string" ? body.module.slice(0, 80).trim() : "";
 
   const lastUser = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
   const [context, knowledge] = await Promise.all([
@@ -67,12 +73,20 @@ export async function POST(req: Request) {
       ]
     : [];
 
+  const screenBlock = moduleLabel
+    ? [
+        "",
+        `PANTALLA ACTUAL: el usuario está viendo "${moduleLabel}". Si viene al caso, ajustá tus sugerencias a lo que puede hacer en esa pantalla; no lo fuerces si la pregunta es sobre otra cosa.`,
+      ]
+    : [];
+
   const system = [
     cfg.system_prompt?.trim() || DEFAULT_SYSTEM,
     "",
     BEHAVIOR_RULES,
     "",
     TBM_METHOD_FRAMING,
+    ...screenBlock,
     "",
     "CONTEXTO ACTUAL (datos reales de la empresa del usuario):",
     context,

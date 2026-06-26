@@ -7,7 +7,6 @@ import { SearchTrigger } from "@/components/layout/search-trigger";
 import { NotificationsBell } from "@/components/layout/notifications-bell";
 import { HeroStrip } from "@/components/dashboard/hero-strip";
 import { JarvisIntro } from "@/components/dashboard/jarvis-intro";
-import { JarvisHeaderOrb } from "@/components/dashboard/jarvis-header-orb";
 import { greetingForHour } from "@/lib/greeting";
 import {
   RotateCcw,
@@ -907,7 +906,6 @@ export default async function DashboardPage() {
             }}
           >
             {greeting}, {firstName}
-            <JarvisHeaderOrb />
           </h1>
           <div
             style={{

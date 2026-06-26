@@ -56,16 +56,25 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
     }
   };
 
+  // No se puede activar el asistente sin una API key (la cargás ahora o ya está en Vault).
+  const willHaveKey = hasKey || apiKey.trim().length > 0;
+
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     setMsg(null);
     setTest(null);
+    if (enabled && !willHaveKey) {
+      setMsg({ ok: false, text: "No podés activar el asistente sin una API key. Cargá la key primero." });
+      return;
+    }
     startSave(async () => {
+      // Temperatura: 0 es válido (más determinista) → no usar `|| 0.7` (0 es falsy).
+      const t = Number.parseFloat(temperature);
       const r = await saveAiConfig({
         provider,
         model,
         systemPrompt,
-        temperature: Number.parseFloat(temperature) || 0.7,
+        temperature: Number.isFinite(t) ? t : 0.7,
         enabled,
         apiKey: apiKey || undefined,
       });
@@ -171,9 +180,28 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
             style={{ width: 110 }}
           />
         </Field>
-        <label className="flex items-center" style={{ gap: 9, cursor: "pointer", marginTop: 18 }}>
-          <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />
-          <span style={{ fontSize: 13.5 }}>Asistente activado</span>
+        <label
+          className="flex items-center"
+          style={{
+            gap: 9,
+            cursor: willHaveKey ? "pointer" : "not-allowed",
+            marginTop: 18,
+            opacity: willHaveKey ? 1 : 0.55,
+          }}
+          title={willHaveKey ? undefined : "Cargá una API key para poder activarlo"}
+        >
+          <input
+            type="checkbox"
+            checked={enabled}
+            disabled={!willHaveKey}
+            onChange={(e) => setEnabled(e.target.checked)}
+          />
+          <span style={{ fontSize: 13.5 }}>
+            Asistente activado
+            {!willHaveKey && (
+              <span style={{ color: "var(--faint)", fontWeight: 400 }}> · requiere API key</span>
+            )}
+          </span>
         </label>
       </div>
 

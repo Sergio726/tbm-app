@@ -3,6 +3,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { TourProvider } from "@/components/layout/tour-provider";
 import { PostHogIdentify } from "@/components/analytics/posthog-identify";
+import { DcLauncher } from "@/components/dashboard/dc-launcher";
 import { redirect } from "next/navigation";
 
 function SuspendedScreen() {
@@ -117,6 +118,9 @@ export default async function DashboardLayout({
       >
         {children}
       </main>
+
+      {/* DC global (DC-1): launcher flotante del asistente en todo el layout. */}
+      <DcLauncher />
 
       {/* Command Palette global (⌘K / Ctrl+K) */}
       <CommandPalette userRole={profile?.role ?? "colaborador"} userId={user.id} />
