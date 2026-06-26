@@ -29,6 +29,19 @@ export function DcLauncher() {
   const [open, setOpen] = useState(false);
   const [tip, setTip] = useState(false);
   const [hint, setHint] = useState(false);
+  // El sidebar bloquea el scroll del body (overflow:hidden) cuando el drawer
+  // mobile está abierto. Usamos eso como señal para ocultar el orbe y no taparlo.
+  // (Decoupled: sirve para cualquier overlay que bloquee el scroll.)
+  const [scrollLocked, setScrollLocked] = useState(false);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const check = () => setScrollLocked(document.body.style.overflow === "hidden");
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.body, { attributes: true, attributeFilter: ["style"] });
+    return () => obs.disconnect();
+  }, []);
 
   // El store arranca en "pending" y solo la bienvenida cinemática (que vive en el
   // dashboard) lo resuelve. En el resto de las pantallas nadie la resuelve → si
@@ -68,7 +81,8 @@ export function DcLauncher() {
   };
 
   // Durante la película el overlay posee el orbe (layoutId) → no montamos el nuestro.
-  if (phase !== "idle") return null;
+  // Con el drawer mobile abierto (scroll bloqueado) lo ocultamos para no flotar encima.
+  if (phase !== "idle" || scrollLocked) return null;
 
   const moduleLabel = moduleFromPath(pathname);
 
@@ -78,8 +92,11 @@ export function DcLauncher() {
         style={{
           position: "fixed",
           right: "clamp(16px, 4vw, 28px)",
-          bottom: "clamp(16px, 4vw, 28px)",
-          zIndex: 70,
+          // En mobile sumamos el safe-area (home indicator de iOS) para que no quede
+          // pegado al borde inferior tapando contenido.
+          bottom: "calc(clamp(16px, 4vw, 24px) + env(safe-area-inset-bottom, 0px))",
+          // Debajo de modales/panel de chat/paleta (70/80/100), encima del contenido.
+          zIndex: 60,
         }}
         className="flex flex-col items-end"
       >
