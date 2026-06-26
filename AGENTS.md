@@ -85,3 +85,46 @@ En dev local: `NODE_TLS_REJECT_UNAUTHORIZED=0` es aceptable solo para evitar el 
 Cuando hay un bundle de diseño (export de Claude Design u otro), descomprimirlo en `.design/` (gitignored). Leer los `.jsx` o `.html` como **referencia visual** y traducirlos a Next/Tailwind. No copiar la estructura interna del prototipo si no encaja con el codebase — replicá el output visual, no el código.
 
 Ejemplo: el módulo `/equipo` actual está basado en `.design/tbm-app/project/Mi Equipo.html` y sus 12 .jsx asociados.
+
+---
+
+## 7. Estado actual del repo (2026-06 · leer antes de tocar nada)
+
+> Esta sección refleja el estado real, posterior al plan original S0–S14. Para retomar trabajo,
+> **leé primero `PROGRESS.md` (estado) y `docs/ROADMAP_DC_Y_APP_2026-06.md` (qué sigue + prioridad)**.
+
+### Monorepo (npm workspaces)
+- **`apps/web`** → proyecto Vercel **`tbm-app`** (Root Dir `apps/web`). Es el producto del líder/equipo.
+  Live: `https://tbm-app-seven.vercel.app`.
+- **`apps/admin`** → proyecto Vercel **`tbm-app-admin`** (Root Dir `apps/admin`). Panel god-mode
+  (super-admin de la plataforma). Live: `https://tbm-app-admin.vercel.app`.
+- **`packages/shared`** (`@tbm/shared`) → tipos `Database` compartidos por el admin.
+- Verificar por app antes de commitear: `cd apps/<app> && npx tsc --noEmit && npm run build`.
+
+### Flujo git + deploy
+- Trabajar en la rama **`fase2`**; **merge fast-forward a `main` por pieza verificada**; pushear ambas.
+- Vercel **auto-deploya `main`** (los 2 proyectos). Confirmar el deploy en `● Ready` antes de dar algo por hecho.
+- Commits Conventional Commits. **Nunca pushear sin build verde.**
+
+### Supabase
+- Proyecto **ACTIVO**: `fozhnfxehbbgqaerprgf` (el viejo `onzsxbghmyuqykiejpxw` quedó inaccesible).
+- Migraciones: aplicar (Supabase CLI/MCP) **y** guardar el SQL en `supabase/migration_<tema>.sql`
+  + fila en `supabase/README.md`. RLS por tabla; funciones que exponen datos sensibles =
+  `SECURITY DEFINER` con `revoke execute from public, anon, authenticated; grant to service_role`.
+- Tras migrar, correr `get_advisors(security)` y confirmar 0 ERROR nuevos.
+
+### DC — Asistente IA (ex "JARVIS", nombre interno sigue `jarvis-*`)
+- Config desde el admin (sección "Asistente IA"): proveedor/modelo/API key (Vault)/system prompt.
+  Proveedor recomendado **OpenRouter** (multi-LLM). Capa `apps/*/src/lib/ai/`.
+- Chat en `apps/web`: route `POST /api/jarvis` (streaming), panel `components/dashboard/jarvis-*`.
+- **RAG:** Edge Function `embed` (gte-small, 384) + tabla `knowledge_chunks` + RPC `match_knowledge`.
+  Re-indexar el corpus del método: `node scripts/ingest-knowledge.mjs`.
+- Diseño/roadmap: `docs/JARVIS_AI_ASSISTANT.md`. Bugs conocidos: `docs/JARVIS_QA_2026-06-22.md`.
+
+### Naming canónico (no romper)
+- Sistema = **LOST** (no "LOS"). Niveles N1–N5 = **Niveles de Delegación** (Cadete→Socio). 4 pilares = **ARQI**.
+- DISC: **Dominante / Influyente / Seguro / Pensador** (no Dominancia/Influencia/Estabilidad/Cumplimiento).
+
+### Excepción a la regla "no archivos paralelos"
+- `docs/ROADMAP_DC_Y_APP_2026-06.md` es **planificación a futuro** (no estado), permitido. El **estado**
+  sigue viviendo solo en `PROGRESS.md`.

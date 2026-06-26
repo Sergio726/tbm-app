@@ -1,0 +1,35 @@
+# Reglas para Cursor / Composer — The Business Multiplier
+
+Seguí **`AGENTS.md`** (raíz): es la fuente única de reglas para asistentes de IA en este repo.
+Lo de abajo es lo mínimo para retomar trabajo y no romper nada.
+
+## Antes de empezar, leé (en este orden)
+1. `AGENTS.md` §7 — estado actual del repo (monorepo, ramas, Supabase, DC).
+2. `PROGRESS.md` — **estado** del proyecto por sprint (fuente de verdad del avance).
+3. `docs/ROADMAP_DC_Y_APP_2026-06.md` — **qué sigue + prioridad** (incluye el pulido pre-beta).
+4. `docs/METODO_TBM_CANONICO.md` — el método manda ante cualquier duda de producto.
+
+## Cómo elegir la próxima tarea
+Tomá el siguiente ítem priorizado del roadmap (§3) salvo que el usuario indique otra cosa. Hoy lo
+pendiente del pulido pre-beta: **#3 mobile del web app**, **#4 perf/loading del dashboard**,
+**#5 errores amigables**, **#6 hardening de seguridad**. (#1 onboarding y #2 empty states ya hechos.)
+
+## Reglas duras (no romper)
+- **Monorepo**: `apps/web` (producto, Vercel `tbm-app`), `apps/admin` (god-mode, Vercel `tbm-app-admin`),
+  `packages/shared` (`@tbm/shared`). Cada app builda sola.
+- **Verificá antes de commitear**: `cd apps/<app> && npx tsc --noEmit && npm run build` en verde.
+  **Nunca commitear/pushear con build roto.**
+- **Git**: trabajar en `fase2`, merge fast-forward a `main` por pieza verificada, pushear ambas.
+  Vercel auto-deploya `main` (2 proyectos) → confirmá `● Ready`. Conventional Commits.
+- **Supabase** (proyecto `fozhnfxehbbgqaerprgf`): migraciones a `supabase/migration_<tema>.sql` +
+  `supabase/README.md`; RLS por tabla; funciones sensibles `SECURITY DEFINER` solo `service_role`.
+- **Naming canónico**: LOST (no "LOS"), Niveles de Delegación, ARQI; DISC = Dominante/Influyente/
+  Seguro/Pensador.
+- **Idioma**: español rioplatense (voseo) en UI, copy y mensajes al usuario.
+- **Actualizá `PROGRESS.md`** en el mismo commit cuando abrís/cerrás una pieza de un sprint.
+- **Componentes chicos**, uno por archivo; colores dinámicos con `style={{}}` (no hay shadcn).
+
+## DC (asistente IA)
+Nombre visible **DC**; el código interno sigue `jarvis-*` / `/api/jarvis`. Config desde el admin
+("Asistente IA"), OpenRouter, RAG con Edge Function `embed` + `knowledge_chunks`. Para tocar prompts
+ver `apps/web/src/app/api/jarvis/route.ts` y `apps/web/src/lib/tbm-disc-context.ts`.

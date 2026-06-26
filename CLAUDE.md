@@ -12,7 +12,7 @@ desincronicen.
 agente respectivo):
 
 - `CLAUDE.md` → Claude Code
-- `.cursorrules` → Cursor (no creado todavía, opt-in)
+- `.cursorrules` → Cursor / Composer (creado; apunta a `AGENTS.md` + `PROGRESS.md` + roadmap)
 - `.github/copilot-instructions.md` → GitHub Copilot (no creado todavía, opt-in)
 - `GEMINI.md` → Gemini CLI (no creado todavía, opt-in)
 
