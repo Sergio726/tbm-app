@@ -11,6 +11,31 @@ const DEFAULT_SYSTEM_PROMPT =
   "español rioplatense (voseo), claro y concreto, con la voz del método (LOST, ARQI, delegación, " +
   "DISC). No inventás datos del equipo o la empresa: usás solo el contexto provisto.";
 
+// Defaults de la persona de DC (espejo de DC_DEFAULTS del web). Si el admin no toca
+// nada, reproducen el comportamiento previo a DC-2.
+const DEFAULT_PERSONA = {
+  name: "DC",
+  tone: "cercano",
+  welcome:
+    "Soy tu asistente del método TBM. Preguntame sobre tu equipo, delegación, DISC o cómo multiplicar tu negocio.",
+  suggestions: [
+    "¿A quién debería delegar según el DISC de mi equipo?",
+    "Resumime en qué enfocarme esta semana.",
+    "¿Cómo lidero mejor a un perfil Dominante?",
+    "¿Qué es el sistema LOST?",
+  ],
+  features: { rag: true },
+};
+
+function parseSuggestions(v: unknown): string[] {
+  if (!Array.isArray(v)) return [...DEFAULT_PERSONA.suggestions];
+  const arr = v
+    .filter((s): s is string => typeof s === "string" && s.trim().length > 0)
+    .map((s) => s.trim())
+    .slice(0, 6);
+  return arr.length ? arr : [...DEFAULT_PERSONA.suggestions];
+}
+
 export type AiConfigView = {
   provider: ProviderId;
   model: string;
@@ -18,6 +43,11 @@ export type AiConfigView = {
   temperature: number;
   enabled: boolean;
   hasKey: boolean;
+  personaName: string;
+  tone: string;
+  welcome: string;
+  suggestedPrompts: string[];
+  features: { rag: boolean };
 };
 
 async function requireAdmin() {
@@ -38,7 +68,9 @@ export async function getAiConfig(): Promise<AiConfigView | null> {
 
   const { data } = await admin
     .from("ai_config")
-    .select("provider, model, system_prompt, temperature, enabled, api_key_ref")
+    .select(
+      "provider, model, system_prompt, temperature, enabled, api_key_ref, persona_name, tone, welcome, suggested_prompts, features"
+    )
     .eq("scope", "platform")
     .maybeSingle();
 
@@ -50,8 +82,14 @@ export async function getAiConfig(): Promise<AiConfigView | null> {
       temperature: 0.7,
       enabled: false,
       hasKey: false,
+      personaName: DEFAULT_PERSONA.name,
+      tone: DEFAULT_PERSONA.tone,
+      welcome: DEFAULT_PERSONA.welcome,
+      suggestedPrompts: [...DEFAULT_PERSONA.suggestions],
+      features: { ...DEFAULT_PERSONA.features },
     };
   }
+  const rag = (data.features as { rag?: boolean } | null)?.rag !== false;
   return {
     provider: data.provider as ProviderId,
     model: data.model,
@@ -59,6 +97,11 @@ export async function getAiConfig(): Promise<AiConfigView | null> {
     temperature: data.temperature,
     enabled: data.enabled,
     hasKey: !!data.api_key_ref,
+    personaName: data.persona_name?.trim() || DEFAULT_PERSONA.name,
+    tone: data.tone?.trim() || DEFAULT_PERSONA.tone,
+    welcome: data.welcome?.trim() || DEFAULT_PERSONA.welcome,
+    suggestedPrompts: parseSuggestions(data.suggested_prompts),
+    features: { rag },
   };
 }
 
@@ -69,6 +112,11 @@ export async function saveAiConfig(input: {
   temperature: number;
   enabled: boolean;
   apiKey?: string;
+  personaName: string;
+  tone: string;
+  welcome: string;
+  suggestedPrompts: string[];
+  features: { rag: boolean };
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const { user, isAdmin } = await requireAdmin();
   if (!user) return { ok: false, error: "no_sesion" };
@@ -88,12 +136,19 @@ export async function saveAiConfig(input: {
   }
 
   const temperature = Math.min(1, Math.max(0, input.temperature));
+  const tone = ["cercano", "formal", "directo"].includes(input.tone) ? input.tone : "cercano";
+  const suggested = parseSuggestions(input.suggestedPrompts);
   const row = {
     provider: input.provider,
     model: input.model,
     system_prompt: input.systemPrompt.trim() || null,
     temperature,
     enabled: input.enabled,
+    persona_name: input.personaName.trim() || null,
+    tone,
+    welcome: input.welcome.trim() || null,
+    suggested_prompts: suggested,
+    features: { rag: input.features.rag !== false },
     updated_by: user.id,
     updated_at: new Date().toISOString(),
     ...(apiKeyRef ? { api_key_ref: apiKeyRef } : {}),
@@ -121,6 +176,9 @@ export async function saveAiConfig(input: {
       model: input.model,
       enabled: input.enabled,
       key_updated: !!apiKeyRef,
+      persona_name: row.persona_name,
+      tone,
+      rag: row.features.rag,
     },
   });
 

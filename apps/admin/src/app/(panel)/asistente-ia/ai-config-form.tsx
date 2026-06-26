@@ -27,6 +27,12 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
   const [enabled, setEnabled] = useState(initial.enabled);
   const [apiKey, setApiKey] = useState("");
   const [hasKey, setHasKey] = useState(initial.hasKey);
+  // Persona de DC (DC-2)
+  const [personaName, setPersonaName] = useState(initial.personaName);
+  const [tone, setTone] = useState(initial.tone);
+  const [welcome, setWelcome] = useState(initial.welcome);
+  const [promptsText, setPromptsText] = useState(initial.suggestedPrompts.join("\n"));
+  const [rag, setRag] = useState(initial.features.rag);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [test, setTest] = useState<{ ok: boolean; text: string } | null>(null);
   const [saving, startSave] = useTransition();
@@ -77,6 +83,15 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
         temperature: Number.isFinite(t) ? t : 0.7,
         enabled,
         apiKey: apiKey || undefined,
+        personaName,
+        tone,
+        welcome,
+        suggestedPrompts: promptsText
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .slice(0, 6),
+        features: { rag },
       });
       if (r.ok) {
         setMsg({ ok: true, text: "Configuración guardada." });
@@ -157,7 +172,7 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
         />
       </Field>
 
-      <Field label="System prompt (la “voz” de DC)">
+      <Field label={`System prompt (la “voz” de ${personaName || "DC"})`}>
         <textarea
           className="adm-input"
           rows={5}
@@ -166,6 +181,86 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
           style={{ resize: "vertical", lineHeight: 1.5 }}
         />
       </Field>
+
+      {/* ── Personalidad de DC (DC-2) ─────────────────────────────── */}
+      <div style={{ borderTop: "1px solid var(--border, rgba(255,255,255,0.1))", paddingTop: 16, marginTop: 4 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, margin: "0 0 4px" }}>Personalidad de DC</h3>
+        <p style={{ fontSize: 12, color: "var(--faint)", margin: "0 0 14px" }}>
+          Cómo se presenta el asistente en la app (nombre, tono, bienvenida y sugerencias). Se aplica
+          al instante; dejá vacío para usar los valores por defecto.
+        </p>
+
+        <div className="flex flex-col" style={{ gap: 16 }}>
+          <div className="flex flex-wrap" style={{ gap: 14 }}>
+            <Field label="Nombre del asistente">
+              <input
+                className="adm-input"
+                value={personaName}
+                onChange={(e) => setPersonaName(e.target.value)}
+                placeholder="DC"
+                maxLength={24}
+              />
+            </Field>
+            <Field label="Tono">
+              <select className="adm-input" value={tone} onChange={(e) => setTone(e.target.value)}>
+                <option value="cercano" style={{ background: "#111827" }}>
+                  Cercano (coach de confianza)
+                </option>
+                <option value="formal" style={{ background: "#111827" }}>
+                  Formal (registro serio)
+                </option>
+                <option value="directo" style={{ background: "#111827" }}>
+                  Directo (al grano)
+                </option>
+              </select>
+            </Field>
+          </div>
+
+          <Field label="Mensaje de bienvenida (panel de chat vacío)">
+            <textarea
+              className="adm-input"
+              rows={2}
+              value={welcome}
+              onChange={(e) => setWelcome(e.target.value)}
+              style={{ resize: "vertical", lineHeight: 1.5 }}
+              placeholder="Soy tu asistente del método TBM…"
+            />
+          </Field>
+
+          <Field label="Prompts sugeridos (un prompt por línea · máx. 6)">
+            <textarea
+              className="adm-input"
+              rows={4}
+              value={promptsText}
+              onChange={(e) => setPromptsText(e.target.value)}
+              style={{ resize: "vertical", lineHeight: 1.5 }}
+              placeholder={"¿A quién debería delegar?\n¿Qué es el sistema LOST?"}
+            />
+          </Field>
+
+          <div className="flex flex-col" style={{ gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)", fontWeight: 600 }}>Funciones</span>
+            <label className="flex items-center" style={{ gap: 9, cursor: "pointer" }}>
+              <input type="checkbox" checked={rag} onChange={(e) => setRag(e.target.checked)} />
+              <span style={{ fontSize: 13.5 }}>
+                RAG — citar el material del método (corpus canónico)
+              </span>
+            </label>
+            <label className="flex items-center" style={{ gap: 9, opacity: 0.5, cursor: "not-allowed" }}>
+              <input type="checkbox" disabled />
+              <span style={{ fontSize: 13.5 }}>
+                Acciones en la app <span style={{ color: "var(--faint)" }}>· próximamente (DC-3)</span>
+              </span>
+            </label>
+            <label className="flex items-center" style={{ gap: 9, opacity: 0.5, cursor: "not-allowed" }}>
+              <input type="checkbox" disabled />
+              <span style={{ fontSize: 13.5 }}>
+                Voz <span style={{ color: "var(--faint)" }}>· próximamente (DC-8)</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
 
       <div className="flex flex-wrap items-center" style={{ gap: 20 }}>
         <Field label="Temperatura (0–1)">

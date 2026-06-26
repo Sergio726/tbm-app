@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { JarvisCore } from "./jarvis-core";
 import type { ChatMessage } from "@/lib/ai";
+import type { DcPublicPersona } from "@/lib/dc-persona";
 
 const ERRORS: Record<string, string> = {
   no_sesion: "Tu sesión expiró. Recargá la página.",
@@ -14,24 +15,20 @@ const ERRORS: Record<string, string> = {
   fallo: "No pude responder ahora mismo. Probá de nuevo en un momento.",
 };
 
-const SUGGESTIONS = [
-  "¿A quién debería delegar según el DISC de mi equipo?",
-  "Resumime en qué enfocarme esta semana.",
-  "¿Cómo lidero mejor a un perfil Dominante?",
-  "¿Qué es el sistema LOST?",
-];
-
 type Msg = { role: "user" | "assistant"; content: string; error?: boolean };
 
 export function JarvisPanel({
   open,
   onClose,
   moduleLabel,
+  persona,
 }: {
   open: boolean;
   onClose: () => void;
   /** Pantalla/módulo actual del usuario (DC-1: context-aware). */
   moduleLabel?: string;
+  /** Persona configurable de DC (DC-2): nombre/bienvenida/sugerencias. */
+  persona: DcPublicPersona;
 }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -180,7 +177,7 @@ export function JarvisPanel({
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Asistente DC"
+        aria-label={`Asistente ${persona.name}`}
         className="jarvis-panel-in flex flex-col"
         style={{
           position: "fixed",
@@ -211,7 +208,7 @@ export function JarvisPanel({
               <JarvisCore size={24} plain />
             </span>
             <div style={{ lineHeight: 1.15 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>DC</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{persona.name}</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Asistente · beta</div>
             </div>
           </div>
@@ -241,10 +238,9 @@ export function JarvisPanel({
           {messages.length === 0 ? (
             <div className="flex flex-col" style={{ gap: 10 }}>
               <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
-                Soy tu asistente del método TBM. Preguntame sobre tu equipo, delegación, DISC o cómo
-                multiplicar tu negocio.
+                {persona.welcome}
               </p>
-              {SUGGESTIONS.map((s) => (
+              {persona.suggestions.map((s) => (
                 <button key={s} type="button" onClick={() => send(s)} style={chip}>
                   {s}
                 </button>
@@ -324,7 +320,7 @@ export function JarvisPanel({
               })}
               {pending && (
                 <div style={{ alignSelf: "flex-start", fontSize: 12.5, color: "rgba(255,255,255,0.45)" }}>
-                  <span className="jarvis-cursor">▍</span> DC está pensando…
+                  <span className="jarvis-cursor">▍</span> {persona.name} está pensando…
                 </div>
               )}
             </div>
@@ -380,7 +376,7 @@ export function JarvisPanel({
             )}
           </div>
           <div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.3)", marginTop: 6, textAlign: "center" }}>
-            DC puede equivocarse. Verificá lo importante. · Enter envía · Shift+Enter salto de línea
+            {persona.name} puede equivocarse. Verificá lo importante. · Enter envía · Shift+Enter salto de línea
           </div>
         </form>
       </aside>

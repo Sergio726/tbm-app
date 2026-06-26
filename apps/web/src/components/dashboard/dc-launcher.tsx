@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useJarvisPhase, setJarvisPhase } from "./jarvis-store";
 import { JarvisCore } from "./jarvis-core";
 import { JarvisPanel } from "./jarvis-panel";
+import type { DcPublicPersona } from "@/lib/dc-persona";
 
 const SIZE = 30;
 const HINT_KEY = "tbm:jarvis-hint-seen";
@@ -23,7 +24,7 @@ const HINT_KEY = "tbm:jarvis-hint-seen";
  * - Context-aware: deriva la pantalla actual de la ruta y se la pasa al panel,
  *   que la manda al endpoint para que DC ajuste sugerencias.
  */
-export function DcLauncher() {
+export function DcLauncher({ persona }: { persona: DcPublicPersona }) {
   const phase = useJarvisPhase();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -115,8 +116,8 @@ export function DcLauncher() {
             }}
           >
             {hint
-              ? "👋 Soy DC, tu asistente del método. Tocame desde cualquier pantalla para preguntarme sobre tu equipo o tu negocio."
-              : "Asistente DC"}
+              ? `👋 Soy ${persona.name}, tu asistente del método. Tocame desde cualquier pantalla para preguntarme sobre tu equipo o tu negocio.`
+              : `Asistente ${persona.name}`}
           </span>
         )}
 
@@ -127,7 +128,7 @@ export function DcLauncher() {
             onClick={openPanel}
             onMouseEnter={() => setTip(true)}
             onMouseLeave={() => setTip(false)}
-            aria-label="Abrir asistente DC"
+            aria-label={`Abrir asistente ${persona.name}`}
             className="relative inline-flex items-center justify-center rounded-full"
             style={{
               width: 52,
@@ -144,7 +145,12 @@ export function DcLauncher() {
         </span>
       </div>
 
-      <JarvisPanel open={open} onClose={() => setOpen(false)} moduleLabel={moduleLabel} />
+      <JarvisPanel
+        open={open}
+        onClose={() => setOpen(false)}
+        moduleLabel={moduleLabel}
+        persona={persona}
+      />
     </>
   );
 }

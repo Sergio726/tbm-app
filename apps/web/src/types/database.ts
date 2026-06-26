@@ -1650,6 +1650,11 @@ export type Database = {
           system_prompt: string | null
           temperature: number
           enabled: boolean
+          persona_name: string | null
+          tone: string | null
+          welcome: string | null
+          suggested_prompts: Json | null
+          features: Json
           updated_by: string | null
           updated_at: string
         }
@@ -1663,6 +1668,11 @@ export type Database = {
           system_prompt?: string | null
           temperature?: number
           enabled?: boolean
+          persona_name?: string | null
+          tone?: string | null
+          welcome?: string | null
+          suggested_prompts?: Json | null
+          features?: Json
           updated_by?: string | null
           updated_at?: string
         }
@@ -1670,6 +1680,11 @@ export type Database = {
           provider?: string
           model?: string
           enabled?: boolean
+          persona_name?: string | null
+          tone?: string | null
+          welcome?: string | null
+          suggested_prompts?: Json | null
+          features?: Json
         }
         Relationships: []
       }

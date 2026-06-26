@@ -39,17 +39,19 @@ persistente" del orbe con `layoutId`: la bienvenida cinemática vuela el orbe ha
   dashboard) lo resolvía → en otras pantallas el launcher toma la fase tras 120ms si nadie la resolvió.
 - **Pendiente menor (no bloqueante):** acción "Preguntar a DC" en el **Command Palette (⌘K)**.
 
-### DC-2 · Personalización desde el super-admin — *alta prioridad*
-Hoy el admin configura proveedor/modelo/key/system-prompt/temperatura. Ampliar a **personalización
-de la "persona" de DC**:
-- **Nombre e identidad** (ya es "DC", pero editable), **tono/voz** (formal/cercano/directo),
-  **avatar/color del orbe**.
-- **Prompts sugeridos** editables (los chips del panel).
-- **Features on/off** (RAG, acciones, voz) por flag.
-- **Mensaje de bienvenida** del panel.
-- **Post-beta:** persona/config **por empresa** (cada piloto con su DC), e idioma.
-- Técnico: ampliar `ai_config` (campos `persona`, `tone`, `suggested_prompts jsonb`, `features
-  jsonb`, `welcome`) + UI en la sección "Asistente IA"; el route arma el system con esos campos.
+### DC-2 · Personalización desde el super-admin — ✅ **hecho (2026-06-26)**
+**Implementado** (migración `jarvis_persona`, columnas nuevas en `ai_config`): el admin edita la
+"persona" de DC en la sección "Asistente IA" y el web lo refleja al instante (sin tocar código):
+- ✅ **Nombre** (default "DC", editable) · ✅ **Tono** (cercano/formal/directo → línea en el system).
+- ✅ **Mensaje de bienvenida** del panel · ✅ **Prompts sugeridos** (chips, un prompt por línea).
+- ✅ **Features:** toggle **RAG** on/off (gatea `retrieveKnowledge`). **Acciones** (DC-3) y **Voz**
+  (DC-8) quedan como placeholders deshabilitados (no construidos).
+- Técnico: `apps/web/src/lib/dc-persona.ts` (`DC_DEFAULTS`, `toneLine`, `ragEnabled`,
+  `getDcPublicPersona`); el layout `(dashboard)` lee la persona pública (service-role) y la pasa al
+  `DcLauncher`→`JarvisPanel`; `api/jarvis/route.ts` arma identidad/tono/RAG. Admin: `actions.ts` +
+  `ai-config-form.tsx` (sección "Personalidad de DC").
+- **Pendiente / diferido:** **color/avatar del orbe** (se difirió, orbe azul por ahora). **Por
+  empresa** y **idioma**: post-beta (la columna `scope='company'` ya existe, sin UI).
 
 ### DC-3 · Acciones en la app (tool use) — *el salto a "copiloto"* — *alta prioridad, media complejidad*
 DC no solo responde: **hace**. Function calling / tool use. Catálogo inicial de herramientas
@@ -184,8 +186,9 @@ No son features nuevas: es calidad. Agrupados por urgencia.
 0. **Pulido pre-beta** (§2·B): top 3 — onboarding del piloto, empty states/primera acción, mobile.
    Condiciona la apertura de la beta; va en paralelo a lo de abajo.
 1. ✅ **DC-9** (fixes QA — quick wins) + ✅ **DC-1** (DC global) *(hecho 2026-06-26)* → DC usable en
-   toda la app. **Sigue:** **DC-2**.
-2. **DC-2** (personalización desde super-admin) → control sin tocar código. *(próximo)*
+   toda la app.
+2. ✅ **DC-2** (personalización desde super-admin) *(hecho 2026-06-26)* → control sin tocar código.
+   **Sigue:** **DC-3** (acciones / tool use).
 3. **DC-3** (acciones / tool use) → el salto a copiloto; arrancar con 2–3 tools (crear tarea,
    generar link DISC, reporte semanal) con confirmación.
 4. **DC-6** (historial + costos) → antes de abrir a más empresas.

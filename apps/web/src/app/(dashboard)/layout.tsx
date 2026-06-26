@@ -4,6 +4,7 @@ import { CommandPalette } from "@/components/layout/command-palette";
 import { TourProvider } from "@/components/layout/tour-provider";
 import { PostHogIdentify } from "@/components/analytics/posthog-identify";
 import { DcLauncher } from "@/components/dashboard/dc-launcher";
+import { getDcPublicPersona } from "@/lib/dc-persona";
 import { redirect } from "next/navigation";
 
 function SuspendedScreen() {
@@ -97,6 +98,9 @@ export default async function DashboardLayout({
     coach: "Coach",
   };
 
+  // Persona de DC (DC-2): nombre/bienvenida/sugerencias configurables desde el admin.
+  const dcPersona = await getDcPublicPersona();
+
   return (
     <div className="min-h-screen bg-tbm-bg">
       {/* Sidebar fijo */}
@@ -119,8 +123,9 @@ export default async function DashboardLayout({
         {children}
       </main>
 
-      {/* DC global (DC-1): launcher flotante del asistente en todo el layout. */}
-      <DcLauncher />
+      {/* DC global (DC-1): launcher flotante del asistente en todo el layout.
+          Persona configurable desde el admin (DC-2). */}
+      <DcLauncher persona={dcPersona} />
 
       {/* Command Palette global (⌘K / Ctrl+K) */}
       <CommandPalette userRole={profile?.role ?? "colaborador"} userId={user.id} />
