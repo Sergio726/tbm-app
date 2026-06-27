@@ -61,6 +61,21 @@ export function canSendExternalEmail(): boolean {
   return !!apiKey && !!from && !from.includes("@resend.dev");
 }
 
+/**
+ * Versiones async que consideran la config del admin (email_config) además de
+ * las env vars. Úsalas en server actions (ej. invitar colaborador) para que la
+ * config del panel mande, sin depender de env vars en Vercel.
+ */
+export async function mailConfigured(): Promise<boolean> {
+  const { apiKey, from } = await resolveMail();
+  return !!apiKey && !!from;
+}
+
+export async function mailCanSendExternal(): Promise<boolean> {
+  const { apiKey, from } = await resolveMail();
+  return !!apiKey && !!from && !from.includes("@resend.dev");
+}
+
 /** Casilla de soporte/contacto configurada en el admin (F1), o null. */
 export async function getSupportEmail(): Promise<string | null> {
   try {

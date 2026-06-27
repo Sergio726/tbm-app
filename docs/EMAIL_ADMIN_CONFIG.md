@@ -121,9 +121,12 @@ cron). `SUPPORT_EMAIL`/reply-to pasan a salir de la config.
 ---
 
 ## 5. Plan sugerido por fases
-- **F0 · Quick win (hoy, sin código):** verificar dominio en Resend → `RESEND_FROM` en Vercel →
-  cargar SMTP de Resend en Supabase Auth. Desbloquea Canal A **y** B. *(Tarea de Sebas + DNS — ver
-  §7.)* ⏳ pendiente de Sebas.
+- **F0 · Quick win:** ✅ **hecho (2026-06-27)** — dominio **`send.stlabs.ar`** verificado en Resend
+  y **envío de la app andando** (probado con "enviar email de prueba" desde `/correo`). El gate de
+  invitaciones (`sendTeamInvite`) ahora usa `mailCanSendExternal()` (lee `email_config`), así que las
+  invitaciones también salen por la config del admin sin tocar env vars. ⏳ **Falta solo Canal B**:
+  cargar el SMTP de Resend en **Supabase → Authentication → SMTP** (para password resets / mails de
+  Auth desde el dominio).
 - **F1 · Sección admin "Correo":** ✅ **hecho (2026-06-26)** — migración `email_config` + Vault
   (`email_set/get_secret`) + sección admin **`/correo`** (form remitente/reply-to/soporte/key +
   **enviar email de prueba**) + refactor de `lib/email.ts` a **DB-config con fallback a env** (el

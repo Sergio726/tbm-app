@@ -2,7 +2,7 @@
 
 import { createServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendEmail, canSendExternalEmail, hasResendConfigured } from "@/lib/email";
+import { sendEmail, mailCanSendExternal } from "@/lib/email";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -124,8 +124,9 @@ export async function sendTeamInvite(input: {
     return { ok: false, error: "Falta SUPABASE_SERVICE_ROLE_KEY en el servidor (Vercel)." };
   }
 
-  // Camino B: Resend con dominio verificado → email en español + link cross-device.
-  if (hasResendConfigured() && canSendExternalEmail()) {
+  // Camino B: correo configurado con dominio verificado (admin o env) → email en
+  // español + link cross-device.
+  if (await mailCanSendExternal()) {
     const inviteLink = await buildInviteLink(admin, input.origin, nextPath, email);
     if (!inviteLink) {
       return { ok: false, error: "No se pudo generar el link de invitación." };
@@ -179,15 +180,13 @@ export async function sendTeamInvite(input: {
     return { ok: false, error: detail || "No se pudo enviar la invitación." };
   }
 
-  const resendHint = hasResendConfigured() && !canSendExternalEmail()
-    ? "RESEND_FROM sigue en @resend.dev — en Vercel usá un email de tu dominio verificado."
-    : undefined;
-
   return {
     ok: true,
     via: "manual",
     link: inviteLink,
-    reason: resendHint ?? otpErr.message,
+    reason:
+      otpErr.message ||
+      "Configurá el correo (dominio verificado) en el panel de admin → Correo para envío automático.",
   };
 }
 

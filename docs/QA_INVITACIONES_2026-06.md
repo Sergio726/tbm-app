@@ -36,6 +36,10 @@ envío y se cae al fallback "manual". O sea: el chequeo distingue "modo prueba `
 - **Mejora de robustez sugerida (código):** si Resend responde "domain is not verified", que
   `sendTeamInvite` **reintente por el OTP de Supabase** antes de devolver `via:"manual"`; o validar el
   dominio antes de tomar el camino Resend.
+- ✅ **Parcialmente resuelto (2026-06-27):** `sendTeamInvite` ya no usa el gate env-based; ahora
+  `mailCanSendExternal()` lee `email_config` → con el dominio verificado en el admin, la invitación
+  sale por Resend sin depender de las env vars de Vercel. (También se arregló el test del admin que
+  marcaba 403 como "API key inválida".)
 
 ## Bug #3 — 🟡 Abrir `/accept-invite?company=…` directo → mensaje engañoso ("No encontramos una invitación")
 El link que hay que **abrir/compartir es el magic link completo**:
