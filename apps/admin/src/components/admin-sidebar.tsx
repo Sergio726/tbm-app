@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, Users, ScrollText, Sparkles, Menu, X } from "lucide-react";
+import { LayoutDashboard, Building2, Users, ScrollText, Sparkles, Mail, Menu, X } from "lucide-react";
 import { LogoutButton } from "@/app/(panel)/logout-button";
 
 const NAV = [
@@ -11,6 +11,7 @@ const NAV = [
   { href: "/empresas", label: "Empresas", icon: Building2, exact: false },
   { href: "/coaches", label: "Coaches", icon: Users, exact: false },
   { href: "/asistente-ia", label: "Asistente IA", icon: Sparkles, exact: false },
+  { href: "/correo", label: "Correo", icon: Mail, exact: false },
   { href: "/auditoria", label: "Auditoría", icon: ScrollText, exact: false },
 ];
 

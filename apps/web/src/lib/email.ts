@@ -1,15 +1,55 @@
 // =============================================================
 // Envío de emails transaccionales vía Resend (server-only)
-// Gateado por RESEND_API_KEY + RESEND_FROM. Sin configurar, devuelve
-// un error claro y no rompe el resto de la app.
+// Config: se lee de la tabla email_config (panel admin, F1) y, si no está
+// configurada/activa, cae a las env vars RESEND_API_KEY + RESEND_FROM. Sin
+// ninguna de las dos, devuelve un error claro y no rompe el resto de la app.
 // Doc: https://resend.com/docs/api-reference/emails/send-email
 // =============================================================
+
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const API_URL = "https://api.resend.com/emails";
 
 export type SendEmailResult = { ok: true; id?: string } | { ok: false; error: string };
 
-/** Hay API key y remitente configurados (puede ser modo prueba @resend.dev). */
+type MailRuntime = { apiKey?: string; from?: string; replyTo?: string };
+
+/**
+ * Resuelve la config efectiva: email_config (si está `enabled`) pisa a las env
+ * vars. Tolerante a fallos: si la DB no responde, sigue con env.
+ */
+async function resolveMail(): Promise<MailRuntime> {
+  let apiKey = process.env.RESEND_API_KEY;
+  let from = process.env.RESEND_FROM;
+  let replyTo: string | undefined;
+
+  try {
+    const admin = createAdminClient();
+    if (admin) {
+      const { data } = await admin
+        .from("email_config")
+        .select("from_name, from_email, reply_to, enabled, api_key_ref")
+        .eq("scope", "platform")
+        .maybeSingle();
+      if (data?.enabled) {
+        if (data.from_email) {
+          from = data.from_name ? `${data.from_name} <${data.from_email}>` : data.from_email;
+        }
+        if (data.reply_to) replyTo = data.reply_to;
+        if (data.api_key_ref) {
+          const { data: key } = await admin.rpc("email_get_secret");
+          if (key) apiKey = key as string;
+        }
+      }
+    }
+  } catch {
+    /* config DB no disponible → seguimos con env */
+  }
+
+  return { apiKey, from, replyTo };
+}
+
+/** Hay API key y remitente configurados (env). Gate sync usado por /equipo. */
 export function hasResendConfigured(): boolean {
   return !!(process.env.RESEND_API_KEY && process.env.RESEND_FROM);
 }
@@ -21,19 +61,34 @@ export function canSendExternalEmail(): boolean {
   return !!apiKey && !!from && !from.includes("@resend.dev");
 }
 
+/** Casilla de soporte/contacto configurada en el admin (F1), o null. */
+export async function getSupportEmail(): Promise<string | null> {
+  try {
+    const admin = createAdminClient();
+    if (!admin) return null;
+    const { data } = await admin
+      .from("email_config")
+      .select("support_email")
+      .eq("scope", "platform")
+      .maybeSingle();
+    return data?.support_email?.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function sendEmail(input: {
   to: string;
   subject: string;
   html: string;
 }): Promise<SendEmailResult> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM;
+  const { apiKey, from, replyTo } = await resolveMail();
 
   if (!apiKey || !from) {
     return {
       ok: false,
       error:
-        "El envío de emails no está configurado (faltan RESEND_API_KEY / RESEND_FROM en el entorno).",
+        "El envío de emails no está configurado (configurá el correo en el admin o cargá RESEND_API_KEY / RESEND_FROM).",
     };
   }
 
@@ -52,6 +107,7 @@ export async function sendEmail(input: {
         to: [input.to],
         subject: input.subject,
         html: input.html,
+        ...(replyTo ? { reply_to: replyTo } : {}),
       }),
       signal: controller.signal,
     });

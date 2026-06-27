@@ -2,10 +2,12 @@ import { redirect } from "next/navigation";
 import { CreditCard, Ticket, Info, Mail, History } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getSupportEmail } from "@/lib/email";
 import {
   creditTypeLabel,
   formatCreditDate,
   buildCreditRequestMailto,
+  SUPPORT_EMAIL,
 } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +54,8 @@ export default async function CreditosPage() {
 
   const balance = credits?.balance ?? 0;
   const history = (txs ?? []) as Tx[];
+  // Casilla de soporte configurable desde el admin (F1), con fallback al default.
+  const supportEmail = (await getSupportEmail()) ?? SUPPORT_EMAIL;
   const low = balance > 0 && balance <= 3;
   const accent = balance === 0 ? "#fca5a5" : low ? "#fbbf24" : "#9bb8ff";
   const accentBg =
@@ -146,7 +150,7 @@ export default async function CreditosPage() {
             evaluando a tu equipo.
           </p>
           <a
-            href={buildCreditRequestMailto(companyName)}
+            href={buildCreditRequestMailto(companyName, supportEmail)}
             className="inline-flex items-center gap-2 rounded-xl text-white transition hover:-translate-y-px"
             style={{
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",

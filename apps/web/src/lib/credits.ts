@@ -2,7 +2,11 @@
 // Modelo: 1 crédito = 1 test DISC. El saldo vive en company_credits y cada
 // movimiento queda en credit_transactions (ver migration_fase2_credits.sql).
 
-/** Correo al que el líder pide más créditos (beta: carga manual). Cambiar acá. */
+/**
+ * Correo de soporte por defecto para "pedir más créditos" (beta: carga manual).
+ * Es el fallback: si hay `support_email` configurado en el admin (email_config),
+ * la vista usa ese (ver getSupportEmail en lib/email.ts).
+ */
 export const SUPPORT_EMAIL = "tbm@stlabs.ar";
 
 /** Etiqueta legible del tipo de movimiento del ledger. */
@@ -32,11 +36,14 @@ export function formatCreditDate(iso: string): string {
   });
 }
 
-/** mailto pre-armado para "Pedir más créditos". */
-export function buildCreditRequestMailto(companyName?: string | null): string {
+/** mailto pre-armado para "Pedir más créditos". `email` = casilla de soporte. */
+export function buildCreditRequestMailto(
+  companyName?: string | null,
+  email: string = SUPPORT_EMAIL
+): string {
   const subject = "Quiero cargar créditos (The Business Multiplier)";
   const body =
     `Hola, soy el líder${companyName ? ` de "${companyName}"` : ""} y quiero sumar créditos ` +
     `para generar tests DISC.\n\n¿Cómo lo coordinamos?\n\nGracias.`;
-  return `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

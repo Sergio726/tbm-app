@@ -122,9 +122,14 @@ cron). `SUPPORT_EMAIL`/reply-to pasan a salir de la config.
 
 ## 5. Plan sugerido por fases
 - **F0 · Quick win (hoy, sin código):** verificar dominio en Resend → `RESEND_FROM` en Vercel →
-  cargar SMTP de Resend en Supabase Auth. Desbloquea Canal A **y** B. *(Tarea de Sebas + DNS.)*
-- **F1 · Sección admin "Correo":** tabla `email_config` + Vault + form + test + refactor de
-  `lib/email.ts` a DB-config (Resend; fallback a env). Mueve `SUPPORT_EMAIL`/from/reply-to a la UI.
+  cargar SMTP de Resend en Supabase Auth. Desbloquea Canal A **y** B. *(Tarea de Sebas + DNS — ver
+  §7.)* ⏳ pendiente de Sebas.
+- **F1 · Sección admin "Correo":** ✅ **hecho (2026-06-26)** — migración `email_config` + Vault
+  (`email_set/get_secret`) + sección admin **`/correo`** (form remitente/reply-to/soporte/key +
+  **enviar email de prueba**) + refactor de `lib/email.ts` a **DB-config con fallback a env** (el
+  cron nunca se rompe). `SUPPORT_EMAIL` (#7) ahora sale de `support_email` si está configurado. SMTP
+  queda como "próximamente". La pantalla incluye el bloque informativo del **Canal B** (Supabase
+  Auth SMTP) que no se puede setear por código.
 - **F2 · SMTP propio (opcional):** soporte `provider='smtp'` con `nodemailer` en `lib/email.ts` +
   campos SMTP en el form. Solo si se decide no depender de Resend.
 - **F3 · (futuro) Inbound:** recibir/parsear correos — evaluar si aporta.

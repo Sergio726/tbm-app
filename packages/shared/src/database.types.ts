@@ -224,6 +224,58 @@ export type Database = {
         Update: { action?: string };
         Relationships: [];
       };
+      email_config: {
+        Row: {
+          id: string;
+          scope: string;
+          provider: string;
+          from_name: string | null;
+          from_email: string | null;
+          reply_to: string | null;
+          support_email: string | null;
+          smtp_host: string | null;
+          smtp_port: number | null;
+          smtp_secure: boolean;
+          smtp_user: string | null;
+          api_key_ref: string | null;
+          enabled: boolean;
+          updated_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          scope?: string;
+          provider?: string;
+          from_name?: string | null;
+          from_email?: string | null;
+          reply_to?: string | null;
+          support_email?: string | null;
+          smtp_host?: string | null;
+          smtp_port?: number | null;
+          smtp_secure?: boolean;
+          smtp_user?: string | null;
+          api_key_ref?: string | null;
+          enabled?: boolean;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          provider?: string;
+          from_name?: string | null;
+          from_email?: string | null;
+          reply_to?: string | null;
+          support_email?: string | null;
+          smtp_host?: string | null;
+          smtp_port?: number | null;
+          smtp_secure?: boolean;
+          smtp_user?: string | null;
+          api_key_ref?: string | null;
+          enabled?: boolean;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -245,6 +297,14 @@ export type Database = {
         Returns: string;
       };
       ai_get_api_key: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+      email_set_secret: {
+        Args: { p_secret: string };
+        Returns: string;
+      };
+      email_get_secret: {
         Args: Record<string, never>;
         Returns: string;
       };
