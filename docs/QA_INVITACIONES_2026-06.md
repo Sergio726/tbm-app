@@ -81,7 +81,13 @@ proveedor de correo lo consumió antes), (c) expiración por tiempo.
   devuelve Supabase, en vez de asumir `magiclink`. `auth/confirm` loguea el error de `verifyOtp` para
   diagnóstico. También endurecido antes: si `verifyOtp` falla pero ya hay sesión → sigue; preserva
   `company`; mensaje más claro en `/accept-invite`.
-- ⏳ **A confirmar:** invitar una casilla **nueva**, abrir el link en **incógnito**, una vez.
+- ✅ **2do bug encadenado (2026-06-27):** ya con el token verificando, al "Unirme al equipo" salía
+  *"No encontramos una invitación para tu email"*. Causa: la RLS de `invitations` tenía policies
+  **solo para el Arquitecto** → el invitado (aún no miembro) no podía **leer** ni **aceptar** su
+  invitación. **Fix** (`migration_invitations_invitee_rls.sql`): policies SELECT + UPDATE de la
+  propia invitación por `auth.email()`.
+- ⏳ **A confirmar:** invitar una casilla **nueva**, abrir el link en **incógnito**, una vez → debe
+  llegar al form, y al "Unirme" entrar al dashboard.
 
 ---
 

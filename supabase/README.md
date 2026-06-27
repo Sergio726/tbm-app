@@ -39,6 +39,7 @@ Supabase **sí** llega al proyecto nuevo (apply_migration/execute_sql). Correr *
 | 25 | `migration_jarvis_rag.sql` | **JARVIS · RAG R1**: `pgvector` + `knowledge_chunks` (embeddings 384) + RPC `match_knowledge` (similitud coseno, solo service-role). Embeddings vía Edge Function `embed` (gte-small). Corpus se carga con `scripts/ingest-knowledge.mjs` | ✅ aplicada (2026-06-22) |
 | 26 | `migration_jarvis_persona.sql` | **DC · DC-2**: columnas de persona en `ai_config` (`persona_name`, `tone`, `welcome`, `suggested_prompts` jsonb, `features` jsonb) para personalizar DC desde el admin. Solo `ALTER ADD` idempotente; RLS sin cambios (solo service-role) | ✅ aplicada (2026-06-26) |
 | 27 | `migration_email_config.sql` | **Email · F1**: tabla `email_config` (remitente/reply-to/soporte del correo de la app) + wrappers de Vault `email_set_secret`/`email_get_secret` (SECURITY DEFINER, solo service-role) para la key de Resend. RLS sin policies (solo service-role) | ✅ aplicada (2026-06-26) |
+| 28 | `migration_invitations_invitee_rls.sql` | **Fix invitaciones**: policies para que el invitado **vea y acepte** su propia invitación (`invitations` por `auth.email()`). Antes solo el Arquitecto tenía policies → /accept-invite no encontraba la invitación del colaborador | ✅ aplicada (2026-06-27) |
 
 ## Limpieza puntual (no es migración de esquema)
 
