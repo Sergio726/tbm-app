@@ -5,9 +5,23 @@
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
+> Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
-**Última actualización:** 2026-06-26 (DC-9/DC-1/DC-2 + pre-beta #7 vista de créditos del líder) · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** B1 — `/equipo` como "Mi Perfil" para el colaborador (pulido UX; la seguridad ya estaba OK). Antes: B2 (IA DISC con método), C1 (mapa LOST), D1/D2 (naming). PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
+**Última actualización:** 2026-06-27 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** B1 — `/equipo` como "Mi Perfil" para el colaborador (pulido UX; la seguridad ya estaba OK). Antes: B2 (IA DISC con método), C1 (mapa LOST), D1/D2 (naming). PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
 
+> **Novedades 2026-06-27 (sesión correo + invitaciones + DC):**
+> - ✅ **Correo operativo (Resend + `send.stlabs.ar`)**: F1 = sección admin **`/correo`** (`email_config`
+>   + Vault, `lib/email.ts` lee de DB con fallback a env); F0 = dominio verificado + Supabase Auth SMTP.
+>   Diseño/runbook: [`docs/EMAIL_ADMIN_CONFIG.md`](docs/EMAIL_ADMIN_CONFIG.md). **Decisión:** Resend para
+>   todo, sin Purelymail; reply-to/soporte = buzón propio.
+> - ✅ **Alta de colaboradores arreglada end-to-end** (3 bugs encadenados): `verification_type` del
+>   magic link, RLS de `invitations` (invitado ve/acepta) y de `companies` (nombre), + gate de envío
+>   por config del admin. Detalle: [`docs/QA_INVITACIONES_2026-06.md`](docs/QA_INVITACIONES_2026-06.md).
+> - ✅ **DC**: DC-9 (fixes QA), DC-1 (launcher global), DC-2 (persona configurable desde el admin).
+> - ✅ **Pre-beta #7**: vista de créditos del líder (`/creditos`).
+> - 🔍 **EN REVISIÓN**: visibilidad de KPIs (hoy todo el equipo los ve) → ver `PENDIENTES_REVISION.md`.
+> - **Próximo:** DC-3 (acciones/tool use) · pre-beta #3 mobile · #8 test DISC público.
+>
 > **Novedades 2026-06-20:**
 > - **Material canónico de Dilio recibido** (Drive "TBM 4": presentaciones S1–S6 + transcripciones) → digerido en [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md), **nueva fuente de verdad del método**. Desbloquea **C1** (LOST: L-Liderazgo/O-Operaciones/S-Sistemas/T-Tiempo) y **B2** (contenido DISC: temores, luz/sombra, roles, cruces). **B3+B4 sigue parcial** (no vino el modelo de las 3 gráficas DISC; "INFORMES DISC" de clientes vacías). **A3.2** sigue bloqueado (WORKBOOKS vacía).
 > - **Divergencias app↔método detectadas** (ver §8 del doc, son tickets): D1 LOS→LOST + "Niveles de Delegación" (no "LOS"); D2 ARQI = **4 pilares** (no "ARQUI"/5); D3 **Multiplicador (S17)** usa los "3 Pecados"+48% que **TBM4 eliminó** (requiere decisión de Dilio); D4 Pre-game vs Los 5 Grandes; D5 ESC vs SEC; D6 arquetipos DISC.
