@@ -135,6 +135,8 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   los emails del cron (hoy en modo test `onboarding@resend.dev`). **PENDIENTE: definir
   Camino A (verificar dominio en Resend → cambiar `RESEND_FROM`, sin código) vs Camino B
   (reescribir `email.ts` a SMTP propio con nodemailer).** Falta confirmar dominio/proveedor.
+  📄 **Diseño completo** (2 canales: Resend app + Supabase Auth SMTP) + propuesta de **sección
+  "Configuración de correo" en el admin**: [`docs/EMAIL_ADMIN_CONFIG.md`](docs/EMAIL_ADMIN_CONFIG.md).
 - ✅ **S16 Mejora #4 — Naming LOS → LOST / ARQI** *(copy hecho 2026-06-20)* — barrido
   D1+D2 del copy visible: "Nivel LOS"→**"Nivel de Delegación"** (Cadete→Socio, el término
   canónico de Dilio) en UI/tour/workbooks/export, y "A.R.Q.U.I."→**"ARQI"** (4 pilares).
