@@ -51,7 +51,7 @@ function AcceptInviteContent() {
         .from("companies")
         .select("name")
         .eq("id", companyId)
-        .single()
+        .maybeSingle()
         .then(({ data }: { data: { name: string } | null }) => {
           if (data) setCompanyName(data.name);
         });

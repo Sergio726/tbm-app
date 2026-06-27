@@ -14,6 +14,7 @@ const HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
  * - Session recording OFF (v1) — la app tiene data sensible.
  * - person_profiles "identified_only": no crea perfiles para anónimos.
  * - Pageviews manuales (App Router no auto-trackea navegación SPA).
+ * - Feature flags OFF: la app no las usa → evita la llamada a /flags (daba 401).
  * - api_host "/ingest" = reverse proxy (ver rewrites en next.config) para esquivar ad-blockers.
  */
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
@@ -27,6 +28,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       autocapture: true,
       disable_session_recording: true,
       person_profiles: "identified_only",
+      advanced_disable_feature_flags: true,
     });
   }, []);
 

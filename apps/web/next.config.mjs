@@ -29,6 +29,12 @@ const nextConfig = {
         source: "/ingest/static/:path*",
         destination: `${POSTHOG_ASSETS_HOST}/static/:path*`,
       },
+      // El config remoto (/array/<key>/config) lo sirve el host de ASSETS, no el
+      // de ingesta → sin esto da 404. Va antes del catch-all /ingest/:path*.
+      {
+        source: "/ingest/array/:path*",
+        destination: `${POSTHOG_ASSETS_HOST}/array/:path*`,
+      },
       { source: "/ingest/:path*", destination: `${POSTHOG_HOST}/:path*` },
     ];
   },
