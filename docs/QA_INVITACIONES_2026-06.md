@@ -71,16 +71,17 @@ Eso lo pone `auth/confirm/route.ts` cuando **`verifyOtp` falla**. Los magic link
 típicas son: (a) abrir un **email viejo** (cada reinvitación a la misma casilla **invalida** el token
 anterior; solo vale el último), (b) el token ya se **gastó** (doble click, o un escáner de links del
 proveedor de correo lo consumió antes), (c) expiración por tiempo.
-- ✅ **Endurecido (2026-06-27):** `auth/confirm` ahora, si `verifyOtp` falla **pero ya hay sesión**
-  en el navegador, **sigue al destino** en vez de mostrar el error (cubre el doble-click); y en el
-  error **preserva el `company`** (venía dentro de `next`, se perdía). El mensaje de `/accept-invite`
-  se aclaró: "sirve una sola vez y solo el más reciente… abrí el último email".
-- ⏳ **Pendiente de confirmar con prueba limpia:** invitar una casilla **nueva**, abrir el **último**
-  email, click **una vez**, en un navegador **sin** sesión de Arquitecto. Si así funciona → los
-  fallos previos eran links viejos/gastados (artefacto de testing), no un bug de código.
-- 💡 **Robustez futura (si persiste):** para nuevos usuarios, preferir `inviteUserByEmail`
-  (type=invite) sobre `magiclink`; y/o mostrar en el modal que el link es de **un solo uso** y lo
-  abre **el invitado** (no el Arquitecto).
+- 🎯 **CAUSA RAÍZ ENCONTRADA (2026-06-27, vía SQL):** los colaboradores invitados quedaban en
+  `auth.users` con `email_confirmed_at = null` y `last_sign_in_at = null` → `verifyOtp` **nunca**
+  funcionaba (fallo sistemático, no token gastado). El bug: `buildInviteLink` armaba el link con
+  **`type=magiclink` hardcodeado**, pero para un usuario **nuevo/sin confirmar** `generateLink`
+  genera un token cuyo **`verification_type` real es `signup`** (no `magiclink`). `verifyOtp({type:
+  'magiclink'})` rechazaba el token → `invalid_link`.
+- ✅ **FIX (2026-06-27):** `buildInviteLink` ahora usa **`data.properties.verification_type`** que
+  devuelve Supabase, en vez de asumir `magiclink`. `auth/confirm` loguea el error de `verifyOtp` para
+  diagnóstico. También endurecido antes: si `verifyOtp` falla pero ya hay sesión → sigue; preserva
+  `company`; mensaje más claro en `/accept-invite`.
+- ⏳ **A confirmar:** invitar una casilla **nueva**, abrir el link en **incógnito**, una vez.
 
 ---
 

@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
+    console.error("auth/confirm: verifyOtp falló", { type, msg: error.message });
   }
 
   if (code) {

@@ -56,11 +56,16 @@ async function buildInviteLink(
     email,
     options: { redirectTo: confirmBase },
   });
-  if (error || !data?.properties?.hashed_token) {
+  const props = data?.properties;
+  if (error || !props?.hashed_token) {
     console.error("sendTeamInvite: generateLink", error);
     return null;
   }
-  return `${origin}/auth/confirm?token_hash=${encodeURIComponent(data.properties.hashed_token)}&type=magiclink&next=${encodeURIComponent(nextPath)}`;
+  // IMPORTANTE: usar el verification_type que devuelve Supabase (para usuarios
+  // nuevos/sin confirmar suele ser 'signup', no 'magiclink'). Hardcodear
+  // 'magiclink' hacía que verifyOtp rechazara el token → "link inválido".
+  const vtype = props.verification_type || "magiclink";
+  return `${origin}/auth/confirm?token_hash=${encodeURIComponent(props.hashed_token)}&type=${encodeURIComponent(vtype)}&next=${encodeURIComponent(nextPath)}`;
 }
 
 /** Envía invitación de equipo con magic link que funciona en cualquier dispositivo. */
