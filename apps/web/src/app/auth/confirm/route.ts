@@ -37,10 +37,28 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // Resiliencia: si la verificación falló PERO ya hay sesión en este navegador
+  // (ej. el link se abrió dos veces y el 1er verify ya creó la sesión), seguimos
+  // al destino en vez de mostrar "link inválido".
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    return NextResponse.redirect(`${origin}${next}`);
+  }
+
+  // Error real: preservar el `company` (viene DENTRO de `next`, no como query
+  // top-level) para no perder el contexto de la empresa en /accept-invite.
   const errorUrl = new URL("/accept-invite", origin);
   errorUrl.searchParams.set("error", "invalid_link");
-  if (searchParams.get("company")) {
-    errorUrl.searchParams.set("company", searchParams.get("company")!);
+  let company = searchParams.get("company");
+  if (!company) {
+    try {
+      company = new URL(next, origin).searchParams.get("company");
+    } catch {
+      /* next no parseable → sin company */
+    }
   }
+  if (company) errorUrl.searchParams.set("company", company);
   return NextResponse.redirect(errorUrl);
 }

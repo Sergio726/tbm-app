@@ -34,7 +34,7 @@ function AcceptInviteContent() {
   const [hasSession, setHasSession] = useState(false);
   const [error, setError] = useState(
     linkError === "invalid_link"
-      ? "El link de invitación expiró o ya fue usado. Pedile al Arquitecto que te reinvite."
+      ? "Este link de invitación expiró o ya se usó (sirve una sola vez y solo el más reciente). Pedile al Arquitecto que te reenvíe la invitación y abrí el último email que te llegue."
       : ""
   );
   const [companyName, setCompanyName] = useState("");
