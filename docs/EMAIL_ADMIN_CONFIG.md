@@ -132,3 +132,38 @@ cron). `SUPPORT_EMAIL`/reply-to pasan a salir de la config.
 > **Próximo paso recomendado:** definir el punto 1 y 2 de §4 (camino + dominio/direcciones). Con eso
 > hago el **F0** (instrucciones exactas de DNS/Vercel/Supabase para vos) y dejo lista la
 > implementación del **F1** (sección admin) como el siguiente entregable de código.
+
+---
+
+## 6. Decisión tomada (2026-06-26)
+- **Camino: Resend + dominio verificado** (un solo dominio para Canal A y B; SMTP de Resend también
+  en Supabase Auth). Sin reescribir `email.ts`.
+- **Orden: quick-win (F0) primero** → desbloquear la beta sin código; la sección admin (F1) después.
+- **Dominio asumido:** `stlabs.ar` (las cuentas ya son `@stlabs.ar`). Sustituir si se elige uno de
+  marca dedicado. **Confirmar** las direcciones `from` / `reply_to` / `support`.
+
+## 7. Runbook F0 — desbloquear el correo (sin código; lo ejecuta Sebas)
+Reemplazá `stlabs.ar` por el dominio elegido. Recomendado un **subdominio** de envío (ej.
+`send.stlabs.ar`) para no tocar el MX del dominio raíz si ya recibís correo ahí.
+
+1. **Resend — verificar el dominio**
+   - resend.com → **Domains → Add Domain** → `stlabs.ar` (o `send.stlabs.ar`).
+   - Cargar en tu DNS los registros que da Resend: **SPF** (TXT), **DKIM** (CNAME/TXT) y, recomendado,
+     **DMARC**. Esperar el estado **Verified**.
+2. **Vercel — proyecto `tbm-app` (web), Production**
+   - `RESEND_FROM = The Business Multiplier <noreply@stlabs.ar>` (debe ser del dominio verificado).
+   - Confirmar que `RESEND_API_KEY = re_…` está cargada.
+   - **Redeploy.** A partir de acá `canSendExternalEmail()` = true → el cron y el link DISC entregan a
+     cualquier destinatario (ya no solo a la cuenta Resend).
+3. **Supabase Auth — SMTP de Resend (Canal B)**
+   - En Resend → **SMTP**: host `smtp.resend.com`, port `465` (SSL) o `587` (TLS), user `resend`,
+     pass = una API key de Resend.
+   - Supabase (proyecto `fozhnfxehbbgqaerprgf`) → **Authentication → SMTP Settings → Enable Custom
+     SMTP**: cargar host/port/user/pass + **Sender** `noreply@stlabs.ar` / "The Business Multiplier".
+4. **`SUPPORT_EMAIL` (#7):** cambiar el placeholder `tbm@stlabs.ar` en `apps/web/src/lib/credits.ts`
+   por la casilla real de contacto (ej. `hola@stlabs.ar`). *(cambio de 1 línea — lo hago cuando se
+   confirme la dirección.)*
+5. **Verificación**
+   - Test DISC: `/equipo` → "enviar por email" a una casilla externa → debe llegar.
+   - Cron: `/api/cron/daily` (con bearer) o esperar 11:00 UTC → digest a arquitectos.
+   - Auth: invitar / reset password → mail desde el dominio propio.
