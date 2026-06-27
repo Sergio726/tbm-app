@@ -141,11 +141,15 @@ cron). `SUPPORT_EMAIL`/reply-to pasan a salir de la config.
 ---
 
 ## 6. Decisión tomada (2026-06-26)
-- **Camino: Resend + dominio verificado** (un solo dominio para Canal A y B; SMTP de Resend también
-  en Supabase Auth). Sin reescribir `email.ts`.
-- **Orden: quick-win (F0) primero** → desbloquear la beta sin código; la sección admin (F1) después.
-- **Dominio asumido:** `stlabs.ar` (las cuentas ya son `@stlabs.ar`). Sustituir si se elige uno de
-  marca dedicado. **Confirmar** las direcciones `from` / `reply_to` / `support`.
+- **Proveedor: Resend para TODO el envío de la app.** Se descarta Purelymail (era hosting de
+  casillas, no un ESP transaccional). Un solo proveedor de envío.
+- **Subdominio de envío dedicado:** `send.<tu-dominio>` → Resend pone ahí SPF/DKIM, sin tocar el
+  resto del dominio. `from = noreply@send.<tu-dominio>`.
+- **Resend solo ENVÍA, no recibe** → `reply_to` y `support_email` deben ser un **buzón que el dueño
+  lea** (ej. el Gmail personal). No se hostean casillas.
+- **Supabase Auth (Canal B):** SMTP de Resend (host `smtp.resend.com`), mismo remitente.
+- **Orden: quick-win (F0) primero** (verificar dominio + cargar la config) → la sección admin (F1)
+  ya está hecha, así que la key/remitente se cargan ahí o por env.
 
 ## 7. Runbook F0 — desbloquear el correo (sin código; lo ejecuta Sebas)
 Reemplazá `stlabs.ar` por el dominio elegido. Recomendado un **subdominio** de envío (ej.
