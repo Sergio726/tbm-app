@@ -166,14 +166,17 @@ export async function testEmailConnection(
     });
     if (!res.ok) {
       const detail = await res.text().catch(() => "");
-      if (res.status === 401 || res.status === 403) return { ok: false, error: "key_invalida" };
+      let message = "";
       try {
-        const parsed = JSON.parse(detail) as { message?: string };
-        if (parsed.message) return { ok: false, error: parsed.message };
+        message = (JSON.parse(detail) as { message?: string }).message ?? "";
       } catch {
-        /* no JSON */
+        /* respuesta no JSON */
       }
-      return { ok: false, error: "fallo_envio" };
+      // Solo 401 es problema de API key. El resto (403 dominio no verificado,
+      // 422, etc.) es de configuración → mostramos el mensaje real de Resend
+      // en vez de "key inválida" (que confunde).
+      if (res.status === 401) return { ok: false, error: message || "key_invalida" };
+      return { ok: false, error: message || "fallo_envio" };
     }
     return { ok: true };
   } catch {
