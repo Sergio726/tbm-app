@@ -41,6 +41,19 @@
 >     email + SSO; el email NO es punto único de falla del login diario.
 >   - ⏳ **Config (ops):** cargar el **SMTP de Resend en Supabase Auth** + agregar `…/auth/confirm` y
 >     `…/reset-password` a Redirect URLs, para que el mail de recovery se entregue confiable.
+> - ✅ **Circuito de cuentas/sesiones endurecido (P0+P1)**: auditoría completa por rol.
+>   - **Gate global de contraseña temporal**: nueva página `(auth)/set-password` + check en
+>     `middleware.ts` que fuerza el cambio a **cualquier** rol con `user_metadata.must_change_password`
+>     (antes el gate vivía solo en `/onboarding` = exclusivo arquitecto). **Cierra el agujero del coach**:
+>     `addCoachToCompany` ahora crea al coach con `must_change_password=true` (antes nunca cambiaba la
+>     clave temporal). Va antes del gate de onboarding; `/set-password` excluido de ese gate (loop-safe).
+>   - **Mínimo de contraseña unificado a 8** en `/cuenta` (antes 6; ahora coincide con accept-invite /
+>     reset / set-password).
+>   - ✅ **"Recordarme" real**: antes era cosmético (localStorage, no cambiaba nada). Ahora la
+>     preferencia vive en una cookie (`tbm-remember`) que leen browser + server + middleware; si está
+>     apagado, las cookies de auth se escriben como **cookies de sesión** (se borran al cerrar el
+>     navegador) vía `lib/supabase/remember.ts` (`sessionizeIfNeeded`). Default ON → sin regresión para
+>     sesiones existentes. (`@supabase/ssr` fuerza maxAge=400d en sets, por eso se intercepta el setAll.)
 >
 > **Novedades 2026-06-20:**
 > - **Material canónico de Dilio recibido** (Drive "TBM 4": presentaciones S1–S6 + transcripciones) → digerido en [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md), **nueva fuente de verdad del método**. Desbloquea **C1** (LOST: L-Liderazgo/O-Operaciones/S-Sistemas/T-Tiempo) y **B2** (contenido DISC: temores, luz/sombra, roles, cruces). **B3+B4 sigue parcial** (no vino el modelo de las 3 gráficas DISC; "INFORMES DISC" de clientes vacías). **A3.2** sigue bloqueado (WORKBOOKS vacía).

@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { readRememberClient, writeRememberClient } from "@/lib/supabase/remember";
 import { capture } from "@/lib/analytics";
 import {
   Mail,
@@ -30,8 +31,6 @@ import {
 const MONO: CSSProperties = {
   fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
 };
-
-const REMEMBER_KEY = "tbm:remember-me";
 
 // =============================================================
 // Marcas SSO (color, no stroke) — Google + Microsoft
@@ -551,29 +550,24 @@ function RightPanel() {
   const [ssoLoading, setSsoLoading] = useState<"google" | "azure" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Recuperar preferencia "recordarme"
+  // Recuperar preferencia "recordarme" (cookie compartida con server/middleware).
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(REMEMBER_KEY);
-      if (stored !== null) setRemember(stored === "1");
-    } catch {
-      /* ignore */
-    }
+    setRemember(readRememberClient());
   }, []);
 
   const persistRemember = (v: boolean) => {
     setRemember(v);
-    try {
-      localStorage.setItem(REMEMBER_KEY, v ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
+    writeRememberClient(v);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Fijar la preferencia ANTES de loguear → las cookies de auth se escriben
+    // persistentes o de sesión según corresponda.
+    writeRememberClient(remember);
 
     const supabase = createClient();
     const { error: authErr } = await supabase.auth.signInWithPassword({
@@ -606,6 +600,7 @@ function RightPanel() {
   const handleSSO = async (provider: "google" | "azure") => {
     setSsoLoading(provider);
     setError(null);
+    writeRememberClient(remember);
     try {
       // Marca de login fresco (persiste el redirect de OAuth) → saludo JARVIS (S17.A)
       try {

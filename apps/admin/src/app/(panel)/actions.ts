@@ -333,7 +333,9 @@ export async function addCoachToCompany(input: {
       email,
       password: tempPassword,
       email_confirm: true,
-      user_metadata: { full_name: fullName },
+      // must_change_password: el coach entra con clave temporal → el gate global
+      // (/set-password) lo fuerza a definir una propia en el primer login.
+      user_metadata: { full_name: fullName, must_change_password: true },
     });
     if (createErr || !createdUser?.user) {
       return {

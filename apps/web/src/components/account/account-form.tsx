@@ -373,7 +373,7 @@ export function AccountForm({
   const strength = useMemo(() => getPasswordStrength(pass1), [pass1]);
   const passMatch = pass2.length > 0 && pass1 === pass2;
   const passMismatch = pass2.length > 0 && pass1 !== pass2;
-  const passMinLen = pass1.length >= 6;
+  const passMinLen = pass1.length >= 8;
 
   // ── actions ──────────────────────────────────────────────────────────────────
 
@@ -479,7 +479,7 @@ export function AccountForm({
 
   async function changePassword() {
     if (!passMinLen) {
-      addToast("error", "La contraseña debe tener al menos 6 caracteres.");
+      addToast("error", "La contraseña debe tener al menos 8 caracteres.");
       return;
     }
     if (pass1 !== pass2) {
@@ -820,7 +820,7 @@ export function AccountForm({
         {/* Checklist */}
         {(pass1.length > 0 || pass2.length > 0) && (
           <ul className="mt-3 space-y-1.5">
-            <CheckItem ok={passMinLen} label="Al menos 6 caracteres" />
+            <CheckItem ok={passMinLen} label="Al menos 8 caracteres" />
             <CheckItem ok={/[A-Z]/.test(pass1) && /[a-z]/.test(pass1)} label="Mayúsculas y minúsculas" />
             <CheckItem ok={/[0-9]/.test(pass1)} label="Al menos un número" />
             {pass2.length > 0 && (
