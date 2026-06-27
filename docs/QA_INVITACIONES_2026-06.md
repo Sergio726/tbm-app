@@ -91,6 +91,25 @@ proveedor de correo lo consumió antes), (c) expiración por tiempo.
 
 ---
 
+## Mejora futura — el Arquitecto no ve las invitaciones enviadas
+**Problema (2026-06-27):** una vez que cierra el modal, el Arquitecto **no tiene dónde ver a quién
+invitó ni en qué estado está**. La única señal es el cartel transitorio "Invitación enviada a X" del
+`invite-modal`. No sabe si el email salió, si está **pendiente** o ya fue **aceptada**, ni puede
+**reenviar** desde un lugar claro.
+
+**Lo que ya existe (no falta DB):** la tabla `invitations` guarda `email`, `status`
+(`pending`/`accepted`), `invited_by`, `created_at`, `accepted_at`, y el Arquitecto **ya puede leerlas**
+(policy "Arquitecto ve las invitaciones de su empresa"). O sea, es casi todo **UI**.
+
+**Propuesta:** en `/equipo` (vista del Arquitecto), una sección/lista **"Invitaciones"** con: email ·
+estado (Pendiente / Aceptada) · fecha · botón **Reenviar**. 
+- El "estado de envío" real (entregado/rebotado) es aparte: hoy no se persiste el resultado de
+  `sendTeamInvite`. Para mostrarlo habría que **guardar el outcome** (email/manual/error) en la fila,
+  o integrar **webhooks de Resend** (delivered/bounced). Mínimo viable: mostrar Pendiente/Aceptada
+  (que ya sale del `status`) + reenviar.
+
+---
+
 ## Nota de prioridad
 - **#2 y #3 se mitigan en gran parte con F0**: cuando `RESEND_FROM` apunte a un dominio verificado, el
   colaborador **recibe el email** con el botón "Unirme al equipo" (magic link correcto) → desaparece
