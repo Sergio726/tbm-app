@@ -167,9 +167,10 @@ No son features nuevas: es calidad. Agrupados por urgencia.
    tabla antes de meter datos reales de empresas. *Media/Alta.*
 
 ### Coherencia / marca
-7. **Vista de créditos del líder.** Hoy solo ve un **chip de saldo**; no entiende qué es un crédito
-   ni cómo conseguir más. Para la beta de "regalamos créditos", debe ser claro (saldo + historial +
-   cómo pedir más). *Media.*
+7. ✅ **Vista de créditos del líder** *(hecho 2026-06-26)*: página **`/creditos`** (arquitecto-only)
+   con saldo + "qué es un crédito" + **historial** (ledger `credit_transactions`) + CTA "Pedir más
+   créditos" (mailto a `SUPPORT_EMAIL`, beta = carga manual). Entrada en el sidebar (gateada) + el
+   chip de `/equipo` ahora linkea a la vista. Sin DB nueva (RLS ya lo permitía). *Media.*
 8. **Experiencia del test DISC público** (`/disc/[token]`). Lo ven **personas que no son usuarios**
    (los evaluados) → cara visible de la marca; pulir esa pantalla. *Media.*
 9. **Unificar el design system** admin ↔ web (hoy dos lenguajes visuales) + cerrar **C1**

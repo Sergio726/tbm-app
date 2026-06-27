@@ -18,6 +18,7 @@ import {
   LogOut,
   HelpCircle,
   GraduationCap,
+  CreditCard,
   Menu,
   X,
   type LucideIcon,
@@ -331,6 +332,38 @@ export function Sidebar({
                 <GraduationCap size={17} strokeWidth={1.6} />
               </span>
               <span className="truncate">Super Coach</span>
+            </Link>
+          )}
+
+          {/* Créditos — solo el Arquitecto gestiona los créditos de la empresa (#7) */}
+          {isArquitecto && (
+            <Link
+              href="/creditos"
+              data-tour="nav-creditos"
+              aria-current={pathname.startsWith("/creditos") ? "page" : undefined}
+              className="group relative flex items-center gap-[13px] rounded-[11px] transition-colors duration-150"
+              style={{
+                padding: "11px 14px",
+                background: pathname.startsWith("/creditos")
+                  ? "linear-gradient(135deg, rgba(91,138,255,0.22) 0%, rgba(91,138,255,0.06) 100%)"
+                  : "transparent",
+                border: `1px solid ${
+                  pathname.startsWith("/creditos") ? "rgba(91,138,255,0.28)" : "transparent"
+                }`,
+                color: pathname.startsWith("/creditos") ? "#fff" : "rgba(255,255,255,0.62)",
+                fontSize: 13.5,
+                fontWeight: pathname.startsWith("/creditos") ? 500 : 400,
+              }}
+            >
+              <span
+                className="flex items-center justify-center"
+                style={{
+                  color: pathname.startsWith("/creditos") ? "#bcd0ff" : "rgba(255,255,255,0.55)",
+                }}
+              >
+                <CreditCard size={17} strokeWidth={1.6} />
+              </span>
+              <span className="truncate">Créditos</span>
             </Link>
           )}
         </nav>

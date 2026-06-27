@@ -1615,6 +1615,32 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_transactions: {
+        Row: {
+          id: string
+          company_id: string
+          delta: number
+          type: string
+          reason: string | null
+          actor_id: string | null
+          ref: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          delta: number
+          type: string
+          reason?: string | null
+          actor_id?: string | null
+          ref?: string | null
+          created_at?: string
+        }
+        Update: {
+          reason?: string | null
+        }
+        Relationships: []
+      }
       knowledge_chunks: {
         Row: {
           id: string

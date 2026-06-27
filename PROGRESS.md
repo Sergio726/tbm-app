@@ -6,7 +6,7 @@
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 
-**Última actualización:** 2026-06-26 (DC-9 fixes QA + DC-1 DC global + DC-2 persona) · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** B1 — `/equipo` como "Mi Perfil" para el colaborador (pulido UX; la seguridad ya estaba OK). Antes: B2 (IA DISC con método), C1 (mapa LOST), D1/D2 (naming). PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
+**Última actualización:** 2026-06-26 (DC-9/DC-1/DC-2 + pre-beta #7 vista de créditos del líder) · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** B1 — `/equipo` como "Mi Perfil" para el colaborador (pulido UX; la seguridad ya estaba OK). Antes: B2 (IA DISC con método), C1 (mapa LOST), D1/D2 (naming). PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
 
 > **Novedades 2026-06-20:**
 > - **Material canónico de Dilio recibido** (Drive "TBM 4": presentaciones S1–S6 + transcripciones) → digerido en [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md), **nueva fuente de verdad del método**. Desbloquea **C1** (LOST: L-Liderazgo/O-Operaciones/S-Sistemas/T-Tiempo) y **B2** (contenido DISC: temores, luz/sombra, roles, cruces). **B3+B4 sigue parcial** (no vino el modelo de las 3 gráficas DISC; "INFORMES DISC" de clientes vacías). **A3.2** sigue bloqueado (WORKBOOKS vacía).

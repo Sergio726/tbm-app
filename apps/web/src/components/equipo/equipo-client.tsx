@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Send, Trophy, Bell, X, FileText, AlertTriangle } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
@@ -280,13 +281,16 @@ export function EquipoClient({
         </div>
         {isArquitecto && (
           <div className="flex flex-wrap items-center" style={{ gap: 10 }}>
-            <span
-              title="Créditos disponibles · 1 crédito = 1 test DISC"
-              className="inline-flex items-center"
+            <Link
+              href="/creditos"
+              title="Ver detalle e historial de créditos"
+              className="inline-flex items-center transition hover:-translate-y-px"
               style={{
                 gap: 7,
                 fontSize: 12.5,
                 fontWeight: 600,
+                textDecoration: "none",
+                cursor: "pointer",
                 color: creditBalance > 0 ? "#9bb8ff" : "#fca5a5",
                 background:
                   creditBalance > 0 ? "rgba(91,138,255,0.10)" : "rgba(248,113,113,0.10)",
@@ -299,7 +303,7 @@ export function EquipoClient({
               }}
             >
               🎟️ {creditBalance} {creditBalance === 1 ? "crédito" : "créditos"}
-            </span>
+            </Link>
             <button
               type="button"
               onClick={() => setInviteOpen(true)}
