@@ -24,7 +24,7 @@ const DEFAULT_PERSONA = {
     "¿Cómo lidero mejor a un perfil Dominante?",
     "¿Qué es el sistema LOST?",
   ],
-  features: { rag: true },
+  features: { rag: true, actions: false },
 };
 
 function parseSuggestions(v: unknown): string[] {
@@ -47,7 +47,7 @@ export type AiConfigView = {
   tone: string;
   welcome: string;
   suggestedPrompts: string[];
-  features: { rag: boolean };
+  features: { rag: boolean; actions: boolean };
 };
 
 async function requireAdmin() {
@@ -90,6 +90,7 @@ export async function getAiConfig(): Promise<AiConfigView | null> {
     };
   }
   const rag = (data.features as { rag?: boolean } | null)?.rag !== false;
+  const actions = (data.features as { actions?: boolean } | null)?.actions === true;
   return {
     provider: data.provider as ProviderId,
     model: data.model,
@@ -101,7 +102,7 @@ export async function getAiConfig(): Promise<AiConfigView | null> {
     tone: data.tone?.trim() || DEFAULT_PERSONA.tone,
     welcome: data.welcome?.trim() || DEFAULT_PERSONA.welcome,
     suggestedPrompts: parseSuggestions(data.suggested_prompts),
-    features: { rag },
+    features: { rag, actions },
   };
 }
 
@@ -116,7 +117,7 @@ export async function saveAiConfig(input: {
   tone: string;
   welcome: string;
   suggestedPrompts: string[];
-  features: { rag: boolean };
+  features: { rag: boolean; actions: boolean };
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const { user, isAdmin } = await requireAdmin();
   if (!user) return { ok: false, error: "no_sesion" };
@@ -148,7 +149,7 @@ export async function saveAiConfig(input: {
     tone,
     welcome: input.welcome.trim() || null,
     suggested_prompts: suggested,
-    features: { rag: input.features.rag !== false },
+    features: { rag: input.features.rag !== false, actions: input.features.actions === true },
     updated_by: user.id,
     updated_at: new Date().toISOString(),
     ...(apiKeyRef ? { api_key_ref: apiKeyRef } : {}),
@@ -179,6 +180,7 @@ export async function saveAiConfig(input: {
       persona_name: row.persona_name,
       tone,
       rag: row.features.rag,
+      actions: row.features.actions,
     },
   });
 

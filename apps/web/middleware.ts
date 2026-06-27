@@ -46,6 +46,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/auth/confirm") ||
     pathname.startsWith("/accept-invite") ||
+    pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/disc/") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/") ||
@@ -73,7 +74,8 @@ export async function middleware(request: NextRequest) {
     user &&
     !isPublicRoute &&
     pathname !== "/onboarding" &&
-    !pathname.startsWith("/cuenta")
+    !pathname.startsWith("/cuenta") &&
+    !pathname.startsWith("/reset-password")
   ) {
     const { data: profile } = await supabase
       .from("profiles")

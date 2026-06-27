@@ -5,7 +5,8 @@ import { getProvider, type ChatMessage, type ProviderId } from "@/lib/ai";
 import { buildJarvisContext } from "@/lib/jarvis-context";
 import { retrieveKnowledge } from "@/lib/jarvis-retrieval";
 import { TBM_METHOD_FRAMING } from "@/lib/tbm-disc-context";
-import { DC_DEFAULTS, toneLine, ragEnabled } from "@/lib/dc-persona";
+import { DC_DEFAULTS, toneLine, ragEnabled, actionsEnabled } from "@/lib/dc-persona";
+import { DC_TOOL_SPECS, isToolName, prepareProposal, executeTool } from "@/lib/jarvis-tools";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -30,7 +31,43 @@ function behaviorRules(name: string) {
   ].join("\n");
 }
 
-/** Chat de JARVIS en streaming (S18.3). Devuelve texto plano token a token. */
+// DC-3: marco de acciones — se inyecta al system cuando el tool use está activo.
+function toolsFraming(name: string) {
+  return [
+    "ACCIONES EN LA APP (podés EJECUTAR, no solo explicar):",
+    `Tenés herramientas para: generar el link del test DISC de un colaborador, crear una tarea de delegación (Pase de Estafeta) e invitar colaboradores por email. Cuando ${name} detecte que el usuario quiere HACER una de esas cosas, usá la herramienta correspondiente en vez de describir los pasos.`,
+    "Si faltan datos para la acción (ej. los 5 puntos de la tarea, o a quién), preguntá primero — no inventes.",
+    "Toda acción se le confirma al usuario antes de ejecutarse, así que no pidas confirmación vos: simplemente proponé la herramienta.",
+  ].join("\n");
+}
+
+/** Respuesta de texto completo (no-streaming) servida como text/plain para que el panel la lea igual que un stream. */
+function textResponse(text: string) {
+  const enc = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(enc.encode(text));
+      controller.close();
+    },
+  });
+  return new Response(stream, {
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+  });
+}
+
+/** Origin para armar links/invitaciones: prioriza el que manda el cliente, con fallback al request. */
+function resolveOrigin(req: Request, bodyOrigin: unknown): string {
+  if (typeof bodyOrigin === "string" && /^https?:\/\//.test(bodyOrigin)) {
+    return bodyOrigin.replace(/\/+$/, "");
+  }
+  try {
+    return new URL(req.url).origin;
+  } catch {
+    return "";
+  }
+}
+
+/** Chat de JARVIS en streaming (S18.3) + tool use con confirmación (DC-3). */
 export async function POST(req: Request) {
   const supabase = await createClient();
   const {
@@ -61,7 +98,22 @@ export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as {
     messages?: ChatMessage[];
     module?: string;
+    confirm?: { tool?: string; args?: Record<string, unknown> };
+    origin?: string;
   };
+
+  // DC-3: rol del usuario (las acciones son solo para arquitectos) + origin para links.
+  const { data: meRow } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const isArquitecto = meRow?.role === "arquitecto";
+  const useActions = !!adapter.chatWithTools && actionsEnabled(cfg.features) && isArquitecto;
+  const origin = resolveOrigin(req, body.origin);
+
+  // DC-3 (fase 2): el usuario confirmó una acción propuesta → ejecutar y responder.
+  if (useActions && body.confirm?.tool && isToolName(body.confirm.tool)) {
+    const result = await executeTool(body.confirm.tool, body.confirm.args ?? {}, origin);
+    return textResponse(result.message);
+  }
+
   const history = Array.isArray(body.messages) ? body.messages : [];
   // DC-1: pantalla actual del usuario (context-aware). Sanitizada y acotada.
   const moduleLabel =
@@ -95,6 +147,7 @@ export async function POST(req: Request) {
     "",
     behaviorRules(personaName),
     toneLine(cfg.tone),
+    ...(useActions ? ["", toolsFraming(personaName)] : []),
     "",
     TBM_METHOD_FRAMING,
     ...screenBlock,
@@ -110,6 +163,34 @@ export async function POST(req: Request) {
     { role: "system", content: system },
     ...history.filter((m) => m.role !== "system").slice(-10),
   ];
+
+  // DC-3 (fase 1): acciones activas → un turno con tools. Si el modelo pide una
+  // herramienta, devolvemos una PROPUESTA (no se ejecuta hasta que el usuario confirme).
+  if (useActions) {
+    try {
+      const result = await adapter.chatWithTools!(
+        {
+          model: cfg.model,
+          messages,
+          maxTokens: 700,
+          temperature: cfg.temperature ?? 0.7,
+          tools: DC_TOOL_SPECS,
+        },
+        key
+      );
+      if (result.toolCall && isToolName(result.toolCall.name)) {
+        const prep = await prepareProposal(result.toolCall.name, result.toolCall.arguments);
+        if (prep.kind === "proposal") {
+          return NextResponse.json({ type: "proposal", proposal: prep.proposal });
+        }
+        const msg = result.text ? `${result.text}\n\n${prep.message}` : prep.message;
+        return textResponse(msg);
+      }
+      return textResponse(result.text || "¿En qué te doy una mano con tu equipo?");
+    } catch {
+      return textResponse("No pude procesar eso ahora. Probá de nuevo en un momento.");
+    }
+  }
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({

@@ -6,6 +6,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { capture } from "@/lib/analytics";
@@ -849,18 +850,17 @@ function RightPanel() {
                 >
                   Contraseña
                 </label>
-                <a
-                  href="#"
+                <Link
+                  href="/forgot-password"
                   className="hover:opacity-80"
                   style={{
                     fontSize: 12,
                     color: "#9fb9ff",
                     textDecoration: "none",
                   }}
-                  onClick={(e) => e.preventDefault()}
                 >
                   ¿Olvidaste tu contraseña?
-                </a>
+                </Link>
               </div>
             }
             trailing={

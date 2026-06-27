@@ -33,6 +33,7 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
   const [welcome, setWelcome] = useState(initial.welcome);
   const [promptsText, setPromptsText] = useState(initial.suggestedPrompts.join("\n"));
   const [rag, setRag] = useState(initial.features.rag);
+  const [actions, setActions] = useState(initial.features.actions);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [test, setTest] = useState<{ ok: boolean; text: string } | null>(null);
   const [saving, startSave] = useTransition();
@@ -91,7 +92,7 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
           .map((s) => s.trim())
           .filter(Boolean)
           .slice(0, 6),
-        features: { rag },
+        features: { rag, actions },
       });
       if (r.ok) {
         setMsg({ ok: true, text: "Configuración guardada." });
@@ -246,10 +247,11 @@ export function AiConfigForm({ initial }: { initial: AiConfigView }) {
                 RAG — citar el material del método (corpus canónico)
               </span>
             </label>
-            <label className="flex items-center" style={{ gap: 9, opacity: 0.5, cursor: "not-allowed" }}>
-              <input type="checkbox" disabled />
+            <label className="flex items-center" style={{ gap: 9, cursor: "pointer" }}>
+              <input type="checkbox" checked={actions} onChange={(e) => setActions(e.target.checked)} />
               <span style={{ fontSize: 13.5 }}>
-                Acciones en la app <span style={{ color: "var(--faint)" }}>· próximamente (DC-3)</span>
+                Acciones en la app — DC ejecuta tareas (generar link DISC, crear tareas, invitar) con
+                confirmación <span style={{ color: "var(--faint)" }}>· solo arquitectos</span>
               </span>
             </label>
             <label className="flex items-center" style={{ gap: 9, opacity: 0.5, cursor: "not-allowed" }}>

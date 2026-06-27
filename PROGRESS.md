@@ -7,7 +7,7 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
-**Última actualización:** 2026-06-27 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** B1 — `/equipo` como "Mi Perfil" para el colaborador (pulido UX; la seguridad ya estaba OK). Antes: B2 (IA DISC con método), C1 (mapa LOST), D1/D2 (naming). PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
+**Última actualización:** 2026-06-27 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** **DC-3 — Acciones / tool use** (DC ejecuta: generar link DISC, crear tarea Pase de Estafeta, invitar colaborador; patrón propose→confirm, gateado por feature flag + solo arquitectos) + **fix sesión del colaborador** (define contraseña al aceptar la invitación → puede volver a entrar por `/login` sin depender de un magic link reenviado). Antes: B1, B2 (IA DISC), C1, D1/D2. PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
 
 > **Novedades 2026-06-27 (sesión correo + invitaciones + DC):**
 > - ✅ **Correo operativo (Resend + `send.stlabs.ar`)**: F1 = sección admin **`/correo`** (`email_config`
@@ -20,7 +20,27 @@
 > - ✅ **DC**: DC-9 (fixes QA), DC-1 (launcher global), DC-2 (persona configurable desde el admin).
 > - ✅ **Pre-beta #7**: vista de créditos del líder (`/creditos`).
 > - 🔍 **EN REVISIÓN**: visibilidad de KPIs (hoy todo el equipo los ve) → ver `PENDIENTES_REVISION.md`.
-> - **Próximo:** DC-3 (acciones/tool use) · pre-beta #3 mobile · #8 test DISC público.
+> - **Próximo:** DC-6 (historial+costos) · pre-beta #3 mobile · #8 test DISC público.
+>
+> **Novedades 2026-06-27 (sesión DC-3 + auth colaborador):**
+> - ✅ **DC-3 — Acciones / tool use**: DC deja de solo responder y **ejecuta** acciones con confirmación.
+>   3 herramientas v1 (`generar_link_disc`, `crear_tarea` Pase de Estafeta, `invitar_colaborador`),
+>   patrón **propose→confirm** (el modelo propone → tarjeta de confirmación en el panel → el server
+>   ejecuta vía RLS; la confirmación es determinística, sin 2º llamado al LLM). `chatWithTools` en los
+>   adapters OpenRouter (formato OpenAI) y Anthropic (tool_use). Gateado por **feature flag
+>   `features.actions`** (admin → "Asistente IA", el toggle "Acciones" ya no es placeholder) + **solo
+>   arquitectos**. Sin migración (jsonb). Nuevo: `lib/jarvis-tools.ts`. Tipos en `lib/ai/types.ts`.
+> - ✅ **Auth del colaborador robusta (A + C) — bloqueante de beta**: la cuenta del colaborador se
+>   creaba por magic link **sin contraseña** → al cerrar sesión quedaba sin forma de reentrar (login
+>   solo ofrecía email+contraseña y SSO).
+>   - **A:** `/accept-invite` ahora **pide crear una contraseña** (`updateUser`) → reentra por `/login`.
+>   - **C (recuperación):** "¿Olvidaste tu contraseña?" dejó de ser decorativo → nuevas páginas
+>     `(auth)/forgot-password` (`resetPasswordForEmail`) y `(auth)/reset-password` (`updateUser`),
+>     reusando `auth/confirm` con `type=recovery`. Middleware: `/forgot-password` público,
+>     `/reset-password` fuera del gate de onboarding. Modelo final: contraseña primaria + reset por
+>     email + SSO; el email NO es punto único de falla del login diario.
+>   - ⏳ **Config (ops):** cargar el **SMTP de Resend en Supabase Auth** + agregar `…/auth/confirm` y
+>     `…/reset-password` a Redirect URLs, para que el mail de recovery se entregue confiable.
 >
 > **Novedades 2026-06-20:**
 > - **Material canónico de Dilio recibido** (Drive "TBM 4": presentaciones S1–S6 + transcripciones) → digerido en [`docs/METODO_TBM_CANONICO.md`](docs/METODO_TBM_CANONICO.md), **nueva fuente de verdad del método**. Desbloquea **C1** (LOST: L-Liderazgo/O-Operaciones/S-Sistemas/T-Tiempo) y **B2** (contenido DISC: temores, luz/sombra, roles, cruces). **B3+B4 sigue parcial** (no vino el modelo de las 3 gráficas DISC; "INFORMES DISC" de clientes vacías). **A3.2** sigue bloqueado (WORKBOOKS vacía).
