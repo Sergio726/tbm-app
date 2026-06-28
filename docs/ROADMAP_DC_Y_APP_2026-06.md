@@ -198,6 +198,74 @@ No son features nuevas: es calidad. Agrupados por urgencia.
 
 ---
 
+## 2·C — Backlog pedido por Sebas (2026-06-28)
+
+Seis mejoras concretas levantadas en sesión. Cada una con **estado real hoy** (verificado en código)
++ dónde se toca. **Decisiones de producto cerradas** (2026-06-28) y **plan detallado por tarea** en
+[`PLAN_BACKLOG_2026-06.md`](PLAN_BACKLOG_2026-06.md). Orden sugerido: **N3 → N6 → N5 → N1 → N4 → N2**.
+
+> ✅ **Las 6 implementadas (2026-06-28)** en la rama `backlog-n1-n6` (typecheck + build de web y admin
+> verdes; migración `credit_requests` aplicada). Resumen abajo por ítem.
+
+> **Decisiones:** N1 = botón "Ir a X →" (no autopilot) · N2 = form in-app + notifica/emaila al admin
+> + carga manual · N3 = quitar testimonial · N4 = pulir tour estático + cerrar presentando a DC como
+> copiloto · N5 = reemplazar el **radar "Atributos base"** por un **modelo de 4 cuadrantes** · N6 =
+> sumar free tiers. Plan completo en [`PLAN_BACKLOG_2026-06.md`](PLAN_BACKLOG_2026-06.md).
+
+### N1 · DC: explicar **y** llevarte a la ventana — *extensión de DC-3* — ✅ hecho (2026-06-28)
+**Hoy:** DC responde con el método (RAG) pero **NO tiene poder de navegación**: `lib/jarvis-tools.ts`
+solo expone `generar_link_disc`, `crear_tarea`, `invitar_colaborador`; `api/jarvis/route.ts` no tiene
+ningún mecanismo de deep-link/redirect. O sea: si preguntás "¿cómo hago una delegación?", te explica,
+pero no te abre `/delegacion`.
+**Tarea:** agregar una acción/herramienta de **navegación** ("llevame a Delegación", "abrí mi Plan
+90D"). Como es **reversible y no escribe**, puede ir **sin la tarjeta de confirmación** de DC-3
+(autopilot): el modelo devuelve un `navigate: { module, anchor? }` y el panel hace `router.push`.
+Mapear nombres de módulo → rutas (reusar `moduleFromPath` de `dc-launcher.tsx`, invertido). Que la
+respuesta combine **explicación + botón "Ir a Delegación →"**. *Bajo-medio.* Encaja como tool de
+lectura/UI dentro del catálogo DC-3.
+
+### N2 · Créditos: pedir recarga **dentro de la plataforma** (sin abrir el mail) — ✅ hecho (2026-06-28)
+**Hoy:** `/creditos` (`page.tsx`) arma un **`mailto:`** (`buildCreditRequestMailto`) → abre el cliente
+de correo externo. Clunky y se pierde el pedido (no queda registro en la app).
+**Tarea:** reemplazar el `mailto` por un **pedido in-app**: modal/form ("¿cuántos créditos?" + nota)
+→ server action que (a) registra el pedido (tabla nueva `credit_requests` o `audit_log` +
+`notifications` al admin) y (b) dispara el email por **Resend** (ya operativo, `lib/email.ts`) al
+`SUPPORT_EMAIL`. El admin lo ve en su panel (idealmente en `/empresas/[id]` o una bandeja de pedidos)
+y carga con `grant_credits`. *Media.* Requiere migración chica (`credit_requests`) + UI admin.
+
+### N3 · Login minimalista: quitar la sección de "comentarios" (testimonial) — ✅ hecho (2026-06-28)
+**Hoy:** `apps/web/src/app/(auth)/login/login-form.tsx` → en `LeftPanel` hay un **testimonial**
+hardcodeado ("Joaquín Pérez · CEO en Acme", bloque `{/* Testimonial */}`, ~líneas 238-288) — es
+ficticio y resta seriedad.
+**Tarea:** quitar ese bloque (y el import `Quote` si queda sin uso); rebalancear el `LeftPanel` para
+que el hero + product preview respiren. Dejar el login **más limpio/minimalista**. *Bajo.*
+
+### N4 · Onboarding: mejorar el tour, incluir más módulos — ✅ hecho (2026-06-28)
+**Hoy:** `lib/tour-steps.ts` define flujos por rol (arquitecto/colaborador) con `driver.js`; cubre
+sidebar/semáforos/avatar pero **no recorre todos los módulos** nuevos. (Nota: el roadmap §2·B#1 ya
+propone migrar a **onboarding guiado por DC** en vez del tour estático — decidir si se pule el estático
+o se salta a DC.)
+**Tarea:** ampliar `tour-steps.ts` para incluir los módulos que faltan (Delegación, Plan 90D, Feedback
+S.E.C., Multiplicador, DC/asistente, Créditos), con `data-tour` en los targets que no lo tengan. *Media.*
+
+### N5 · Equipo: cambiar la gráfica DISC "Atributos base" — ✅ hecho (2026-06-28)
+**Hoy:** el **radar "Atributos base"** (`components/equipo/disc-radar.tsx`, usado solo en el Perfil
+DISC de `disc-section.tsx`). **No** es el rombo de conexiones (ese se mantiene).
+**Tarea:** reemplazarlo por un **modelo de 4 cuadrantes** (D/I/S/C con ejes Extrovertido↔Introvertido
+y Tareas↔Personas) según [`assets/N5_disc_modelo_referencia.png`](assets/N5_disc_modelo_referencia.png),
+resaltando el estilo del miembro y conservando `DiscBars` (medición) al lado. *Media.*
+
+### N6 · Admin: ofrecer los **modelos gratuitos más potentes** — ✅ hecho (2026-06-28)
+**Hoy:** el catálogo del admin (`apps/admin/src/lib/ai/index.ts`) lista modelos **de pago**
+(Claude/GPT/Gemini/DeepSeek/Llama/Grok); ninguno `:free`. OpenRouter igual permite tipear cualquier
+slug a mano, pero no están sugeridos.
+**Tarea:** sumar al catálogo OpenRouter los **free tiers potentes** con etiqueta "gratis" (ej.
+`deepseek/deepseek-r1:free`, `meta-llama/llama-3.3-70b-instruct:free`, `google/gemini-2.0-flash-exp:free`,
+`qwen/…:free`) para abaratar la beta. *Bajo* (solo data en el catálogo). ⚠️ Aclarar en el hint que los
+free tienen **rate-limits/latencia** y a veces calidad menor → buenos para probar, no garantizados en prod.
+
+---
+
 ## 3. Priorización sugerida (próximos pasos)
 
 0. **Pulido pre-beta** (§2·B): top 3 — onboarding del piloto, empty states/primera acción, mobile.

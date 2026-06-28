@@ -22,6 +22,28 @@
 > - 🔍 **EN REVISIÓN**: visibilidad de KPIs (hoy todo el equipo los ve) → ver `PENDIENTES_REVISION.md`.
 > - **Próximo:** pre-beta #3 mobile · #8 test DISC público · DC-5 (RAG por empresa) / DC-7 (proactividad).
 >
+> **Novedades 2026-06-28 (backlog Sebas N1–N6):** 6 mejoras pedidas por Sebas, decisiones cerradas +
+> plan en [`docs/PLAN_BACKLOG_2026-06.md`](docs/PLAN_BACKLOG_2026-06.md). Rama `backlog-n1-n6` (typecheck
+> + build de web y admin verdes).
+> - ✅ **N1 — DC navega**: DC explica **y** ofrece un botón "Ir a {módulo} →" (read-only, sin confirmación).
+>   Vía marcador `[[IR:<slug>]]` en el stream (preserva streaming, todos los roles); `lib/dc-navigation.ts`
+>   (whitelist + parseo), framing en `api/jarvis/route.ts` (se persiste sin el marcador), botón en
+>   `jarvis-panel.tsx` (`router.push`).
+> - ✅ **N2 — Pedir créditos in-app**: reemplazado el `mailto` de `/creditos` por un form (cantidad +
+>   nota) → server action `requestCredits` (registra en `credit_requests` por RLS + emaila al admin);
+>   el admin ve los pedidos pendientes en `/empresas/[id]` y al cargar con `grant_credits` se marcan
+>   `granted`. Migración `credit_requests` (RLS arquitecto-de-su-empresa) aplicada.
+> - ✅ **N3 — Login minimalista**: quitado el testimonial ficticio ("Joaquín Pérez") de `login-form.tsx`.
+> - ✅ **N4 — Tour ampliado**: `tour-steps.ts` suma Plan 90D / Feedback / Multiplicador / Créditos
+>   (arquitecto) y Feedback (colaborador), y **cierra presentando a DC como copiloto** (`data-tour="dc-launcher"`),
+>   también en mobile.
+> - ✅ **N5 — Gráfica DISC**: el radar "Atributos base" se reemplazó por un **modelo de 4 cuadrantes**
+>   (`disc-quadrant-model.tsx`) que resalta el estilo del miembro; atributos en `lib/disc` (`DISC_ATTRS`);
+>   se borró `disc-radar.tsx`. Las barras de medición (`DiscBars`) quedan al lado. Referencia:
+>   `docs/assets/N5_disc_modelo_referencia.png`.
+> - ✅ **N6 — Modelos gratis en admin**: catálogo OpenRouter suma free tiers (`deepseek-r1:free`,
+>   `llama-3.3-70b:free`, `gemini-2.0-flash-exp:free`, `qwen-2.5-72b:free`) + aviso de límites.
+>
 > **Novedades 2026-06-28 (sesión DC-6 + deploy a main + SMTP):**
 > - ✅ **DC-6 — Historial + uso/costos + rate-limit** (migración `jarvis_history`: `ai_conversations`
 >   + `ai_messages` con RLS por usuario). El panel persiste cada turno, devuelve `x-conversation-id`,
