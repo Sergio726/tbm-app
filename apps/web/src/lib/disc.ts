@@ -46,6 +46,39 @@ export const DISC_DIMENSIONS: Record<
   },
 };
 
+// ── Atributos cortos + ejes por estilo (modelo de 4 cuadrantes) ──
+// Para la gráfica "Modelo DISC" del Perfil DISC. Naming canónico de la app
+// (D Dominante · I Influyente · S Seguro · C Pensador). Ejes:
+//   vertical: Extrovertido (Activo) ↔ Introvertido (Reflexivo)
+//   horizontal: Orientado a tareas ↔ Orientado a personas
+export type DiscQuadrant = {
+  energy: "Extrovertido" | "Introvertido";
+  focus: "Tareas" | "Personas";
+  attrs: string[]; // 4 atributos comportamentales
+};
+export const DISC_ATTRS: Record<DiscLetter, DiscQuadrant> = {
+  D: {
+    energy: "Extrovertido",
+    focus: "Tareas",
+    attrs: ["Decisiones rápidas", "Competitivo", "Orientado a resultados", "Le gustan los desafíos"],
+  },
+  I: {
+    energy: "Extrovertido",
+    focus: "Personas",
+    attrs: ["Sociable y comunicativo", "Entusiasta", "Persuasivo", "Optimista"],
+  },
+  S: {
+    energy: "Introvertido",
+    focus: "Personas",
+    attrs: ["Paciente", "Leal", "Colaborador", "Busca estabilidad"],
+  },
+  C: {
+    energy: "Introvertido",
+    focus: "Tareas",
+    attrs: ["Analítico", "Preciso", "Organizado", "Orientado a la calidad"],
+  },
+};
+
 // ── Perfil de cada factor dominante ──────────────────────────
 // Nombres cortos = los de Dilio (Motor / Combustible / Chasis / Sensor).
 // Luz/Sombra/temor/bajo presión/cómo gestionarlo = de los informes DISC reales.
