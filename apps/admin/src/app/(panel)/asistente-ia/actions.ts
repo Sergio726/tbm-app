@@ -188,6 +188,41 @@ export async function saveAiConfig(input: {
   return { ok: true };
 }
 
+// DC-6: uso de tokens de los últimos 30 días (base de costos). Service-role.
+export type AiUsage = {
+  totalTokens: number;
+  promptTokens: number;
+  completionTokens: number;
+  messages: number;
+};
+
+export async function getAiUsage(): Promise<AiUsage | null> {
+  const { user, isAdmin } = await requireAdmin();
+  if (!user || !isAdmin) return null;
+  const admin = createAdminClient();
+  if (!admin) return null;
+
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const { data } = await admin
+    .from("ai_messages")
+    .select("prompt_tokens, completion_tokens")
+    .gte("created_at", since);
+
+  const rows = data ?? [];
+  let promptTokens = 0;
+  let completionTokens = 0;
+  for (const r of rows) {
+    promptTokens += r.prompt_tokens ?? 0;
+    completionTokens += r.completion_tokens ?? 0;
+  }
+  return {
+    totalTokens: promptTokens + completionTokens,
+    promptTokens,
+    completionTokens,
+    messages: rows.length,
+  };
+}
+
 export async function testAiConnection(): Promise<
   { ok: true; reply: string } | { ok: false; error: string }
 > {

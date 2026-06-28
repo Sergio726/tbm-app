@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getProvider, type ChatMessage, type ProviderId } from "@/lib/ai";
+import {
+  getProvider,
+  estimateTokens,
+  type ChatMessage,
+  type ProviderId,
+  type TokenUsage,
+} from "@/lib/ai";
+import type { createClient as createServerClientType } from "@/lib/supabase/server";
 import { buildJarvisContext } from "@/lib/jarvis-context";
 import { retrieveKnowledge } from "@/lib/jarvis-retrieval";
 import { TBM_METHOD_FRAMING } from "@/lib/tbm-disc-context";
@@ -42,7 +49,7 @@ function toolsFraming(name: string) {
 }
 
 /** Respuesta de texto completo (no-streaming) servida como text/plain para que el panel la lea igual que un stream. */
-function textResponse(text: string) {
+function textResponse(text: string, conversationId?: string | null) {
   const enc = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
@@ -50,9 +57,68 @@ function textResponse(text: string) {
       controller.close();
     },
   });
-  return new Response(stream, {
-    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+  const headers: Record<string, string> = {
+    "content-type": "text/plain; charset=utf-8",
+    "cache-control": "no-store",
+  };
+  if (conversationId) headers["x-conversation-id"] = conversationId;
+  return new Response(stream, { headers });
+}
+
+// ── DC-6: historial + uso + rate-limit ────────────────────────────────────
+const DC_RATE_LIMIT = 50; // mensajes del usuario por hora
+type RlsClient = Awaited<ReturnType<typeof createServerClientType>>;
+
+/** ¿El usuario superó el tope de mensajes/hora? (RLS limita el conteo a sus mensajes). */
+async function overRateLimit(supabase: RlsClient): Promise<boolean> {
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count } = await supabase
+    .from("ai_messages")
+    .select("id", { count: "exact", head: true })
+    .eq("role", "user")
+    .gte("created_at", since);
+  return (count ?? 0) >= DC_RATE_LIMIT;
+}
+
+/** Devuelve la conversación existente o crea una nueva (título = inicio del 1er mensaje). */
+async function getOrCreateConversation(
+  supabase: RlsClient,
+  userId: string,
+  companyId: string | null,
+  conversationId: string | undefined,
+  firstText: string
+): Promise<string | null> {
+  if (conversationId) return conversationId;
+  const title = (firstText || "Conversación").slice(0, 60);
+  const { data } = await supabase
+    .from("ai_conversations")
+    .insert({ user_id: userId, company_id: companyId, title })
+    .select("id")
+    .single();
+  return data?.id ?? null;
+}
+
+/** Persiste un mensaje (con tokens si los hay) y toca updated_at de la conversación. */
+async function saveMessage(
+  supabase: RlsClient,
+  conversationId: string,
+  role: "user" | "assistant",
+  content: string,
+  model: string | null,
+  usage?: TokenUsage
+): Promise<void> {
+  await supabase.from("ai_messages").insert({
+    conversation_id: conversationId,
+    role,
+    content,
+    model,
+    prompt_tokens: usage?.promptTokens ?? 0,
+    completion_tokens: usage?.completionTokens ?? 0,
   });
+  await supabase
+    .from("ai_conversations")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", conversationId);
 }
 
 /** Origin para armar links/invitaciones: prioriza el que manda el cliente, con fallback al request. */
@@ -100,18 +166,32 @@ export async function POST(req: Request) {
     module?: string;
     confirm?: { tool?: string; args?: Record<string, unknown> };
     origin?: string;
+    conversationId?: string;
   };
 
-  // DC-3: rol del usuario (las acciones son solo para arquitectos) + origin para links.
-  const { data: meRow } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  // DC-3: rol del usuario (las acciones son solo para arquitectos) + empresa (DC-6) + origin.
+  const { data: meRow } = await supabase
+    .from("profiles")
+    .select("role, company_id")
+    .eq("id", user.id)
+    .single();
   const isArquitecto = meRow?.role === "arquitecto";
+  const companyId = (meRow?.company_id as string | null) ?? null;
   const useActions = !!adapter.chatWithTools && actionsEnabled(cfg.features) && isArquitecto;
   const origin = resolveOrigin(req, body.origin);
 
   // DC-3 (fase 2): el usuario confirmó una acción propuesta → ejecutar y responder.
   if (useActions && body.confirm?.tool && isToolName(body.confirm.tool)) {
     const result = await executeTool(body.confirm.tool, body.confirm.args ?? {}, origin);
-    return textResponse(result.message);
+    if (body.conversationId) {
+      await saveMessage(supabase, body.conversationId, "assistant", result.message, cfg.model);
+    }
+    return textResponse(result.message, body.conversationId);
+  }
+
+  // DC-6: tope simple de mensajes por usuario/hora.
+  if (await overRateLimit(supabase)) {
+    return NextResponse.json({ error: "rate_limit" }, { status: 429 });
   }
 
   const history = Array.isArray(body.messages) ? body.messages : [];
@@ -120,6 +200,19 @@ export async function POST(req: Request) {
     typeof body.module === "string" ? body.module.slice(0, 80).trim() : "";
 
   const lastUser = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
+
+  // DC-6: conversación (retomar o crear) + persistir el mensaje nuevo del usuario.
+  const conversationId = await getOrCreateConversation(
+    supabase,
+    user.id,
+    companyId,
+    body.conversationId,
+    lastUser
+  );
+  if (conversationId && lastUser) {
+    await saveMessage(supabase, conversationId, "user", lastUser, null);
+  }
+
   // RAG gateable por features (DC-2): si está off, no recuperamos material.
   const useRag = ragEnabled(cfg.features);
   const [context, knowledge] = await Promise.all([
@@ -181,36 +274,76 @@ export async function POST(req: Request) {
       if (result.toolCall && isToolName(result.toolCall.name)) {
         const prep = await prepareProposal(result.toolCall.name, result.toolCall.arguments);
         if (prep.kind === "proposal") {
-          return NextResponse.json({ type: "proposal", proposal: prep.proposal });
+          // El assistant message lo guarda el confirm (cuando se ejecuta la acción).
+          return NextResponse.json({ type: "proposal", proposal: prep.proposal, conversationId });
         }
         const msg = result.text ? `${result.text}\n\n${prep.message}` : prep.message;
-        return textResponse(msg);
+        if (conversationId) await saveMessage(supabase, conversationId, "assistant", msg, cfg.model, result.usage);
+        return textResponse(msg, conversationId);
       }
-      return textResponse(result.text || "¿En qué te doy una mano con tu equipo?");
+      const finalText = result.text || "¿En qué te doy una mano con tu equipo?";
+      if (conversationId)
+        await saveMessage(
+          supabase,
+          conversationId,
+          "assistant",
+          finalText,
+          cfg.model,
+          result.usage ?? { promptTokens: 0, completionTokens: estimateTokens(finalText) }
+        );
+      return textResponse(finalText, conversationId);
     } catch {
-      return textResponse("No pude procesar eso ahora. Probá de nuevo en un momento.");
+      return textResponse("No pude procesar eso ahora. Probá de nuevo en un momento.", conversationId);
     }
   }
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
+      let acc = "";
+      let usage: TokenUsage | undefined;
       try {
-        for await (const token of adapter.chatStream!(
+        // Iteración manual: el generator `return`-ea el usage al terminar (DC-6).
+        const it = adapter.chatStream!(
           { model: cfg.model, messages, maxTokens: 450, temperature: cfg.temperature ?? 0.7 },
           key
-        )) {
-          controller.enqueue(encoder.encode(token));
+        );
+        while (true) {
+          const r = await it.next();
+          if (r.done) {
+            usage = r.value ?? undefined;
+            break;
+          }
+          acc += r.value;
+          controller.enqueue(encoder.encode(r.value));
         }
       } catch {
         controller.enqueue(encoder.encode("\n\n[No pude completar la respuesta. Probá de nuevo.]"));
       } finally {
+        // DC-6: persistir ANTES de close() — en Vercel el trabajo post-close puede no completarse.
+        if (conversationId && acc) {
+          try {
+            await saveMessage(
+              supabase,
+              conversationId,
+              "assistant",
+              acc,
+              cfg.model,
+              usage ?? { promptTokens: 0, completionTokens: estimateTokens(acc) }
+            );
+          } catch {
+            /* no romper la respuesta por un fallo de persistencia */
+          }
+        }
         controller.close();
       }
     },
   });
 
-  return new Response(stream, {
-    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
-  });
+  const headers: Record<string, string> = {
+    "content-type": "text/plain; charset=utf-8",
+    "cache-control": "no-store",
+  };
+  if (conversationId) headers["x-conversation-id"] = conversationId;
+  return new Response(stream, { headers });
 }

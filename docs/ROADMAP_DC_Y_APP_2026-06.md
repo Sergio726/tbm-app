@@ -100,11 +100,16 @@ en PDF, notas de coaching, y el material de **Google Drive TBM4** (presentacione
 Requiere: upload + parsing (PDF→texto), scope `company` (ya soportado en `knowledge_chunks`),
 y un re-ingest. Resultado: DC responde fundamentado en la operación real de cada empresa.
 
-### DC-6 · Historial, costos y control — *necesario antes de escalar*
-- **Historial** persistente (`ai_conversations` / `ai_messages`) para retomar conversaciones.
-- **`ai_usage`** (tokens por empresa/usuario) + **rate-limit** y, post-beta, **presupuesto/gating**
-  (créditos IA separados o por plan).
-- **Router de costo:** consultas simples → modelo barato; complejas → premium.
+### DC-6 · Historial, costos y control — ✅ **v1 hecho (2026-06-28)**
+**Implementado** (migración `jarvis_history`):
+- ✅ **Historial** persistente (`ai_conversations` / `ai_messages`, RLS por usuario) → el panel retoma
+  y lista conversaciones (botón 🕘); `/api/jarvis` crea/continúa y devuelve `x-conversation-id`.
+- ✅ **Tokens por mensaje** (base de costos): los adapters capturan el usage (`chatStream` lo
+  `return`-ea; OpenRouter `stream_options.include_usage`, Anthropic `message_start/_delta`; fallback
+  estimado ~4 chars/token). Readout **Uso · 30 días** en el admin `/asistente-ia`.
+- ✅ **Rate-limit** simple: 50 mensajes/usuario/hora → 429.
+- ⏳ **Diferido (DC-6.2):** tabla rollup `ai_usage` dedicada, **router de costo** (barato/premium),
+  **presupuesto/gating** por créditos de IA o plan.
 
 ### DC-7 · Proactividad — *diferenciador*
 DC **inicia** en vez de solo responder: briefing diario generado por IA, nudges contextuales

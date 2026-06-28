@@ -7,7 +7,7 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
-**Última actualización:** 2026-06-27 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** **DC-3 — Acciones / tool use** (DC ejecuta: generar link DISC, crear tarea Pase de Estafeta, invitar colaborador; patrón propose→confirm, gateado por feature flag + solo arquitectos) + **fix sesión del colaborador** (define contraseña al aceptar la invitación → puede volver a entrar por `/login` sin depender de un magic link reenviado). Antes: B1, B2 (IA DISC), C1, D1/D2. PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
+**Última actualización:** 2026-06-28 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** **DC-6 — Historial + uso/costos + rate-limit** (conversaciones persistentes en `ai_conversations`/`ai_messages`, captura de tokens por mensaje, retomar/listar charlas en el panel, tope de 50 msgs/usuario/hora, readout de uso 30d en el admin). Antes: **DC-3 — Acciones / tool use** (DC ejecuta: generar link DISC, crear tarea Pase de Estafeta, invitar colaborador; patrón propose→confirm, gateado por feature flag + solo arquitectos) + **fix sesión del colaborador** (define contraseña al aceptar la invitación → puede volver a entrar por `/login` sin depender de un magic link reenviado). Antes: B1, B2 (IA DISC), C1, D1/D2. PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
 
 > **Novedades 2026-06-27 (sesión correo + invitaciones + DC):**
 > - ✅ **Correo operativo (Resend + `send.stlabs.ar`)**: F1 = sección admin **`/correo`** (`email_config`
@@ -20,7 +20,20 @@
 > - ✅ **DC**: DC-9 (fixes QA), DC-1 (launcher global), DC-2 (persona configurable desde el admin).
 > - ✅ **Pre-beta #7**: vista de créditos del líder (`/creditos`).
 > - 🔍 **EN REVISIÓN**: visibilidad de KPIs (hoy todo el equipo los ve) → ver `PENDIENTES_REVISION.md`.
-> - **Próximo:** DC-6 (historial+costos) · pre-beta #3 mobile · #8 test DISC público.
+> - **Próximo:** pre-beta #3 mobile · #8 test DISC público · DC-5 (RAG por empresa) / DC-7 (proactividad).
+>
+> **Novedades 2026-06-28 (sesión DC-6 + deploy a main + SMTP):**
+> - ✅ **DC-6 — Historial + uso/costos + rate-limit** (migración `jarvis_history`: `ai_conversations`
+>   + `ai_messages` con RLS por usuario). El panel persiste cada turno, devuelve `x-conversation-id`,
+>   retoma/lista charlas (botón 🕘). Tokens capturados por mensaje (adapters: `chatStream` `return`-ea
+>   el usage; OpenRouter `include_usage`, Anthropic `message_start/_delta`; fallback estimado). Tope
+>   **50 msgs/usuario/hora** (429). Admin `/asistente-ia`: tarjeta **Uso · 30 días** (tokens in/out +
+>   mensajes). Diferido: rollup `ai_usage`, router de costo, gating por créditos de IA.
+> - ✅ **Deploy a producción**: `fase2 → main` mergeado y deployado (DC-3 + circuito cuentas/sesiones
+>   + "Recordarme" real). Reset de contraseña verificado E2E en prod.
+> - ✅ **SMTP de Supabase Auth corregido**: usaba `noreply@stlabs.ar` (dominio no verificado) → ahora
+>   `noreply@send.stlabs.ar` con la key del Vault; plantillas recovery/email-change en flujo
+>   `token_hash`; rate-limit de emails a 100/h. Detalle en memoria `project-email-smtp`.
 >
 > **Novedades 2026-06-27 (sesión DC-3 + auth colaborador):**
 > - ✅ **DC-3 — Acciones / tool use**: DC deja de solo responder y **ejecuta** acciones con confirmación.
