@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { JarvisCore } from "./jarvis-core";
 import type { ChatMessage } from "@/lib/ai";
 import type { DcPublicPersona } from "@/lib/dc-persona";
+import { parseNavMarker } from "@/lib/dc-navigation";
 import {
   listConversations,
   getConversationMessages,
@@ -52,6 +54,7 @@ export function JarvisPanel({
   /** Persona configurable de DC (DC-2): nombre/bienvenida/sugerencias. */
   persona: DcPublicPersona;
 }) {
+  const router = useRouter();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false); // esperando el primer token
@@ -456,6 +459,9 @@ export function JarvisPanel({
                 const isLast = i === messages.length - 1;
                 const isUser = m.role === "user";
                 const showCursor = streaming && isLast && m.role === "assistant";
+                // N1: extraer [[IR:slug]] → texto limpio + destino para el botón "Ir a X →".
+                const nav = m.role === "assistant" && !m.error ? parseNavMarker(m.content) : null;
+                const displayText = nav ? nav.clean : m.content;
                 const bubbleStyle: React.CSSProperties = isUser
                   ? {
                       maxWidth: "85%",
@@ -496,16 +502,42 @@ export function JarvisPanel({
                   >
                     <div style={bubbleStyle}>
                       {m.role === "assistant" && !m.error ? (
-                        <MarkdownLite text={m.content} />
+                        <MarkdownLite text={displayText} />
                       ) : (
                         <span style={{ whiteSpace: "pre-wrap" }}>{m.content}</span>
                       )}
                       {showCursor && <span className="jarvis-cursor">▍</span>}
                     </div>
-                    {m.role === "assistant" && !m.error && m.content && !showCursor && (
+                    {/* N1: botón de navegación sugerido por DC (read-only, sin confirmación). */}
+                    {nav?.target && !showCursor && (
                       <button
                         type="button"
-                        onClick={() => copy(m.content, i)}
+                        onClick={() => {
+                          router.push(nav.target!.path);
+                          onClose();
+                        }}
+                        style={{
+                          marginTop: 2,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          padding: "8px 13px",
+                          borderRadius: 10,
+                          background: "rgba(91,138,255,0.16)",
+                          border: "1px solid rgba(91,138,255,0.38)",
+                          color: "#9bb8ff",
+                          fontSize: 13,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Ir a {nav.target.label} →
+                      </button>
+                    )}
+                    {m.role === "assistant" && !m.error && displayText && !showCursor && (
+                      <button
+                        type="button"
+                        onClick={() => copy(displayText, i)}
                         className="jarvis-copy"
                         style={{
                           fontSize: 11,
