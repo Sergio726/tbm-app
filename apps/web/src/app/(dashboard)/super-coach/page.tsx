@@ -91,17 +91,17 @@ export default async function SuperCoachPage() {
       avg === null
         ? { color: "#64748b", label: "Sin diagnóstico" }
         : avg < 2.5 || warUpsClosed === 0
-          ? { color: "#f87171", label: "Atención urgente" }
+          ? { color: "var(--danger-text)", label: "Atención urgente" }
           : avg < 3.5 || warUpsClosed < 3
-            ? { color: "#fbbf24", label: "En desarrollo" }
-            : { color: "#34d399", label: "Saludable" };
+            ? { color: "var(--warn-text)", label: "En desarrollo" }
+            : { color: "var(--success-text)", label: "Saludable" };
 
     return { company: c, avg, warUpsClosed, activeRocks: activeRocks.length, avgRockProgress, teamSize, tone };
   });
 
   return (
     <div
-      className="text-white"
+      className="text-fg"
       style={{
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px) 60px",
         maxWidth: 1100,
@@ -124,7 +124,7 @@ export default async function SuperCoachPage() {
         >
           Tus empresas alumnas
         </h1>
-        <p className="mt-2 max-w-[640px] text-[13.5px] text-white/55">
+        <p className="mt-2 max-w-[640px] text-[13.5px] text-fg-muted">
           {rows.length} {rows.length === 1 ? "empresa asignada" : "empresas asignadas"} ·
           semáforo general por diagnóstico, adherencia a rituales y Rocas del trimestre.
           Los rituales personales (Pre-game, Cool Down) no son visibles para el coach.
@@ -162,7 +162,7 @@ export default async function SuperCoachPage() {
                   <div className="truncate text-[15.5px] font-bold">
                     {company.name}
                   </div>
-                  <div className="flex items-center gap-2 text-[11.5px] text-white/50">
+                  <div className="flex items-center gap-2 text-[11.5px] text-fg-muted">
                     <span
                       className="inline-block h-1.5 w-1.5 rounded-full"
                       style={{ background: tone.color, boxShadow: `0 0 6px ${tone.color}` }}
@@ -203,7 +203,7 @@ export default async function SuperCoachPage() {
                 color="#fbbf24"
               />
 
-              <ArrowRight size={16} className="text-white/65" />
+              <ArrowRight size={16} className="text-fg-muted" />
             </div>
           </Link>
         ))}
@@ -232,11 +232,11 @@ function Metric({
         <Icon size={14} strokeWidth={1.9} />
       </div>
       <div>
-        <div className="text-[9.5px] font-bold uppercase tracking-wide text-white/65">
+        <div className="text-[9.5px] font-bold uppercase tracking-wide text-fg-muted">
           {label}
         </div>
         <div
-          className="text-[13.5px] font-bold text-white"
+          className="text-[13.5px] font-bold text-fg"
           style={{ fontFamily: 'ui-monospace, "JetBrains Mono", monospace' }}
         >
           {value}

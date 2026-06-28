@@ -99,8 +99,8 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
         }}
       >
         <div className="flex flex-col items-center gap-4 text-center">
-          <CheckCircle2 size={48} style={{ color: "#34d399" }} />
-          <h2 className="text-white" style={{ fontSize: 22, fontWeight: 700 }}>
+          <CheckCircle2 size={48} style={{ color: "var(--success-text)" }} />
+          <h2 className="text-fg" style={{ fontSize: 22, fontWeight: 700 }}>
             Escalado al líder
           </h2>
           <p style={{ fontSize: 14, color: "var(--fg-subtle)" }}>
@@ -124,7 +124,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
         {/* Back link */}
         <Link
           href="/delegacion/mis-tareas"
-          className="mb-6 inline-flex items-center gap-1.5 transition-colors hover:text-white"
+          className="mb-6 inline-flex items-center gap-1.5 transition-colors hover:text-fg"
           style={{ fontSize: 13, color: "var(--fg-muted)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
@@ -138,14 +138,14 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
             style={{
               background: "linear-gradient(135deg, rgba(248,113,113,0.15), rgba(248,113,113,0.05))",
               border: "1px solid rgba(248,113,113,0.25)",
-              color: "#f87171",
+              color: "var(--danger-text)",
             }}
           >
             <Shield size={18} strokeWidth={1.6} />
           </div>
           <div>
             <h1
-              className="text-white"
+              className="text-fg"
               style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3 }}
             >
               Escudo Anti-Boomerang
@@ -160,8 +160,8 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
         <div
           className="mb-7 rounded-xl border p-4"
           style={{
-            borderColor: "rgba(255,255,255,0.07)",
-            background: "rgba(255,255,255,0.03)",
+            borderColor: "var(--border)",
+            background: "var(--elevated)",
           }}
         >
           <p
@@ -177,7 +177,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
             Tarea bloqueada
           </p>
           <p
-            className="text-white"
+            className="text-fg"
             style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.5, marginBottom: 8 }}
           >
             {task.what_dod}
@@ -211,7 +211,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
           }}
         >
           <p
-            className="mb-5 text-white"
+            className="mb-5 text-fg"
             style={{ fontSize: 14, fontWeight: 600 }}
           >
             ¿Cuáles son tus 3 opciones de solución?
@@ -242,11 +242,11 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
                 onChange={(e) => item.onChange(e.target.value)}
                 placeholder={`Describí la opción ${idx + 1}…`}
                 rows={2}
-                className="w-full resize-none rounded-xl border bg-transparent text-white outline-none transition-colors placeholder:text-white/20 focus:border-white/20"
+                className="w-full resize-none rounded-xl border bg-transparent text-fg outline-none transition-colors placeholder:text-fg-subtle focus:border-border"
                 style={{
                   fontSize: 13.5,
                   padding: "10px 14px",
-                  borderColor: "rgba(255,255,255,0.1)",
+                  borderColor: "var(--border)",
                   lineHeight: 1.5,
                 }}
               />
@@ -272,7 +272,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
                 key={n}
                 type="button"
                 onClick={() => setRecommended(n)}
-                className="rounded-xl border px-5 py-2.5 text-white transition-all"
+                className="rounded-xl border px-5 py-2.5 text-fg transition-all"
                 style={{
                   fontSize: 13,
                   fontWeight: 600,
@@ -308,11 +308,11 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
             onChange={(e) => setJustification(e.target.value)}
             placeholder="Justificá tu recomendación…"
             rows={3}
-            className="w-full resize-none rounded-xl border bg-transparent text-white outline-none transition-colors placeholder:text-white/20 focus:border-white/20"
+            className="w-full resize-none rounded-xl border bg-transparent text-fg outline-none transition-colors placeholder:text-fg-subtle focus:border-border"
             style={{
               fontSize: 13.5,
               padding: "10px 14px",
-              borderColor: "rgba(255,255,255,0.1)",
+              borderColor: "var(--border)",
               lineHeight: 1.5,
             }}
           />
@@ -324,7 +324,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
             className="mb-4 rounded-xl border px-4 py-3"
             style={{
               fontSize: 13,
-              color: "#f87171",
+              color: "var(--danger-text)",
               borderColor: "rgba(248,113,113,0.2)",
               background: "rgba(248,113,113,0.06)",
             }}
@@ -338,7 +338,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
           type="button"
           onClick={handleEscalate}
           disabled={!canEscalate || isPending}
-          className="rounded-xl px-6 py-3 text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-xl px-6 py-3 text-fg transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           style={{
             fontSize: 14,
             fontWeight: 600,

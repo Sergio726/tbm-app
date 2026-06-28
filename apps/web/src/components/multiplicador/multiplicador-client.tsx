@@ -100,10 +100,10 @@ export function MultiplicadorClient({
           borderColor: "rgba(251,191,36,0.18)",
         }}
       >
-        <div className="mb-1 text-[14.5px] font-semibold text-white">
+        <div className="mb-1 text-[14.5px] font-semibold text-fg">
           ¿Cuánto de la capacidad mental y creativa de tu equipo estás usando hoy?
         </div>
-        <p className="mb-3.5 text-[12px] text-white/65">
+        <p className="mb-3.5 text-[12px] text-fg-muted">
           Si marcás menos del 80%, estás perdiendo dinero en cada nómina.
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -126,7 +126,7 @@ export function MultiplicadorClient({
                 >
                   {r.label}
                 </div>
-                <div className="mt-0.5 text-[11.5px] leading-snug text-white/65">
+                <div className="mt-0.5 text-[11.5px] leading-snug text-fg-muted">
                   {r.desc}
                 </div>
               </button>
@@ -141,15 +141,15 @@ export function MultiplicadorClient({
           key={sin.key}
           className="rounded-2xl border p-5"
           style={{
-            background: "rgba(255,255,255,0.025)",
-            borderColor: "rgba(255,255,255,0.07)",
+            background: "var(--elevated)",
+            borderColor: "var(--border)",
           }}
         >
           <div className="mb-3.5">
-            <div className="text-[15px] font-semibold text-white">
+            <div className="text-[15px] font-semibold text-fg">
               {sin.emoji} {sin.label}
             </div>
-            <div className="text-[12px] text-white/65">
+            <div className="text-[12px] text-fg-muted">
               {sin.descripcion} · <span className="italic">{sin.sintoma}</span>
             </div>
           </div>
@@ -159,7 +159,7 @@ export function MultiplicadorClient({
               const value = answers[q.key];
               return (
                 <div key={q.key} className="flex flex-wrap items-center justify-between gap-3">
-                  <span className="min-w-0 flex-1 text-[13.5px] text-white/80">
+                  <span className="min-w-0 flex-1 text-[13.5px] text-fg">
                     {q.text}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -190,7 +190,7 @@ export function MultiplicadorClient({
         </section>
       ))}
 
-      <p className="text-[11.5px] text-white/65">
+      <p className="text-[11.5px] text-fg-muted">
         Escala: 1 = {MULTIPLICADOR_SCALE[0]} · 2 = {MULTIPLICADOR_SCALE[1]} · 3 ={" "}
         {MULTIPLICADOR_SCALE[2]} · 4 = {MULTIPLICADOR_SCALE[3]}
       </p>
@@ -201,7 +201,7 @@ export function MultiplicadorClient({
           style={{
             background: "rgba(248,113,113,0.10)",
             borderColor: "rgba(248,113,113,0.30)",
-            color: "#fca5a5",
+            color: "var(--danger-text)",
           }}
         >
           {error}
@@ -210,7 +210,7 @@ export function MultiplicadorClient({
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-1">
-        <div className="text-[12.5px] text-white/65">
+        <div className="text-[12.5px] text-fg-muted">
           {answeredCount}/{allQuestions.length} respondidas
           {capacity == null && " · falta la pregunta de capacidad"}
         </div>
@@ -219,8 +219,8 @@ export function MultiplicadorClient({
             <button
               type="button"
               onClick={() => setView("result")}
-              className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-3 text-[13px] font-semibold text-white/70 transition hover:text-white"
-              style={{ borderColor: "rgba(255,255,255,0.12)" }}
+              className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-3 text-[13px] font-semibold text-fg transition hover:text-fg"
+              style={{ borderColor: "var(--border-strong)" }}
             >
               <RotateCcw size={14} />
               Ver último resultado
@@ -230,7 +230,7 @@ export function MultiplicadorClient({
             type="button"
             onClick={save}
             disabled={isPending || !complete}
-            className="inline-flex items-center gap-2 rounded-xl border-0 px-5 py-3 text-[13.5px] font-semibold text-white transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl border-0 px-5 py-3 text-[13.5px] font-semibold text-fg transition disabled:opacity-50"
             style={{
               background: "linear-gradient(180deg, #f0b429, #d99708)",
               boxShadow: "0 6px 18px rgba(217,151,8,0.3)",

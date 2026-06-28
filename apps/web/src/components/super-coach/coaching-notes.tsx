@@ -69,8 +69,8 @@ export function CoachingNotes({
   return (
     <section className="mb-7">
       <div className="mb-3 flex items-center gap-2">
-        <MessageSquareText size={15} strokeWidth={1.9} style={{ color: "#34d399" }} />
-        <h2 className="m-0 text-[13px] font-bold uppercase tracking-[1.2px] text-white/55">
+        <MessageSquareText size={15} strokeWidth={1.9} style={{ color: "var(--success-text)" }} />
+        <h2 className="m-0 text-[13px] font-bold uppercase tracking-[1.2px] text-fg-muted">
           Notas de coaching
         </h2>
       </div>
@@ -88,19 +88,19 @@ export function CoachingNotes({
           onChange={(e) => setDraft(e.target.value)}
           rows={3}
           placeholder="Dejá una observación para el Arquitecto: qué está funcionando, qué ajustar esta semana…"
-          className="w-full resize-y rounded-xl border bg-transparent p-3 text-sm leading-relaxed text-white outline-none"
+          className="w-full resize-y rounded-xl border bg-transparent p-3 text-sm leading-relaxed text-fg outline-none"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "rgba(255,255,255,0.09)",
+            background: "var(--elevated)",
+            borderColor: "var(--border)",
           }}
         />
         {error && (
-          <p className="mt-2 text-[12px]" style={{ color: "#f87171" }}>
+          <p className="mt-2 text-[12px]" style={{ color: "var(--danger-text)" }}>
             {error}
           </p>
         )}
         <div className="mt-2.5 flex items-center justify-between">
-          <span className="text-[11.5px] text-white/65">
+          <span className="text-[11.5px] text-fg-muted">
             El Arquitecto la recibe como notificación.
           </span>
           <button
@@ -122,8 +122,8 @@ export function CoachingNotes({
       {/* Historial */}
       {notes.length === 0 ? (
         <div
-          className="rounded-2xl border border-dashed p-4 text-center text-[12.5px] text-white/65"
-          style={{ borderColor: "rgba(255,255,255,0.12)" }}
+          className="rounded-2xl border border-dashed p-4 text-center text-[12.5px] text-fg-muted"
+          style={{ borderColor: "var(--border-strong)" }}
         >
           Sin notas todavía. La primera observación marca el tono del acompañamiento.
         </div>
@@ -134,14 +134,14 @@ export function CoachingNotes({
               key={n.id}
               className="rounded-xl border px-4 py-3"
               style={{
-                background: "rgba(255,255,255,0.02)",
-                borderColor: "rgba(255,255,255,0.06)",
+                background: "var(--elevated)",
+                borderColor: "var(--border)",
               }}
             >
-              <p className="m-0 text-[13px] leading-relaxed text-white/80">
+              <p className="m-0 text-[13px] leading-relaxed text-fg">
                 {n.note}
               </p>
-              <span className="mt-1.5 block text-[11px] text-white/65">
+              <span className="mt-1.5 block text-[11px] text-fg-muted">
                 {timeAgo(n.created_at)}
               </span>
             </div>

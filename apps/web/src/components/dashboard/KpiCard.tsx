@@ -58,13 +58,13 @@ export default function KpiCard({ kpi }: Props) {
 
   return (
     <div
-      className="relative transition-all hover:border-white/10"
+      className="relative transition-all hover:border-border"
       style={{
         padding: "18px 20px",
         borderRadius: 14,
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        border: "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid var(--border)",
       }}
     >
       {/* Header: label + delta badge */}
@@ -123,7 +123,7 @@ export default function KpiCard({ kpi }: Props) {
                 onClick={handleSave}
                 disabled={saving}
                 className="text-xs hover:underline"
-                style={{ color: "#9fb9ff" }}
+                style={{ color: "var(--accent-text)" }}
               >
                 {saving ? "..." : "Guardar"}
               </button>
@@ -132,7 +132,7 @@ export default function KpiCard({ kpi }: Props) {
                   setValue(String(currentValue));
                   setEditing(false);
                 }}
-                className="text-xs hover:text-white"
+                className="text-xs hover:text-fg"
                 style={{ color: "var(--fg-subtle)" }}
               >
                 Cancelar
@@ -181,7 +181,7 @@ export default function KpiCard({ kpi }: Props) {
               </span>
               <span
                 className="opacity-0 transition-opacity group-hover:opacity-100"
-                style={{ color: "#9fb9ff" }}
+                style={{ color: "var(--accent-text)" }}
               >
                 <Pencil size={12} />
               </span>
@@ -205,7 +205,7 @@ export default function KpiCard({ kpi }: Props) {
         <div
           style={{
             height: 4,
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--elevated)",
             borderRadius: 99,
             overflow: "hidden",
           }}

@@ -92,7 +92,7 @@ export function DiscConnectionsDiagram({
         })}
       </svg>
 
-      <div className="mt-2 flex items-center justify-center gap-4 text-[11px] text-white/55">
+      <div className="mt-2 flex items-center justify-center gap-4 text-[11px] text-fg-muted">
         <span className="flex items-center gap-1.5">
           <svg width="22" height="6" aria-hidden>
             <line x1="0" y1="3" x2="22" y2="3" stroke={NATURAL} strokeWidth="2.5" strokeLinecap="round" />

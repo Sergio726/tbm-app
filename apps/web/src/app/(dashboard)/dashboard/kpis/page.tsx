@@ -117,7 +117,7 @@ export default function KpisPage() {
     <div className="p-6 max-w-3xl space-y-6">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm text-tbm-text-muted hover:text-white transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-tbm-text-muted hover:text-fg transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Volver al dashboard
@@ -125,7 +125,7 @@ export default function KpisPage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">KPIs de la semana</h1>
+          <h1 className="text-xl font-bold text-fg">KPIs de la semana</h1>
           <p className="text-sm text-tbm-text-secondary mt-0.5">
             Semana del{" "}
             {new Date(weekDate + "T12:00:00").toLocaleDateString("es-AR", {
@@ -149,7 +149,7 @@ export default function KpisPage() {
       {/* Formulario nuevo KPI */}
       {showForm && (
         <div className="tbm-card p-5 border-tbm-blue/40 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Nuevo KPI</h3>
+          <h3 className="text-sm font-semibold text-fg">Nuevo KPI</h3>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
@@ -203,7 +203,7 @@ export default function KpisPage() {
                     className={cn(
                       "flex-1 py-2 rounded-lg text-sm border transition-all",
                       newType === t
-                        ? "border-tbm-blue bg-tbm-blue/10 text-white"
+                        ? "border-tbm-blue bg-tbm-blue/10 text-fg"
                         : "border-tbm-border text-tbm-text-muted hover:border-tbm-blue/40"
                     )}
                   >
@@ -232,7 +232,7 @@ export default function KpisPage() {
           <div className="flex gap-3 justify-end">
             <button
               onClick={() => setShowForm(false)}
-              className="text-sm text-tbm-text-muted hover:text-white px-4 py-2"
+              className="text-sm text-tbm-text-muted hover:text-fg px-4 py-2"
             >
               Cancelar
             </button>
@@ -251,7 +251,7 @@ export default function KpisPage() {
       {kpis.length === 0 && !showForm ? (
         <div className="tbm-card p-10 text-center border-dashed">
           <p className="text-3xl mb-3">📊</p>
-          <p className="text-white font-medium">Sin KPIs esta semana</p>
+          <p className="text-fg font-medium">Sin KPIs esta semana</p>
           <p className="text-tbm-text-secondary text-sm mt-1">
             Agregá hasta 5 indicadores para trackear el progreso de tu equipo
           </p>
@@ -294,7 +294,7 @@ export default function KpisPage() {
                         {kpi.type === "leading" ? "Leading" : "Lagging"}
                       </span>
                     </div>
-                    <p className="font-medium text-white text-sm">{kpi.name}</p>
+                    <p className="font-medium text-fg text-sm">{kpi.name}</p>
                   </div>
 
                   <button
@@ -325,7 +325,7 @@ export default function KpisPage() {
                       onBlur={(e) =>
                         handleValueUpdate(kpi.id, parseFloat(e.target.value))
                       }
-                      className="w-16 bg-tbm-surface border border-tbm-border rounded px-2 py-1 text-white text-xs text-center focus:border-tbm-blue outline-none"
+                      className="w-16 bg-tbm-surface border border-tbm-border rounded px-2 py-1 text-fg text-xs text-center focus:border-tbm-blue outline-none"
                     />
                     <span className="text-tbm-text-muted text-xs">
                       / {kpi.weekly_target}

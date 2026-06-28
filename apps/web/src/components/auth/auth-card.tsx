@@ -16,7 +16,7 @@ export function AuthCard({ children }: { children: React.ReactNode }) {
         {/* Brand */}
         <div className="mb-8 text-center">
           <div className="mb-2 inline-flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-gradient text-sm font-bold text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-gradient text-sm font-bold text-fg">
               TBM
             </div>
             <span className="text-lg font-semibold text-tbm-text-primary">

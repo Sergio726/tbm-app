@@ -133,8 +133,8 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
           left: "50%",
           transform: "translateX(-50%)",
           width: "min(560px, 90vw)",
-          background: "#0f1525",
-          border: "1px solid rgba(255,255,255,0.1)",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 16,
           boxShadow: "0 24px 64px rgba(0,0,0,0.7)",
           overflow: "hidden",
@@ -143,20 +143,20 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
         {/* Input */}
         <div
           className="flex items-center gap-3 border-b px-4 py-3.5"
-          style={{ borderColor: "rgba(255,255,255,0.07)" }}
+          style={{ borderColor: "var(--border)" }}
         >
-          <Search size={16} className="text-white/65" />
+          <Search size={16} className="text-fg-muted" />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Buscar o ir a…"
-            className="flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-white/65"
+            className="flex-1 bg-transparent text-[14px] text-fg outline-none placeholder:text-fg-muted"
           />
           <kbd
-            className="rounded px-1.5 py-0.5 text-[10px] text-white/65"
-            style={{ background: "rgba(255,255,255,0.06)" }}
+            className="rounded px-1.5 py-0.5 text-[10px] text-fg-muted"
+            style={{ background: "var(--elevated)" }}
           >
             Esc
           </kbd>
@@ -165,7 +165,7 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
         {/* Resultados */}
         <div className="max-h-[380px] overflow-y-auto py-2">
           {sections.flat.length === 0 && (
-            <p className="px-4 py-6 text-center text-[13px] text-white/65">
+            <p className="px-4 py-6 text-center text-[13px] text-fg-muted">
               Sin resultados para &quot;{query}&quot;
             </p>
           )}
@@ -194,8 +194,8 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
 
         {/* Footer */}
         <div
-          className="flex items-center gap-3 border-t px-4 py-2.5 text-[10.5px] text-white/65"
-          style={{ borderColor: "rgba(255,255,255,0.07)" }}
+          className="flex items-center gap-3 border-t px-4 py-2.5 text-[10.5px] text-fg-muted"
+          style={{ borderColor: "var(--border)" }}
         >
           <span>↑↓ navegar</span>
           <span>↵ ir</span>
@@ -224,7 +224,7 @@ function PaletteSection({
 }) {
   return (
     <div className="mb-1">
-      <div className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[1.2px] text-white/65">
+      <div className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[1.2px] text-fg-muted">
         {title}
       </div>
       {items.map((item, i) => {
@@ -252,7 +252,7 @@ function PaletteSection({
               {item.label}
             </span>
             {active && (
-              <span className="text-[11px] text-white/65">↵</span>
+              <span className="text-[11px] text-fg-muted">↵</span>
             )}
           </button>
         );

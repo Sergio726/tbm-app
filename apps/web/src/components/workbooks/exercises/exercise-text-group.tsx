@@ -39,8 +39,8 @@ export function ExerciseTextGroup({ exerciseKey, questions, savedResponse, onSav
             placeholder="Tu respuesta..."
             className="w-full resize-none rounded-xl border bg-transparent p-3 text-sm leading-relaxed outline-none transition-all"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.1)",
+              background: "var(--elevated)",
+              borderColor: "var(--border)",
               color: "var(--fg)",
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(91,138,255,0.4)")}

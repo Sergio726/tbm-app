@@ -21,8 +21,8 @@ const BTN: React.CSSProperties = {
 
 const FIELD: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.12)",
+  background: "var(--elevated)",
+  border: "1px solid var(--border-strong)",
   borderRadius: 10,
   color: "var(--fg)",
   padding: "9px 11px",
@@ -44,7 +44,7 @@ export function RequestCreditsButton({ hasPending }: { hasPending: boolean }) {
         className="flex items-center gap-2 rounded-xl px-3.5 py-2.5"
         style={{ background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.3)" }}
       >
-        <Check size={15} strokeWidth={2.2} style={{ color: "#34d399" }} />
+        <Check size={15} strokeWidth={2.2} style={{ color: "var(--success-text)" }} />
         <span style={{ fontSize: 12.5, color: "#6ee7b7", lineHeight: 1.45 }}>
           Pedido enviado. Te avisamos cuando carguemos los créditos.
         </span>
@@ -102,7 +102,7 @@ export function RequestCreditsButton({ hasPending }: { hasPending: boolean }) {
         />
       </div>
       {error && (
-        <div style={{ fontSize: 12, color: "#fca5a5", lineHeight: 1.45 }}>{error}</div>
+        <div style={{ fontSize: 12, color: "var(--danger-text)", lineHeight: 1.45 }}>{error}</div>
       )}
       <div className="flex items-center gap-2">
         <button type="button" onClick={submit} disabled={submitting} style={{ ...BTN, opacity: submitting ? 0.7 : 1 }}>
@@ -117,7 +117,7 @@ export function RequestCreditsButton({ hasPending }: { hasPending: boolean }) {
             padding: "11px 14px",
             borderRadius: 12,
             background: "transparent",
-            border: "1px solid rgba(255,255,255,0.14)",
+            border: "1px solid var(--border-strong)",
             color: "var(--fg-muted)",
             fontSize: 13,
             fontWeight: 600,

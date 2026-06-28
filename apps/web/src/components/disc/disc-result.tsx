@@ -88,7 +88,7 @@ export function DiscResult({
             {letters.split("").map((l, i) => (
               <span
                 key={i}
-                className="px-2 py-0.5 rounded text-xs font-bold text-white"
+                className="px-2 py-0.5 rounded text-xs font-bold text-fg"
                 style={{ background: DISC_COLORS[l as DiscLetter] ?? "#475569" }}
               >
                 {l}
@@ -258,7 +258,7 @@ export function DiscResult({
             return (
               <div key={letter} className="flex items-start gap-3">
                 <span
-                  className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold text-white shrink-0"
+                  className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold text-fg shrink-0"
                   style={{ background: DISC_COLORS[letter] }}
                 >
                   {letter}

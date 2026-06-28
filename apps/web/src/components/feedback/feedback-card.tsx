@@ -22,8 +22,8 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
     <div
       className="rounded-xl border p-4"
       style={{
-        background: "rgba(255,255,255,0.025)",
-        borderColor: "rgba(255,255,255,0.07)",
+        background: "var(--elevated)",
+        borderColor: "var(--border)",
         borderLeft: `3px solid ${cfg.color}`,
       }}
     >
@@ -48,7 +48,7 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
             className="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 text-xs"
             style={{
               background: "rgba(251,191,36,0.1)",
-              color: "#fbbf24",
+              color: "var(--warn-text)",
               border: "1px solid rgba(251,191,36,0.25)",
             }}
           >
@@ -60,7 +60,7 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
             className="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 text-xs"
             style={{
               background: "rgba(52,211,153,0.1)",
-              color: "#34d399",
+              color: "var(--success-text)",
               border: "1px solid rgba(52,211,153,0.25)",
             }}
           >
@@ -102,7 +102,7 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
           className="mt-3 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
           style={{
             background: "rgba(52,211,153,0.12)",
-            color: "#34d399",
+            color: "var(--success-text)",
             border: "1px solid rgba(52,211,153,0.3)",
           }}
         >

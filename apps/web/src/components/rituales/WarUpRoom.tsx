@@ -347,8 +347,8 @@ export default function WarUpRoom({
                 gap: 6,
                 padding: "4px 10px",
                 borderRadius: 999,
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.10)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
                 fontSize: 11.5,
                 color:
                   elapsedMin > (warUp.timer_duration_min ?? 15)
@@ -373,7 +373,7 @@ export default function WarUpRoom({
                 borderRadius: 999,
                 background: "rgba(248,113,113,0.10)",
                 border: "1px solid rgba(248,113,113,0.30)",
-                color: "#fca5a5",
+                color: "var(--danger-text)",
                 fontSize: 12,
                 fontWeight: 500,
                 cursor: isPending ? "not-allowed" : "pointer",
@@ -457,7 +457,7 @@ function PreGameLockBanner() {
         antes de iniciar la sala.{" "}
         <Link
           href="/rituales/pre-game"
-          style={{ color: "#fcd34d", textDecoration: "underline" }}
+          style={{ color: "var(--warn-text)", textDecoration: "underline" }}
         >
           Ir al Pre-game
         </Link>
@@ -527,7 +527,7 @@ function MyEntryForm({
         style={{
           fontSize: 11,
           fontWeight: 600,
-          color: "#bcd0ff",
+          color: "var(--accent-text)",
           letterSpacing: 1.3,
           marginBottom: 14,
         }}
@@ -619,7 +619,7 @@ function EntryField({
         style={{
           fontSize: 12,
           fontWeight: 700,
-          color: "#bcd0ff",
+          color: "var(--accent-text)",
           marginBottom: 2,
           letterSpacing: 0.6,
         }}
@@ -642,8 +642,8 @@ function EntryField({
         rows={rows}
         style={{
           width: "100%",
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "var(--elevated)",
+          border: "1px solid var(--border)",
           borderRadius: 10,
           color: "var(--fg)",
           padding: "9px 14px",
@@ -804,7 +804,7 @@ function EntryCard({
                 borderRadius: 999,
                 background: "rgba(148,163,184,0.12)",
                 border: "1px solid rgba(148,163,184,0.28)",
-                color: "#cbd5e1",
+                color: "var(--fg-muted)",
                 fontSize: 11.5,
                 cursor: parkBusy ? "not-allowed" : "pointer",
                 opacity: parkBusy ? 0.6 : 1,
@@ -912,8 +912,8 @@ function EmptyState({
       style={{
         padding: "26px 28px",
         borderRadius: 14,
-        background: "rgba(255,255,255,0.025)",
-        border: "1px dashed rgba(255,255,255,0.10)",
+        background: "var(--elevated)",
+        border: "1px dashed var(--border)",
         textAlign: "center",
       }}
     >
@@ -949,7 +949,7 @@ function ErrorBanner({
         borderRadius: 10,
         background: "rgba(248,113,113,0.10)",
         border: "1px solid rgba(248,113,113,0.30)",
-        color: "#fca5a5",
+        color: "var(--danger-text)",
         fontSize: 13,
         marginTop: inline ? 0 : 14,
         marginBottom: inline ? 12 : 0,

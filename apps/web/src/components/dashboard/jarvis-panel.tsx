@@ -336,7 +336,7 @@ export function JarvisPanel({
           bottom: 0,
           width: "min(440px, 100vw)",
           background: "var(--surface)",
-          borderLeft: "1px solid rgba(255,255,255,0.08)",
+          borderLeft: "1px solid var(--border)",
           zIndex: 81,
           boxShadow: "-20px 0 60px rgba(0,0,0,0.5)",
           // Reset de herencia (el orbe vive dentro de un <h1> bold): texto normal.
@@ -350,7 +350,7 @@ export function JarvisPanel({
         {/* Header */}
         <div
           className="flex items-center justify-between"
-          style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", gap: 12 }}
+          style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", gap: 12 }}
         >
           <div className="flex items-center" style={{ gap: 10 }}>
             <span style={{ position: "relative", width: 24, height: 24 }}>
@@ -414,7 +414,7 @@ export function JarvisPanel({
                       borderRadius: 10,
                       background:
                         c.id === conversationId ? "rgba(91,138,255,0.12)" : "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.07)",
+                      border: "1px solid var(--border)",
                       color: "var(--fg)",
                       cursor: "pointer",
                     }}
@@ -483,7 +483,7 @@ export function JarvisPanel({
                         lineHeight: 1.55,
                         background: "rgba(248,113,113,0.1)",
                         border: "1px solid rgba(248,113,113,0.28)",
-                        color: "#fca5a5",
+                        color: "var(--danger-text)",
                         whiteSpace: "pre-wrap",
                       }
                     : {
@@ -569,7 +569,7 @@ export function JarvisPanel({
             e.preventDefault();
             send(input);
           }}
-          style={{ padding: 12, borderTop: "1px solid rgba(255,255,255,0.08)" }}
+          style={{ padding: 12, borderTop: "1px solid var(--border)" }}
         >
           <div className="flex items-end" style={{ gap: 8 }}>
             <textarea
@@ -590,8 +590,8 @@ export function JarvisPanel({
               style={{
                 flex: 1,
                 resize: "none",
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
                 borderRadius: 12,
                 color: "var(--fg)",
                 padding: "10px 12px",
@@ -602,7 +602,7 @@ export function JarvisPanel({
               }}
             />
             {streaming || pending ? (
-              <button type="button" onClick={stop} style={{ ...sendBtn, background: "rgba(248,113,113,0.18)", border: "1px solid rgba(248,113,113,0.4)", color: "#fca5a5" }}>
+              <button type="button" onClick={stop} style={{ ...sendBtn, background: "rgba(248,113,113,0.18)", border: "1px solid rgba(248,113,113,0.4)", color: "var(--danger-text)" }}>
                 Parar
               </button>
             ) : (
@@ -658,7 +658,7 @@ function ProposalCard({
         ))}
       </div>
       {resolved === "confirmed" ? (
-        <div style={{ fontSize: 12.5, color: "#34d399" }}>✓ Confirmado</div>
+        <div style={{ fontSize: 12.5, color: "var(--success-text)" }}>✓ Confirmado</div>
       ) : resolved === "cancelled" ? (
         <div style={{ fontSize: 12.5, color: "var(--fg-muted)" }}>Cancelado</div>
       ) : (
@@ -689,7 +689,7 @@ function ProposalCard({
               padding: "8px 14px",
               borderRadius: 10,
               background: "transparent",
-              border: "1px solid rgba(255,255,255,0.14)",
+              border: "1px solid var(--border-strong)",
               color: "var(--fg-muted)",
               fontSize: 13,
               fontWeight: 600,
@@ -779,7 +779,7 @@ function inline(text: string): ReactNode[] {
       );
     else if (tok.startsWith("`"))
       out.push(
-        <code key={k++} style={{ background: "rgba(255,255,255,0.1)", borderRadius: 4, padding: "1px 5px", fontSize: 12.5 }}>
+        <code key={k++} style={{ background: "var(--elevated)", borderRadius: 4, padding: "1px 5px", fontSize: 12.5 }}>
           {tok.slice(1, -1)}
         </code>
       );
@@ -804,8 +804,8 @@ const chip: React.CSSProperties = {
   textAlign: "left",
   padding: "10px 12px",
   borderRadius: 12,
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
+  background: "var(--elevated)",
+  border: "1px solid var(--border)",
   color: "var(--fg-muted)",
   fontSize: 13,
   cursor: "pointer",

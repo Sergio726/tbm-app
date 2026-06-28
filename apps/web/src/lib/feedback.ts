@@ -128,21 +128,21 @@ export const SEC_CONFIG: Record<
 > = {
   S: {
     label: "Sostener",
-    color: "#34d399",
+    color: "var(--success-text)",
     bg: "rgba(52,211,153,0.1)",
     border: "rgba(52,211,153,0.3)",
     description: "Refuerza un comportamiento positivo para que se repita",
   },
   E: {
     label: "Elevar",
-    color: "#fbbf24",
+    color: "var(--warn-text)",
     bg: "rgba(251,191,36,0.1)",
     border: "rgba(251,191,36,0.3)",
     description: "Reconoce el nivel actual y exige el siguiente",
   },
   C: {
     label: "Corregir",
-    color: "#f87171",
+    color: "var(--danger-text)",
     bg: "rgba(248,113,113,0.1)",
     border: "rgba(248,113,113,0.3)",
     description: "Corrige una falla de estándar con claridad y firmeza",

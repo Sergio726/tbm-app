@@ -28,10 +28,10 @@ const PUNTOS: {
   icon: LucideIcon;
   color: string;
 }[] = [
-  { key: "what_dod", label: "QUÉ · Definition of Done", icon: CheckSquare, color: "#34d399" },
-  { key: "why_context", label: "POR QUÉ · Contexto", icon: HelpCircle, color: "#fbbf24" },
-  { key: "how_constraints", label: "CÓMO · Restricciones", icon: Settings, color: "#5b8aff" },
-  { key: "when_deadline", label: "CUÁNDO · Deadline", icon: Calendar, color: "#f87171" },
+  { key: "what_dod", label: "QUÉ · Definition of Done", icon: CheckSquare, color: "var(--success-text)" },
+  { key: "why_context", label: "POR QUÉ · Contexto", icon: HelpCircle, color: "var(--warn-text)" },
+  { key: "how_constraints", label: "CÓMO · Restricciones", icon: Settings, color: "var(--accent-text)" },
+  { key: "when_deadline", label: "CUÁNDO · Deadline", icon: Calendar, color: "var(--danger-text)" },
   { key: "check_loop", label: "CHEQUEO · Loop de revisión", icon: RefreshCw, color: "#a78bfa" },
 ];
 
@@ -46,21 +46,21 @@ const STATUS_ACTIONS: {
     value: "in_progress",
     label: "En curso",
     icon: Play,
-    color: "#5b8aff",
+    color: "var(--accent-text)",
     grad: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
   },
   {
     value: "done",
     label: "Listo",
     icon: Check,
-    color: "#34d399",
+    color: "var(--success-text)",
     grad: "linear-gradient(135deg, #34d399, #059669)",
   },
   {
     value: "blocked",
     label: "Bloqueado",
     icon: ShieldAlert,
-    color: "#f87171",
+    color: "var(--danger-text)",
     grad: "linear-gradient(135deg, #f87171, #dc2626)",
   },
 ];
@@ -194,15 +194,15 @@ export function TaskDrawer({
       <div
         className="tbm-drawer-in absolute inset-y-0 right-0 flex w-full max-w-[480px] flex-col"
         style={{
-          background: "linear-gradient(180deg, #121826, #0c1018)",
-          borderLeft: "1px solid rgba(255,255,255,0.08)",
+          background: "linear-gradient(180deg, #121826, var(--bg))",
+          borderLeft: "1px solid var(--border)",
           boxShadow: "-24px 0 60px rgba(0,0,0,0.5)",
         }}
       >
         {/* Header */}
         <div
           className="flex items-start justify-between gap-3 px-6 py-5"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+          style={{ borderBottom: "1px solid var(--border)" }}
         >
           <div className="min-w-0 flex-1">
             <p
@@ -218,7 +218,7 @@ export function TaskDrawer({
               Detalle de tarea
             </p>
             <h2
-              className="text-white"
+              className="text-fg"
               style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.4 }}
             >
               {task.what_dod || "Sin descripción"}
@@ -227,7 +227,7 @@ export function TaskDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-elevated"
             style={{ color: "var(--fg-subtle)", cursor: "pointer" }}
             aria-label="Cerrar"
           >
@@ -271,18 +271,18 @@ export function TaskDrawer({
                 type="button"
                 onClick={() => setAssigneeMenuOpen((o) => !o)}
                 disabled={isPending}
-                className="flex flex-1 items-center gap-3 rounded-xl border p-3.5 text-left transition-colors hover:border-white/20"
+                className="flex flex-1 items-center gap-3 rounded-xl border p-3.5 text-left transition-colors hover:border-border"
                 style={{
                   borderColor: assigneeMenuOpen
                     ? "rgba(91,138,255,0.5)"
                     : "rgba(255,255,255,0.07)",
-                  background: "rgba(255,255,255,0.025)",
+                  background: "var(--elevated)",
                   cursor: isPending ? "default" : "pointer",
                 }}
               >
                 {assignee ? (
                   <div
-                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-white"
+                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-fg"
                     style={{
                       background: `linear-gradient(135deg, ${discColor}, ${discColor}88)`,
                       fontSize: 13,
@@ -296,8 +296,8 @@ export function TaskDrawer({
                   <div
                     className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
                     style={{
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px dashed rgba(255,255,255,0.2)",
+                      background: "var(--elevated)",
+                      border: "1px dashed var(--border-strong)",
                     }}
                   >
                     <User size={16} style={{ color: "var(--fg-muted)" }} />
@@ -305,7 +305,7 @@ export function TaskDrawer({
                 )}
                 <div className="min-w-0 flex-1">
                   <p
-                    className="text-white"
+                    className="text-fg"
                     style={{ fontSize: 14, fontWeight: 600 }}
                   >
                     {assignee?.full_name ?? "Sin asignar"}
@@ -354,7 +354,7 @@ export function TaskDrawer({
                   className="absolute left-0 right-0 z-20 mt-1.5 max-h-72 overflow-y-auto rounded-xl border p-1.5"
                   style={{
                     background: "#161d2e",
-                    borderColor: "rgba(255,255,255,0.1)",
+                    borderColor: "var(--border)",
                     boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
                   }}
                 >
@@ -366,8 +366,8 @@ export function TaskDrawer({
                     <div
                       className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
                       style={{
-                        background: "rgba(255,255,255,0.06)",
-                        border: "1px dashed rgba(255,255,255,0.2)",
+                        background: "var(--elevated)",
+                        border: "1px dashed var(--border-strong)",
                       }}
                     >
                       <User size={13} style={{ color: "var(--fg-muted)" }} />
@@ -387,7 +387,7 @@ export function TaskDrawer({
                         onClick={() => handleAssign(member.id)}
                       >
                         <div
-                          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-white"
+                          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-fg"
                           style={{
                             background: `linear-gradient(135deg, ${mColor}, ${mColor}88)`,
                             fontSize: 11,
@@ -398,7 +398,7 @@ export function TaskDrawer({
                         </div>
                         <div className="min-w-0 flex-1">
                           <p
-                            className="text-white"
+                            className="text-fg"
                             style={{
                               fontSize: 13,
                               fontWeight: 500,
@@ -487,9 +487,9 @@ export function TaskDrawer({
               }}
             >
               <div className="mb-3 flex items-center gap-2">
-                <ShieldAlert size={15} style={{ color: "#f87171" }} />
+                <ShieldAlert size={15} style={{ color: "var(--danger-text)" }} />
                 <p
-                  className="text-white"
+                  className="text-fg"
                   style={{ fontSize: 13.5, fontWeight: 600 }}
                 >
                   Escalado Anti-Boomerang
@@ -536,7 +536,7 @@ export function TaskDrawer({
                                 style={{
                                   fontSize: 9.5,
                                   fontWeight: 700,
-                                  color: "#34d399",
+                                  color: "var(--success-text)",
                                   background: "rgba(52,211,153,0.15)",
                                 }}
                               >
@@ -596,7 +596,7 @@ export function TaskDrawer({
         {/* Footer: cambio de estado */}
         <div
           className="px-6 py-4"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
+          style={{ borderTop: "1px solid var(--border)" }}
         >
           <div className="mb-2.5 flex items-center gap-2">
             <Clock size={13} style={{ color: "var(--fg-muted)" }} />
@@ -661,7 +661,7 @@ function AssigneeOption({
         <Check
           size={15}
           strokeWidth={2.5}
-          style={{ color: "#5b8aff", flexShrink: 0, marginLeft: "auto" }}
+          style={{ color: "var(--accent-text)", flexShrink: 0, marginLeft: "auto" }}
         />
       )}
     </button>

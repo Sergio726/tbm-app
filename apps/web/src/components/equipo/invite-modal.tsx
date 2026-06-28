@@ -80,14 +80,14 @@ export function InviteModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[420px] rounded-2xl border border-white/10 bg-[var(--surface)] p-6 shadow-2xl"
+        className="w-full max-w-[420px] rounded-2xl border border-border bg-[var(--surface)] p-6 shadow-2xl"
       >
         <div className="mb-3.5 flex items-start justify-between">
           <div>
-            <h3 id="invite-modal-title" className="m-0 text-[17px] font-bold text-white">
+            <h3 id="invite-modal-title" className="m-0 text-[17px] font-bold text-fg">
               Invitar colaborador
             </h3>
-            <p className="mt-1 text-[12.5px] text-white/50">
+            <p className="mt-1 text-[12.5px] text-fg-muted">
               Le llega un email con un link para unirse a tu equipo.
             </p>
           </div>
@@ -95,7 +95,7 @@ export function InviteModal({
             type="button"
             onClick={onClose}
             aria-label="Cerrar"
-            className="text-white/50 hover:text-white"
+            className="text-fg-muted hover:text-fg"
           >
             <X size={18} />
           </button>
@@ -117,19 +117,19 @@ export function InviteModal({
                 readOnly
                 value={manualLink}
                 rows={3}
-                className="w-full rounded-lg border border-white/10 bg-black/20 p-2 text-[11px] text-white/80"
+                className="w-full rounded-lg border border-border bg-black/20 p-2 text-[11px] text-fg"
               />
               <button
                 type="button"
                 onClick={() => navigator.clipboard.writeText(manualLink)}
-                className="w-full rounded-[10px] border border-white/15 px-3 py-2.5 text-[13px] font-medium text-white hover:bg-white/5"
+                className="w-full rounded-[10px] border border-border px-3 py-2.5 text-[13px] font-medium text-fg hover:bg-elevated"
               >
                 Copiar link
               </button>
               <button
                 type="button"
                 onClick={onDone}
-                className="w-full rounded-[10px] px-3 py-2.5 text-[13px] text-white/50 hover:text-white"
+                className="w-full rounded-[10px] px-3 py-2.5 text-[13px] text-fg-muted hover:text-fg"
               >
                 Listo
               </button>
@@ -156,7 +156,7 @@ export function InviteModal({
               type="button"
               onClick={send}
               disabled={sending}
-              className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-[10px] border-0 px-3 py-3 text-[13.5px] font-semibold text-white transition disabled:cursor-default"
+              className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-[10px] border-0 px-3 py-3 text-[13.5px] font-semibold text-fg transition disabled:cursor-default"
               style={{
                 background: "linear-gradient(180deg, #4f86ff, #2c5fe6)",
               }}

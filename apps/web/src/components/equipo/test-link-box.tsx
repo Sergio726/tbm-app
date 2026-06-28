@@ -98,7 +98,7 @@ export function TestLinkBox({
             <div className="mb-0.5 text-[13px] font-bold text-[#9fb9ff]">
               Test DISC completado
             </div>
-            <div className="text-[12px] text-white/60">
+            <div className="text-[12px] text-fg-muted">
               La persona ya completó el test; su perfil se calculó y cargó automáticamente.
             </div>
           </div>
@@ -111,12 +111,12 @@ export function TestLinkBox({
           type="button"
           onClick={onGenerate}
           disabled={generating}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-[9px] border border-white/10 bg-white/[0.04] px-3 py-2 text-[12px] font-semibold text-white/70 transition hover:bg-white/[0.08] hover:text-white disabled:cursor-default disabled:opacity-60"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-[9px] border border-border bg-white/[0.04] px-3 py-2 text-[12px] font-semibold text-fg transition hover:bg-white/[0.08] hover:text-fg disabled:cursor-default disabled:opacity-60"
         >
           <RotateCcw size={13} />
           {generating ? "Generando…" : "Generar nuevo link · re-hacer test"}
         </button>
-        <p className="mt-1.5 text-[11px] text-white/65">
+        <p className="mt-1.5 text-[11px] text-fg-muted">
           Genera un link nuevo y deja el perfil en blanco para volver a evaluarlo.
         </p>
       </div>
@@ -156,7 +156,7 @@ export function TestLinkBox({
 
           {/* Enviar por email */}
           <div className="mt-3 border-t border-white/[0.07] pt-3">
-            <div className="mb-1.5 flex items-center gap-1.5 text-[11.5px] font-semibold text-white/70">
+            <div className="mb-1.5 flex items-center gap-1.5 text-[11.5px] font-semibold text-fg">
               <Mail size={12.5} /> Enviar por email
             </div>
             <div className="flex items-center gap-2">
@@ -184,7 +184,7 @@ export function TestLinkBox({
             type="button"
             onClick={onGenerate}
             disabled={generating}
-            className="mt-2.5 inline-flex items-center gap-1 text-[11px] text-white/50 hover:text-white/70"
+            className="mt-2.5 inline-flex items-center gap-1 text-[11px] text-fg-muted hover:text-fg"
           >
             <RotateCcw size={11} />
             {generating ? "Generando…" : "Regenerar link (invalida el anterior)"}
@@ -192,7 +192,7 @@ export function TestLinkBox({
         </>
       ) : (
         <>
-          <p className="mb-2 text-[12px] text-white/60">
+          <p className="mb-2 text-[12px] text-fg-muted">
             Generá un enlace para que la persona responda el test DISC. El perfil se
             calcula solo.
           </p>

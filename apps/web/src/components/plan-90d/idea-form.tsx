@@ -38,7 +38,7 @@ export function IdeaForm({ isPending, onSubmit, onCancel }: IdeaFormProps) {
     >
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <p className="font-semibold text-white" style={{ fontSize: 14 }}>
+          <p className="font-semibold text-fg" style={{ fontSize: 14 }}>
             Parkear idea
           </p>
           <p style={{ fontSize: 11.5, color: "var(--fg-muted)", marginTop: 2 }}>
@@ -61,10 +61,10 @@ export function IdeaForm({ isPending, onSubmit, onCancel }: IdeaFormProps) {
             placeholder="Describí brevemente la idea…"
             rows={2}
             required
-            className="w-full resize-none rounded-xl border px-3 py-2 text-sm text-white outline-none"
+            className="w-full resize-none rounded-xl border px-3 py-2 text-sm text-fg outline-none"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
@@ -78,10 +78,10 @@ export function IdeaForm({ isPending, onSubmit, onCancel }: IdeaFormProps) {
             onChange={(e) => setRationale(e.target.value)}
             placeholder="Contexto, hipótesis, potencial impacto…"
             rows={2}
-            className="w-full resize-none rounded-xl border px-3 py-2 text-sm text-white outline-none"
+            className="w-full resize-none rounded-xl border px-3 py-2 text-sm text-fg outline-none"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
@@ -91,7 +91,7 @@ export function IdeaForm({ isPending, onSubmit, onCancel }: IdeaFormProps) {
             type="button"
             onClick={onCancel}
             className="flex-1 rounded-xl py-2 text-sm font-medium"
-            style={{ background: "rgba(255,255,255,0.06)", color: "var(--fg-muted)" }}
+            style={{ background: "var(--elevated)", color: "var(--fg-muted)" }}
           >
             Cancelar
           </button>

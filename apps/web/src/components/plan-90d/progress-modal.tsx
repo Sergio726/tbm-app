@@ -36,13 +36,13 @@ export function ProgressModal({
       <div
         className="w-full max-w-md rounded-2xl border p-6"
         style={{
-          background: "#0d1120",
-          borderColor: "rgba(255,255,255,0.12)",
+          background: "var(--surface)",
+          borderColor: "var(--border-strong)",
         }}
       >
         <div className="mb-5 flex items-start justify-between">
           <div>
-            <p className="font-semibold text-white" style={{ fontSize: 15 }}>
+            <p className="font-semibold text-fg" style={{ fontSize: 15 }}>
               Actualizar avance
             </p>
             <p
@@ -52,7 +52,7 @@ export function ProgressModal({
               {rockTitle}
             </p>
           </div>
-          <button onClick={onClose} style={{ color: "var(--fg-muted)" }} className="hover:text-white transition-colors">
+          <button onClick={onClose} style={{ color: "var(--fg-muted)" }} className="hover:text-fg transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -81,7 +81,7 @@ export function ProgressModal({
             />
             <div
               className="mt-1 h-2 w-full overflow-hidden rounded-full"
-              style={{ background: "rgba(255,255,255,0.08)" }}
+              style={{ background: "var(--elevated)" }}
             >
               <div
                 className="h-full rounded-full transition-all"
@@ -102,10 +102,10 @@ export function ProgressModal({
               onChange={(e) => setNote(e.target.value)}
               placeholder="¿Qué avanzaste esta semana? ¿Algún obstáculo?"
               rows={3}
-              className="w-full resize-none rounded-xl border px-3 py-2 text-sm text-white outline-none"
+              className="w-full resize-none rounded-xl border px-3 py-2 text-sm text-fg outline-none"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                borderColor: "rgba(255,255,255,0.1)",
+                background: "var(--elevated)",
+                borderColor: "var(--border)",
               }}
             />
           </div>
@@ -116,7 +116,7 @@ export function ProgressModal({
               onClick={onClose}
               className="flex-1 rounded-xl py-2.5 text-sm font-medium"
               style={{
-                background: "rgba(255,255,255,0.06)",
+                background: "var(--elevated)",
                 color: "var(--fg-muted)",
               }}
             >

@@ -64,7 +64,7 @@ export default async function MiProgramaPage() {
     >
       <Link
         href="/workbooks"
-        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-white/55 hover:text-white/80"
+        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-fg-muted hover:text-fg"
       >
         <ArrowLeft size={14} />
         Workbooks

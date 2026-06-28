@@ -52,7 +52,7 @@ export default async function RitualConfigPage() {
               borderRadius: 11,
               background: "rgba(100,116,139,0.12)",
               border: "1px solid rgba(100,116,139,0.28)",
-              color: "#cbd5e1",
+              color: "var(--fg-muted)",
             }}
           >
             <Settings size={20} strokeWidth={1.6} />
@@ -88,7 +88,7 @@ export default async function RitualConfigPage() {
             borderRadius: 12,
             background: "rgba(251,191,36,0.08)",
             border: "1px solid rgba(251,191,36,0.25)",
-            color: "#fcd34d",
+            color: "var(--warn-text)",
             fontSize: 13.5,
             marginBottom: 18,
           }}

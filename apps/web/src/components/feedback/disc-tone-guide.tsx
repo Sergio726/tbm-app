@@ -19,8 +19,8 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
       <div
         className="rounded-xl border p-4"
         style={{
-          borderColor: "rgba(255,255,255,0.06)",
-          background: "rgba(255,255,255,0.015)",
+          borderColor: "var(--border)",
+          background: "var(--elevated)",
         }}
       >
         <p
@@ -40,8 +40,8 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
     <div
       className="rounded-xl border p-4"
       style={{
-        borderColor: "rgba(255,255,255,0.08)",
-        background: "rgba(255,255,255,0.025)",
+        borderColor: "var(--border)",
+        background: "var(--elevated)",
       }}
     >
       {/* Header */}
@@ -106,9 +106,9 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
                 size={13}
                 strokeWidth={2}
                 className="shrink-0"
-                style={{ color: "#fbbf24", marginTop: 1 }}
+                style={{ color: "var(--warn-text)", marginTop: 1 }}
               />
-              <p style={{ fontSize: 11.5, color: "#fbbf24", lineHeight: 1.5 }}>
+              <p style={{ fontSize: 11.5, color: "var(--warn-text)", lineHeight: 1.5 }}>
                 {guide.warning}
               </p>
             </div>

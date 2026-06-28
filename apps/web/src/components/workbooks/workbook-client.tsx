@@ -349,7 +349,7 @@ export function WorkbookClient({
             style={{
               background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
               border: "1px solid rgba(91,138,255,0.25)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <BookOpen size={18} strokeWidth={1.6} />
@@ -358,7 +358,7 @@ export function WorkbookClient({
             <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--fg-muted)" }}>
               Sesión {session.number}
             </p>
-            <h1 className="text-white" style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.4 }}>
+            <h1 className="text-fg" style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.4 }}>
               {session.title}
             </h1>
           </div>
@@ -372,12 +372,12 @@ export function WorkbookClient({
       <div
         className="mb-6 rounded-2xl border p-4"
         style={{
-          background: "rgba(255,255,255,0.03)",
-          borderColor: "rgba(255,255,255,0.07)",
+          background: "var(--elevated)",
+          borderColor: "var(--border)",
         }}
       >
         <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="font-semibold text-white">
+          <span className="font-semibold text-fg">
             {completedCount}/{totalExercises} ejercicios
           </span>
           <div className="flex items-center gap-3">
@@ -394,7 +394,7 @@ export function WorkbookClient({
         </div>
         <div
           className="h-2 w-full overflow-hidden rounded-full"
-          style={{ background: "rgba(255,255,255,0.08)" }}
+          style={{ background: "var(--elevated)" }}
         >
           <div
             className="h-full rounded-full transition-all duration-500"
@@ -416,7 +416,7 @@ export function WorkbookClient({
           style={{
             background: "rgba(52,211,153,0.1)",
             borderColor: "rgba(52,211,153,0.3)",
-            color: "#34d399",
+            color: "var(--success-text)",
           }}
         >
           {successMsg}
@@ -428,7 +428,7 @@ export function WorkbookClient({
           style={{
             background: "rgba(248,113,113,0.1)",
             borderColor: "rgba(248,113,113,0.3)",
-            color: "#f87171",
+            color: "var(--danger-text)",
           }}
         >
           {errorMsg}
@@ -499,7 +499,7 @@ export function WorkbookClient({
 
               {/* Accordion body */}
               {isOpen && (
-                <div className="border-t px-5 pb-5 pt-4" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                <div className="border-t px-5 pb-5 pt-4" style={{ borderColor: "var(--border)" }}>
                   <p
                     className="mb-4 text-sm leading-relaxed"
                     style={{ color: "var(--fg-subtle)" }}
@@ -590,11 +590,11 @@ export function WorkbookClient({
       <div
         className="mb-6 rounded-2xl border p-5"
         style={{
-          background: "rgba(255,255,255,0.03)",
-          borderColor: "rgba(255,255,255,0.07)",
+          background: "var(--elevated)",
+          borderColor: "var(--border)",
         }}
       >
-        <h3 className="mb-1 text-sm font-bold text-white">Mi compromiso de esta semana</h3>
+        <h3 className="mb-1 text-sm font-bold text-fg">Mi compromiso de esta semana</h3>
         <p className="mb-3 text-xs" style={{ color: "var(--fg-muted)" }}>
           ¿Cuál es la acción concreta que vas a ejecutar esta semana con lo que aprendiste en esta sesión?
         </p>
@@ -605,8 +605,8 @@ export function WorkbookClient({
           placeholder="Escribí tu compromiso aquí..."
           className="mb-3 w-full resize-none rounded-xl border bg-transparent p-3 text-sm leading-relaxed outline-none transition-all"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "rgba(255,255,255,0.1)",
+            background: "var(--elevated)",
+            borderColor: "var(--border)",
             color: "var(--fg)",
           }}
           onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(91,138,255,0.4)")}
@@ -639,7 +639,7 @@ export function WorkbookClient({
         >
           <div className="mb-2 flex items-center gap-2">
             <Zap size={16} color="#fbbf24" />
-            <h3 className="text-sm font-bold" style={{ color: "#fbbf24" }}>
+            <h3 className="text-sm font-bold" style={{ color: "var(--warn-text)" }}>
               Completaste la sesión antes de tiempo
             </h3>
           </div>
@@ -654,7 +654,7 @@ export function WorkbookClient({
             style={{
               background: "rgba(251,191,36,0.2)",
               border: "1px solid rgba(251,191,36,0.4)",
-              color: "#fbbf24",
+              color: "var(--warn-text)",
             }}
           >
             {isPending ? "Desbloqueando..." : `Solicitar avance anticipado → Sesión ${session.number + 1}`}

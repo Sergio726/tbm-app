@@ -29,7 +29,7 @@ export function DecisionsPanel({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
+          <h2 className="font-bold text-fg" style={{ fontSize: 16 }}>
             Decisiones — Filtro del 70%
           </h2>
           <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
@@ -43,7 +43,7 @@ export function DecisionsPanel({
             style={{
               background: "rgba(91,138,255,0.15)",
               border: "1px solid rgba(91,138,255,0.3)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <Plus size={13} strokeWidth={2.5} />
@@ -82,7 +82,7 @@ export function DecisionsPanel({
       {decisions.length === 0 && !showForm && (
         <div
           className="flex flex-col items-center gap-3 rounded-2xl border py-10 text-center"
-          style={{ borderColor: "rgba(255,255,255,0.06)", borderStyle: "dashed" }}
+          style={{ borderColor: "var(--border)", borderStyle: "dashed" }}
         >
           <Zap size={28} style={{ color: "var(--fg-subtle)" }} />
           <p style={{ fontSize: 13.5, color: "var(--fg-muted)" }}>
@@ -121,8 +121,8 @@ function DecisionCard({ decision }: { decision: Decision }) {
     <div
       className="rounded-2xl border p-4 flex flex-col gap-3"
       style={{
-        borderColor: "rgba(255,255,255,0.08)",
-        background: "rgba(255,255,255,0.02)",
+        borderColor: "var(--border)",
+        background: "var(--elevated)",
       }}
     >
       {/* Main text */}
@@ -131,7 +131,7 @@ function DecisionCard({ decision }: { decision: Decision }) {
         onClick={() => setExpanded((e) => !e)}
       >
         <p
-          className={`font-semibold text-white ${!expanded ? "line-clamp-2" : ""}`}
+          className={`font-semibold text-fg ${!expanded ? "line-clamp-2" : ""}`}
           style={{ fontSize: 14, lineHeight: 1.5 }}
         >
           {decision.decision_text}
@@ -158,7 +158,7 @@ function DecisionCard({ decision }: { decision: Decision }) {
             style={{
               background: "rgba(52,211,153,0.1)",
               border: "1px solid rgba(52,211,153,0.2)",
-              color: "#34d399",
+              color: "var(--success-text)",
             }}
           >
             <CheckCircle2 size={10} strokeWidth={2.5} />
@@ -171,7 +171,7 @@ function DecisionCard({ decision }: { decision: Decision }) {
             style={{
               background: "rgba(251,191,36,0.1)",
               border: "1px solid rgba(251,191,36,0.2)",
-              color: "#fbbf24",
+              color: "var(--warn-text)",
             }}
           >
             <Users size={10} strokeWidth={2.5} />

@@ -76,11 +76,11 @@ export default async function EquipoPage() {
 
 function EquipoError() {
   return (
-    <main className="mx-auto w-full max-w-[1500px] px-5 py-[30px] text-white md:px-10">
+    <main className="mx-auto w-full max-w-[1500px] px-5 py-[30px] text-fg md:px-10">
       <div className="mx-auto mt-10 max-w-[480px] rounded-2xl border border-[#f87171]/30 bg-[#2a1416]/60 p-7 text-center">
         <div className="mb-2 text-3xl">⚠️</div>
-        <h1 className="text-[17px] font-bold text-white">No pudimos cargar tu equipo</h1>
-        <p className="mt-2 text-[13px] leading-relaxed text-white/65">
+        <h1 className="text-[17px] font-bold text-fg">No pudimos cargar tu equipo</h1>
+        <p className="mt-2 text-[13px] leading-relaxed text-fg-muted">
           Hubo un error al consultar los datos. Recargá la página; si el problema persiste,
           revisá tu conexión o intentá de nuevo en unos minutos.
         </p>

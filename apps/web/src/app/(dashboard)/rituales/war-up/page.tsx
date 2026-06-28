@@ -102,7 +102,7 @@ export default async function WarUpPage() {
               borderRadius: 11,
               background: "rgba(91,138,255,0.12)",
               border: "1px solid rgba(91,138,255,0.28)",
-              color: "#5b8aff",
+              color: "var(--accent-text)",
             }}
           >
             <Zap size={20} strokeWidth={1.6} />

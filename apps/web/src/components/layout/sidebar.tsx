@@ -126,7 +126,7 @@ export function Sidebar({
         className="fixed inset-x-0 top-0 z-30 flex h-14 items-center gap-3 px-4 md:hidden"
         style={{
           background: "rgba(10,14,24,0.92)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid var(--border)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
         }}
@@ -136,12 +136,12 @@ export function Sidebar({
           onClick={() => setOpen(true)}
           aria-label="Abrir menú"
           data-tour="mobile-menu"
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-white/80 transition-colors hover:bg-white/10"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-fg transition-colors hover:bg-elevated"
         >
           <Menu size={20} strokeWidth={1.8} />
         </button>
         <div
-          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-white"
+          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-fg"
           style={{
             background:
               "linear-gradient(135deg, #5b8aff 0%, #2c5fe6 60%, #1a3ea8 100%)",
@@ -152,7 +152,7 @@ export function Sidebar({
         >
           TBM
         </div>
-        <span className="truncate text-sm font-semibold text-white">
+        <span className="truncate text-sm font-semibold text-fg">
           {companyName ?? "Mi Empresa"}
         </span>
       </div>
@@ -167,15 +167,15 @@ export function Sidebar({
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-full flex-col overflow-hidden text-white transition-transform duration-300 ease-out md:z-40 md:translate-x-0 ${
+        className={`fixed left-0 top-0 z-50 flex h-full flex-col overflow-hidden text-fg transition-transform duration-300 ease-out md:z-40 md:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{
           width: 280,
           maxWidth: "85vw",
           background:
-            "linear-gradient(180deg, #101627 0%, #0a0e18 60%, #0a0e18 100%)",
-          borderRight: "1px solid rgba(255,255,255,0.05)",
+            "linear-gradient(180deg, #101627 0%, var(--bg) 60%, var(--bg) 100%)",
+          borderRight: "1px solid var(--border)",
           fontFamily: "Inter, system-ui, sans-serif",
         }}
       >
@@ -184,7 +184,7 @@ export function Sidebar({
           type="button"
           onClick={() => setOpen(false)}
           aria-label="Cerrar menú"
-          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:bg-white/10 md:hidden"
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-lg text-fg transition-colors hover:bg-elevated md:hidden"
         >
           <X size={18} strokeWidth={1.8} />
         </button>
@@ -221,7 +221,7 @@ export function Sidebar({
         {/* Brand */}
         <div className="flex items-center gap-3 px-[22px] pb-[22px] pt-6">
           <div
-            className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-xl text-white"
+            className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-xl text-fg"
             style={{
               background:
                 "linear-gradient(135deg, #5b8aff 0%, #2c5fe6 60%, #1a3ea8 100%)",
@@ -236,7 +236,7 @@ export function Sidebar({
           </div>
           <div className="min-w-0 flex-1">
             <p
-              className="truncate text-white"
+              className="truncate text-fg"
               style={{ fontSize: 14, fontWeight: 600, letterSpacing: -0.2 }}
             >
               {companyName ?? "Mi Empresa"}
@@ -327,7 +327,7 @@ export function Sidebar({
             >
               <span
                 className="flex items-center justify-center"
-                style={{ color: "#34d399" }}
+                style={{ color: "var(--success-text)" }}
               >
                 <GraduationCap size={17} strokeWidth={1.6} />
               </span>
@@ -375,8 +375,8 @@ export function Sidebar({
             className="flex items-center gap-[11px] rounded-xl"
             style={{
               padding: "12px 13px",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "var(--elevated)",
+              border: "1px solid var(--border)",
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
             }}
@@ -396,7 +396,7 @@ export function Sidebar({
                   />
                 ) : (
                   <div
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-white"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-fg"
                     style={{
                       background: "linear-gradient(135deg, #f87171, #b91c1c)",
                       fontSize: 14,
@@ -416,7 +416,7 @@ export function Sidebar({
                     height: 10,
                     borderRadius: "50%",
                     background: "#10b981",
-                    border: "2px solid #0a0e18",
+                    border: "2px solid var(--bg)",
                   }}
                 />
               </div>
@@ -433,7 +433,7 @@ export function Sidebar({
               <button
                 type="button"
                 aria-label="Notificaciones"
-                className="relative flex items-center justify-center transition-colors hover:text-white"
+                className="relative flex items-center justify-center transition-colors hover:text-fg"
                 style={{
                   color: "var(--fg-subtle)",
                   padding: 4,
@@ -452,7 +452,7 @@ export function Sidebar({
                     height: 8,
                     borderRadius: "50%",
                     background: "#5b8aff",
-                    border: "2px solid #0a0e18",
+                    border: "2px solid var(--bg)",
                   }}
                 />
               </button>
@@ -461,7 +461,7 @@ export function Sidebar({
                 onClick={restartTour}
                 aria-label="Ver tour de nuevo"
                 title="Ver tour de nuevo"
-                className="flex items-center justify-center transition-colors hover:text-white"
+                className="flex items-center justify-center transition-colors hover:text-fg"
                 style={{
                   color: "var(--fg-subtle)",
                   padding: 4,

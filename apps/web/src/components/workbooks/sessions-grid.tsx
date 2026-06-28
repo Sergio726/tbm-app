@@ -86,17 +86,17 @@ export function SessionsGrid({ allProgress }: Props) {
                 className="rounded-full px-2.5 py-1 text-xs font-semibold"
                 style={
                   completed
-                    ? { background: "rgba(52,211,153,0.15)", color: "#34d399" }
+                    ? { background: "rgba(52,211,153,0.15)", color: "var(--success-text)" }
                     : unlocked
-                    ? { background: "rgba(91,138,255,0.15)", color: "#9fb9ff" }
+                    ? { background: "rgba(91,138,255,0.15)", color: "var(--accent-text)" }
                     : days > 0
                     ? {
-                        background: "rgba(255,255,255,0.06)",
+                        background: "var(--elevated)",
                         color: "var(--fg-muted)",
                       }
                     : {
                         background: "rgba(251,191,36,0.1)",
-                        color: "#fbbf24",
+                        color: "var(--warn-text)",
                       }
                 }
               >
@@ -113,7 +113,7 @@ export function SessionsGrid({ allProgress }: Props) {
             <div className="mb-1 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--fg-muted)" }}>
               Sesión {session.number}
             </div>
-            <h3 className="mb-1 text-base font-bold text-white">{session.title}</h3>
+            <h3 className="mb-1 text-base font-bold text-fg">{session.title}</h3>
             <p className="mb-4 text-xs leading-relaxed" style={{ color: "var(--fg-muted)" }}>
               {session.subtitle}
             </p>
@@ -123,7 +123,7 @@ export function SessionsGrid({ allProgress }: Props) {
               <>
                 <div
                   className="mb-2 h-1.5 w-full overflow-hidden rounded-full"
-                  style={{ background: "rgba(255,255,255,0.08)" }}
+                  style={{ background: "var(--elevated)" }}
                 >
                   <div
                     className="h-full rounded-full transition-all duration-500"

@@ -240,9 +240,9 @@ export const LOS_LEVELS: LosDef[] = [
 // ── Alineación rol ↔ perfil → acción (borrador Dilio) ────────
 export type AlignmentValue = "alta" | "media" | "baja";
 export const ALIGNMENT_ACTION: Record<AlignmentValue, { label: string; action: string; color: string }> = {
-  alta: { label: "Alta", action: "Mantener", color: "#34d399" },
-  media: { label: "Media", action: "Desarrollar", color: "#fbbf24" },
-  baja: { label: "Baja", action: "Reubicar", color: "#f87171" },
+  alta: { label: "Alta", action: "Mantener", color: "var(--success-text)" },
+  media: { label: "Media", action: "Desarrollar", color: "var(--warn-text)" },
+  baja: { label: "Baja", action: "Reubicar", color: "var(--danger-text)" },
 };
 
 // ── Estados del informe DISC ─────────────────────────────────

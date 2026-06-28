@@ -25,26 +25,26 @@ const STATUS_DISPLAY: Record<
     label: "Pendiente",
     color: "var(--fg-muted)",
     bg: "rgba(255,255,255,0.07)",
-    border: "rgba(255,255,255,0.12)",
+    border: "var(--border-strong)",
     accent: "rgba(255,255,255,0.3)",
   },
   in_progress: {
     label: "En curso",
-    color: "#5b8aff",
+    color: "var(--accent-text)",
     bg: "rgba(91,138,255,0.1)",
     border: "rgba(91,138,255,0.25)",
     accent: "#5b8aff",
   },
   blocked: {
     label: "Bloqueado",
-    color: "#f87171",
+    color: "var(--danger-text)",
     bg: "rgba(248,113,113,0.1)",
     border: "rgba(248,113,113,0.25)",
     accent: "#f87171",
   },
   done: {
     label: "Listo",
-    color: "#34d399",
+    color: "var(--success-text)",
     bg: "rgba(52,211,153,0.1)",
     border: "rgba(52,211,153,0.25)",
     accent: "#34d399",
@@ -116,7 +116,7 @@ export function MisTareasClient({ tasks: initialTasks, currentUserId }: MisTarea
       <div className="mb-8">
         <Link
           href="/dashboard"
-          className="mb-4 inline-flex items-center gap-1.5 transition-colors hover:text-white"
+          className="mb-4 inline-flex items-center gap-1.5 transition-colors hover:text-fg"
           style={{ fontSize: 13, color: "var(--fg-muted)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
@@ -129,14 +129,14 @@ export function MisTareasClient({ tasks: initialTasks, currentUserId }: MisTarea
             style={{
               background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
               border: "1px solid rgba(91,138,255,0.25)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <ClipboardList size={18} strokeWidth={1.6} />
           </div>
           <div>
             <h1
-              className="text-white"
+              className="text-fg"
               style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}
             >
               Mis tareas
@@ -249,7 +249,7 @@ function TaskRow({
 
         {/* QUÉ */}
         <span
-          className="flex-1 text-white"
+          className="flex-1 text-fg"
           style={{
             fontSize: 13.5,
             fontWeight: 500,
@@ -351,7 +351,7 @@ function TaskRow({
       {isExpanded && (
         <div
           style={{
-            borderTop: "1px solid rgba(255,255,255,0.06)",
+            borderTop: "1px solid var(--border)",
             padding: "18px 18px 18px 21px",
           }}
         >
@@ -400,7 +400,7 @@ function TaskRow({
       {isDone && (
         <p
           className="pb-3.5 pl-5 pr-4"
-          style={{ fontSize: 13, color: "#34d399", fontWeight: 500, marginTop: -4 }}
+          style={{ fontSize: 13, color: "var(--success-text)", fontWeight: 500, marginTop: -4 }}
         >
           ✓ Tarea completada
         </p>
@@ -429,7 +429,7 @@ function ActionButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed"
+      className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-fg transition-opacity hover:opacity-90 disabled:cursor-not-allowed"
       style={{
         fontSize: 12.5,
         fontWeight: 600,
@@ -448,7 +448,7 @@ function EmptyState() {
     <div
       className="flex flex-col items-center justify-center rounded-2xl border py-20 text-center"
       style={{
-        borderColor: "rgba(255,255,255,0.06)",
+        borderColor: "var(--border)",
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
         maxWidth: 820,
@@ -464,10 +464,10 @@ function EmptyState() {
         <ClipboardList
           size={28}
           strokeWidth={1.4}
-          style={{ color: "#5b8aff" }}
+          style={{ color: "var(--accent-text)" }}
         />
       </div>
-      <h2 className="mb-2 text-white" style={{ fontSize: 18, fontWeight: 600 }}>
+      <h2 className="mb-2 text-fg" style={{ fontSize: 18, fontWeight: 600 }}>
         Sin tareas asignadas
       </h2>
       <p

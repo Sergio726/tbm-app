@@ -59,7 +59,7 @@ export default async function NuevaTareaPage() {
           style={{
             background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
             border: "1px solid rgba(91,138,255,0.25)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           <Send size={18} strokeWidth={1.6} />

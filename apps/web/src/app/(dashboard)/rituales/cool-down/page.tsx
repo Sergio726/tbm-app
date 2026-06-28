@@ -67,7 +67,7 @@ export default async function CoolDownPage() {
               borderRadius: 11,
               background: "rgba(251,146,60,0.12)",
               border: "1px solid rgba(251,146,60,0.28)",
-              color: "#fb923c",
+              color: "var(--warn-text)",
             }}
           >
             <Sunset size={20} strokeWidth={1.6} />
@@ -102,7 +102,7 @@ export default async function CoolDownPage() {
         >
           Victory Log obligatorio, Reality Check (hechos, no excusas) y qué queda
           agendado para mañana. {isFriday && (
-            <span style={{ color: "#fb923c" }}>
+            <span style={{ color: "var(--warn-text)" }}>
               Hoy es viernes: al cerrar tu Cool Down se genera el Reporte Semanal del equipo.
             </span>
           )}
@@ -195,8 +195,8 @@ export default async function CoolDownPage() {
             style={{
               padding: "16px 20px",
               borderRadius: 12,
-              background: "rgba(255,255,255,0.025)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "var(--elevated)",
+              border: "1px solid var(--border)",
               color: "var(--fg-subtle)",
               fontSize: 13,
             }}

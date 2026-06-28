@@ -21,7 +21,7 @@ export function PrintBar({ backHref, title }: { backHref: string; title: string 
       <button
         type="button"
         onClick={() => window.print()}
-        className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold text-white"
+        className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold text-fg"
         style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}
       >
         <Printer size={14} />

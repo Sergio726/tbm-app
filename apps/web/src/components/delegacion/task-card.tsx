@@ -48,9 +48,9 @@ export function TaskCard({ task, assignee, onOpen }: TaskCardProps) {
     <button
       type="button"
       onClick={() => onOpen(task)}
-      className="relative w-full overflow-hidden rounded-xl border text-left transition-all hover:border-white/20"
+      className="relative w-full overflow-hidden rounded-xl border text-left transition-all hover:border-border"
       style={{
-        borderColor: "rgba(255,255,255,0.07)",
+        borderColor: "var(--border)",
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015))",
         cursor: "pointer",
@@ -95,7 +95,7 @@ export function TaskCard({ task, assignee, onOpen }: TaskCardProps) {
 
         {/* QUÉ */}
         <p
-          className="mb-2.5 text-white"
+          className="mb-2.5 text-fg"
           style={{
             fontSize: 13,
             fontWeight: 500,
@@ -114,7 +114,7 @@ export function TaskCard({ task, assignee, onOpen }: TaskCardProps) {
           <div className="flex items-center gap-2">
             {assignee ? (
               <div
-                className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-white"
+                className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-fg"
                 style={{
                   background: `linear-gradient(135deg, ${discColor}, ${discColor}88)`,
                   fontSize: 9,
@@ -129,8 +129,8 @@ export function TaskCard({ task, assignee, onOpen }: TaskCardProps) {
               <div
                 className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
                 style={{
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px dashed rgba(255,255,255,0.2)",
+                  background: "var(--elevated)",
+                  border: "1px dashed var(--border-strong)",
                 }}
               >
                 <User size={11} style={{ color: "var(--fg-muted)" }} />

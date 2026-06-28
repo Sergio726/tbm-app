@@ -40,7 +40,7 @@ export function IndicatorForm({
       }}
     >
       <div className="mb-4 flex items-center justify-between">
-        <p className="font-semibold text-white" style={{ fontSize: 14 }}>
+        <p className="font-semibold text-fg" style={{ fontSize: 14 }}>
           Nuevo Indicador
         </p>
         <button type="button" onClick={onCancel} style={{ color: "var(--fg-muted)" }}>
@@ -59,10 +59,10 @@ export function IndicatorForm({
             onChange={(e) => setName(e.target.value)}
             placeholder="ej. Llamadas de prospección"
             required
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none"
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
@@ -78,10 +78,10 @@ export function IndicatorForm({
             placeholder="ej. 20"
             min={1}
             required
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none"
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
@@ -93,8 +93,8 @@ export function IndicatorForm({
           <select
             value={ownerId}
             onChange={(e) => setOwnerId(e.target.value)}
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none"
-            style={{ background: "#0d1120", borderColor: "rgba(255,255,255,0.12)" }}
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none"
+            style={{ background: "var(--surface)", borderColor: "var(--border-strong)" }}
           >
             {team.map((m) => (
               <option key={m.id} value={m.id}>
@@ -109,7 +109,7 @@ export function IndicatorForm({
             type="button"
             onClick={onCancel}
             className="flex-1 rounded-xl py-2 text-sm font-medium"
-            style={{ background: "rgba(255,255,255,0.06)", color: "var(--fg-muted)" }}
+            style={{ background: "var(--elevated)", color: "var(--fg-muted)" }}
           >
             Cancelar
           </button>

@@ -14,8 +14,8 @@ export function SearchTrigger() {
         gap: 8,
         padding: "8px 12px",
         borderRadius: 10,
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "var(--elevated)",
+        border: "1px solid var(--border)",
         color: "var(--fg-subtle)",
         fontSize: 13,
         minWidth: 220,
@@ -32,7 +32,7 @@ export function SearchTrigger() {
           style={{
             padding: "1px 5px",
             borderRadius: 4,
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--elevated)",
           }}
         >
           ⌘
@@ -41,7 +41,7 @@ export function SearchTrigger() {
           style={{
             padding: "1px 5px",
             borderRadius: 4,
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--elevated)",
           }}
         >
           K

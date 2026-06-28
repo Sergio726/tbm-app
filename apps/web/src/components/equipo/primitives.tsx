@@ -53,7 +53,7 @@ export function Panel({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2.5">
             <h3
-              className="m-0 text-[17px] font-bold tracking-tight text-white"
+              className="m-0 text-[17px] font-bold tracking-tight text-fg"
               style={{ letterSpacing: -0.2 }}
             >
               {title}
@@ -61,7 +61,7 @@ export function Panel({
             {badge}
           </div>
           {sub && (
-            <p className="mt-1 text-[12.5px] leading-[1.5] text-white/50">
+            <p className="mt-1 text-[12.5px] leading-[1.5] text-fg-muted">
               {sub}
             </p>
           )}
@@ -82,11 +82,11 @@ export function FieldLabel({
 }) {
   return (
     <div className="mb-[7px] flex items-baseline justify-between">
-      <label className="text-[11.5px] font-semibold tracking-[0.2px] text-white/60">
+      <label className="text-[11.5px] font-semibold tracking-[0.2px] text-fg-muted">
         {children}
       </label>
       {hint && (
-        <span className="text-[11px] text-white/65">{hint}</span>
+        <span className="text-[11px] text-fg-muted">{hint}</span>
       )}
     </div>
   );
@@ -104,7 +104,7 @@ export function TextInput({
       className={cn(
         // Read-only/colaborador: en vez de atenuar todo el campo al 60% (ilegible),
         // se mantiene el texto legible (white/75) con cursor por defecto.
-        "w-full rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm text-white outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:cursor-default disabled:text-white/75",
+        "w-full rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm text-fg outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:cursor-default disabled:text-fg",
         className
       )}
       style={style}
@@ -123,7 +123,7 @@ export function TextAreaInput({
       {...props}
       className={cn(
         // Mismo criterio de legibilidad en read-only que TextInput.
-        "min-h-[76px] w-full resize-y rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm leading-relaxed text-white outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:cursor-default disabled:text-white/75",
+        "min-h-[76px] w-full resize-y rounded-[11px] border border-white/[0.09] bg-white/[0.035] px-3.5 py-3 text-sm leading-relaxed text-fg outline-none transition focus:border-[#5b8aff]/60 focus:ring-2 focus:ring-[#5b8aff]/20 disabled:cursor-default disabled:text-fg",
         className
       )}
       style={style}

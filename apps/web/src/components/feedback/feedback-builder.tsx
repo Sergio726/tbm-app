@@ -47,12 +47,12 @@ export function FeedbackBuilder({
           onChange={(e) => onChange(e.target.value)}
           rows={6}
           placeholder="Editá el template o escribí tu propio feedback…"
-          className="w-full resize-y rounded-xl border bg-transparent px-4 py-3 text-sm text-white outline-none transition-colors"
+          className="w-full resize-y rounded-xl border bg-transparent px-4 py-3 text-sm text-fg outline-none transition-colors"
           style={{
             borderColor: isEmpty
               ? "rgba(255,255,255,0.08)"
               : `${cfg.color}44`,
-            background: "rgba(255,255,255,0.03)",
+            background: "var(--elevated)",
             color: "var(--fg)",
             lineHeight: 1.7,
             minHeight: 120,
@@ -70,9 +70,9 @@ export function FeedbackBuilder({
           disabled={isPending || isEmpty}
           className="flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-opacity hover:opacity-80 disabled:opacity-40"
           style={{
-            borderColor: "rgba(255,255,255,0.12)",
+            borderColor: "var(--border-strong)",
             color: "var(--fg-muted)",
-            background: "rgba(255,255,255,0.04)",
+            background: "var(--elevated)",
           }}
         >
           <Save size={15} strokeWidth={2} />
@@ -82,7 +82,7 @@ export function FeedbackBuilder({
         <button
           onClick={onDeliver}
           disabled={isPending || isEmpty}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-fg transition-opacity hover:opacity-90 disabled:opacity-40"
           style={{
             background: `linear-gradient(135deg, ${cfg.color}cc, ${cfg.color}99)`,
             boxShadow: `0 4px 14px ${cfg.color}33`,

@@ -14,21 +14,21 @@ import type { ProcessAsset, Profile } from "@/types/database";
 import { ActivoForm, type ActivoFormData } from "./activo-form";
 
 export const ASSET_CATEGORIES = [
-  { key: "operaciones", label: "Operaciones", color: "#5b8aff" },
-  { key: "ventas", label: "Ventas", color: "#34d399" },
-  { key: "finanzas", label: "Finanzas", color: "#fbbf24" },
+  { key: "operaciones", label: "Operaciones", color: "var(--accent-text)" },
+  { key: "ventas", label: "Ventas", color: "var(--success-text)" },
+  { key: "finanzas", label: "Finanzas", color: "var(--warn-text)" },
   { key: "rrhh", label: "RRHH", color: "#a78bfa" },
   { key: "tecnologia", label: "Tecnología", color: "#06b6d4" },
-  { key: "otro", label: "Otro", color: "#94a3b8" },
+  { key: "otro", label: "Otro", color: "var(--fg-muted)" },
 ] as const;
 
 const STATUS_META: Record<
   string,
   { label: string; color: string; Icon: typeof CheckCircle2 }
 > = {
-  borrador: { label: "Borrador", color: "#94a3b8", Icon: PencilLine },
-  activo: { label: "Activo", color: "#34d399", Icon: CheckCircle2 },
-  desactualizado: { label: "Desactualizado", color: "#fbbf24", Icon: AlertTriangle },
+  borrador: { label: "Borrador", color: "var(--fg-muted)", Icon: PencilLine },
+  activo: { label: "Activo", color: "var(--success-text)", Icon: CheckCircle2 },
+  desactualizado: { label: "Desactualizado", color: "var(--warn-text)", Icon: AlertTriangle },
 };
 
 export function ActivosPanel({
@@ -62,7 +62,7 @@ export function ActivosPanel({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
+          <h2 className="font-bold text-fg" style={{ fontSize: 16 }}>
             Activos del Sistema
           </h2>
           <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
@@ -76,7 +76,7 @@ export function ActivosPanel({
             style={{
               background: "rgba(91,138,255,0.15)",
               border: "1px solid rgba(91,138,255,0.3)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <Plus size={13} strokeWidth={2.5} />
@@ -140,7 +140,7 @@ export function ActivosPanel({
       {filtered.length === 0 && !showForm && (
         <div
           className="flex flex-col items-center gap-3 rounded-2xl border py-10 text-center"
-          style={{ borderColor: "rgba(255,255,255,0.06)", borderStyle: "dashed" }}
+          style={{ borderColor: "var(--border)", borderStyle: "dashed" }}
         >
           <Library size={28} style={{ color: "var(--fg-subtle)" }} />
           <p style={{ fontSize: 13.5, color: "var(--fg-muted)" }}>
@@ -166,8 +166,8 @@ export function ActivosPanel({
                 key={asset.id}
                 className="flex flex-col gap-3 rounded-2xl border p-4"
                 style={{
-                  borderColor: "rgba(255,255,255,0.08)",
-                  background: "rgba(255,255,255,0.02)",
+                  borderColor: "var(--border)",
+                  background: "var(--elevated)",
                 }}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -184,7 +184,7 @@ export function ActivosPanel({
                         {cat.label}
                       </span>
                       <p
-                        className="font-semibold text-white"
+                        className="font-semibold text-fg"
                         style={{ fontSize: 14, lineHeight: 1.4 }}
                       >
                         {asset.title}
@@ -299,7 +299,7 @@ function AssetLink({
       style={{
         borderColor: "rgba(91,138,255,0.3)",
         background: "rgba(91,138,255,0.08)",
-        color: "#9fb9ff",
+        color: "var(--accent-text)",
       }}
     >
       <Icon size={11} strokeWidth={2} />

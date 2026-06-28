@@ -123,7 +123,7 @@ export default async function Los5GrandesPage({ searchParams }: PageProps) {
           Cada una alineada a una Roca del Plan 90D — si no encaja con ninguna, va al{" "}
           <Link
             href="/rituales/parking-lot"
-            style={{ color: "#bcd0ff", textDecoration: "underline" }}
+            style={{ color: "var(--accent-text)", textDecoration: "underline" }}
           >
             Parking Lot
           </Link>
@@ -154,7 +154,7 @@ export default async function Los5GrandesPage({ searchParams }: PageProps) {
             borderRadius: 12,
             background: "rgba(251,191,36,0.08)",
             border: "1px solid rgba(251,191,36,0.25)",
-            color: "#fcd34d",
+            color: "var(--warn-text)",
             fontSize: 13.5,
             marginBottom: 18,
           }}

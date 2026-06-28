@@ -54,11 +54,11 @@ const SIZES = ["1–3", "4–8", "9–15", "16–30", "31–50", "50+"];
 
 type ScoreEntry = { label: string; color: string };
 const scoreLabel = (v: number): ScoreEntry => {
-  if (v <= 1) return { label: "Crítico", color: "#f87171" };
-  if (v <= 2) return { label: "Bajo", color: "#fb923c" };
-  if (v <= 3) return { label: "Regular", color: "#fbbf24" };
+  if (v <= 1) return { label: "Crítico", color: "var(--danger-text)" };
+  if (v <= 2) return { label: "Bajo", color: "var(--warn-text)" };
+  if (v <= 3) return { label: "Regular", color: "var(--warn-text)" };
   if (v <= 4) return { label: "Bueno", color: "#a3e635" };
-  return { label: "Excelente", color: "#34d399" };
+  return { label: "Excelente", color: "var(--success-text)" };
 };
 
 type DayPlan = { wu?: boolean; cd?: boolean };
@@ -77,7 +77,7 @@ const RITUAL_MODES: RitualMode[] = [
     id: "diario",
     title: "Diario",
     desc: "Warm Up y Cool Down todos los días.",
-    status: { label: "Situación crítica", color: "#f87171", Icon: Flame },
+    status: { label: "Situación crítica", color: "var(--danger-text)", Icon: Flame },
     days: [
       { wu: true, cd: true },
       { wu: true, cd: true },
@@ -90,7 +90,7 @@ const RITUAL_MODES: RitualMode[] = [
     id: "mode_a",
     title: "Modo A",
     desc: "Warm Up lunes · Cool Down viernes. La cadencia recomendada.",
-    status: { label: "Equipo productivo", color: "#34d399", Icon: Leaf },
+    status: { label: "Equipo productivo", color: "var(--success-text)", Icon: Leaf },
     days: [
       { wu: true },
       {},
@@ -103,7 +103,7 @@ const RITUAL_MODES: RitualMode[] = [
     id: "mode_b",
     title: "Modo B",
     desc: "Warm Up lunes · Cool Down martes. Para semanas cortas.",
-    status: { label: "Equipo poco productivo", color: "#fbbf24", Icon: Moon },
+    status: { label: "Equipo poco productivo", color: "var(--warn-text)", Icon: Moon },
     days: [
       { wu: true },
       { cd: true },
@@ -116,7 +116,7 @@ const RITUAL_MODES: RitualMode[] = [
     id: "mode_c",
     title: "Modo C",
     desc: "Warm Up y Cool Down el mismo día.",
-    status: { label: "Situación de alerta", color: "#fb923c", Icon: Flame },
+    status: { label: "Situación de alerta", color: "var(--warn-text)", Icon: Flame },
     days: [
       { wu: true, cd: true },
       {},
@@ -166,7 +166,7 @@ function Stepper({ current }: { current: number }) {
             left: 18,
             right: 18,
             height: 2,
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--elevated)",
             borderRadius: 99,
             zIndex: 0,
           }}
@@ -265,7 +265,7 @@ function StepHeader({
             background:
               "linear-gradient(135deg, rgba(91,138,255,0.22), rgba(91,138,255,0.08))",
             border: "1px solid rgba(91,138,255,0.32)",
-            color: "#5b8aff",
+            color: "var(--accent-text)",
             boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
           }}
         >
@@ -304,7 +304,7 @@ function ScoreSlider({
       {/* Track */}
       <div
         className="absolute left-0 right-0 overflow-hidden"
-        style={{ height: 6, borderRadius: 99, background: "rgba(255,255,255,0.08)" }}
+        style={{ height: 6, borderRadius: 99, background: "var(--elevated)" }}
       >
         <div
           style={{
@@ -517,8 +517,8 @@ function Step2Diagnostico({
               style={{
                 padding: "18px 20px",
                 borderRadius: 12,
-                background: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.06)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
               }}
             >
               <div
@@ -536,7 +536,7 @@ function Step2Diagnostico({
                     style={{
                       ...MONO,
                       color: "var(--fg)",
-                      background: "rgba(255,255,255,0.04)",
+                      background: "var(--elevated)",
                       padding: "2px 8px",
                       borderRadius: 6,
                       fontSize: 11.5,
@@ -741,8 +741,8 @@ function Step3Rituales({
           gap: 18,
           padding: "10px 14px",
           borderRadius: 10,
-          background: "rgba(255,255,255,0.02)",
-          border: "1px solid rgba(255,255,255,0.05)",
+          background: "var(--elevated)",
+          border: "1px solid var(--border)",
           marginBottom: 16,
           fontSize: 12,
           color: "var(--fg-muted)",
@@ -837,8 +837,8 @@ function Step4Equipo({
           style={{
             padding: "0 14px",
             borderRadius: 10,
-            border: "1px solid rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.02)",
+            border: "1px solid var(--border)",
+            background: "var(--elevated)",
           }}
         >
           <span style={{ color: "var(--fg-muted)", marginRight: 10 }}>
@@ -889,8 +889,8 @@ function Step4Equipo({
               style={{
                 padding: "2px 6px",
                 borderRadius: 4,
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
               }}
             >
               ↵
@@ -922,7 +922,7 @@ function Step4Equipo({
       </div>
 
       {error && (
-        <p style={{ color: "#f87171", fontSize: 12, marginBottom: 12 }}>{error}</p>
+        <p style={{ color: "var(--danger-text)", fontSize: 12, marginBottom: 12 }}>{error}</p>
       )}
 
       {/* Invites list */}
@@ -930,8 +930,8 @@ function Step4Equipo({
         style={{
           padding: emails.length ? "8px" : "36px 16px",
           borderRadius: 12,
-          background: "rgba(255,255,255,0.018)",
-          border: "1px solid rgba(255,255,255,0.06)",
+          background: "var(--elevated)",
+          border: "1px solid var(--border)",
           marginBottom: 14,
           minHeight: 80,
         }}
@@ -974,7 +974,7 @@ function Step4Equipo({
                   }}
                 >
                   <div
-                    className="flex items-center justify-center text-white"
+                    className="flex items-center justify-center text-fg"
                     style={{
                       width: 30,
                       height: 30,
@@ -1001,7 +1001,7 @@ function Step4Equipo({
                       borderRadius: 99,
                       background: "rgba(251,191,36,0.12)",
                       border: "1px solid rgba(251,191,36,0.3)",
-                      color: "#fbbf24",
+                      color: "var(--warn-text)",
                       letterSpacing: 0.4,
                     }}
                   >
@@ -1044,11 +1044,11 @@ function Step4Equipo({
           lineHeight: 1.5,
         }}
       >
-        <span style={{ color: "#5b8aff", flexShrink: 0, marginTop: 1 }}>
+        <span style={{ color: "var(--accent-text)", flexShrink: 0, marginTop: 1 }}>
           <Info size={16} />
         </span>
         <div>
-          <span style={{ color: "#9fb9ff", fontWeight: 600 }}>Cada colaborador</span>{" "}
+          <span style={{ color: "var(--accent-text)", fontWeight: 600 }}>Cada colaborador</span>{" "}
           recibirá un email para crear su cuenta y completar su perfil al aceptar la
           invitación.
         </div>
@@ -1097,8 +1097,8 @@ function SetPasswordGate({
 
   const input: CSSProperties = {
     width: "100%",
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    background: "var(--elevated)",
+    border: "1px solid var(--border-strong)",
     borderRadius: 10,
     color: "var(--fg)",
     padding: "12px 14px",
@@ -1108,7 +1108,7 @@ function SetPasswordGate({
 
   return (
     <div
-      className="flex min-h-screen flex-col items-center justify-center text-white"
+      className="flex min-h-screen flex-col items-center justify-center text-fg"
       style={{
         background:
           "radial-gradient(circle at 20% 0%, rgba(91,138,255,0.06), transparent 50%), var(--bg)",
@@ -1121,7 +1121,7 @@ function SetPasswordGate({
         style={{
           maxWidth: 420,
           background: "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-          border: "1px solid rgba(255,255,255,0.07)",
+          border: "1px solid var(--border)",
           borderRadius: 18,
           padding: "32px 32px 28px",
           boxShadow: "0 24px 60px rgba(0,0,0,0.4)",
@@ -1129,7 +1129,7 @@ function SetPasswordGate({
       >
         <div className="flex items-center" style={{ gap: 10, marginBottom: 6 }}>
           <Sparkles size={18} strokeWidth={2} color="#5b8aff" />
-          <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1.4, color: "#5b8aff" }}>
+          <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1.4, color: "var(--accent-text)" }}>
             BIENVENIDO/A
           </span>
         </div>
@@ -1156,7 +1156,7 @@ function SetPasswordGate({
             autoComplete="new-password"
             style={input}
           />
-          {err && <p style={{ color: "#fca5a5", fontSize: 12.5, margin: 0 }}>{err}</p>}
+          {err && <p style={{ color: "var(--danger-text)", fontSize: 12.5, margin: 0 }}>{err}</p>}
           <button
             type="submit"
             disabled={loading}
@@ -1323,7 +1323,7 @@ export default function OnboardingPage() {
 
   return (
     <div
-      className="flex min-h-screen flex-col items-center text-white"
+      className="flex min-h-screen flex-col items-center text-fg"
       style={{
         background:
           "radial-gradient(circle at 20% 0%, rgba(91,138,255,0.06), transparent 50%), radial-gradient(circle at 90% 100%, rgba(91,138,255,0.04), transparent 50%), var(--bg)",
@@ -1340,7 +1340,7 @@ export default function OnboardingPage() {
             fontSize: 12,
             fontWeight: 600,
             letterSpacing: 1.6,
-            color: "#5b8aff",
+            color: "var(--accent-text)",
             padding: "5px 12px",
             borderRadius: 99,
             background: "rgba(91,138,255,0.08)",
@@ -1383,7 +1383,7 @@ export default function OnboardingPage() {
           maxWidth: 720,
           background:
             "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-          border: "1px solid rgba(255,255,255,0.07)",
+          border: "1px solid var(--border)",
           borderRadius: 18,
           padding: "36px 40px",
           boxShadow:
@@ -1446,7 +1446,7 @@ export default function OnboardingPage() {
               borderRadius: 10,
               background: "rgba(248,113,113,0.08)",
               border: "1px solid rgba(248,113,113,0.3)",
-              color: "#fca5a5",
+              color: "var(--danger-text)",
               fontSize: 13,
             }}
           >
@@ -1460,7 +1460,7 @@ export default function OnboardingPage() {
           style={{
             marginTop: 36,
             paddingTop: 24,
-            borderTop: "1px solid rgba(255,255,255,0.06)",
+            borderTop: "1px solid var(--border)",
           }}
         >
           <button
@@ -1534,7 +1534,7 @@ export default function OnboardingPage() {
                     width: 14,
                     height: 14,
                     borderRadius: "50%",
-                    border: "2px solid rgba(255,255,255,0.4)",
+                    border: "2px solid var(--border-strong)",
                     borderTopColor: "transparent",
                   }}
                 />

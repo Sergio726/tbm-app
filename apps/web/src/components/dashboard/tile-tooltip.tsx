@@ -16,7 +16,7 @@ export function TileTooltip({ children }: { children: ReactNode }) {
         padding: "12px 14px",
         borderRadius: 12,
         background: "var(--surface)",
-        border: "1px solid rgba(255,255,255,0.1)",
+        border: "1px solid var(--border)",
         boxShadow: "0 16px 40px rgba(0,0,0,0.6)",
         pointerEvents: "none",
       }}

@@ -117,7 +117,7 @@ export default async function PreGamePage() {
               borderRadius: 11,
               background: "rgba(251,191,36,0.12)",
               border: "1px solid rgba(251,191,36,0.28)",
-              color: "#fbbf24",
+              color: "var(--warn-text)",
             }}
           >
             <Sunrise size={20} strokeWidth={1.6} />
@@ -255,8 +255,8 @@ export default async function PreGamePage() {
                 width: 10,
                 height: 10,
                 borderRadius: 3,
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
                 display: "inline-block",
               }}
             />

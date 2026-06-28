@@ -109,7 +109,7 @@ export default function RitualConfigForm({
         borderRadius: 16,
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        border: "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid var(--border)",
       }}
     >
       {/* Modo */}
@@ -211,7 +211,7 @@ export default function RitualConfigForm({
         style={{
           width: "100%",
           background: canEdit ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid var(--border)",
           borderRadius: 10,
           color: canEdit ? "#fff" : "rgba(255,255,255,0.5)",
           padding: "10px 14px",
@@ -222,7 +222,7 @@ export default function RitualConfigForm({
         }}
       >
         {TIMEZONES.map((tz) => (
-          <option key={tz} value={tz} style={{ background: "#0a0e18" }}>
+          <option key={tz} value={tz} style={{ background: "var(--bg)" }}>
             {tz}
           </option>
         ))}
@@ -235,7 +235,7 @@ export default function RitualConfigForm({
             borderRadius: 10,
             background: "rgba(248,113,113,0.10)",
             border: "1px solid rgba(248,113,113,0.30)",
-            color: "#fca5a5",
+            color: "var(--danger-text)",
             fontSize: 13,
             marginBottom: 14,
           }}
@@ -333,7 +333,7 @@ function TimeField({
         style={{
           width: "100%",
           background: disabled ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid var(--border)",
           borderRadius: 10,
           color: disabled ? "rgba(255,255,255,0.5)" : "#fff",
           padding: "9px 14px",

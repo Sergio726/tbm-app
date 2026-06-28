@@ -75,7 +75,7 @@ export function ExerciseSliderGroup({ exerciseKey, sliders, savedResponse, onSav
           style={{
             background: "rgba(91,138,255,0.2)",
             border: "1px solid rgba(91,138,255,0.4)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           {isPending ? "Guardando..." : "Guardar"}

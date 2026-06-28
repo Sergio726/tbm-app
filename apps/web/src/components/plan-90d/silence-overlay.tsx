@@ -30,7 +30,7 @@ export function SilenceOverlay({ onDone }: SilenceOverlayProps) {
         className="mb-3 flex h-14 w-14 items-center justify-center rounded-full text-2xl font-black tabular-nums"
         style={{
           border: "2px solid rgba(248,113,113,0.4)",
-          color: "#f87171",
+          color: "var(--danger-text)",
         }}
       >
         {count}

@@ -145,13 +145,13 @@ export function JarvisIntro({
             }
             finish();
           }}
-          className="mt-6 text-[12px] text-white/65 underline-offset-2 transition hover:text-white/70 hover:underline"
+          className="mt-6 text-[12px] text-fg-muted underline-offset-2 transition hover:text-fg hover:underline"
         >
           No volver a mostrar
         </button>
       </div>
 
-      <div className="absolute bottom-8 text-[11px] tracking-wide text-white/65">
+      <div className="absolute bottom-8 text-[11px] tracking-wide text-fg-muted">
         Click para saltar
       </div>
     </div>
@@ -192,11 +192,11 @@ function Typewriter({ lines, active }: { lines: string[]; active: boolean }) {
 
   return (
     <>
-      <div className="text-[22px] font-semibold leading-snug text-white">
+      <div className="text-[22px] font-semibold leading-snug text-fg">
         {out[0]}
         {caretLine === 0 && <Caret />}
       </div>
-      <div className="mt-2 text-[15px] leading-relaxed text-white/70">
+      <div className="mt-2 text-[15px] leading-relaxed text-fg">
         {out[1]}
         {caretLine === 1 && <Caret />}
       </div>

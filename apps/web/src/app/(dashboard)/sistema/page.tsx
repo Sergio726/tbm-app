@@ -183,8 +183,8 @@ export default async function SistemaLostPage() {
                     style={{
                       padding: "10px 13px",
                       borderRadius: 10,
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      background: "var(--elevated)",
+                      border: "1px solid var(--border)",
                       color: "var(--fg)",
                       fontSize: 13.5,
                       fontWeight: 500,

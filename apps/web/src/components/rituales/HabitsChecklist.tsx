@@ -104,8 +104,8 @@ export default function HabitsChecklist({
               gap: 6,
               fontSize: 12.5,
               color: "var(--fg-muted)",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.09)",
+              background: "var(--elevated)",
+              border: "1px solid var(--border)",
               borderRadius: 9,
               padding: "6px 11px",
             }}
@@ -125,7 +125,7 @@ export default function HabitsChecklist({
             borderRadius: 16,
             background:
               "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-            border: "1px solid rgba(255,255,255,0.06)",
+            border: "1px solid var(--border)",
           }}
         >
           {/* Progreso */}

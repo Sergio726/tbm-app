@@ -40,13 +40,13 @@ export function DelegacionClient({
               style={{
                 background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
                 border: "1px solid rgba(91,138,255,0.25)",
-                color: "#9fb9ff",
+                color: "var(--accent-text)",
               }}
             >
               <Send size={18} strokeWidth={1.6} />
             </div>
             <h1
-              className="text-white"
+              className="text-fg"
               style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}
             >
               Delegación
@@ -60,7 +60,7 @@ export function DelegacionClient({
         {isArquitecto && (
           <Link
             href="/delegacion/nueva"
-            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-white transition-opacity hover:opacity-90"
+            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-fg transition-opacity hover:opacity-90"
             style={{
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
               fontSize: 13.5,
@@ -94,7 +94,7 @@ function EmptyState({ isArquitecto }: { isArquitecto: boolean }) {
     <div
       className="flex flex-col items-center justify-center rounded-2xl border py-20 text-center"
       style={{
-        borderColor: "rgba(255,255,255,0.06)",
+        borderColor: "var(--border)",
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
       }}
@@ -106,10 +106,10 @@ function EmptyState({ isArquitecto }: { isArquitecto: boolean }) {
           border: "1px solid rgba(91,138,255,0.2)",
         }}
       >
-        <Send size={28} strokeWidth={1.4} style={{ color: "#5b8aff" }} />
+        <Send size={28} strokeWidth={1.4} style={{ color: "var(--accent-text)" }} />
       </div>
       <h2
-        className="mb-2 text-white"
+        className="mb-2 text-fg"
         style={{ fontSize: 18, fontWeight: 600 }}
       >
         Sin tareas delegadas aún
@@ -129,7 +129,7 @@ function EmptyState({ isArquitecto }: { isArquitecto: boolean }) {
       {isArquitecto && (
         <Link
           href="/delegacion/nueva"
-          className="mt-6 flex items-center gap-2 rounded-xl px-5 py-3 text-white transition-opacity hover:opacity-90"
+          className="mt-6 flex items-center gap-2 rounded-xl px-5 py-3 text-fg transition-opacity hover:opacity-90"
           style={{
             background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
             fontSize: 13.5,

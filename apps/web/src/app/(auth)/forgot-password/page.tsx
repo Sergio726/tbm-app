@@ -42,9 +42,9 @@ export default function ForgotPasswordPage() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-tbm-blue/40 bg-tbm-blue/20 text-2xl">
             ✉️
           </div>
-          <h2 className="text-xl font-bold text-white">Revisá tu email</h2>
+          <h2 className="text-xl font-bold text-fg">Revisá tu email</h2>
           <p className="text-sm text-tbm-text-secondary">
-            Si <span className="text-white">{email.trim().toLowerCase()}</span> tiene una cuenta, te
+            Si <span className="text-fg">{email.trim().toLowerCase()}</span> tiene una cuenta, te
             enviamos un link para crear una nueva contraseña. Revisá también spam.
           </p>
           <Link
@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
       ) : (
         <div className="space-y-6">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-white">¿Olvidaste tu contraseña?</h2>
+            <h2 className="text-xl font-bold text-fg">¿Olvidaste tu contraseña?</h2>
             <p className="mt-1 text-sm text-tbm-text-secondary">
               Ingresá tu email y te mandamos un link para crear una nueva.
             </p>

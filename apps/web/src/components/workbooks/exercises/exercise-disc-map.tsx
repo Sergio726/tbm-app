@@ -53,9 +53,9 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
       {/* Referencia: conexiones y fricciones DISC (canónico §4 / Sesión 2). */}
       <div
         className="rounded-xl border p-4"
-        style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}
+        style={{ background: "var(--elevated)", borderColor: "var(--border)" }}
       >
-        <p className="mb-1 text-sm font-semibold text-white">Conexiones y fricciones del equipo</p>
+        <p className="mb-1 text-sm font-semibold text-fg">Conexiones y fricciones del equipo</p>
         <p className="mb-3 text-xs" style={{ color: "var(--fg-subtle)" }}>
           Primero el quién, luego el qué. El perímetro une perfiles que conectan naturalmente; las
           diagonales punteadas (D↔S · I↔C) son temperamentos cruzados que requieren acordar cómo
@@ -80,13 +80,13 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
             key={member.id}
             className="rounded-xl border p-4"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.08)",
+              background: "var(--elevated)",
+              borderColor: "var(--border)",
             }}
           >
             <div className="mb-3 flex items-start justify-between">
               <div>
-                <p className="text-sm font-semibold text-white">{member.full_name}</p>
+                <p className="text-sm font-semibold text-fg">{member.full_name}</p>
                 <p className="text-xs" style={{ color: "var(--fg-muted)" }}>
                   {member.cargo ?? "Sin cargo"}
                 </p>
@@ -117,8 +117,8 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
                   placeholder="ej. DI"
                   className="w-full rounded-lg border bg-transparent px-3 py-2 text-sm uppercase tracking-widest outline-none transition-all"
                   style={{
-                    background: "rgba(255,255,255,0.04)",
-                    borderColor: "rgba(255,255,255,0.12)",
+                    background: "var(--elevated)",
+                    borderColor: "var(--border-strong)",
                     color: "white",
                   }}
                   onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(91,138,255,0.4)")}
@@ -133,7 +133,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
                 >
                   Estado
                 </label>
-                <div className="flex rounded-lg border overflow-hidden" style={{ borderColor: "rgba(255,255,255,0.12)" }}>
+                <div className="flex rounded-lg border overflow-hidden" style={{ borderColor: "var(--border-strong)" }}>
                   {(["luz", "sombra"] as const).map((state) => (
                     <button
                       key={state}
@@ -142,7 +142,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
                       style={
                         draft.disc_state === state
                           ? state === "luz"
-                            ? { background: "rgba(251,191,36,0.2)", color: "#fbbf24" }
+                            ? { background: "rgba(251,191,36,0.2)", color: "var(--warn-text)" }
                             : { background: "rgba(107,114,128,0.3)", color: "#9ca3af" }
                           : { background: "transparent", color: "var(--fg-muted)" }
                       }
@@ -176,7 +176,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
           style={{
             background: "rgba(91,138,255,0.2)",
             border: "1px solid rgba(91,138,255,0.4)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           {isPending ? "Guardando..." : "Guardar y Actualizar Perfiles"}

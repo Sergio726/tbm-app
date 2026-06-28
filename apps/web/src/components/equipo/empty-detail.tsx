@@ -9,7 +9,7 @@ export function EmptyDetail() {
       style={{
         padding: "60px 20px",
         borderRadius: 16,
-        border: "1px dashed rgba(255,255,255,0.12)",
+        border: "1px dashed var(--border-strong)",
         color: "var(--fg-subtle)",
         minHeight: 320,
       }}

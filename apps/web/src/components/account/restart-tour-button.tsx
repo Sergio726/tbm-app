@@ -19,7 +19,7 @@ export function RestartTourButton({ userId }: { userId: string }) {
       style={{
         background: "rgba(91,138,255,0.08)",
         borderColor: "rgba(91,138,255,0.28)",
-        color: "#bcd0ff",
+        color: "var(--accent-text)",
       }}
     >
       <Compass size={15} strokeWidth={1.9} />

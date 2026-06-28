@@ -148,7 +148,7 @@ export function DeadlinePicker({
         className="flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition"
         style={{
           borderColor: open ? `${ACCENT}80` : "rgba(255,255,255,0.09)",
-          background: "rgba(255,255,255,0.035)",
+          background: "var(--elevated)",
           boxShadow: open ? `0 0 0 3px ${ACCENT}26` : "none",
           cursor: "pointer",
         }}
@@ -191,15 +191,15 @@ export function DeadlinePicker({
             left: 0,
             width: 340,
             maxWidth: "calc(100vw - 48px)",
-            borderColor: "rgba(255,255,255,0.1)",
-            background: "linear-gradient(180deg, #141a2b, #0f1422)",
+            borderColor: "var(--border)",
+            background: "linear-gradient(180deg, #141a2b, var(--surface))",
             boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
           }}
         >
           {/* Atajos rápidos */}
           <div
             className="flex flex-wrap gap-2 border-b px-4 py-3"
-            style={{ borderColor: "rgba(255,255,255,0.06)" }}
+            style={{ borderColor: "var(--border)" }}
           >
             {[
               { label: "Hoy", off: 0 },
@@ -214,8 +214,8 @@ export function DeadlinePicker({
                 className="rounded-lg border px-2.5 py-1.5 transition-all"
                 style={{
                   fontSize: 12,
-                  borderColor: "rgba(255,255,255,0.08)",
-                  background: "rgba(255,255,255,0.03)",
+                  borderColor: "var(--border)",
+                  background: "var(--elevated)",
                   color: "var(--fg-muted)",
                   cursor: "pointer",
                 }}
@@ -238,7 +238,7 @@ export function DeadlinePicker({
                     (v) => new Date(v.getFullYear(), v.getMonth() - 1, 1)
                   )
                 }
-                className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
+                className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-elevated"
                 style={{ color: "var(--fg-muted)", cursor: "pointer" }}
                 aria-label="Mes anterior"
               >
@@ -251,7 +251,7 @@ export function DeadlinePicker({
                     (v) => new Date(v.getFullYear(), v.getMonth() + 1, 1)
                   )
                 }
-                className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
+                className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-elevated"
                 style={{ color: "var(--fg-muted)", cursor: "pointer" }}
                 aria-label="Mes siguiente"
               >
@@ -328,7 +328,7 @@ export function DeadlinePicker({
           {/* Selector de hora */}
           <div
             className="border-t px-4 py-3.5"
-            style={{ borderColor: "rgba(255,255,255,0.06)" }}
+            style={{ borderColor: "var(--border)" }}
           >
             <div className="mb-2.5 flex items-center gap-2">
               <Clock size={14} style={{ color: "var(--fg-subtle)" }} />
@@ -351,9 +351,9 @@ export function DeadlinePicker({
                   const [h, m] = e.target.value.split(":").map(Number);
                   if (!Number.isNaN(h) && !Number.isNaN(m)) handleTime(h, m);
                 }}
-                className="rounded-lg border bg-white/[0.04] px-3 py-2 text-sm text-white outline-none transition focus:border-[#f87171]/50"
+                className="rounded-lg border bg-white/[0.04] px-3 py-2 text-sm text-fg outline-none transition focus:border-[#f87171]/50"
                 style={{
-                  borderColor: "rgba(255,255,255,0.1)",
+                  borderColor: "var(--border)",
                   colorScheme: "dark",
                 }}
               />
@@ -390,7 +390,7 @@ export function DeadlinePicker({
           {/* Footer */}
           <div
             className="flex items-center justify-between border-t px-4 py-3"
-            style={{ borderColor: "rgba(255,255,255,0.06)" }}
+            style={{ borderColor: "var(--border)" }}
           >
             <span style={{ fontSize: 12, color: "var(--fg-muted)" }}>
               {parsed.date
@@ -401,7 +401,7 @@ export function DeadlinePicker({
               type="button"
               onClick={() => setOpen(false)}
               disabled={!parsed.date}
-              className="rounded-lg px-4 py-1.5 text-white transition-opacity"
+              className="rounded-lg px-4 py-1.5 text-fg transition-opacity"
               style={{
                 fontSize: 13,
                 fontWeight: 600,

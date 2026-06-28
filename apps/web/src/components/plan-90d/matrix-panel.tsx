@@ -15,7 +15,7 @@ const QUADRANTS = [
     key: "roca" as const,
     label: "Rocas",
     subtitle: "Alto impacto · No urgente",
-    color: "#5b8aff",
+    color: "var(--accent-text)",
     bg: "rgba(91,138,255,0.06)",
     border: "rgba(91,138,255,0.2)",
     action: "Crear Roca en Plan 90D",
@@ -24,7 +24,7 @@ const QUADRANTS = [
     key: "proyecto" as const,
     label: "Proyectos",
     subtitle: "Alto impacto · Urgente",
-    color: "#34d399",
+    color: "var(--success-text)",
     bg: "rgba(52,211,153,0.06)",
     border: "rgba(52,211,153,0.2)",
     action: null,
@@ -33,7 +33,7 @@ const QUADRANTS = [
     key: "arena" as const,
     label: "Arena",
     subtitle: "Bajo impacto · Urgente",
-    color: "#f87171",
+    color: "var(--danger-text)",
     bg: "rgba(248,113,113,0.06)",
     border: "rgba(248,113,113,0.2)",
     action: "Delegar",
@@ -44,7 +44,7 @@ const QUADRANTS = [
     subtitle: "Bajo impacto · No urgente",
     color: "var(--fg-muted)",
     bg: "rgba(255,255,255,0.02)",
-    border: "rgba(255,255,255,0.08)",
+    border: "var(--border)",
     action: null,
   },
 ] as const;
@@ -81,7 +81,7 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
+        <h2 className="font-bold text-fg" style={{ fontSize: 16 }}>
           Clasificador Rocas vs Arena
         </h2>
         <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
@@ -93,11 +93,11 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
       <div
         className="rounded-2xl border p-4"
         style={{
-          borderColor: "rgba(255,255,255,0.08)",
-          background: "rgba(255,255,255,0.02)",
+          borderColor: "var(--border)",
+          background: "var(--elevated)",
         }}
       >
-        <p className="mb-3 text-sm font-semibold text-white">Agregar iniciativa</p>
+        <p className="mb-3 text-sm font-semibold text-fg">Agregar iniciativa</p>
         <div className="flex gap-2">
           <input
             type="text"
@@ -107,10 +107,10 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
             onKeyDown={(e) => {
               if (e.key === "Enter" && activeQuadrant) addItem(activeQuadrant);
             }}
-            className="flex-1 rounded-xl border px-3 py-2 text-sm text-white outline-none"
+            className="flex-1 rounded-xl border px-3 py-2 text-sm text-fg outline-none"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
@@ -138,7 +138,7 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
               {/* Quadrant header */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-bold text-white" style={{ fontSize: 13 }}>
+                  <p className="font-bold text-fg" style={{ fontSize: 13 }}>
                     {q.label}
                   </p>
                   <p style={{ fontSize: 10.5, color: "var(--fg-muted)", marginTop: 1 }}>
@@ -171,12 +171,12 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
                     key={item.id}
                     className="flex items-center justify-between gap-2 rounded-lg border px-2.5 py-2"
                     style={{
-                      borderColor: "rgba(255,255,255,0.07)",
-                      background: "rgba(255,255,255,0.03)",
+                      borderColor: "var(--border)",
+                      background: "var(--elevated)",
                     }}
                   >
                     <p
-                      className="flex-1 min-w-0 truncate text-white"
+                      className="flex-1 min-w-0 truncate text-fg"
                       style={{ fontSize: 12.5 }}
                     >
                       {item.title}
@@ -189,7 +189,7 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
                           className="rounded px-1.5 py-0.5 text-xs font-semibold disabled:opacity-50"
                           style={{
                             background: "rgba(91,138,255,0.15)",
-                            color: "#9fb9ff",
+                            color: "var(--accent-text)",
                           }}
                           title="Crear Roca"
                         >

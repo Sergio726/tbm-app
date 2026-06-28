@@ -15,19 +15,19 @@ export const NOTIF_META: Record<
   NotificationType,
   { icon: string; color: string }
 > = {
-  task_blocked: { icon: "🚨", color: "#f87171" },
-  task_overdue: { icon: "⏰", color: "#fb923c" },
-  task_done: { icon: "✅", color: "#34d399" },
-  task_assigned: { icon: "📥", color: "#fbbf24" },
-  war_up_started: { icon: "⚡", color: "#5b8aff" },
+  task_blocked: { icon: "🚨", color: "var(--danger-text)" },
+  task_overdue: { icon: "⏰", color: "var(--warn-text)" },
+  task_done: { icon: "✅", color: "var(--success-text)" },
+  task_assigned: { icon: "📥", color: "var(--warn-text)" },
+  war_up_started: { icon: "⚡", color: "var(--accent-text)" },
   scorecard_updated: { icon: "📊", color: "#a78bfa" },
-  coaching_note: { icon: "🎓", color: "#34d399" },
+  coaching_note: { icon: "🎓", color: "var(--success-text)" },
   cycle_reminder: { icon: "🗓️", color: "#8b5cf6" },
 };
 
 export function notifMeta(type: string) {
   return (
-    NOTIF_META[type as NotificationType] ?? { icon: "🔔", color: "#94a3b8" }
+    NOTIF_META[type as NotificationType] ?? { icon: "🔔", color: "var(--fg-muted)" }
   );
 }
 

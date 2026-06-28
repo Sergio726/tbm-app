@@ -51,7 +51,7 @@ export function ExerciseDiagnostic({ exerciseKey, savedResponse, onSave, isPendi
           <div key={area.key}>
             <div className="mb-2 flex items-center justify-between">
               <div>
-                <span className="text-sm font-semibold text-white">{area.label}</span>
+                <span className="text-sm font-semibold text-fg">{area.label}</span>
                 <p className="text-xs" style={{ color: "var(--fg-muted)" }}>
                   {area.descripcion}
                 </p>
@@ -76,8 +76,8 @@ export function ExerciseDiagnostic({ exerciseKey, savedResponse, onSave, isPendi
                           color: scoreColor(n),
                         }
                       : {
-                          background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.1)",
+                          background: "var(--elevated)",
+                          border: "1px solid var(--border)",
                           color: "var(--fg-subtle)",
                         }
                   }

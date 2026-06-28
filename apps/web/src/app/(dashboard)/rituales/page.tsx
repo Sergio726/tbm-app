@@ -210,7 +210,7 @@ export default async function RitualesHubPage() {
         >
           <AlertTriangle size={18} color="#f87171" />
           <div>
-            <div style={{ fontSize: 13.5, fontWeight: 600, color: "#fca5a5" }}>
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--danger-text)" }}>
               {lastWarUpDate
                 ? `Hace ${daysSinceLastWarUp} día${daysSinceLastWarUp === 1 ? "" : "s"} sin War Up`
                 : "No hay War Ups registrados en las últimas 2 semanas"}
@@ -242,7 +242,7 @@ export default async function RitualesHubPage() {
                 borderRadius: 14,
                 background:
                   "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-                border: "1px solid rgba(255,255,255,0.06)",
+                border: "1px solid var(--border)",
                 transition: "all 0.15s",
                 textDecoration: "none",
                 color: "var(--fg)",
@@ -273,7 +273,7 @@ export default async function RitualesHubPage() {
                       padding: "3px 8px",
                       borderRadius: 999,
                       background: "rgba(52,211,153,0.12)",
-                      color: "#34d399",
+                      color: "var(--success-text)",
                       border: "1px solid rgba(52,211,153,0.25)",
                       letterSpacing: 0.5,
                     }}
@@ -289,7 +289,7 @@ export default async function RitualesHubPage() {
                       padding: "3px 8px",
                       borderRadius: 999,
                       background: "rgba(91,138,255,0.15)",
-                      color: "#bcd0ff",
+                      color: "var(--accent-text)",
                       border: "1px solid rgba(91,138,255,0.35)",
                       letterSpacing: 0.5,
                     }}

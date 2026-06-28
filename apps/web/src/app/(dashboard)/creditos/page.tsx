@@ -86,12 +86,12 @@ export default async function CreditosPage() {
             style={{
               background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
               border: "1px solid rgba(91,138,255,0.25)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <CreditCard size={18} strokeWidth={1.6} />
           </div>
-          <h1 className="text-white" style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}>
+          <h1 className="text-fg" style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}>
             Créditos
           </h1>
         </div>
@@ -121,12 +121,12 @@ export default async function CreditosPage() {
             1 crédito = 1 test DISC
           </p>
           {balance === 0 && (
-            <p style={{ marginTop: 8, fontSize: 12.5, color: "#fca5a5", lineHeight: 1.5 }}>
+            <p style={{ marginTop: 8, fontSize: 12.5, color: "var(--danger-text)", lineHeight: 1.5 }}>
               Te quedaste sin créditos: no vas a poder generar nuevos links DISC hasta cargar más.
             </p>
           )}
           {low && (
-            <p style={{ marginTop: 8, fontSize: 12.5, color: "#fbbf24", lineHeight: 1.5 }}>
+            <p style={{ marginTop: 8, fontSize: 12.5, color: "var(--warn-text)", lineHeight: 1.5 }}>
               Te quedan pocos créditos.
             </p>
           )}
@@ -152,10 +152,10 @@ export default async function CreditosPage() {
       </div>
 
       {/* Historial */}
-      <div className="mt-7 rounded-2xl border" style={{ borderColor: "rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}>
-        <div className="flex items-center gap-2 border-b px-5 py-4" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
-          <History size={16} strokeWidth={1.8} style={{ color: "#9fb9ff" }} />
-          <span className="font-semibold text-white" style={{ fontSize: 14 }}>
+      <div className="mt-7 rounded-2xl border" style={{ borderColor: "var(--border)", background: "var(--elevated)" }}>
+        <div className="flex items-center gap-2 border-b px-5 py-4" style={{ borderColor: "var(--border)" }}>
+          <History size={16} strokeWidth={1.8} style={{ color: "var(--accent-text)" }} />
+          <span className="font-semibold text-fg" style={{ fontSize: 14 }}>
             Historial de movimientos
           </span>
         </div>
@@ -181,7 +181,7 @@ export default async function CreditosPage() {
                 {history.map((t) => {
                   const positive = t.delta >= 0;
                   return (
-                    <tr key={t.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                    <tr key={t.id} style={{ borderTop: "1px solid var(--border)" }}>
                       <td style={tdStyle}>{formatCreditDate(t.created_at)}</td>
                       <td style={{ ...tdStyle, color: "var(--fg)" }}>{creditTypeLabel(t.type)}</td>
                       <td style={{ ...tdStyle, color: "var(--fg-subtle)" }}>{t.reason ?? "—"}</td>
@@ -220,9 +220,9 @@ function Card({
   return (
     <div
       className="rounded-2xl border p-6"
-      style={{ borderColor: "rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}
+      style={{ borderColor: "var(--border)", background: "var(--elevated)" }}
     >
-      <div className="mb-3 flex items-center gap-2" style={{ color: "#9fb9ff", fontSize: 13, fontWeight: 600 }}>
+      <div className="mb-3 flex items-center gap-2" style={{ color: "var(--accent-text)", fontSize: 13, fontWeight: 600 }}>
         {icon} {title}
       </div>
       <div style={{ fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.55 }}>{children}</div>

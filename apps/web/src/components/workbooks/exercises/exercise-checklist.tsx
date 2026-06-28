@@ -36,8 +36,8 @@ export function ExerciseChecklist({ exerciseKey, items, savedResponse, onSave, i
                   borderColor: "rgba(52,211,153,0.3)",
                 }
               : {
-                  background: "rgba(255,255,255,0.03)",
-                  borderColor: "rgba(255,255,255,0.08)",
+                  background: "var(--elevated)",
+                  borderColor: "var(--border)",
                 }
           }
         >
@@ -46,7 +46,7 @@ export function ExerciseChecklist({ exerciseKey, items, savedResponse, onSave, i
             style={
               checked[i]
                 ? { background: "rgba(52,211,153,0.2)", border: "1.5px solid #34d399" }
-                : { border: "1.5px solid rgba(255,255,255,0.2)", background: "transparent" }
+                : { border: "1.5px solid var(--border-strong)", background: "transparent" }
             }
           >
             {checked[i] && (
@@ -75,7 +75,7 @@ export function ExerciseChecklist({ exerciseKey, items, savedResponse, onSave, i
           style={{
             background: "rgba(91,138,255,0.2)",
             border: "1px solid rgba(91,138,255,0.4)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           {isPending ? "Guardando..." : "Guardar"}

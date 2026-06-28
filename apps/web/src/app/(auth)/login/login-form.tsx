@@ -80,7 +80,7 @@ const MicrosoftMark = ({ size = 18 }: { size?: number }) => (
 function LeftPanel() {
   return (
     <div
-      className="relative hidden flex-col text-white md:flex"
+      className="relative hidden flex-col text-fg md:flex"
       style={{
         flex: "1 1 50%",
         minWidth: 0,
@@ -137,7 +137,7 @@ function LeftPanel() {
       {/* Brand mark */}
       <div className="relative flex items-center" style={{ gap: 12 }}>
         <div
-          className="flex items-center justify-center text-white"
+          className="flex items-center justify-center text-fg"
           style={{
             width: 42,
             height: 42,
@@ -185,7 +185,7 @@ function LeftPanel() {
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: 1.4,
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
             width: "fit-content",
             marginBottom: 22,
           }}
@@ -254,8 +254,8 @@ function MiniMetric({
         flex: 1,
         padding: 10,
         borderRadius: 9,
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.06)",
+        background: "var(--elevated)",
+        border: "1px solid var(--border)",
       }}
     >
       <div
@@ -293,7 +293,7 @@ function ProductPreview() {
         borderRadius: 14,
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))",
-        border: "1px solid rgba(255,255,255,0.08)",
+        border: "1px solid var(--border)",
         boxShadow:
           "0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)",
         maxWidth: 460,
@@ -329,7 +329,7 @@ function ProductPreview() {
             border: "1px solid rgba(52,211,153,0.3)",
             fontSize: 11,
             fontWeight: 600,
-            color: "#34d399",
+            color: "var(--success-text)",
           }}
         >
           <Leaf size={11} strokeWidth={2} />
@@ -346,7 +346,7 @@ function ProductPreview() {
               gap: 12,
               padding: "8px 10px",
               borderRadius: 8,
-              background: "rgba(255,255,255,0.02)",
+              background: "var(--elevated)",
             }}
           >
             <div
@@ -588,7 +588,7 @@ function RightPanel() {
       {/* Brand compacto — solo móvil (el LeftPanel está oculto en < md) */}
       <div className="mb-6 flex items-center gap-3 md:hidden">
         <div
-          className="flex flex-shrink-0 items-center justify-center text-white"
+          className="flex flex-shrink-0 items-center justify-center text-fg"
           style={{
             width: 38,
             height: 38,
@@ -667,8 +667,8 @@ function RightPanel() {
               gap: 9,
               padding: "11px 14px",
               borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.025)",
+              border: "1px solid var(--border)",
+              background: "var(--elevated)",
               color: "var(--fg)",
               fontSize: 13,
               fontWeight: 500,
@@ -683,7 +683,7 @@ function RightPanel() {
                   width: 14,
                   height: 14,
                   borderRadius: "50%",
-                  border: "2px solid rgba(255,255,255,0.4)",
+                  border: "2px solid var(--border-strong)",
                   borderTopColor: "var(--fg)",
                 }}
               />
@@ -701,8 +701,8 @@ function RightPanel() {
               gap: 9,
               padding: "11px 14px",
               borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.025)",
+              border: "1px solid var(--border)",
+              background: "var(--elevated)",
               color: "var(--fg)",
               fontSize: 13,
               fontWeight: 500,
@@ -717,7 +717,7 @@ function RightPanel() {
                   width: 14,
                   height: 14,
                   borderRadius: "50%",
-                  border: "2px solid rgba(255,255,255,0.4)",
+                  border: "2px solid var(--border-strong)",
                   borderTopColor: "var(--fg)",
                 }}
               />
@@ -734,7 +734,7 @@ function RightPanel() {
           style={{ gap: 14, margin: "4px 0 22px" }}
         >
           <div
-            style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }}
+            style={{ flex: 1, height: 1, background: "var(--elevated)" }}
           />
           <div
             style={{
@@ -747,7 +747,7 @@ function RightPanel() {
             O CONTINUAR CON EMAIL
           </div>
           <div
-            style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }}
+            style={{ flex: 1, height: 1, background: "var(--elevated)" }}
           />
         </div>
 
@@ -797,7 +797,7 @@ function RightPanel() {
                   className="hover:opacity-80"
                   style={{
                     fontSize: 12,
-                    color: "#9fb9ff",
+                    color: "var(--accent-text)",
                     textDecoration: "none",
                   }}
                 >
@@ -871,7 +871,7 @@ function RightPanel() {
                 borderRadius: 10,
                 background: "rgba(248,113,113,0.08)",
                 border: "1px solid rgba(248,113,113,0.3)",
-                color: "#fca5a5",
+                color: "var(--danger-text)",
                 fontSize: 13,
               }}
             >
@@ -911,7 +911,7 @@ function RightPanel() {
                     width: 14,
                     height: 14,
                     borderRadius: "50%",
-                    border: "2px solid rgba(255,255,255,0.4)",
+                    border: "2px solid var(--border-strong)",
                     borderTopColor: "var(--fg)",
                   }}
                 />
@@ -987,7 +987,7 @@ function RightPanel() {
 export function LoginForm() {
   return (
     <div
-      className="login-split flex min-h-screen text-white"
+      className="login-split flex min-h-screen text-fg"
       style={{
         background: "var(--bg)",
         fontFamily: "Inter, system-ui, sans-serif",

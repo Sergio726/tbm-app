@@ -65,7 +65,7 @@ export default async function ParkingLotPage() {
               borderRadius: 11,
               background: "rgba(148,163,184,0.12)",
               border: "1px solid rgba(148,163,184,0.28)",
-              color: "#cbd5e1",
+              color: "var(--fg-muted)",
             }}
           >
             <Inbox size={20} strokeWidth={1.6} />

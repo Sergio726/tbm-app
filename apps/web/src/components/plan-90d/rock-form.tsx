@@ -59,14 +59,14 @@ export function RockForm({
       }}
     >
       <div className="mb-4 flex items-center justify-between">
-        <p className="font-semibold text-white" style={{ fontSize: 14 }}>
+        <p className="font-semibold text-fg" style={{ fontSize: 14 }}>
           Nueva Roca
         </p>
         <button
           type="button"
           onClick={onCancel}
           style={{ color: "var(--fg-muted)" }}
-          className="hover:text-white transition-colors"
+          className="hover:text-fg transition-colors"
         >
           <X size={16} />
         </button>
@@ -83,10 +83,10 @@ export function RockForm({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="ej. Implementar sistema de ventas B2B"
             required
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none transition-colors"
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none transition-colors"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
@@ -99,10 +99,10 @@ export function RockForm({
             value={ownerId}
             onChange={(e) => setOwnerId(e.target.value)}
             required
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none"
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none"
             style={{
-              background: "#0d1120",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--surface)",
+              borderColor: "var(--border-strong)",
             }}
           >
             {team.map((m) => (
@@ -122,10 +122,10 @@ export function RockForm({
             onChange={(e) => setCriteria(e.target.value)}
             placeholder="¿Cómo sabés que se logró la Roca?"
             rows={2}
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none resize-none"
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none resize-none"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
@@ -139,10 +139,10 @@ export function RockForm({
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none"
+              className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none"
               style={{
-                background: "#0d1120",
-                borderColor: "rgba(255,255,255,0.12)",
+                background: "var(--surface)",
+                borderColor: "var(--border-strong)",
               }}
             />
           </div>
@@ -156,8 +156,8 @@ export function RockForm({
               readOnly
               className="w-full rounded-xl border px-3 py-2 text-sm outline-none"
               style={{
-                background: "rgba(255,255,255,0.02)",
-                borderColor: "rgba(255,255,255,0.07)",
+                background: "var(--elevated)",
+                borderColor: "var(--border)",
                 color: "var(--fg-muted)",
               }}
             />
@@ -170,7 +170,7 @@ export function RockForm({
             onClick={onCancel}
             className="flex-1 rounded-xl py-2 text-sm font-medium transition-colors"
             style={{
-              background: "rgba(255,255,255,0.06)",
+              background: "var(--elevated)",
               color: "var(--fg-muted)",
             }}
           >

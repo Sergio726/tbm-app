@@ -80,19 +80,19 @@ export function MemberReportModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[calc(100vh-4rem)] w-full max-w-[680px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface)] shadow-2xl"
+        className="flex max-h-[calc(100vh-4rem)] w-full max-w-[680px] flex-col overflow-hidden rounded-2xl border border-border bg-[var(--surface)] shadow-2xl"
       >
         {/* Header */}
         <div className="flex flex-shrink-0 items-center gap-3.5 border-b border-white/[0.07] p-5">
           <span
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-bold text-white"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-bold text-fg"
             style={{ background: color }}
           >
             {initials(member.full_name)}
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h2 className="truncate text-[17px] font-bold text-white">
+              <h2 className="truncate text-[17px] font-bold text-fg">
                 {member.full_name ?? "Sin nombre"}
               </h2>
               {member.disc_letters && (
@@ -102,7 +102,7 @@ export function MemberReportModal({
                     .map((l, i) => (
                       <span
                         key={i}
-                        className="rounded px-1.5 py-0.5 text-[10px] font-bold text-white"
+                        className="rounded px-1.5 py-0.5 text-[10px] font-bold text-fg"
                         style={{ background: DISC_COLORS[l as DiscLetter] ?? "#475569" }}
                       >
                         {l}
@@ -111,12 +111,12 @@ export function MemberReportModal({
                 </span>
               )}
             </div>
-            <p className="truncate text-xs text-white/55">
+            <p className="truncate text-xs text-fg-muted">
               {profile?.name ? `${profile.icon ?? ""} ${profile.name}` : "Perfil DISC"}
               {member.cargo ? ` · ${member.cargo}` : ""}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="text-white/50 hover:text-white">
+          <button type="button" onClick={onClose} className="text-fg-muted hover:text-fg">
             <X size={20} />
           </button>
         </div>
@@ -131,13 +131,13 @@ export function MemberReportModal({
                   return (
                     <div key={l}>
                       <div className="mb-1 flex justify-between text-xs">
-                        <span className="text-white/70">
+                        <span className="text-fg">
                           <span className="font-bold" style={{ color: DISC_COLORS[l] }}>
                             {l}
                           </span>{" "}
                           {DISC_DIMENSIONS[l].name}
                         </span>
-                        <span className="text-white/65">{seg}/7</span>
+                        <span className="text-fg-muted">{seg}/7</span>
                       </div>
                       <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
                         <div
@@ -162,11 +162,11 @@ export function MemberReportModal({
 
           {/* Comparación con el equipo */}
           <Section title="Comparación con el equipo" Icon={Users}>
-            <p className="mb-3 text-[13px] text-white/65">
+            <p className="mb-3 text-[13px] text-fg-muted">
               {primary ? (
                 <>
-                  <span className="font-semibold text-white">{sameStyle.length + 1}</span> de{" "}
-                  <span className="font-semibold text-white">{withDisc.length}</span> personas con DISC
+                  <span className="font-semibold text-fg">{sameStyle.length + 1}</span> de{" "}
+                  <span className="font-semibold text-fg">{withDisc.length}</span> personas con DISC
                   comparten el estilo dominante{" "}
                   <span className="font-bold" style={{ color }}>
                     {primary} · {DISC_DIMENSIONS[primary].name}
@@ -198,7 +198,7 @@ export function MemberReportModal({
                       }}
                     />
                   </div>
-                  <span className="w-5 text-right text-[11px] text-white/55">{dist[l]}</span>
+                  <span className="w-5 text-right text-[11px] text-fg-muted">{dist[l]}</span>
                 </div>
               ))}
             </div>
@@ -228,8 +228,8 @@ export function MemberReportModal({
                 <TipCard Icon={Users} label="Evitar fricción" text={tips.friccion} />
               </div>
               {factor && (
-                <p className="mt-3 text-[12px] leading-relaxed text-white/55">
-                  <span className="font-semibold text-white/75">Bajo presión:</span>{" "}
+                <p className="mt-3 text-[12px] leading-relaxed text-fg-muted">
+                  <span className="font-semibold text-fg">Bajo presión:</span>{" "}
                   {factor.underPressure}
                 </p>
               )}
@@ -254,7 +254,7 @@ function Section({
     <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
       <div className="mb-3 flex items-center gap-2">
         <Icon size={15} className="text-[#9fb9ff]" />
-        <h3 className="text-[13.5px] font-semibold text-white">{title}</h3>
+        <h3 className="text-[13.5px] font-semibold text-fg">{title}</h3>
       </div>
       {children}
     </div>
@@ -282,7 +282,7 @@ function TraitCard({
       </div>
       <ul className="space-y-1.5">
         {items.map((it, i) => (
-          <li key={i} className="flex gap-2 text-[12.5px] leading-snug text-white/70">
+          <li key={i} className="flex gap-2 text-[12.5px] leading-snug text-fg">
             <span style={{ color: tone }}>·</span>
             {it}
           </li>
@@ -303,10 +303,10 @@ function PeopleList({
 }) {
   return (
     <div>
-      <p className="text-[12px] font-semibold text-white/80">{label}</p>
-      <p className="mb-2 text-[11px] text-white/65">{hint}</p>
+      <p className="text-[12px] font-semibold text-fg">{label}</p>
+      <p className="mb-2 text-[11px] text-fg-muted">{hint}</p>
       {people.length === 0 ? (
-        <p className="text-[12px] text-white/65">— Nadie por ahora.</p>
+        <p className="text-[12px] text-fg-muted">— Nadie por ahora.</p>
       ) : (
         <div className="flex flex-wrap gap-1.5">
           {people.map((p) => {
@@ -315,7 +315,7 @@ function PeopleList({
             return (
               <span
                 key={p.id}
-                className="inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] text-white/80"
+                className="inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] text-fg"
                 style={{ borderColor: `${c}40`, background: `${c}14` }}
               >
                 <span className="font-bold" style={{ color: c }}>
@@ -345,7 +345,7 @@ function TipCard({
       <div className="mb-1 flex items-center gap-1.5 text-[12px] font-semibold text-[#9fb9ff]">
         <Icon size={13} /> {label}
       </div>
-      <p className="text-[12.5px] leading-snug text-white/70">{text}</p>
+      <p className="text-[12.5px] leading-snug text-fg">{text}</p>
     </div>
   );
 }

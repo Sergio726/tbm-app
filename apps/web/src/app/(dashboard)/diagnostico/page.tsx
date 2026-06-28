@@ -35,7 +35,7 @@ export default async function DiagnosticoPage() {
 
   return (
     <div
-      className="text-white"
+      className="text-fg"
       style={{
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px) 60px",
         maxWidth: 880,
@@ -46,7 +46,7 @@ export default async function DiagnosticoPage() {
     >
       <Link
         href="/dashboard"
-        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-white/55 transition hover:text-white/80"
+        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-fg-muted transition hover:text-fg"
       >
         <ArrowLeft size={14} />
         Dashboard
@@ -59,7 +59,7 @@ export default async function DiagnosticoPage() {
             style={{
               background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
               border: "1px solid rgba(91,138,255,0.25)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <LineChart size={18} strokeWidth={1.7} />
@@ -71,13 +71,13 @@ export default async function DiagnosticoPage() {
             >
               Diagnóstico Organizacional TBM
             </h1>
-            <p className="mt-0.5 text-[12.5px] text-white/55">
+            <p className="mt-0.5 text-[12.5px] text-fg-muted">
               Re-evaluación de las 8 áreas · los semáforos del Dashboard se
               actualizan al guardar
             </p>
           </div>
         </div>
-        <p className="max-w-[640px] text-[13.5px] leading-relaxed text-white/60">
+        <p className="max-w-[640px] text-[13.5px] leading-relaxed text-fg-muted">
           Evaluá tu empresa hoy, sin filtros.{" "}
           {lastScorecard
             ? "Pre-cargamos tu última evaluación — ajustá solo lo que cambió desde entonces."

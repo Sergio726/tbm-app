@@ -49,10 +49,10 @@ export function PdfReportBox({
           <ScrollText size={16} strokeWidth={1.9} />
         </div>
         <div>
-          <div className="text-[13px] font-semibold text-white/85">
+          <div className="text-[13px] font-semibold text-fg">
             Informe DISC profesional
           </div>
-          <div className="text-[11.5px] text-white/65">
+          <div className="text-[11.5px] text-fg-muted">
             {pdfPath ? (
               <button
                 type="button"

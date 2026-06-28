@@ -32,8 +32,8 @@ export function ExerciseText({
         placeholder={placeholder}
         className="w-full resize-none rounded-xl border bg-transparent p-4 text-sm leading-relaxed outline-none transition-all"
         style={{
-          background: "rgba(255,255,255,0.03)",
-          borderColor: "rgba(255,255,255,0.1)",
+          background: "var(--elevated)",
+          borderColor: "var(--border)",
           color: "var(--fg)",
         }}
         onFocus={(e) =>
