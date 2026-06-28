@@ -53,9 +53,20 @@ persistente" del orbe con `layoutId`: la bienvenida cinemática vuela el orbe ha
 - **Pendiente / diferido:** **color/avatar del orbe** (se difirió, orbe azul por ahora). **Por
   empresa** y **idioma**: post-beta (la columna `scope='company'` ya existe, sin UI).
 
-### DC-3 · Acciones en la app (tool use) — *el salto a "copiloto"* — *alta prioridad, media complejidad*
-DC no solo responde: **hace**. Function calling / tool use. Catálogo inicial de herramientas
-(todas con **confirmación** antes de ejecutar, y respetando permisos/rol):
+### DC-3 · Acciones en la app (tool use) — *el salto a "copiloto"* — ✅ **v1 hecho (2026-06-27)**
+**Implementado:** DC ejecuta acciones con **confirmación**, patrón **propose→confirm** sin segundo
+llamado al LLM. `chatWithTools` en los adapters (OpenRouter formato OpenAI · Anthropic `tool_use`);
+registro server-side `lib/jarvis-tools.ts` (specs + resolución de nombre→colaborador + ejecución vía
+RLS / server actions existentes); el route `/api/jarvis` decide propuesta vs texto y ejecuta el confirm;
+el panel muestra una **tarjeta de confirmación** (Confirmar/Cancelar). Gateado por **feature flag
+`features.actions`** (toggle en el admin) + **solo arquitectos**. Sin migración (jsonb `features`).
+**3 herramientas v1:** `generar_link_disc` (consume crédito, reusa `generate_disc_link`),
+`crear_tarea` (Pase de Estafeta, 5 puntos), `invitar_colaborador` (`sendTeamInvite`).
+**Pendiente / próxima iteración:** más tools (feedback S.E.C., rocas, ritual, scorecard, reporte
+semanal) · tools de lectura con loop multi-turno (hoy v1 es write-actions; las lecturas van por el
+contexto ya inyectado) · unificar `lib/ai` admin↔web en `packages/shared`.
+
+> Catálogo objetivo (orden original, todas con **confirmación** antes de ejecutar y respetando rol):
 - **Crear tarea** (Pase de Estafeta, con los 5 puntos) y asignarla.
 - **Generar link DISC** para un colaborador (consume crédito) / invitar colaborador.
 - **Agendar/marcar ritual** (War Up, Cool Down, Pre-game).

@@ -29,6 +29,9 @@ function AcceptInviteContent() {
 
   const [fullName, setFullName] = useState("");
   const [cargo, setCargo] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
   const [hasSession, setHasSession] = useState(false);
@@ -81,6 +84,16 @@ function AcceptInviteContent() {
     e.preventDefault();
     if (!fullName.trim()) {
       setError("Ingresá tu nombre completo");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Creá una contraseña de al menos 8 caracteres para poder volver a entrar.");
+      return;
+    }
+
+    if (password !== password2) {
+      setError("Las contraseñas no coinciden.");
       return;
     }
 
@@ -139,7 +152,19 @@ function AcceptInviteContent() {
         );
       }
 
-      // 3. Vincular perfil → empresa como colaborador (chequeando el error).
+      // 3. Setear la contraseña → el colaborador puede volver a entrar por /login
+      //    (la cuenta se creó por magic link y NO tenía contraseña). Sin esto, al
+      //    cerrar sesión quedaba dependiendo de que el Arquitecto le reenvíe el link.
+      const { error: pwdErr } = await supabase.auth.updateUser({ password });
+      if (pwdErr) {
+        throw new Error(
+          pwdErr.message?.toLowerCase().includes("password")
+            ? "Esa contraseña es muy débil o ya fue usada. Probá con otra."
+            : "No pudimos guardar tu contraseña. Probá de nuevo."
+        );
+      }
+
+      // 4. Vincular perfil → empresa como colaborador (chequeando el error).
       const { error: profErr } = await supabase
         .from("profiles")
         .update({
@@ -153,7 +178,7 @@ function AcceptInviteContent() {
 
       if (profErr) throw profErr;
 
-      // 4. Marcar la invitación como aceptada.
+      // 5. Marcar la invitación como aceptada.
       await supabase
         .from("invitations")
         .update({ status: "accepted", accepted_at: new Date().toISOString() })
@@ -226,6 +251,48 @@ function AcceptInviteContent() {
             onChange={(e) => setCargo(e.target.value)}
             placeholder="Gerente de Operaciones"
             className="tbm-input w-full"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
+            Creá tu contraseña
+          </label>
+          <div className="relative">
+            <input
+              type={showPwd ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Mínimo 8 caracteres"
+              className="tbm-input w-full pr-16"
+              autoComplete="new-password"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPwd((s) => !s)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-white"
+            >
+              {showPwd ? "ocultar" : "ver"}
+            </button>
+          </div>
+          <p className="mt-1.5 text-xs text-tbm-text-secondary">
+            La vas a usar para entrar a la app cada vez que vuelvas.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
+            Repetí la contraseña
+          </label>
+          <input
+            type={showPwd ? "text" : "password"}
+            value={password2}
+            onChange={(e) => setPassword2(e.target.value)}
+            placeholder="Repetí tu contraseña"
+            className="tbm-input w-full"
+            autoComplete="new-password"
+            required
           />
         </div>
 

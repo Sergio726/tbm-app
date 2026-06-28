@@ -12,11 +12,48 @@ export type ChatOptions = {
   temperature?: number;
 };
 
+// ── Tool use / function calling (DC-3) ────────────────────────────────────
+/** Esquema de parámetros de una herramienta (subset JSON Schema, común a OpenAI/Anthropic). */
+export type ToolParams = {
+  type: "object";
+  properties: Record<string, { type: string; description: string; enum?: string[] }>;
+  required?: string[];
+};
+
+/** Definición de una herramienta que el modelo puede pedir ejecutar. */
+export type ToolSpec = {
+  name: string;
+  description: string;
+  parameters: ToolParams;
+};
+
+/** Pedido del modelo de ejecutar una herramienta. */
+export type ToolCall = {
+  id: string;
+  name: string;
+  arguments: Record<string, unknown>;
+};
+
+/** Resultado de un turno con tools: texto y/o un pedido de herramienta. */
+export type ChatResult = {
+  text: string;
+  toolCall?: ToolCall;
+};
+
 export interface AIProvider {
   id: ProviderId;
   chat(opts: ChatOptions, apiKey: string): Promise<string>;
   /** Stream de tokens (S18.3). Opcional: el caller cae a chat() si no existe. */
   chatStream?(opts: ChatOptions, apiKey: string): AsyncIterable<string>;
+  /**
+   * Un turno con herramientas disponibles (DC-3, no-streaming). Devuelve texto
+   * libre y/o un único toolCall. El caller decide si ejecutar (con confirmación).
+   * Opcional: si no existe, el caller cae al chat normal sin acciones.
+   */
+  chatWithTools?(
+    opts: ChatOptions & { tools: ToolSpec[] },
+    apiKey: string
+  ): Promise<ChatResult>;
 }
 
 /** Parser incremental de líneas SSE "data: {...}" → JSON por línea de datos. */

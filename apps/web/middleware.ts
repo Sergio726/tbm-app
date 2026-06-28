@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { REMEMBER_COOKIE, isRemembered, sessionizeIfNeeded } from "@/lib/supabase/remember";
 
 /**
  * Middleware de autenticación.
@@ -21,12 +22,14 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
+          // "Recordarme" off → cookies de sesión (sin Max-Age/Expires).
+          const remember = isRemembered(request.cookies.get(REMEMBER_COOKIE)?.value);
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
           supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, sessionizeIfNeeded(options ?? {}, value, remember))
           );
         },
       },
@@ -46,6 +49,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/auth/confirm") ||
     pathname.startsWith("/accept-invite") ||
+    pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/disc/") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/") ||
@@ -66,6 +70,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(dashboardUrl);
   }
 
+  // Gate global de contraseña temporal (CUALQUIER rol): un usuario creado desde el
+  // admin con contraseña temporal (arquitecto, coach) tiene
+  // user_metadata.must_change_password=true → se lo fuerza a /set-password antes de
+  // cualquier pantalla. Va ANTES del gate de onboarding (clave primero). Loop-safe.
+  if (
+    user &&
+    !isPublicRoute &&
+    pathname !== "/set-password" &&
+    user.user_metadata?.must_change_password === true
+  ) {
+    const setPwdUrl = request.nextUrl.clone();
+    setPwdUrl.pathname = "/set-password";
+    return NextResponse.redirect(setPwdUrl);
+  }
+
   // Gate de onboarding: un arquitecto que NO completó el setup (ej. líder creado
   // desde el admin con contraseña temporal) se fuerza a /onboarding. Se excluye
   // /onboarding (evita loop) y /cuenta (por si necesita la cuenta). Loop-safe.
@@ -73,7 +92,9 @@ export async function middleware(request: NextRequest) {
     user &&
     !isPublicRoute &&
     pathname !== "/onboarding" &&
-    !pathname.startsWith("/cuenta")
+    !pathname.startsWith("/cuenta") &&
+    !pathname.startsWith("/reset-password") &&
+    !pathname.startsWith("/set-password")
   ) {
     const { data: profile } = await supabase
       .from("profiles")

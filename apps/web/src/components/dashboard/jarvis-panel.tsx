@@ -15,7 +15,23 @@ const ERRORS: Record<string, string> = {
   fallo: "No pude responder ahora mismo. Probá de nuevo en un momento.",
 };
 
-type Msg = { role: "user" | "assistant"; content: string; error?: boolean };
+// DC-3: propuesta de acción que el usuario confirma antes de ejecutar.
+type Proposal = {
+  tool: string;
+  args: Record<string, unknown>;
+  title: string;
+  details: { label: string; value: string }[];
+};
+
+type Msg = {
+  role: "user" | "assistant";
+  content: string;
+  error?: boolean;
+  /** Si está presente, el mensaje es una tarjeta de confirmación de acción (DC-3). */
+  proposal?: Proposal;
+  /** Estado de la tarjeta una vez resuelta. */
+  resolved?: "confirmed" | "cancelled";
+};
 
 export function JarvisPanel({
   open,
@@ -88,6 +104,38 @@ export function JarvisPanel({
     setStreaming(false);
   };
 
+  // Solo el historial conversacional real (sin tarjetas de acción ni errores).
+  const chatHistory = (msgs: Msg[]): ChatMessage[] =>
+    msgs.filter((m) => !m.proposal && !m.error).map((m) => ({ role: m.role, content: m.content }));
+
+  // Lee un stream text/plain y lo va volcando como mensaje del asistente.
+  const consumeStream = async (res: Response) => {
+    const reader = res.body!.getReader();
+    const decoder = new TextDecoder();
+    let acc = "";
+    let started = false;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      acc += decoder.decode(value, { stream: true });
+      if (!started) {
+        started = true;
+        setPending(false);
+        setStreaming(true);
+        setMessages((prev) => [...prev, { role: "assistant", content: acc }]);
+      } else {
+        setMessages((prev) => {
+          const copy = [...prev];
+          copy[copy.length - 1] = { role: "assistant", content: acc };
+          return copy;
+        });
+      }
+    }
+    if (!started) {
+      setMessages((prev) => [...prev, { role: "assistant", content: "(sin respuesta)" }]);
+    }
+  };
+
   const send = async (text: string) => {
     const content = text.trim();
     if (!content || pending || streaming) return;
@@ -97,7 +145,7 @@ export function JarvisPanel({
     setTimeout(autosize, 0);
     setPending(true);
 
-    const history: ChatMessage[] = next.map((m) => ({ role: m.role, content: m.content }));
+    const history = chatHistory(next);
     const ctrl = new AbortController();
     abortRef.current = ctrl;
 
@@ -105,44 +153,37 @@ export function JarvisPanel({
       const res = await fetch("/api/jarvis", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages: history, module: moduleLabel }),
+        body: JSON.stringify({ messages: history, module: moduleLabel, origin: window.location.origin }),
         signal: ctrl.signal,
       });
 
-      if (!res.ok || !res.body) {
-        const j = (await res.json().catch(() => ({}))) as { error?: string };
+      // DC-3: respuesta JSON = error (no-200) o propuesta de acción.
+      const ct = res.headers.get("content-type") ?? "";
+      if (!res.ok || ct.includes("application/json")) {
+        const j = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          type?: string;
+          proposal?: Proposal;
+        };
         setPending(false);
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: ERRORS[j.error ?? ""] ?? "No pude responder.", error: true },
-        ]);
+        if (res.ok && j.type === "proposal" && j.proposal) {
+          setMessages((prev) => [...prev, { role: "assistant", content: "", proposal: j.proposal }]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: ERRORS[j.error ?? ""] ?? "No pude responder.", error: true },
+          ]);
+        }
         return;
       }
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let acc = "";
-      let started = false;
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        acc += decoder.decode(value, { stream: true });
-        if (!started) {
-          started = true;
-          setPending(false);
-          setStreaming(true);
-          setMessages((prev) => [...prev, { role: "assistant", content: acc }]);
-        } else {
-          setMessages((prev) => {
-            const copy = [...prev];
-            copy[copy.length - 1] = { role: "assistant", content: acc };
-            return copy;
-          });
-        }
+      if (!res.body) {
+        setPending(false);
+        setMessages((prev) => [...prev, { role: "assistant", content: "No pude responder.", error: true }]);
+        return;
       }
-      if (!started) {
-        setMessages((prev) => [...prev, { role: "assistant", content: "(sin respuesta)" }]);
-      }
+
+      await consumeStream(res);
     } catch (e) {
       if ((e as Error)?.name !== "AbortError") {
         setMessages((prev) => [
@@ -155,6 +196,54 @@ export function JarvisPanel({
       setStreaming(false);
       abortRef.current = null;
     }
+  };
+
+  // DC-3: el usuario confirma la acción propuesta → ejecutar en el servidor.
+  const confirmProposal = async (proposal: Proposal, idx: number) => {
+    if (pending || streaming) return;
+    setMessages((prev) => prev.map((m, i) => (i === idx ? { ...m, resolved: "confirmed" } : m)));
+    setPending(true);
+    const history = chatHistory(messages);
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    try {
+      const res = await fetch("/api/jarvis", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          confirm: { tool: proposal.tool, args: proposal.args },
+          messages: history,
+          module: moduleLabel,
+          origin: window.location.origin,
+        }),
+        signal: ctrl.signal,
+      });
+      if (!res.ok || !res.body) {
+        const j = (await res.json().catch(() => ({}))) as { error?: string };
+        setPending(false);
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: ERRORS[j.error ?? ""] ?? "No pude ejecutar la acción.", error: true },
+        ]);
+        return;
+      }
+      await consumeStream(res);
+    } catch (e) {
+      if ((e as Error)?.name !== "AbortError") {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: "No pude ejecutar la acción. Probá de nuevo.", error: true },
+        ]);
+      }
+    } finally {
+      setPending(false);
+      setStreaming(false);
+      abortRef.current = null;
+    }
+  };
+
+  const cancelProposal = (idx: number) => {
+    setMessages((prev) => prev.map((m, i) => (i === idx ? { ...m, resolved: "cancelled" } : m)));
   };
 
   const copy = (text: string, i: number) => {
@@ -249,6 +338,19 @@ export function JarvisPanel({
           ) : (
             <div className="flex flex-col" style={{ gap: 14 }}>
               {messages.map((m, i) => {
+                // DC-3: tarjeta de confirmación de acción.
+                if (m.proposal) {
+                  return (
+                    <ProposalCard
+                      key={i}
+                      proposal={m.proposal}
+                      resolved={m.resolved}
+                      busy={pending || streaming}
+                      onConfirm={() => confirmProposal(m.proposal!, i)}
+                      onCancel={() => cancelProposal(i)}
+                    />
+                  );
+                }
                 const isLast = i === messages.length - 1;
                 const isUser = m.role === "user";
                 const showCursor = streaming && isLast && m.role === "assistant";
@@ -382,6 +484,89 @@ export function JarvisPanel({
       </aside>
     </>,
     document.body
+  );
+}
+
+// ── DC-3: tarjeta de confirmación de acción ──────────────────────────────────
+function ProposalCard({
+  proposal,
+  resolved,
+  busy,
+  onConfirm,
+  onCancel,
+}: {
+  proposal: Proposal;
+  resolved?: "confirmed" | "cancelled";
+  busy: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        borderRadius: 14,
+        background: "rgba(91,138,255,0.06)",
+        border: "1px solid rgba(91,138,255,0.28)",
+        padding: 14,
+      }}
+    >
+      <div className="flex items-center" style={{ gap: 8, marginBottom: 10 }}>
+        <span style={{ fontSize: 15 }}>⚡</span>
+        <div style={{ fontSize: 13.5, fontWeight: 700, color: "#fff" }}>{proposal.title}</div>
+      </div>
+      <div className="flex flex-col" style={{ gap: 6, marginBottom: 12 }}>
+        {proposal.details.map((d, j) => (
+          <div key={j} style={{ display: "flex", gap: 8, fontSize: 12.5, lineHeight: 1.45 }}>
+            <span style={{ color: "rgba(255,255,255,0.45)", minWidth: 78, flexShrink: 0 }}>{d.label}</span>
+            <span style={{ color: "rgba(255,255,255,0.9)", wordBreak: "break-word" }}>{d.value}</span>
+          </div>
+        ))}
+      </div>
+      {resolved === "confirmed" ? (
+        <div style={{ fontSize: 12.5, color: "#34d399" }}>✓ Confirmado</div>
+      ) : resolved === "cancelled" ? (
+        <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.4)" }}>Cancelado</div>
+      ) : (
+        <div className="flex" style={{ gap: 8 }}>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={busy}
+            style={{
+              padding: "8px 14px",
+              borderRadius: 10,
+              background: "rgba(52,211,153,0.18)",
+              border: "1px solid rgba(52,211,153,0.4)",
+              color: "#6ee7b7",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: busy ? "not-allowed" : "pointer",
+              opacity: busy ? 0.6 : 1,
+            }}
+          >
+            Confirmar
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={busy}
+            style={{
+              padding: "8px 14px",
+              borderRadius: 10,
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.14)",
+              color: "rgba(255,255,255,0.65)",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: busy ? "not-allowed" : "pointer",
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 

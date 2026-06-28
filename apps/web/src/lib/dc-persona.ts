@@ -57,6 +57,11 @@ export function ragEnabled(features: unknown): boolean {
   return (features as { rag?: boolean } | null)?.rag !== false;
 }
 
+/** ¿Acciones (tool use, DC-3) activas? Default OFF: solo si features.actions === true. */
+export function actionsEnabled(features: unknown): boolean {
+  return (features as { actions?: boolean } | null)?.actions === true;
+}
+
 /** Lee solo los campos públicos de la persona (para el layout → launcher/panel). */
 export async function getDcPublicPersona(): Promise<DcPublicPersona> {
   const fallback: DcPublicPersona = {
