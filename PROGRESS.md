@@ -22,6 +22,23 @@
 > - 🔍 **EN REVISIÓN**: visibilidad de KPIs (hoy todo el equipo los ve) → ver `PENDIENTES_REVISION.md`.
 > - **Próximo:** pre-beta #3 mobile · #8 test DISC público · DC-5 (RAG por empresa) / DC-7 (proactividad).
 >
+> **Novedades 2026-06-28 (theming + contraste):** base para evolución de interfaz. Rama `theme-tokens`.
+> - ✅ **Tokens semánticos** en `globals.css` como canales `R G B` (dark `:root` + claro
+>   `:root[data-theme="light"]`): superficies, texto (`--fg/-muted/-subtle/-faint`), bordes, acento,
+>   estados. **Cambiar paleta o tema = editar SOLO esos canales.** Nombres viejos (`--bg-global`,
+>   `--text-*`, semáforos) re-apuntados → flipan con el tema solos.
+> - ✅ **Tailwind** (`tailwind.config.ts`): `tbm-*` + alias semánticos (`bg/surface/fg/fg-muted/accent/…`)
+>   → tokens con soporte de opacidad. Ya hace **theme-aware** y sube el contraste de los 127 usos de
+>   `tbm-text-*` en oscuro.
+> - ✅ **Modo claro + toggle**: `ThemeProvider` + script **no-FOUC** en `<html data-theme>`; selector
+>   Oscuro/Claro/Sistema en `/cuenta` (Apariencia), persistido. `darkMode` ya no depende de `.dark`.
+> - ✅ **Contraste (oscuro)**: pasada segura que subió el texto blanco ilegible (`text-white/30-45` →
+>   `/65`; `color: rgba(255,255,255,≤0.45)` → `0.62`) en **78 archivos**, sin tocar fondos/bordes.
+>   Medición previa: ~75 textos a 2.6–3.2:1 (fallaban AA). Umbrales en `docs/PLAN_BACKLOG_2026-06.md`.
+> - ⏳ **Fase 2 (diferido):** migrar el color **inline hardcodeado** (superficies/bordes) de los componentes
+>   a tokens para pulir el **modo claro** en todas las pantallas (hoy lo no migrado se ve oscuro en claro,
+>   no roto). Alinear `apps/admin`. `components/ui/empty-state` ya migrada como patrón.
+>
 > **Novedades 2026-06-28 (backlog Sebas N1–N6):** 6 mejoras pedidas por Sebas, decisiones cerradas +
 > plan en [`docs/PLAN_BACKLOG_2026-06.md`](docs/PLAN_BACKLOG_2026-06.md). Rama `backlog-n1-n6` (typecheck
 > + build de web y admin verdes).

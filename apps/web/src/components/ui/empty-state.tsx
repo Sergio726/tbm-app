@@ -23,10 +23,10 @@ export function EmptyState({
       className="flex flex-col items-center justify-center text-center"
       style={{ gap: 10, padding: "44px 24px" }}
     >
-      {icon ? <div style={{ color: "rgba(255,255,255,0.62)", marginBottom: 2 }}>{icon}</div> : null}
-      <div style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.92)" }}>{title}</div>
+      {icon ? <div style={{ color: "var(--fg-subtle)", marginBottom: 2 }}>{icon}</div> : null}
+      <div style={{ fontSize: 16, fontWeight: 600, color: "var(--fg)" }}>{title}</div>
       {hint ? (
-        <div style={{ fontSize: 13.5, color: "rgba(255,255,255,0.5)", maxWidth: 420, lineHeight: 1.55 }}>
+        <div style={{ fontSize: 13.5, color: "var(--fg-subtle)", maxWidth: 420, lineHeight: 1.55 }}>
           {hint}
         </div>
       ) : null}
@@ -39,8 +39,8 @@ export function EmptyState({
             gap: 8,
             padding: "10px 18px",
             borderRadius: 10,
-            background: "linear-gradient(180deg, #4f86ff, #2c5fe6)",
-            color: "#fff",
+            background: "linear-gradient(180deg, var(--accent), var(--accent-hover))",
+            color: "var(--accent-fg)",
             fontSize: 13.5,
             fontWeight: 600,
             boxShadow: "0 6px 18px rgba(54,114,255,0.3)",
