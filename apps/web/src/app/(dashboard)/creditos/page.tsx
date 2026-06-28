@@ -24,7 +24,7 @@ export default async function CreditosPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, company_id, companies(name)")
+    .select("role, company_id")
     .eq("id", user.id)
     .single();
 
