@@ -7,6 +7,7 @@ import {
   type ChatOptions,
   type ChatResult,
   type ToolSpec,
+  type TokenUsage,
 } from "./types";
 
 const API_URL = "https://api.anthropic.com/v1/messages";
@@ -64,7 +65,10 @@ export const anthropicProvider: AIProvider = {
     }
   },
 
-  async *chatStream(opts: ChatOptions, apiKey: string): AsyncIterable<string> {
+  async *chatStream(
+    opts: ChatOptions,
+    apiKey: string
+  ): AsyncGenerator<string, TokenUsage | undefined, void> {
     const { system, messages } = splitSystem(opts);
     const res = await fetch(API_URL, {
       method: "POST",
@@ -82,12 +86,29 @@ export const anthropicProvider: AIProvider = {
       const body = await res.text().catch(() => "");
       throw new AIError(res.status, body || `HTTP ${res.status}`);
     }
+    // DC-6: input_tokens vienen en message_start; output_tokens (acumulado) en message_delta.
+    let promptTokens = 0;
+    let completionTokens = 0;
     for await (const ev of parseSSE(res)) {
-      const e = ev as { type?: string; delta?: { type?: string; text?: string } };
+      const e = ev as {
+        type?: string;
+        delta?: { type?: string; text?: string };
+        message?: { usage?: { input_tokens?: number; output_tokens?: number } };
+        usage?: { input_tokens?: number; output_tokens?: number };
+      };
+      if (e.type === "message_start" && e.message?.usage) {
+        promptTokens = e.message.usage.input_tokens ?? 0;
+        completionTokens = e.message.usage.output_tokens ?? 0;
+      }
       if (e.type === "content_block_delta" && e.delta?.type === "text_delta" && e.delta.text) {
         yield e.delta.text;
       }
+      if (e.type === "message_delta" && e.usage) {
+        if (typeof e.usage.output_tokens === "number") completionTokens = e.usage.output_tokens;
+        if (typeof e.usage.input_tokens === "number") promptTokens = e.usage.input_tokens;
+      }
     }
+    return promptTokens || completionTokens ? { promptTokens, completionTokens } : undefined;
   },
 
   // DC-3: un turno con tools (formato Anthropic: tool_use como content block). No-streaming.
@@ -132,6 +153,7 @@ export const anthropicProvider: AIProvider = {
           name?: string;
           input?: Record<string, unknown>;
         }[];
+        usage?: { input_tokens?: number; output_tokens?: number };
       };
       const blocks = data.content ?? [];
       const text = blocks
@@ -139,14 +161,21 @@ export const anthropicProvider: AIProvider = {
         .map((b) => b.text!.trim())
         .join("\n\n")
         .trim();
+      const usage: TokenUsage | undefined = data.usage
+        ? {
+            promptTokens: data.usage.input_tokens ?? 0,
+            completionTokens: data.usage.output_tokens ?? 0,
+          }
+        : undefined;
       const use = blocks.find((b) => b.type === "tool_use" && b.name);
       if (use?.name) {
         return {
           text,
+          usage,
           toolCall: { id: use.id || use.name, name: use.name, arguments: use.input ?? {} },
         };
       }
-      return { text };
+      return { text, usage };
     } finally {
       clearTimeout(timeout);
     }

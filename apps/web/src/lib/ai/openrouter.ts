@@ -7,6 +7,7 @@ import {
   type ChatOptions,
   type ChatResult,
   type ToolSpec,
+  type TokenUsage,
 } from "./types";
 
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
@@ -52,7 +53,10 @@ export const openrouterProvider: AIProvider = {
     }
   },
 
-  async *chatStream(opts: ChatOptions, apiKey: string): AsyncIterable<string> {
+  async *chatStream(
+    opts: ChatOptions,
+    apiKey: string
+  ): AsyncGenerator<string, TokenUsage | undefined, void> {
     const messages = opts.messages.map((m) => ({ role: m.role, content: m.content }));
     const res = await fetch(API_URL, {
       method: "POST",
@@ -62,6 +66,7 @@ export const openrouterProvider: AIProvider = {
         max_tokens: opts.maxTokens ?? 1024,
         temperature: opts.temperature ?? 0.7,
         stream: true,
+        stream_options: { include_usage: true }, // DC-6: el chunk final trae usage
         messages,
       }),
     });
@@ -69,11 +74,22 @@ export const openrouterProvider: AIProvider = {
       const body = await res.text().catch(() => "");
       throw new AIError(res.status, body || `HTTP ${res.status}`);
     }
+    let usage: TokenUsage | undefined;
     for await (const ev of parseSSE(res)) {
-      const token = (ev as { choices?: { delta?: { content?: string } }[] })?.choices?.[0]?.delta
-        ?.content;
+      const e = ev as {
+        choices?: { delta?: { content?: string } }[];
+        usage?: { prompt_tokens?: number; completion_tokens?: number };
+      };
+      const token = e?.choices?.[0]?.delta?.content;
       if (token) yield token;
+      if (e?.usage) {
+        usage = {
+          promptTokens: e.usage.prompt_tokens ?? 0,
+          completionTokens: e.usage.completion_tokens ?? 0,
+        };
+      }
     }
+    return usage;
   },
 
   // DC-3: un turno con tools (formato OpenAI). No-streaming.
@@ -116,9 +132,16 @@ export const openrouterProvider: AIProvider = {
             tool_calls?: { id?: string; function?: { name?: string; arguments?: string } }[];
           };
         }[];
+        usage?: { prompt_tokens?: number; completion_tokens?: number };
       };
       const msg = data.choices?.[0]?.message;
       const text = (msg?.content ?? "").trim();
+      const usage: TokenUsage | undefined = data.usage
+        ? {
+            promptTokens: data.usage.prompt_tokens ?? 0,
+            completionTokens: data.usage.completion_tokens ?? 0,
+          }
+        : undefined;
       const call = msg?.tool_calls?.[0];
       if (call?.function?.name) {
         let args: Record<string, unknown> = {};
@@ -129,10 +152,11 @@ export const openrouterProvider: AIProvider = {
         }
         return {
           text,
+          usage,
           toolCall: { id: call.id || call.function.name, name: call.function.name, arguments: args },
         };
       }
-      return { text };
+      return { text, usage };
     } finally {
       clearTimeout(timeout);
     }

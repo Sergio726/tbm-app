@@ -5,6 +5,11 @@ import { createPortal } from "react-dom";
 import { JarvisCore } from "./jarvis-core";
 import type { ChatMessage } from "@/lib/ai";
 import type { DcPublicPersona } from "@/lib/dc-persona";
+import {
+  listConversations,
+  getConversationMessages,
+  type ConversationSummary,
+} from "@/lib/jarvis-history";
 
 const ERRORS: Record<string, string> = {
   no_sesion: "Tu sesión expiró. Recargá la página.",
@@ -12,6 +17,7 @@ const ERRORS: Record<string, string> = {
   sin_config: "El asistente todavía no está configurado (falta la API key).",
   provider_no_implementado: "El proveedor configurado no está disponible.",
   key_invalida: "La API key configurada es inválida.",
+  rate_limit: "Alcanzaste el límite de mensajes por ahora. Probá de nuevo en un rato.",
   fallo: "No pude responder ahora mismo. Probá de nuevo en un momento.",
 };
 
@@ -51,6 +57,11 @@ export function JarvisPanel({
   const [pending, setPending] = useState(false); // esperando el primer token
   const [streaming, setStreaming] = useState(false); // recibiendo tokens
   const [copied, setCopied] = useState<number | null>(null);
+  // DC-6: historial persistente
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLElement>(null);
@@ -104,6 +115,43 @@ export function JarvisPanel({
     setStreaming(false);
   };
 
+  // DC-6: capturar el id de conversación que devuelve el server (header).
+  const captureConvId = (res: Response) => {
+    const cid = res.headers.get("x-conversation-id");
+    if (cid) setConversationId(cid);
+  };
+
+  // DC-6: abrir el historial y traer las conversaciones del usuario.
+  const openHistory = async () => {
+    setShowHistory(true);
+    setLoadingHistory(true);
+    try {
+      setConversations(await listConversations());
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  // DC-6: retomar una conversación (carga sus mensajes al panel).
+  const loadConversation = async (id: string) => {
+    setShowHistory(false);
+    setPending(true);
+    try {
+      const msgs = await getConversationMessages(id);
+      setMessages(msgs.map((m) => ({ role: m.role, content: m.content })));
+      setConversationId(id);
+    } finally {
+      setPending(false);
+    }
+  };
+
+  const newConversation = () => {
+    stop();
+    setMessages([]);
+    setConversationId(null);
+    setShowHistory(false);
+  };
+
   // Solo el historial conversacional real (sin tarjetas de acción ni errores).
   const chatHistory = (msgs: Msg[]): ChatMessage[] =>
     msgs.filter((m) => !m.proposal && !m.error).map((m) => ({ role: m.role, content: m.content }));
@@ -153,9 +201,15 @@ export function JarvisPanel({
       const res = await fetch("/api/jarvis", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages: history, module: moduleLabel, origin: window.location.origin }),
+        body: JSON.stringify({
+          messages: history,
+          module: moduleLabel,
+          origin: window.location.origin,
+          conversationId,
+        }),
         signal: ctrl.signal,
       });
+      captureConvId(res);
 
       // DC-3: respuesta JSON = error (no-200) o propuesta de acción.
       const ct = res.headers.get("content-type") ?? "";
@@ -164,9 +218,11 @@ export function JarvisPanel({
           error?: string;
           type?: string;
           proposal?: Proposal;
+          conversationId?: string;
         };
         setPending(false);
         if (res.ok && j.type === "proposal" && j.proposal) {
+          if (j.conversationId) setConversationId(j.conversationId);
           setMessages((prev) => [...prev, { role: "assistant", content: "", proposal: j.proposal }]);
         } else {
           setMessages((prev) => [
@@ -215,9 +271,11 @@ export function JarvisPanel({
           messages: history,
           module: moduleLabel,
           origin: window.location.origin,
+          conversationId,
         }),
         signal: ctrl.signal,
       });
+      captureConvId(res);
       if (!res.ok || !res.body) {
         const j = (await res.json().catch(() => ({}))) as { error?: string };
         setPending(false);
@@ -302,13 +360,19 @@ export function JarvisPanel({
             </div>
           </div>
           <div className="flex items-center" style={{ gap: 4 }}>
+            <button
+              type="button"
+              onClick={() => (showHistory ? setShowHistory(false) : openHistory())}
+              aria-label="Historial"
+              title="Historial"
+              style={iconBtn}
+            >
+              🕘
+            </button>
             {messages.length > 0 && (
               <button
                 type="button"
-                onClick={() => {
-                  stop();
-                  setMessages([]);
-                }}
+                onClick={newConversation}
                 aria-label="Nueva conversación"
                 title="Nueva conversación"
                 style={iconBtn}
@@ -324,7 +388,45 @@ export function JarvisPanel({
 
         {/* Mensajes */}
         <div ref={scrollRef} className="flex-1" style={{ overflowY: "auto", padding: 16 }}>
-          {messages.length === 0 ? (
+          {showHistory ? (
+            <div className="flex flex-col" style={{ gap: 6 }}>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", margin: "2px 0 8px" }}>
+                Conversaciones anteriores
+              </div>
+              {loadingHistory ? (
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}>Cargando…</div>
+              ) : conversations.length === 0 ? (
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
+                  Todavía no hay conversaciones guardadas.
+                </div>
+              ) : (
+                conversations.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => loadConversation(c.id)}
+                    style={{
+                      textAlign: "left",
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      background:
+                        c.id === conversationId ? "rgba(91,138,255,0.12)" : "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                      color: "rgba(255,255,255,0.85)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <div style={{ fontSize: 13.5, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {c.title || "Conversación"}
+                    </div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                      {new Date(c.updated_at).toLocaleString("es-AR")}
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          ) : messages.length === 0 ? (
             <div className="flex flex-col" style={{ gap: 10 }}>
               <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
                 {persona.welcome}

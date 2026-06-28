@@ -1714,6 +1714,55 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_conversations: {
+        Row: {
+          id: string
+          user_id: string
+          company_id: string | null
+          title: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          company_id?: string | null
+          title?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_messages: {
+        Row: {
+          id: string
+          conversation_id: string
+          role: string
+          content: string
+          model: string | null
+          prompt_tokens: number
+          completion_tokens: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          role: string
+          content?: string
+          model?: string | null
+          prompt_tokens?: number
+          completion_tokens?: number
+          created_at?: string
+        }
+        Update: {
+          content?: string
+        }
+        Relationships: []
+      }
       email_config: {
         Row: {
           id: string
