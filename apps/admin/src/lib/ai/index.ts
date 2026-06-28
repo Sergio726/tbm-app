@@ -21,7 +21,10 @@ export const PROVIDERS: ProviderMeta[] = [
     label: "OpenRouter (multi-LLM) · recomendado",
     implemented: true,
     allowCustomModel: true,
-    hint: "Un endpoint y una key dan acceso a toda la gama. Modelo = slug de openrouter.ai/models.",
+    hint:
+      "Un endpoint y una key dan acceso a toda la gama. Modelo = slug de openrouter.ai/models. " +
+      "Los modelos «gratis» (:free) no consumen créditos de OpenRouter, pero tienen límites de uso, " +
+      "más latencia y a veces menor calidad: ideales para probar, no garantizados para producción.",
     models: [
       { id: "anthropic/claude-3.5-haiku", label: "Claude 3.5 Haiku · económico" },
       { id: "anthropic/claude-3.7-sonnet", label: "Claude 3.7 Sonnet" },
@@ -35,6 +38,11 @@ export const PROVIDERS: ProviderMeta[] = [
       { id: "deepseek/deepseek-r1", label: "DeepSeek R1 · razonamiento" },
       { id: "meta-llama/llama-3.3-70b-instruct", label: "Llama 3.3 70B" },
       { id: "x-ai/grok-2", label: "Grok 2 (xAI)" },
+      // ── Gratis (:free) — potentes para la beta. Validar slugs vigentes en openrouter.ai/models. ──
+      { id: "deepseek/deepseek-r1:free", label: "DeepSeek R1 · gratis (razonamiento)" },
+      { id: "meta-llama/llama-3.3-70b-instruct:free", label: "Llama 3.3 70B · gratis" },
+      { id: "google/gemini-2.0-flash-exp:free", label: "Gemini 2.0 Flash (exp) · gratis" },
+      { id: "qwen/qwen-2.5-72b-instruct:free", label: "Qwen 2.5 72B · gratis" },
     ],
   },
   {

@@ -1641,6 +1641,36 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_requests: {
+        Row: {
+          id: string
+          company_id: string
+          requested_by: string
+          amount: number | null
+          note: string | null
+          status: string
+          created_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          requested_by: string
+          amount?: number | null
+          note?: string | null
+          status?: string
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Update: {
+          status?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Relationships: []
+      }
       knowledge_chunks: {
         Row: {
           id: string

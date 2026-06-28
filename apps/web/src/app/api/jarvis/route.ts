@@ -14,6 +14,7 @@ import { retrieveKnowledge } from "@/lib/jarvis-retrieval";
 import { TBM_METHOD_FRAMING } from "@/lib/tbm-disc-context";
 import { DC_DEFAULTS, toneLine, ragEnabled, actionsEnabled } from "@/lib/dc-persona";
 import { DC_TOOL_SPECS, isToolName, prepareProposal, executeTool } from "@/lib/jarvis-tools";
+import { NAV_SLUGS, parseNavMarker } from "@/lib/dc-navigation";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -35,6 +36,17 @@ function behaviorRules(name: string) {
     "1. BREVEDAD: respondé corto y al grano (2 a 4 frases). NO hagas respuestas largas ni listados extensos salvo que el usuario lo pida explícitamente.",
     "2. CIERRE CON PREGUNTA: terminá SIEMPRE con UNA sola pregunta breve para entender mejor qué necesita y seguir la conversación (ej.: '¿Querés que lo veamos con tu equipo?').",
     "3. SOLO TU DOMINIO: respondé únicamente sobre el método TBM, liderazgo, gestión y diseño de equipos, delegación, DISC, productividad del líder y el negocio del usuario. Si te preguntan algo fuera de eso (recetas, deportes, entretenimiento, trivia, temas personales no laborales), NO lo respondas: decliná con amabilidad y reencauzá. Ej.: 'Eso se sale de lo mío 🙂. Estoy para ayudarte a multiplicar tu negocio y tu equipo. ¿En qué te doy una mano hoy?'",
+  ].join("\n");
+}
+
+// N1: navegación — se inyecta SIEMPRE (todos los roles). DC puede llevar al usuario
+// a la pantalla correcta agregando un marcador al final que el panel vuelve botón.
+function navigationFraming() {
+  return [
+    "NAVEGACIÓN (podés llevar al usuario a la pantalla correcta):",
+    "Si tu respuesta se refiere a algo que se hace en un módulo de la app, agregá AL FINAL, en una línea sola, el marcador [[IR:<slug>]] (un solo marcador). El usuario verá un botón para ir a esa pantalla.",
+    `Slugs válidos: ${NAV_SLUGS.join(", ")}.`,
+    "Si la pregunta no se resuelve en un módulo concreto, NO agregues el marcador. Nunca menciones el marcador en el texto ni expliques su existencia: es una instrucción interna.",
   ].join("\n");
 }
 
@@ -240,6 +252,8 @@ export async function POST(req: Request) {
     "",
     behaviorRules(personaName),
     toneLine(cfg.tone),
+    "",
+    navigationFraming(),
     ...(useActions ? ["", toolsFraming(personaName)] : []),
     "",
     TBM_METHOD_FRAMING,
@@ -278,7 +292,8 @@ export async function POST(req: Request) {
           return NextResponse.json({ type: "proposal", proposal: prep.proposal, conversationId });
         }
         const msg = result.text ? `${result.text}\n\n${prep.message}` : prep.message;
-        if (conversationId) await saveMessage(supabase, conversationId, "assistant", msg, cfg.model, result.usage);
+        if (conversationId)
+          await saveMessage(supabase, conversationId, "assistant", parseNavMarker(msg).clean, cfg.model, result.usage);
         return textResponse(msg, conversationId);
       }
       const finalText = result.text || "¿En qué te doy una mano con tu equipo?";
@@ -287,7 +302,7 @@ export async function POST(req: Request) {
           supabase,
           conversationId,
           "assistant",
-          finalText,
+          parseNavMarker(finalText).clean,
           cfg.model,
           result.usage ?? { promptTokens: 0, completionTokens: estimateTokens(finalText) }
         );
@@ -321,13 +336,14 @@ export async function POST(req: Request) {
         controller.enqueue(encoder.encode("\n\n[No pude completar la respuesta. Probá de nuevo.]"));
       } finally {
         // DC-6: persistir ANTES de close() — en Vercel el trabajo post-close puede no completarse.
+        // N1: guardar el texto SIN el marcador [[IR:…]] (no recargar botones viejos del historial).
         if (conversationId && acc) {
           try {
             await saveMessage(
               supabase,
               conversationId,
               "assistant",
-              acc,
+              parseNavMarker(acc).clean,
               cfg.model,
               usage ?? { promptTokens: 0, completionTokens: estimateTokens(acc) }
             );

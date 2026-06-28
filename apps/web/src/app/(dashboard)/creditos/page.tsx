@@ -2,13 +2,8 @@ import { redirect } from "next/navigation";
 import { CreditCard, Ticket, Info, Mail, History } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getSupportEmail } from "@/lib/email";
-import {
-  creditTypeLabel,
-  formatCreditDate,
-  buildCreditRequestMailto,
-  SUPPORT_EMAIL,
-} from "@/lib/credits";
+import { creditTypeLabel, formatCreditDate } from "@/lib/credits";
+import { RequestCreditsButton } from "./request-credits-button";
 
 export const dynamic = "force-dynamic";
 
@@ -29,16 +24,14 @@ export default async function CreditosPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, company_id, companies(name)")
+    .select("role, company_id")
     .eq("id", user.id)
     .single();
 
   // Los créditos son de la empresa y solo el Arquitecto los gestiona.
   if (profile?.role !== "arquitecto" || !profile.company_id) redirect("/dashboard");
 
-  const companyName = (profile.companies as { name: string } | null)?.name ?? null;
-
-  const [{ data: credits }, { data: txs }] = await Promise.all([
+  const [{ data: credits }, { data: txs }, { count: pendingCount }] = await Promise.all([
     supabase
       .from("company_credits")
       .select("balance")
@@ -50,12 +43,17 @@ export default async function CreditosPage() {
       .eq("company_id", profile.company_id)
       .order("created_at", { ascending: false })
       .limit(50),
+    // N2: ¿ya hay un pedido de créditos pendiente? → el form lo refleja.
+    supabase
+      .from("credit_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("company_id", profile.company_id)
+      .eq("status", "pending"),
   ]);
 
   const balance = credits?.balance ?? 0;
   const history = (txs ?? []) as Tx[];
-  // Casilla de soporte configurable desde el admin (F1), con fallback al default.
-  const supportEmail = (await getSupportEmail()) ?? SUPPORT_EMAIL;
+  const hasPending = (pendingCount ?? 0) > 0;
   const low = balance > 0 && balance <= 3;
   const accent = balance === 0 ? "#fca5a5" : low ? "#fbbf24" : "#9bb8ff";
   const accentBg =
@@ -146,22 +144,10 @@ export default async function CreditosPage() {
         {/* Cómo conseguir más */}
         <Card title="¿Necesitás más?" icon={<Mail size={16} strokeWidth={1.9} />}>
           <p style={{ margin: "0 0 14px", fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.55 }}>
-            Durante la beta cargamos los créditos a mano. Escribinos y te sumamos más para que sigas
-            evaluando a tu equipo.
+            Durante la beta cargamos los créditos a mano. Mandanos el pedido desde acá y te sumamos
+            más para que sigas evaluando a tu equipo.
           </p>
-          <a
-            href={buildCreditRequestMailto(companyName, supportEmail)}
-            className="inline-flex items-center gap-2 rounded-xl text-white transition hover:-translate-y-px"
-            style={{
-              background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-              boxShadow: "0 8px 22px rgba(91,138,255,0.34), inset 0 1px 0 rgba(255,255,255,0.2)",
-              padding: "11px 18px",
-              fontSize: 13.5,
-              fontWeight: 600,
-            }}
-          >
-            <Mail size={15} strokeWidth={1.9} /> Pedir más créditos
-          </a>
+          <RequestCreditsButton hasPending={hasPending} />
         </Card>
       </div>
 

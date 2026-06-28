@@ -20,7 +20,6 @@ import {
   Check,
   Sparkles,
   Shield,
-  Quote,
   Target,
   Activity,
   Zap,
@@ -233,58 +232,6 @@ function LeftPanel() {
 
         {/* Product preview */}
         <ProductPreview />
-      </div>
-
-      {/* Testimonial */}
-      <div
-        className="relative flex"
-        style={{
-          gap: 14,
-          maxWidth: 520,
-          paddingTop: 22,
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div style={{ color: "#5b8aff", flexShrink: 0, marginTop: 2 }}>
-          <Quote size={20} strokeWidth={1.6} />
-        </div>
-        <div>
-          <div
-            style={{
-              fontSize: 13.5,
-              color: "rgba(255,255,255,0.78)",
-              lineHeight: 1.55,
-              fontStyle: "italic",
-            }}
-          >
-            “Pasamos de improvisar todos los días a tener un sistema. Los rituales
-            solos cambiaron la calidad de mis lunes.”
-          </div>
-          <div
-            className="flex items-center"
-            style={{ gap: 10, marginTop: 10 }}
-          >
-            <div
-              className="flex items-center justify-center text-white"
-              style={{
-                width: 26,
-                height: 26,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #a78bfa, #6d28d9)",
-                fontSize: 11,
-                fontWeight: 600,
-              }}
-            >
-              JP
-            </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
-              <span style={{ color: "#fff", fontWeight: 500 }}>
-                Joaquín Pérez
-              </span>{" "}
-              · CEO en Acme
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

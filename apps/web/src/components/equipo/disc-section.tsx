@@ -12,7 +12,7 @@ import {
 } from "./primitives";
 import { LettersHintBox } from "./letters-hint";
 import { TestLinkBox } from "./test-link-box";
-import { DiscRadar } from "./disc-radar";
+import { DiscQuadrantModel } from "./disc-quadrant-model";
 import { DiscBars } from "./disc-bars";
 import {
   archetypeFor,
@@ -104,20 +104,9 @@ export function DiscSection({
 
       {code ? (
         <>
-          {/* radar + stat bars */}
-          <div className="mb-[22px] grid items-center gap-5 md:grid-cols-[230px_minmax(0,1fr)]">
-            <div
-              className="rounded-[14px] border border-white/[0.05] p-3"
-              style={{
-                background:
-                  "radial-gradient(circle at 50% 45%, rgba(91,138,255,0.07), transparent 70%)",
-              }}
-            >
-              <div className="mb-1 text-center text-[10px] font-bold uppercase tracking-[1.2px] text-white/40">
-                Atributos base
-              </div>
-              <DiscRadar scores={pctScores} primary={primary} />
-            </div>
+          {/* modelo de cuadrantes (estilo) + barras de medición */}
+          <div className="mb-[22px] flex flex-col gap-4">
+            <DiscQuadrantModel primary={primary} code={code} />
             <DiscBars scores={pctScores} primary={primary} />
           </div>
 

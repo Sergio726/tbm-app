@@ -51,7 +51,7 @@ export default async function EmpresaDetailPage({
     .maybeSingle();
   if (!company) notFound();
 
-  const [{ data: profiles }, { data: credits }, { data: ledger }, { data: audit }] =
+  const [{ data: profiles }, { data: credits }, { data: ledger }, { data: audit }, { data: requests }] =
     await Promise.all([
       admin
         .from("profiles")
@@ -71,11 +71,19 @@ export default async function EmpresaDetailPage({
         .eq("target_id", id)
         .order("created_at", { ascending: false })
         .limit(20),
+      // N2: pedidos de créditos pendientes de esta empresa.
+      admin
+        .from("credit_requests")
+        .select("id, requested_by, amount, note, created_at")
+        .eq("company_id", id)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false }),
     ]);
 
   const members = profiles ?? [];
   const lider = members.find((m) => m.id === company.owner_id) ?? null;
   const balance = credits?.balance ?? 0;
+  const pendingRequests = requests ?? [];
 
   // Coaches asignados a esta empresa.
   const { data: assigns } = await admin
@@ -162,6 +170,29 @@ export default async function EmpresaDetailPage({
       <Section title="Coaches asignados">
         <CoachesPanel companyId={company.id} initialCoaches={coachProfiles ?? []} />
       </Section>
+
+      {/* Pedidos de créditos pendientes (N2) */}
+      {pendingRequests.length > 0 && (
+        <Section title={`Pedidos de créditos pendientes (${pendingRequests.length})`}>
+          <p style={{ fontSize: 12.5, color: "var(--muted)", margin: "0 0 12px" }}>
+            Cargá los créditos con el formulario de arriba: al hacerlo, los pedidos pendientes se
+            marcan como resueltos automáticamente.
+          </p>
+          <Table head={["Fecha", "Solicita", "Cantidad", "Nota"]}>
+            {pendingRequests.map((r) => {
+              const who = members.find((m) => m.id === r.requested_by);
+              return (
+                <tr key={r.id} style={{ borderTop: "1px solid var(--border)" }}>
+                  <td style={{ ...td, color: "var(--muted)", whiteSpace: "nowrap" }}>{fmt(r.created_at)}</td>
+                  <td style={td}>{who?.full_name || who?.email || "—"}</td>
+                  <td style={{ ...td, fontWeight: 700 }}>{r.amount ?? "—"}</td>
+                  <td style={{ ...td, color: "var(--muted)" }}>{r.note ?? "—"}</td>
+                </tr>
+              );
+            })}
+          </Table>
+        </Section>
+      )}
 
       {/* Ledger de créditos */}
       <Section title="Movimientos de créditos">
