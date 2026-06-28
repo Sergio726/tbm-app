@@ -198,6 +198,31 @@ No son features nuevas: es calidad. Agrupados por urgencia.
 
 ---
 
+## 2·D — Theming · Modo claro (mejora futura) — 🟡 base lista, pulido pendiente
+
+**Hecho (2026-06-28):** base de tokens semánticos (canales `R G B` en `globals.css`, dark + light),
+Tailwind cableado, `ThemeProvider` + toggle no-FOUC, y 3 fases de migración (contraste en oscuro +
+codemod de color inline + codemod de `text-white`/bordes/acentos a tokens). El **modo oscuro** quedó
+mejorado (contraste AA) y los componentes son theme-aware.
+
+**Estado del modo claro:** **oculto en prod** detrás de `apps/web/src/lib/theme-flags.ts`
+(`LIGHT_THEME_READY=false` → fuerza oscuro y esconde el selector de `/cuenta`). Está al ~90%: el codemod
+dejó superficies + texto + acentos en tokens, pero falta **pulido fino** antes de exponerlo.
+
+**Pendiente para activarlo (`LIGHT_THEME_READY=true`):**
+- **Sombras**: token `--shadow` (dark `rgba(0,0,0,.5)` / light `rgba(15,23,42,.08)`) aplicado a cards/
+  paneles (hoy las sombras negras fuertes se ven mal en claro).
+- **Charts**: grillas/labels a tokens en `components/equipo/{disc-bars,disc-connections-diagram,
+  disc-quadrant-model}`, `components/dashboard/{hero-strip,tile-tooltip}`, `feedback-metrics`, semáforos.
+- **Casos sueltos**: tintes de estado oscuros (`#04241a`…), 1 fondo en `onboarding`, gradientes/glows
+  tuneados para dark, y `ROLE_COLOR`/literales dinámicos no anclados por el codemod.
+- **QA visual** pantalla por pantalla en claro + reactivar el toggle.
+- **Alinear `apps/admin`** a los mismos tokens (hoy tiene su propio set, `--muted: 0.55`).
+
+> Cómo previsualizar: poner `LIGHT_THEME_READY=true` en local → `/cuenta → Apariencia → Claro`.
+
+---
+
 ## 2·C — Backlog pedido por Sebas (2026-06-28)
 
 Seis mejoras concretas levantadas en sesión. Cada una con **estado real hoy** (verificado en código)
