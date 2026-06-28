@@ -129,6 +129,7 @@ export function DcLauncher({ persona }: { persona: DcPublicPersona }) {
             onMouseEnter={() => setTip(true)}
             onMouseLeave={() => setTip(false)}
             aria-label={`Abrir asistente ${persona.name}`}
+            data-tour="dc-launcher"
             className="relative inline-flex items-center justify-center rounded-full"
             style={{
               width: 52,
