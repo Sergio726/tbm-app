@@ -51,11 +51,11 @@ export function RocksPanel({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
+          <h2 className="font-bold text-fg" style={{ fontSize: 16 }}>
             Rocas del trimestre
           </h2>
           {quarterDay !== null && (
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
+            <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
               Día {Math.min(quarterDay, 90)} de 90 del trimestre
             </p>
           )}
@@ -68,7 +68,7 @@ export function RocksPanel({
             style={{
               background: "rgba(91,138,255,0.15)",
               border: "1px solid rgba(91,138,255,0.3)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
             title={!canAddRock ? "Máximo 5 Rocas activas" : undefined}
           >
@@ -97,16 +97,16 @@ export function RocksPanel({
         <div
           className="flex flex-col items-center gap-3 rounded-2xl border py-10 text-center"
           style={{
-            borderColor: "rgba(255,255,255,0.06)",
+            borderColor: "var(--border)",
             borderStyle: "dashed",
           }}
         >
-          <Target size={32} style={{ color: "rgba(255,255,255,0.15)" }} />
+          <Target size={32} style={{ color: "var(--fg-subtle)" }} />
           <div>
-            <p className="font-semibold text-white" style={{ fontSize: 14 }}>
+            <p className="font-semibold text-fg" style={{ fontSize: 14 }}>
               Sin Rocas activas
             </p>
-            <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)", marginTop: 4 }}>
+            <p style={{ fontSize: 12.5, color: "var(--fg-muted)", marginTop: 4 }}>
               Las Rocas son los 1–5 resultados más importantes del trimestre.
             </p>
           </div>
@@ -138,7 +138,7 @@ export function RocksPanel({
         <details className="group">
           <summary
             className="cursor-pointer select-none text-xs font-semibold"
-            style={{ color: "rgba(255,255,255,0.62)" }}
+            style={{ color: "var(--fg-muted)" }}
           >
             Historial ({otherRocks.length})
           </summary>

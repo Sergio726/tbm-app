@@ -120,7 +120,7 @@ export function DiscSection({
               </span>
             </p>
           ) : (
-            <p className="-mt-3 mb-[18px] text-[11.5px] text-white/65">
+            <p className="-mt-3 mb-[18px] text-[11.5px] text-fg-muted">
               Valores medidos en el test DISC.
             </p>
           )}
@@ -176,10 +176,10 @@ export function DiscSection({
               <Compass size={16} strokeWidth={1.9} />
               Cómo liderar a {member.full_name?.split(" ")[0] ?? "esta persona"} · estrategia
             </div>
-            <div className="mb-1.5 text-[13.5px] font-semibold leading-snug text-white">
+            <div className="mb-1.5 text-[13.5px] font-semibold leading-snug text-fg">
               {factor.howToManage}
             </div>
-            <div className="text-[12.5px] leading-snug text-white/60">
+            <div className="text-[12.5px] leading-snug text-fg-muted">
               Bajo presión: {factor.underPressure}
             </div>
           </div>
@@ -206,7 +206,7 @@ export function DiscSection({
           </div>
         </>
       ) : (
-        <p className="mt-3 text-[12.5px] text-white/65">
+        <p className="mt-3 text-[12.5px] text-fg-muted">
           Ingresá las letras DISC (del informe) para ver Luz/Sombra, temores y guía de
           liderazgo.
         </p>
@@ -279,7 +279,7 @@ function SideList({
         {items.map((t, i) => (
           <div
             key={i}
-            className="flex gap-2.5 text-[12.5px] leading-snug text-white/70"
+            className="flex gap-2.5 text-[12.5px] leading-snug text-fg"
           >
             <span className="mt-1 flex-shrink-0" style={{ color }}>
               <svg width="6" height="6" viewBox="0 0 6 6">

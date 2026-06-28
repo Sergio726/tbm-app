@@ -86,7 +86,7 @@ export default function SetPasswordPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-tbm-blue/40 bg-tbm-blue/20 text-2xl">
             🔐
           </div>
-          <h2 className="text-xl font-bold text-white">Creá tu contraseña</h2>
+          <h2 className="text-xl font-bold text-fg">Creá tu contraseña</h2>
           <p className="mt-1 text-sm text-tbm-text-secondary">
             Entraste con una contraseña temporal. Definí una propia para asegurar tu cuenta.
           </p>
@@ -110,7 +110,7 @@ export default function SetPasswordPage() {
               <button
                 type="button"
                 onClick={() => setShowPwd((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-fg"
               >
                 {showPwd ? "ocultar" : "ver"}
               </button>

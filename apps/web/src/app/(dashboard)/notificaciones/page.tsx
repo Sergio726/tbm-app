@@ -32,7 +32,7 @@ export default async function NotificacionesPage() {
 
   return (
     <div
-      className="text-white"
+      className="text-fg"
       style={{
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px) 60px",
         maxWidth: 720,
@@ -43,7 +43,7 @@ export default async function NotificacionesPage() {
     >
       <Link
         href="/dashboard"
-        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-white/55 transition hover:text-white/80"
+        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-fg-muted transition hover:text-fg"
       >
         <ArrowLeft size={14} />
         Dashboard
@@ -55,7 +55,7 @@ export default async function NotificacionesPage() {
           style={{
             background: "rgba(91,138,255,0.12)",
             border: "1px solid rgba(91,138,255,0.25)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           <Bell size={18} strokeWidth={1.7} />
@@ -64,7 +64,7 @@ export default async function NotificacionesPage() {
           <h1 className="m-0 text-[22px] font-bold tracking-tight">
             Notificaciones
           </h1>
-          <p className="mt-0.5 text-[12.5px] text-white/55">
+          <p className="mt-0.5 text-[12.5px] text-fg-muted">
             Historial completo · últimas {notifications.length}
           </p>
         </div>
@@ -72,8 +72,8 @@ export default async function NotificacionesPage() {
 
       {notifications.length === 0 ? (
         <div
-          className="rounded-2xl border border-dashed p-10 text-center text-[13.5px] text-white/65"
-          style={{ borderColor: "rgba(255,255,255,0.12)" }}
+          className="rounded-2xl border border-dashed p-10 text-center text-[13.5px] text-fg-muted"
+          style={{ borderColor: "var(--border-strong)" }}
         >
           Sin notificaciones todavía. Acá van a aparecer las tareas asignadas,
           escaladas, completadas y los War Ups iniciados.
@@ -103,12 +103,12 @@ export default async function NotificacionesPage() {
                     >
                       {n.title}
                     </span>
-                    <span className="shrink-0 text-[11px] text-white/65">
+                    <span className="shrink-0 text-[11px] text-fg-muted">
                       {timeAgo(n.created_at)}
                     </span>
                   </div>
                   {n.body && (
-                    <p className="mt-0.5 text-[12.5px] leading-snug text-white/60">
+                    <p className="mt-0.5 text-[12.5px] leading-snug text-fg-muted">
                       {n.body}
                     </p>
                   )}

@@ -56,7 +56,7 @@ export function CompletionBar({
           {ready ? <Trophy size={20} strokeWidth={1.9} /> : <Swords size={20} strokeWidth={1.9} />}
         </div>
         <div>
-          <div className="text-[13.5px] font-bold text-white">
+          <div className="text-[13.5px] font-bold text-fg">
             {savedFlash
               ? "¡Ficha guardada!"
               : ready
@@ -64,7 +64,7 @@ export function CompletionBar({
                 : "Completá la ficha del jugador"}
           </div>
           <div
-            className="mt-0.5 text-[11.5px] text-white/50"
+            className="mt-0.5 text-[11.5px] text-fg-muted"
             style={{ fontFamily: MONO }}
           >
             {doneCount}/{total} objetivos

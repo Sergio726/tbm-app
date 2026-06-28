@@ -35,9 +35,16 @@
 > - ✅ **Contraste (oscuro)**: pasada segura que subió el texto blanco ilegible (`text-white/30-45` →
 >   `/65`; `color: rgba(255,255,255,≤0.45)` → `0.62`) en **78 archivos**, sin tocar fondos/bordes.
 >   Medición previa: ~75 textos a 2.6–3.2:1 (fallaban AA). Umbrales en `docs/PLAN_BACKLOG_2026-06.md`.
-> - ⏳ **Fase 2 (diferido):** migrar el color **inline hardcodeado** (superficies/bordes) de los componentes
->   a tokens para pulir el **modo claro** en todas las pantallas (hoy lo no migrado se ve oscuro en claro,
->   no roto). Alinear `apps/admin`. `components/ui/empty-state` ya migrada como patrón.
+> - ✅ **Fase 2 (hecho, 2026-06-28):** codemod que migró el color **inline** a tokens en **88 archivos**:
+>   navy hardcodeado (`#0A1628/#0F1B2D/#162238/#1E3050…`) → `var(--bg/--surface/--elevated/--border)` y
+>   texto (`color: rgba(255,255,255,α)` / `#fff`) → `var(--fg/-muted/-subtle)` por banda.
+> - ✅ **Fase 3 (hecho, 2026-06-28):** codemod agresivo para el **modo claro usable** (124 archivos): clases
+>   `text-white*` → `text-fg/-muted/-subtle` (era el bloqueante #1), bordes/fills de blanco translúcido →
+>   `var(--border/--border-strong/--elevated)`, literales de acento/estado como texto → `var(--accent/
+>   success/warn/danger-text)`, y hexes oscuros faltantes. **Toggle de tema oculto en prod** detrás de
+>   `lib/theme-flags.ts` (`LIGHT_THEME_READY=false`) → fuerza oscuro hasta QA visual del claro.
+> - ⏳ **Pendiente fase 3:** QA visual del claro + pulido fino (sombras vía token `--shadow`, grillas de
+>   charts, casos sueltos), reactivar el toggle (`LIGHT_THEME_READY=true`), y alinear `apps/admin`.
 >
 > **Novedades 2026-06-28 (backlog Sebas N1–N6):** 6 mejoras pedidas por Sebas, decisiones cerradas +
 > plan en [`docs/PLAN_BACKLOG_2026-06.md`](docs/PLAN_BACKLOG_2026-06.md). Rama `backlog-n1-n6` (typecheck

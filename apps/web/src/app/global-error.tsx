@@ -26,8 +26,8 @@ export default function GlobalError({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0a0e1a",
-          color: "rgba(255,255,255,0.9)",
+          background: "var(--bg)",
+          color: "var(--fg)",
           fontFamily: "Inter, system-ui, sans-serif",
           padding: 24,
         }}
@@ -40,7 +40,7 @@ export default function GlobalError({
           <p
             style={{
               fontSize: 14,
-              color: "rgba(255,255,255,0.55)",
+              color: "var(--fg-subtle)",
               lineHeight: 1.5,
               margin: "0 0 20px",
             }}
@@ -56,7 +56,7 @@ export default function GlobalError({
               borderRadius: 10,
               border: "none",
               background: "linear-gradient(180deg, #4f86ff, #2c5fe6)",
-              color: "#fff",
+              color: "var(--fg)",
               fontSize: 14,
               fontWeight: 600,
               cursor: "pointer",

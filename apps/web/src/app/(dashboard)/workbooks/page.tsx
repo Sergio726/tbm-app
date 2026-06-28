@@ -57,7 +57,7 @@ export default async function WorkbooksPage() {
   return (
     <div
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
         minHeight: "100vh",
@@ -72,20 +72,20 @@ export default async function WorkbooksPage() {
               style={{
                 background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
                 border: "1px solid rgba(91,138,255,0.25)",
-                color: "#9fb9ff",
+                color: "var(--accent-text)",
               }}
             >
               <BookOpen size={18} strokeWidth={1.6} />
             </div>
             <h1
-              className="text-white"
+              className="text-fg"
               style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}
             >
               Workbooks
             </h1>
           </div>
           <p
-            style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}
+            style={{ fontSize: 14, color: "var(--fg-muted)", marginLeft: 52 }}
           >
             Programa TBM — 8 sesiones interactivas que transforman el conocimiento en acción concreta
           </p>
@@ -96,7 +96,7 @@ export default async function WorkbooksPage() {
           style={{
             background: "rgba(91,138,255,0.10)",
             borderColor: "rgba(91,138,255,0.30)",
-            color: "#bcd0ff",
+            color: "var(--accent-text)",
           }}
         >
           <BarChart3 size={15} />
@@ -116,13 +116,13 @@ export default async function WorkbooksPage() {
         <div className="flex items-start gap-3">
           <div
             className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold"
-            style={{ background: "rgba(91,138,255,0.2)", color: "#9fb9ff" }}
+            style={{ background: "rgba(91,138,255,0.2)", color: "var(--accent-text)" }}
           >
             i
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">Metodología de desbloqueo</p>
-            <p className="mt-0.5 text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <p className="text-sm font-semibold text-fg">Metodología de desbloqueo</p>
+            <p className="mt-0.5 text-xs leading-relaxed" style={{ color: "var(--fg-subtle)" }}>
               Cada sesión se desbloquea automáticamente 7 días después de completar la anterior al 100%.
               Si la completás antes, podés solicitar avance anticipado desde dentro de la sesión.
             </p>

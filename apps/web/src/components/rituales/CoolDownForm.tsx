@@ -106,7 +106,7 @@ export default function CoolDownForm({
         borderRadius: 16,
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        border: "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid var(--border)",
       }}
     >
       <div
@@ -118,7 +118,7 @@ export default function CoolDownForm({
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.3,
           }}
         >
@@ -130,7 +130,7 @@ export default function CoolDownForm({
             style={{
               gap: 6,
               fontSize: 11.5,
-              color: "#fb923c",
+              color: "var(--warn-text)",
               padding: "4px 10px",
               borderRadius: 999,
               background: "rgba(251,146,60,0.10)",
@@ -191,7 +191,7 @@ export default function CoolDownForm({
             borderRadius: 10,
             background: "rgba(248,113,113,0.10)",
             border: "1px solid rgba(248,113,113,0.30)",
-            color: "#fca5a5",
+            color: "var(--danger-text)",
             fontSize: 13,
           }}
         >
@@ -219,7 +219,7 @@ export default function CoolDownForm({
       )}
 
       <div className="flex items-center justify-between">
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+        <div style={{ fontSize: 12, color: "var(--fg-muted)" }}>
           {savedAt
             ? "Guardado · " +
               new Date(savedAt).toLocaleTimeString("es-AR", {
@@ -262,10 +262,10 @@ export default function CoolDownForm({
 
 const TEXTAREA_STYLE: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
+  background: "var(--elevated)",
+  border: "1px solid var(--border)",
   borderRadius: 10,
-  color: "#fff",
+  color: "var(--fg)",
   padding: "10px 14px",
   fontSize: 13.5,
   resize: "vertical",
@@ -290,19 +290,19 @@ function Field({
         style={{
           fontSize: 13.5,
           fontWeight: 600,
-          color: "#fff",
+          color: "var(--fg)",
           marginBottom: 2,
         }}
       >
         {label}
         {required && (
-          <span style={{ color: "#fb923c", marginLeft: 6 }}>·obligatorio</span>
+          <span style={{ color: "var(--warn-text)", marginLeft: 6 }}>·obligatorio</span>
         )}
       </div>
       <p
         style={{
           fontSize: 12.5,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 4,
           lineHeight: 1.5,
         }}

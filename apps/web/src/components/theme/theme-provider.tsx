@@ -6,6 +6,7 @@
 // SO en vivo. El no-FOUC lo resuelve el script inline del layout (corre antes del paint).
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { LIGHT_THEME_READY } from "@/lib/theme-flags";
 
 export type ThemePref = "dark" | "light" | "system";
 const STORAGE_KEY = "tbm-theme";
@@ -33,7 +34,8 @@ function readPref(): ThemePref {
 
 /** Aplica el tema resuelto al <html>. Centraliza el efecto (mismo cálculo que el script inline). */
 function apply(pref: ThemePref): "dark" | "light" {
-  const resolved = pref === "system" ? systemTheme() : pref;
+  // Mientras el claro no esté listo, la app fuerza oscuro (ver theme-flags).
+  const resolved = !LIGHT_THEME_READY ? "dark" : pref === "system" ? systemTheme() : pref;
   document.documentElement.dataset.theme = resolved;
   return resolved;
 }
@@ -79,4 +81,6 @@ export function useTheme(): Ctx {
  * Script que corre ANTES del primer paint (se inyecta en <head> del layout) para
  * evitar el flash de tema. Lee la misma key que el provider. Mantener en sync.
  */
-export const THEME_INIT_SCRIPT = `(function(){try{var p=localStorage.getItem('${STORAGE_KEY}');var t=(p==='light'||p==='dark')?p:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}})();`;
+export const THEME_INIT_SCRIPT = LIGHT_THEME_READY
+  ? `(function(){try{var p=localStorage.getItem('${STORAGE_KEY}');var t=(p==='light'||p==='dark')?p:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}})();`
+  : `document.documentElement.dataset.theme='dark';`;

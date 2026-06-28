@@ -76,11 +76,11 @@ export function FeedbackMetrics({ feedbacks: allFeedbacks }: FeedbackMetricsProp
         <div
           className="flex flex-1 items-center gap-2 rounded-lg border px-3 py-2"
           style={{
-            background: "rgba(255,255,255,0.02)",
-            borderColor: "rgba(255,255,255,0.07)",
+            background: "var(--elevated)",
+            borderColor: "var(--border)",
           }}
         >
-          <span className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+          <span className="text-xs" style={{ color: "var(--fg-muted)" }}>
             Total
           </span>
           <span
@@ -101,8 +101,8 @@ export function FeedbackMetrics({ feedbacks: allFeedbacks }: FeedbackMetricsProp
             borderColor: "rgba(251,191,36,0.25)",
           }}
         >
-          <AlertTriangle size={14} strokeWidth={2} style={{ color: "#fbbf24", marginTop: 1 }} />
-          <p style={{ fontSize: 12, color: "#fbbf24", lineHeight: 1.5 }}>
+          <AlertTriangle size={14} strokeWidth={2} style={{ color: "var(--warn-text)", marginTop: 1 }} />
+          <p style={{ fontSize: 12, color: "var(--warn-text)", lineHeight: 1.5 }}>
             Sin feedback entregado hace {daysSinceLastFeedback} días. El feedback frecuente construye equipo.
           </p>
         </div>
@@ -116,8 +116,8 @@ export function FeedbackMetrics({ feedbacks: allFeedbacks }: FeedbackMetricsProp
             borderColor: "rgba(248,113,113,0.25)",
           }}
         >
-          <AlertTriangle size={14} strokeWidth={2} style={{ color: "#f87171", marginTop: 1 }} />
-          <p style={{ fontSize: 12, color: "#f87171", lineHeight: 1.5 }}>
+          <AlertTriangle size={14} strokeWidth={2} style={{ color: "var(--danger-text)", marginTop: 1 }} />
+          <p style={{ fontSize: 12, color: "var(--danger-text)", lineHeight: 1.5 }}>
             Los últimos feedbacks fueron todos tipo C (Corregir). ¿Cuándo fue la última vez que reforzaste algo positivo?
           </p>
         </div>

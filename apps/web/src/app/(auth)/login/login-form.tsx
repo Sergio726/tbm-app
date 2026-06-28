@@ -80,12 +80,12 @@ const MicrosoftMark = ({ size = 18 }: { size?: number }) => (
 function LeftPanel() {
   return (
     <div
-      className="relative hidden flex-col text-white md:flex"
+      className="relative hidden flex-col text-fg md:flex"
       style={{
         flex: "1 1 50%",
         minWidth: 0,
         background:
-          "linear-gradient(180deg, #0c1322 0%, #0a0f1c 60%, #080c17 100%)",
+          "linear-gradient(180deg, var(--bg) 0%, var(--bg) 60%, var(--bg) 100%)",
         overflow: "hidden",
         padding: "40px 56px",
       }}
@@ -137,7 +137,7 @@ function LeftPanel() {
       {/* Brand mark */}
       <div className="relative flex items-center" style={{ gap: 12 }}>
         <div
-          className="flex items-center justify-center text-white"
+          className="flex items-center justify-center text-fg"
           style={{
             width: 42,
             height: 42,
@@ -157,7 +157,7 @@ function LeftPanel() {
           <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: -0.2 }}>
             The Business Multiplier
           </div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+          <div style={{ fontSize: 12, color: "var(--fg-subtle)" }}>
             Sistema operativo de tu negocio
           </div>
         </div>
@@ -185,7 +185,7 @@ function LeftPanel() {
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: 1.4,
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
             width: "fit-content",
             marginBottom: 22,
           }}
@@ -221,7 +221,7 @@ function LeftPanel() {
         <div
           style={{
             fontSize: 15,
-            color: "rgba(255,255,255,0.6)",
+            color: "var(--fg-muted)",
             lineHeight: 1.55,
             marginBottom: 36,
           }}
@@ -254,8 +254,8 @@ function MiniMetric({
         flex: 1,
         padding: 10,
         borderRadius: 9,
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.06)",
+        background: "var(--elevated)",
+        border: "1px solid var(--border)",
       }}
     >
       <div
@@ -267,7 +267,7 @@ function MiniMetric({
           style={{
             fontSize: 10,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             letterSpacing: 0.4,
           }}
         >
@@ -293,7 +293,7 @@ function ProductPreview() {
         borderRadius: 14,
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))",
-        border: "1px solid rgba(255,255,255,0.08)",
+        border: "1px solid var(--border)",
         boxShadow:
           "0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)",
         maxWidth: 460,
@@ -309,7 +309,7 @@ function ProductPreview() {
             style={{
               ...MONO,
               fontSize: 11,
-              color: "rgba(255,255,255,0.62)",
+              color: "var(--fg-muted)",
               letterSpacing: 1.2,
             }}
           >
@@ -329,7 +329,7 @@ function ProductPreview() {
             border: "1px solid rgba(52,211,153,0.3)",
             fontSize: 11,
             fontWeight: 600,
-            color: "#34d399",
+            color: "var(--success-text)",
           }}
         >
           <Leaf size={11} strokeWidth={2} />
@@ -346,7 +346,7 @@ function ProductPreview() {
               gap: 12,
               padding: "8px 10px",
               borderRadius: 8,
-              background: "rgba(255,255,255,0.02)",
+              background: "var(--elevated)",
             }}
           >
             <div
@@ -359,7 +359,7 @@ function ProductPreview() {
                 border: item.done
                   ? "1px solid #34d399"
                   : "1.5px solid rgba(255,255,255,0.2)",
-                color: "#0a0e1a",
+                color: "var(--bg)",
               }}
             >
               {item.done && <Check size={10} strokeWidth={3} />}
@@ -474,7 +474,7 @@ function Field({
             border: "none",
             outline: "none",
             padding: "13px 0",
-            color: "#fff",
+            color: "var(--fg)",
             fontSize: 14,
           }}
         />
@@ -581,14 +581,14 @@ function RightPanel() {
       style={{
         flex: "1 1 50%",
         minWidth: 0,
-        background: "#0a0e1a",
+        background: "var(--bg)",
         padding: "40px 56px",
       }}
     >
       {/* Brand compacto — solo móvil (el LeftPanel está oculto en < md) */}
       <div className="mb-6 flex items-center gap-3 md:hidden">
         <div
-          className="flex flex-shrink-0 items-center justify-center text-white"
+          className="flex flex-shrink-0 items-center justify-center text-fg"
           style={{
             width: 38,
             height: 38,
@@ -608,7 +608,7 @@ function RightPanel() {
           <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: -0.2 }}>
             The Business Multiplier
           </div>
-          <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.5)" }}>
+          <div style={{ fontSize: 11.5, color: "var(--fg-subtle)" }}>
             Sistema operativo de tu negocio
           </div>
         </div>
@@ -633,7 +633,7 @@ function RightPanel() {
               fontWeight: 700,
               margin: "0 0 8px",
               letterSpacing: -0.5,
-              color: "#fff",
+              color: "var(--fg)",
             }}
           >
             Bienvenido de vuelta
@@ -641,7 +641,7 @@ function RightPanel() {
           <div
             style={{
               fontSize: 14,
-              color: "rgba(255,255,255,0.55)",
+              color: "var(--fg-subtle)",
               lineHeight: 1.5,
             }}
           >
@@ -667,9 +667,9 @@ function RightPanel() {
               gap: 9,
               padding: "11px 14px",
               borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.025)",
-              color: "rgba(255,255,255,0.85)",
+              border: "1px solid var(--border)",
+              background: "var(--elevated)",
+              color: "var(--fg)",
               fontSize: 13,
               fontWeight: 500,
               cursor: ssoLoading || loading ? "not-allowed" : "pointer",
@@ -683,8 +683,8 @@ function RightPanel() {
                   width: 14,
                   height: 14,
                   borderRadius: "50%",
-                  border: "2px solid rgba(255,255,255,0.4)",
-                  borderTopColor: "#fff",
+                  border: "2px solid var(--border-strong)",
+                  borderTopColor: "var(--fg)",
                 }}
               />
             ) : (
@@ -701,9 +701,9 @@ function RightPanel() {
               gap: 9,
               padding: "11px 14px",
               borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.025)",
-              color: "rgba(255,255,255,0.85)",
+              border: "1px solid var(--border)",
+              background: "var(--elevated)",
+              color: "var(--fg)",
               fontSize: 13,
               fontWeight: 500,
               cursor: ssoLoading || loading ? "not-allowed" : "pointer",
@@ -717,8 +717,8 @@ function RightPanel() {
                   width: 14,
                   height: 14,
                   borderRadius: "50%",
-                  border: "2px solid rgba(255,255,255,0.4)",
-                  borderTopColor: "#fff",
+                  border: "2px solid var(--border-strong)",
+                  borderTopColor: "var(--fg)",
                 }}
               />
             ) : (
@@ -734,20 +734,20 @@ function RightPanel() {
           style={{ gap: 14, margin: "4px 0 22px" }}
         >
           <div
-            style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }}
+            style={{ flex: 1, height: 1, background: "var(--elevated)" }}
           />
           <div
             style={{
               ...MONO,
               fontSize: 11,
-              color: "rgba(255,255,255,0.62)",
+              color: "var(--fg-muted)",
               letterSpacing: 1,
             }}
           >
             O CONTINUAR CON EMAIL
           </div>
           <div
-            style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }}
+            style={{ flex: 1, height: 1, background: "var(--elevated)" }}
           />
         </div>
 
@@ -787,7 +787,7 @@ function RightPanel() {
                   style={{
                     fontSize: 12.5,
                     fontWeight: 500,
-                    color: "rgba(255,255,255,0.65)",
+                    color: "var(--fg-muted)",
                   }}
                 >
                   Contraseña
@@ -797,7 +797,7 @@ function RightPanel() {
                   className="hover:opacity-80"
                   style={{
                     fontSize: 12,
-                    color: "#9fb9ff",
+                    color: "var(--accent-text)",
                     textDecoration: "none",
                   }}
                 >
@@ -816,7 +816,7 @@ function RightPanel() {
                 style={{
                   background: "transparent",
                   border: "none",
-                  color: "rgba(255,255,255,0.5)",
+                  color: "var(--fg-subtle)",
                   cursor: "pointer",
                   padding: 6,
                   marginLeft: 4,
@@ -853,13 +853,13 @@ function RightPanel() {
                   ? "linear-gradient(135deg, #5b8aff, #2c5fe6)"
                   : "transparent",
                 border: remember ? "1px solid #5b8aff" : "1.5px solid rgba(255,255,255,0.2)",
-                color: "#fff",
+                color: "var(--fg)",
                 boxShadow: remember ? "0 4px 12px rgba(91,138,255,0.32)" : "none",
               }}
             >
               {remember && <Check size={11} strokeWidth={3} />}
             </span>
-            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+            <span style={{ fontSize: 13, color: "var(--fg-muted)" }}>
               Recordarme en este dispositivo
             </span>
           </label>
@@ -871,7 +871,7 @@ function RightPanel() {
                 borderRadius: 10,
                 background: "rgba(248,113,113,0.08)",
                 border: "1px solid rgba(248,113,113,0.3)",
-                color: "#fca5a5",
+                color: "var(--danger-text)",
                 fontSize: 13,
               }}
             >
@@ -893,7 +893,7 @@ function RightPanel() {
                 loading || ssoLoading
                   ? "linear-gradient(180deg, #3a6ad3 0%, #1e4ec0 100%)"
                   : "linear-gradient(180deg, #4f86ff 0%, #2c5fe6 100%)",
-              color: "#fff",
+              color: "var(--fg)",
               fontSize: 14.5,
               fontWeight: 600,
               cursor: loading ? "wait" : "pointer",
@@ -911,8 +911,8 @@ function RightPanel() {
                     width: 14,
                     height: 14,
                     borderRadius: "50%",
-                    border: "2px solid rgba(255,255,255,0.4)",
-                    borderTopColor: "#fff",
+                    border: "2px solid var(--border-strong)",
+                    borderTopColor: "var(--fg)",
                   }}
                 />
                 Iniciando sesión…
@@ -932,7 +932,7 @@ function RightPanel() {
               ...MONO,
               gap: 8,
               fontSize: 11.5,
-              color: "rgba(255,255,255,0.62)",
+              color: "var(--fg-muted)",
               marginTop: 4,
               letterSpacing: 0.3,
             }}
@@ -949,7 +949,7 @@ function RightPanel() {
         style={{
           ...MONO,
           fontSize: 11.5,
-          color: "rgba(255,255,255,0.62)",
+          color: "var(--fg-muted)",
         }}
       >
         <div>© 2026 STLabs · TBM</div>
@@ -987,9 +987,9 @@ function RightPanel() {
 export function LoginForm() {
   return (
     <div
-      className="login-split flex min-h-screen text-white"
+      className="login-split flex min-h-screen text-fg"
       style={{
-        background: "#0a0e1a",
+        background: "var(--bg)",
         fontFamily: "Inter, system-ui, sans-serif",
       }}
     >

@@ -82,14 +82,14 @@ export function NotificationsBell({
           border: open
             ? "1px solid rgba(91,138,255,0.3)"
             : "1px solid rgba(255,255,255,0.07)",
-          color: "rgba(255,255,255,0.7)",
+          color: "var(--fg-muted)",
           cursor: "pointer",
         }}
       >
         <Bell size={16} />
         {unread > 0 && (
           <span
-            className="absolute flex items-center justify-center text-[9px] font-bold text-white"
+            className="absolute flex items-center justify-center text-[9px] font-bold text-fg"
             style={{
               top: 4,
               right: 4,
@@ -98,7 +98,7 @@ export function NotificationsBell({
               padding: "0 4px",
               borderRadius: 99,
               background: "#f87171",
-              border: "2px solid #0a0e1a",
+              border: "2px solid var(--bg)",
             }}
           >
             {unread > 9 ? "9+" : unread}
@@ -117,22 +117,22 @@ export function NotificationsBell({
             className="absolute right-0 z-50 mt-2 overflow-hidden rounded-2xl border"
             style={{
               width: 360,
-              background: "#0f1525",
-              borderColor: "rgba(255,255,255,0.1)",
+              background: "var(--surface)",
+              borderColor: "var(--border)",
               boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
             }}
           >
             <div
               className="flex items-center justify-between border-b px-4 py-3"
-              style={{ borderColor: "rgba(255,255,255,0.07)" }}
+              style={{ borderColor: "var(--border)" }}
             >
-              <span className="text-[13.5px] font-bold text-white">
+              <span className="text-[13.5px] font-bold text-fg">
                 Notificaciones
               </span>
               <button
                 type="button"
                 onClick={markAll}
-                className="flex items-center gap-1 text-[11.5px] font-semibold text-white/50 transition hover:text-white/80"
+                className="flex items-center gap-1 text-[11.5px] font-semibold text-fg-muted transition hover:text-fg"
               >
                 <CheckCheck size={12} />
                 Marcar todo
@@ -141,12 +141,12 @@ export function NotificationsBell({
 
             <div className="max-h-[400px] overflow-y-auto">
               {loading && (
-                <p className="px-4 py-6 text-center text-[12.5px] text-white/65">
+                <p className="px-4 py-6 text-center text-[12.5px] text-fg-muted">
                   Cargando…
                 </p>
               )}
               {!loading && items.length === 0 && (
-                <p className="px-4 py-8 text-center text-[12.5px] text-white/65">
+                <p className="px-4 py-8 text-center text-[12.5px] text-fg-muted">
                   Sin notificaciones todavía.
                 </p>
               )}
@@ -158,7 +158,7 @@ export function NotificationsBell({
                     type="button"
                     onClick={() => goTo(n)}
                     className="flex w-full items-start gap-3 border-b px-4 py-3 text-left transition hover:bg-white/[0.03]"
-                    style={{ borderColor: "rgba(255,255,255,0.05)" }}
+                    style={{ borderColor: "var(--border)" }}
                   >
                     <span className="mt-0.5 text-[15px]">{meta.icon}</span>
                     <span className="min-w-0 flex-1">
@@ -169,12 +169,12 @@ export function NotificationsBell({
                         >
                           {n.title}
                         </span>
-                        <span className="shrink-0 text-[10.5px] text-white/65">
+                        <span className="shrink-0 text-[10.5px] text-fg-muted">
                           {timeAgo(n.created_at)}
                         </span>
                       </span>
                       {n.body && (
-                        <span className="mt-0.5 block truncate text-[12px] text-white/55">
+                        <span className="mt-0.5 block truncate text-[12px] text-fg-muted">
                           {n.body}
                         </span>
                       )}
@@ -191,7 +191,7 @@ export function NotificationsBell({
                 router.push("/notificaciones");
               }}
               className="w-full border-t px-4 py-2.5 text-center text-[12px] font-semibold text-[#9fb9ff] transition hover:bg-white/[0.03]"
-              style={{ borderColor: "rgba(255,255,255,0.07)" }}
+              style={{ borderColor: "var(--border)" }}
             >
               Ver todas →
             </button>

@@ -58,14 +58,14 @@ export default async function Los5GrandesPage({ searchParams }: PageProps) {
   const tomorrow = isoTomorrow();
 
   return (
-    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 880 }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "var(--fg)", maxWidth: 880 }}>
       <Link
         href="/rituales"
         className="inline-flex items-center"
         style={{
           gap: 6,
           fontSize: 13,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 20,
         }}
       >
@@ -104,7 +104,7 @@ export default async function Los5GrandesPage({ searchParams }: PageProps) {
             <div
               style={{
                 fontSize: 12.5,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
               }}
             >
               Para {humanDate(forDate)} · Ritual nocturno del negocio
@@ -114,7 +114,7 @@ export default async function Los5GrandesPage({ searchParams }: PageProps) {
         <p
           style={{
             fontSize: 14,
-            color: "rgba(255,255,255,0.65)",
+            color: "var(--fg-muted)",
             lineHeight: 1.55,
             maxWidth: 680,
           }}
@@ -123,7 +123,7 @@ export default async function Los5GrandesPage({ searchParams }: PageProps) {
           Cada una alineada a una Roca del Plan 90D — si no encaja con ninguna, va al{" "}
           <Link
             href="/rituales/parking-lot"
-            style={{ color: "#bcd0ff", textDecoration: "underline" }}
+            style={{ color: "var(--accent-text)", textDecoration: "underline" }}
           >
             Parking Lot
           </Link>
@@ -154,7 +154,7 @@ export default async function Los5GrandesPage({ searchParams }: PageProps) {
             borderRadius: 12,
             background: "rgba(251,191,36,0.08)",
             border: "1px solid rgba(251,191,36,0.25)",
-            color: "#fcd34d",
+            color: "var(--warn-text)",
             fontSize: 13.5,
             marginBottom: 18,
           }}

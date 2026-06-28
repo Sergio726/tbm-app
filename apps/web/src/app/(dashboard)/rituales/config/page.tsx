@@ -27,14 +27,14 @@ export default async function RitualConfigPage() {
     .maybeSingle();
 
   return (
-    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 760 }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "var(--fg)", maxWidth: 760 }}>
       <Link
         href="/rituales"
         className="inline-flex items-center"
         style={{
           gap: 6,
           fontSize: 13,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 20,
         }}
       >
@@ -52,7 +52,7 @@ export default async function RitualConfigPage() {
               borderRadius: 11,
               background: "rgba(100,116,139,0.12)",
               border: "1px solid rgba(100,116,139,0.28)",
-              color: "#cbd5e1",
+              color: "var(--fg-muted)",
             }}
           >
             <Settings size={20} strokeWidth={1.6} />
@@ -70,7 +70,7 @@ export default async function RitualConfigPage() {
             <div
               style={{
                 fontSize: 12.5,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
               }}
             >
               Modo de ejecución, horarios y zona horaria de la empresa
@@ -88,7 +88,7 @@ export default async function RitualConfigPage() {
             borderRadius: 12,
             background: "rgba(251,191,36,0.08)",
             border: "1px solid rgba(251,191,36,0.25)",
-            color: "#fcd34d",
+            color: "var(--warn-text)",
             fontSize: 13.5,
             marginBottom: 18,
           }}

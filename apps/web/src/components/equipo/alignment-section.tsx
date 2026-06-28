@@ -62,9 +62,9 @@ export function AlignmentSection({
       </div>
 
       {suggested && (
-        <div className="mt-3 flex items-center gap-1.5 text-[12px]" style={{ color: "#fbbf24" }}>
+        <div className="mt-3 flex items-center gap-1.5 text-[12px]" style={{ color: "var(--warn-text)" }}>
           <Sparkles size={14} strokeWidth={1.9} />
-          <span className="text-white/85">
+          <span className="text-fg">
             Sugerido por perfil + área:{" "}
             <b style={{ color: ALIGNMENT_ACTION[suggested].color }}>
               {ALIGNMENT_ACTION[suggested].label} → {ALIGNMENT_ACTION[suggested].action}
@@ -137,7 +137,7 @@ export function AlignmentSection({
         </div>
 
         {!hasKpi && (
-          <div className="mt-3 flex gap-2 text-[12px] leading-snug text-white/60">
+          <div className="mt-3 flex gap-2 text-[12px] leading-snug text-fg-muted">
             <Info
               size={14}
               strokeWidth={1.9}

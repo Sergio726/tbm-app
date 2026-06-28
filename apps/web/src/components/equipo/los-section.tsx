@@ -159,7 +159,7 @@ function LevelNode({
     },
     locked: {
       bg: "rgba(255,255,255,0.03)",
-      border: "rgba(255,255,255,0.12)",
+      border: "var(--border-strong)",
       text: "rgba(255,255,255,0.35)",
       glow: false,
     },
@@ -174,7 +174,7 @@ function LevelNode({
           style={{
             background: "rgba(91,138,255,0.18)",
             borderColor: "rgba(91,138,255,0.45)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           Estás acá
@@ -186,7 +186,7 @@ function LevelNode({
           style={{
             background: "rgba(251,191,36,0.16)",
             borderColor: "rgba(251,191,36,0.5)",
-            color: "#fbbf24",
+            color: "var(--warn-text)",
           }}
         >
           <Flag size={9} strokeWidth={2.4} />
@@ -285,10 +285,10 @@ function LevelRow({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="text-[13.5px] font-bold text-white">{name}</span>
-          {locked && <Lock size={12} strokeWidth={2} className="text-white/65" />}
+          <span className="text-[13.5px] font-bold text-fg">{name}</span>
+          {locked && <Lock size={12} strokeWidth={2} className="text-fg-muted" />}
         </div>
-        <div className="mt-0.5 text-[12px] text-white/50">{desc}</div>
+        <div className="mt-0.5 text-[12px] text-fg-muted">{desc}</div>
       </div>
       {editable && (
         <div className="flex flex-shrink-0 gap-1.5">

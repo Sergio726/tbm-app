@@ -175,7 +175,7 @@ export default function ParkingLotClient({
           </FilterChip>
         </div>
 
-        <div style={{ width: 1, height: 18, background: "rgba(255,255,255,0.08)" }} />
+        <div style={{ width: 1, height: 18, background: "var(--elevated)" }} />
 
         <div className="flex items-center" style={{ gap: 6 }}>
           <StatusChip
@@ -236,8 +236,8 @@ export default function ParkingLotClient({
           style={{
             padding: "16px 18px",
             borderRadius: 12,
-            background: "rgba(255,255,255,0.025)",
-            border: "1px solid rgba(255,255,255,0.06)",
+            background: "var(--elevated)",
+            border: "1px solid var(--border)",
             marginBottom: 18,
           }}
         >
@@ -292,7 +292,7 @@ export default function ParkingLotClient({
             borderRadius: 10,
             background: "rgba(248,113,113,0.10)",
             border: "1px solid rgba(248,113,113,0.30)",
-            color: "#fca5a5",
+            color: "var(--danger-text)",
             fontSize: 13,
             marginBottom: 14,
           }}
@@ -307,9 +307,9 @@ export default function ParkingLotClient({
           style={{
             padding: "20px 24px",
             borderRadius: 12,
-            background: "rgba(255,255,255,0.025)",
-            border: "1px dashed rgba(255,255,255,0.10)",
-            color: "rgba(255,255,255,0.5)",
+            background: "var(--elevated)",
+            border: "1px dashed var(--border)",
+            color: "var(--fg-subtle)",
             fontSize: 13.5,
             textAlign: "center",
           }}
@@ -324,8 +324,8 @@ export default function ParkingLotClient({
               style={{
                 padding: "14px 16px",
                 borderRadius: 12,
-                background: "rgba(255,255,255,0.025)",
-                border: "1px solid rgba(255,255,255,0.06)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
                 opacity: it.status !== "parked" ? 0.6 : 1,
               }}
             >
@@ -355,9 +355,9 @@ export default function ParkingLotClient({
                           fontSize: 10.5,
                           padding: "2px 8px",
                           borderRadius: 999,
-                          background: "rgba(255,255,255,0.05)",
-                          color: "rgba(255,255,255,0.6)",
-                          border: "1px solid rgba(255,255,255,0.10)",
+                          background: "var(--elevated)",
+                          color: "var(--fg-muted)",
+                          border: "1px solid var(--border)",
                           letterSpacing: 0.5,
                           textTransform: "uppercase",
                         }}
@@ -366,14 +366,14 @@ export default function ParkingLotClient({
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: "#fff" }}>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: "var(--fg)" }}>
                     {it.title}
                   </div>
                   {it.rationale && (
                     <div
                       style={{
                         fontSize: 12.5,
-                        color: "rgba(255,255,255,0.6)",
+                        color: "var(--fg-muted)",
                         marginTop: 4,
                         lineHeight: 1.5,
                       }}
@@ -395,7 +395,7 @@ export default function ParkingLotClient({
                   <div
                     style={{
                       fontSize: 11,
-                      color: "rgba(255,255,255,0.62)",
+                      color: "var(--fg-muted)",
                       marginTop: 6,
                     }}
                   >
@@ -444,10 +444,10 @@ export default function ParkingLotClient({
 
 const INPUT_STYLE: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
+  background: "var(--elevated)",
+  border: "1px solid var(--border)",
   borderRadius: 10,
-  color: "#fff",
+  color: "var(--fg)",
   padding: "10px 14px",
   fontSize: 13.5,
   fontFamily: "inherit",
@@ -468,14 +468,14 @@ function StatBox({
       style={{
         padding: "12px 14px",
         borderRadius: 12,
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.06)",
+        background: "var(--elevated)",
+        border: "1px solid var(--border)",
       }}
     >
       <div
         style={{
           fontSize: 11,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           textTransform: "uppercase",
           letterSpacing: 1.2,
           marginBottom: 4,

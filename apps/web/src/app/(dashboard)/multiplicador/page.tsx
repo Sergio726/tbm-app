@@ -37,7 +37,7 @@ export default async function MultiplicadorPage() {
 
   return (
     <div
-      className="text-white"
+      className="text-fg"
       style={{
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px) 60px",
         maxWidth: 880,
@@ -48,7 +48,7 @@ export default async function MultiplicadorPage() {
     >
       <Link
         href="/dashboard"
-        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-white/55 transition hover:text-white/80"
+        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-fg-muted transition hover:text-fg"
       >
         <ArrowLeft size={14} />
         Dashboard
@@ -61,7 +61,7 @@ export default async function MultiplicadorPage() {
             style={{
               background: "linear-gradient(135deg, #fbbf2422, #fbbf240a)",
               border: "1px solid rgba(251,191,36,0.25)",
-              color: "#fcd34d",
+              color: "var(--warn-text)",
             }}
           >
             <Zap size={18} strokeWidth={1.7} />
@@ -73,15 +73,15 @@ export default async function MultiplicadorPage() {
             >
               Multiplicador de Liderazgo
             </h1>
-            <p className="mt-0.5 text-[12.5px] text-white/55">
+            <p className="mt-0.5 text-[12.5px] text-fg-muted">
               Diagnóstico ROI de Talento · ¿Multiplicás o disminuís a tu equipo?
             </p>
           </div>
         </div>
-        <p className="max-w-[640px] text-[13.5px] leading-relaxed text-white/60">
-          Los Multiplicadores obtienen el <strong className="text-white/80">97%</strong> de la
+        <p className="max-w-[640px] text-[13.5px] leading-relaxed text-fg-muted">
+          Los Multiplicadores obtienen el <strong className="text-fg">97%</strong> de la
           inteligencia de su equipo. Los Disminuidores, solo el{" "}
-          <strong className="text-white/80">48%</strong>. Respondé sin filtros: este
+          <strong className="text-fg">48%</strong>. Respondé sin filtros: este
           diagnóstico mide tus 3 Pecados del Disminuidor y te devuelve las
           herramientas para corregirlos. Repetilo cada mes para ver tu evolución.
         </p>

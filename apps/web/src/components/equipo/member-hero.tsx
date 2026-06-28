@@ -69,19 +69,19 @@ export function MemberHero({
         {/* avatar + level badge */}
         <div className="relative flex-shrink-0">
           <div
-            className="flex h-[76px] w-[76px] items-center justify-center rounded-full text-[30px] font-extrabold text-white"
+            className="flex h-[76px] w-[76px] items-center justify-center rounded-full text-[30px] font-extrabold text-fg"
             style={{
               background: `linear-gradient(135deg, ${ring}, ${ring}99)`,
-              boxShadow: `0 0 0 3px #0a0e1a, 0 0 0 5px ${ring}77, 0 0 26px ${ring}55, inset 0 2px 0 rgba(255,255,255,0.25)`,
+              boxShadow: `0 0 0 3px var(--bg), 0 0 0 5px ${ring}77, 0 0 26px ${ring}55, inset 0 2px 0 rgba(255,255,255,0.25)`,
             }}
           >
             {initials(member.full_name)}
           </div>
           <div
-            className="absolute -bottom-1.5 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border-2 px-2 py-0.5 text-[11px] font-bold tracking-wide text-white"
+            className="absolute -bottom-1.5 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border-2 px-2 py-0.5 text-[11px] font-bold tracking-wide text-fg"
             style={{
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-              borderColor: "#0a0e1a",
+              borderColor: "var(--bg)",
               boxShadow: "0 4px 12px rgba(91,138,255,0.4)",
               fontFamily: MONO,
             }}
@@ -94,7 +94,7 @@ export function MemberHero({
         <div className="min-w-[200px] flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h2
-              className="m-0 text-[26px] font-extrabold text-white"
+              className="m-0 text-[26px] font-extrabold text-fg"
               style={{ letterSpacing: -0.5 }}
             >
               {member.full_name ?? "Sin nombre"}
@@ -112,8 +112,8 @@ export function MemberHero({
             </span>
           </div>
           {member.email && (
-            <div className="mt-2 flex items-center gap-2 text-[13px] text-white/55">
-              <Mail size={14} strokeWidth={1.7} className="text-white/65" />
+            <div className="mt-2 flex items-center gap-2 text-[13px] text-fg-muted">
+              <Mail size={14} strokeWidth={1.7} className="text-fg-muted" />
               {member.email}
             </div>
           )}
@@ -154,7 +154,7 @@ export function MemberHero({
           </div>
           <div>
             <div
-              className="mb-1.5 flex justify-between text-[10.5px] text-white/50"
+              className="mb-1.5 flex justify-between text-[10.5px] text-fg-muted"
               style={{ fontFamily: MONO }}
             >
               <span title="Completitud de la ficha: DISC + Delegación + KPI cargados (distinto del Estado DISC del equipo, que mide el test)">
@@ -198,10 +198,10 @@ function StatChip({
         <Icon size={15} strokeWidth={1.9} />
       </span>
       <div className="leading-[1.15]">
-        <div className="text-[9.5px] font-bold uppercase tracking-[0.8px] text-white/65">
+        <div className="text-[9.5px] font-bold uppercase tracking-[0.8px] text-fg-muted">
           {label}
         </div>
-        <div className="text-[13px] font-semibold text-white">{value}</div>
+        <div className="text-[13px] font-semibold text-fg">{value}</div>
       </div>
     </div>
   );

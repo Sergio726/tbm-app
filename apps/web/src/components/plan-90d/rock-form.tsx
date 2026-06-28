@@ -59,14 +59,14 @@ export function RockForm({
       }}
     >
       <div className="mb-4 flex items-center justify-between">
-        <p className="font-semibold text-white" style={{ fontSize: 14 }}>
+        <p className="font-semibold text-fg" style={{ fontSize: 14 }}>
           Nueva Roca
         </p>
         <button
           type="button"
           onClick={onCancel}
-          style={{ color: "rgba(255,255,255,0.62)" }}
-          className="hover:text-white transition-colors"
+          style={{ color: "var(--fg-muted)" }}
+          className="hover:text-fg transition-colors"
         >
           <X size={16} />
         </button>
@@ -74,7 +74,7 @@ export function RockForm({
 
       <div className="flex flex-col gap-3">
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             Resultado a lograr *
           </label>
           <input
@@ -83,26 +83,26 @@ export function RockForm({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="ej. Implementar sistema de ventas B2B"
             required
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none transition-colors"
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none transition-colors"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             Responsable *
           </label>
           <select
             value={ownerId}
             onChange={(e) => setOwnerId(e.target.value)}
             required
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none"
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none"
             style={{
-              background: "#0d1120",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--surface)",
+              borderColor: "var(--border-strong)",
             }}
           >
             {team.map((m) => (
@@ -114,7 +114,7 @@ export function RockForm({
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             Criterio de éxito
           </label>
           <textarea
@@ -122,32 +122,32 @@ export function RockForm({
             onChange={(e) => setCriteria(e.target.value)}
             placeholder="¿Cómo sabés que se logró la Roca?"
             rows={2}
-            className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none resize-none"
+            className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none resize-none"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
         </div>
 
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
               Inicio
             </label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full rounded-xl border px-3 py-2 text-sm text-white outline-none"
+              className="w-full rounded-xl border px-3 py-2 text-sm text-fg outline-none"
               style={{
-                background: "#0d1120",
-                borderColor: "rgba(255,255,255,0.12)",
+                background: "var(--surface)",
+                borderColor: "var(--border-strong)",
               }}
             />
           </div>
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
               Fin (auto +90d)
             </label>
             <input
@@ -156,9 +156,9 @@ export function RockForm({
               readOnly
               className="w-full rounded-xl border px-3 py-2 text-sm outline-none"
               style={{
-                background: "rgba(255,255,255,0.02)",
-                borderColor: "rgba(255,255,255,0.07)",
-                color: "rgba(255,255,255,0.62)",
+                background: "var(--elevated)",
+                borderColor: "var(--border)",
+                color: "var(--fg-muted)",
               }}
             />
           </div>
@@ -170,8 +170,8 @@ export function RockForm({
             onClick={onCancel}
             className="flex-1 rounded-xl py-2 text-sm font-medium transition-colors"
             style={{
-              background: "rgba(255,255,255,0.06)",
-              color: "rgba(255,255,255,0.6)",
+              background: "var(--elevated)",
+              color: "var(--fg-muted)",
             }}
           >
             Cancelar

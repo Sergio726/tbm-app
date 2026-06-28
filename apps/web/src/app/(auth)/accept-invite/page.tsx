@@ -209,11 +209,11 @@ function AcceptInviteContent() {
         <div className="w-12 h-12 rounded-full bg-tbm-blue/20 border border-tbm-blue/40 flex items-center justify-center mx-auto mb-4 text-2xl">
           🎯
         </div>
-        <h2 className="text-xl font-bold text-white">Te invitaron al equipo</h2>
+        <h2 className="text-xl font-bold text-fg">Te invitaron al equipo</h2>
         {companyName && (
           <p className="text-tbm-text-secondary text-sm mt-1">
             Vas a unirte a{" "}
-            <span className="text-white font-medium">{companyName}</span> en The
+            <span className="text-fg font-medium">{companyName}</span> en The
             Business Multiplier
           </p>
         )}
@@ -271,7 +271,7 @@ function AcceptInviteContent() {
             <button
               type="button"
               onClick={() => setShowPwd((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-fg"
             >
               {showPwd ? "ocultar" : "ver"}
             </button>
@@ -306,7 +306,7 @@ function AcceptInviteContent() {
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full rounded-lg border border-tbm-border px-4 py-2 text-sm font-medium text-tbm-text-secondary transition-colors hover:bg-tbm-elevated hover:text-white"
+            className="w-full rounded-lg border border-tbm-border px-4 py-2 text-sm font-medium text-tbm-text-secondary transition-colors hover:bg-tbm-elevated hover:text-fg"
           >
             Cerrar sesión y volver a /login
           </button>
@@ -319,7 +319,7 @@ function AcceptInviteContent() {
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span className="w-4 h-4 border-2 border-border border-t-transparent rounded-full animate-spin" />
               Completando perfil...
             </span>
           ) : (

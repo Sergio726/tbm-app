@@ -38,7 +38,7 @@ export function FeedbackBuilder({
       <div>
         <label
           className="mb-2 block text-xs font-semibold"
-          style={{ color: "rgba(255,255,255,0.55)" }}
+          style={{ color: "var(--fg-subtle)" }}
         >
           Feedback para {member.full_name?.split(" ")[0] ?? "este colaborador"}
         </label>
@@ -47,18 +47,18 @@ export function FeedbackBuilder({
           onChange={(e) => onChange(e.target.value)}
           rows={6}
           placeholder="Editá el template o escribí tu propio feedback…"
-          className="w-full resize-y rounded-xl border bg-transparent px-4 py-3 text-sm text-white outline-none transition-colors"
+          className="w-full resize-y rounded-xl border bg-transparent px-4 py-3 text-sm text-fg outline-none transition-colors"
           style={{
             borderColor: isEmpty
               ? "rgba(255,255,255,0.08)"
               : `${cfg.color}44`,
-            background: "rgba(255,255,255,0.03)",
-            color: "rgba(255,255,255,0.85)",
+            background: "var(--elevated)",
+            color: "var(--fg)",
             lineHeight: 1.7,
             minHeight: 120,
           }}
         />
-        <p className="mt-1.5 text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
+        <p className="mt-1.5 text-xs" style={{ color: "var(--fg-subtle)" }}>
           Template pre-cargado según el tipo. Editá libremente — no hay límite de caracteres.
         </p>
       </div>
@@ -70,9 +70,9 @@ export function FeedbackBuilder({
           disabled={isPending || isEmpty}
           className="flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-opacity hover:opacity-80 disabled:opacity-40"
           style={{
-            borderColor: "rgba(255,255,255,0.12)",
-            color: "rgba(255,255,255,0.6)",
-            background: "rgba(255,255,255,0.04)",
+            borderColor: "var(--border-strong)",
+            color: "var(--fg-muted)",
+            background: "var(--elevated)",
           }}
         >
           <Save size={15} strokeWidth={2} />
@@ -82,7 +82,7 @@ export function FeedbackBuilder({
         <button
           onClick={onDeliver}
           disabled={isPending || isEmpty}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-fg transition-opacity hover:opacity-90 disabled:opacity-40"
           style={{
             background: `linear-gradient(135deg, ${cfg.color}cc, ${cfg.color}99)`,
             boxShadow: `0 4px 14px ${cfg.color}33`,

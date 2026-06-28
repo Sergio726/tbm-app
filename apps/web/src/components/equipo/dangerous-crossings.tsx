@@ -18,11 +18,11 @@ export function DangerousCrossings({ team }: { team: Profile[] }) {
     <div className="rounded-[14px] border border-white/[0.07] bg-white/[0.02] p-4">
       <div className="mb-2.5 flex items-center gap-2">
         <Network size={15} className="text-[#9fb9ff]" />
-        <h3 className="text-[13.5px] font-semibold text-white">Conexiones y fricciones DISC</h3>
+        <h3 className="text-[13.5px] font-semibold text-fg">Conexiones y fricciones DISC</h3>
       </div>
 
       {withDisc < 2 ? (
-        <p className="text-[12.5px] text-white/65">
+        <p className="text-[12.5px] text-fg-muted">
           Cargá el DISC de al menos 2 miembros para ver el mapa de conexiones del equipo.
         </p>
       ) : (
@@ -45,13 +45,13 @@ export function DangerousCrossings({ team }: { team: Profile[] }) {
                   <div className="mb-1 flex items-center gap-2">
                     <span
                       className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
-                      style={{ background: "#fbbf2422", color: "#fbbf24" }}
+                      style={{ background: "#fbbf2422", color: "var(--warn-text)" }}
                     >
                       Cruce {c.pairLabel}
                     </span>
-                    <span className="text-[13px] font-semibold text-white">{c.names}</span>
+                    <span className="text-[13px] font-semibold text-fg">{c.names}</span>
                   </div>
-                  <p className="text-[12.5px] leading-snug text-white/65">{c.detalle}</p>
+                  <p className="text-[12.5px] leading-snug text-fg-muted">{c.detalle}</p>
                   <p className="mt-1.5 text-[12.5px] leading-snug text-[#fbbf24]">→ {c.sugerencia}</p>
                 </div>
               ))}
@@ -61,7 +61,7 @@ export function DangerousCrossings({ team }: { team: Profile[] }) {
           {/* Composición del equipo (señales secundarias) */}
           {composition.length > 0 && (
             <div className="space-y-2.5">
-              <p className="text-[11px] font-bold uppercase tracking-[1.2px] text-white/65">
+              <p className="text-[11px] font-bold uppercase tracking-[1.2px] text-fg-muted">
                 Composición del equipo
               </p>
               {composition.map((c, i) => {
@@ -79,9 +79,9 @@ export function DangerousCrossings({ team }: { team: Profile[] }) {
                       >
                         {c.severity}
                       </span>
-                      <span className="text-[13px] font-semibold text-white">{c.titulo}</span>
+                      <span className="text-[13px] font-semibold text-fg">{c.titulo}</span>
                     </div>
-                    <p className="text-[12.5px] leading-snug text-white/65">{c.detalle}</p>
+                    <p className="text-[12.5px] leading-snug text-fg-muted">{c.detalle}</p>
                     <p className="mt-1.5 text-[12.5px] leading-snug" style={{ color: tone }}>
                       → {c.sugerencia}
                     </p>

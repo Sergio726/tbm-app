@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-tbm-red/40 bg-tbm-red/10 text-2xl">
             ⏳
           </div>
-          <h2 className="text-xl font-bold text-white">El link expiró o ya se usó</h2>
+          <h2 className="text-xl font-bold text-fg">El link expiró o ya se usó</h2>
           <p className="text-sm text-tbm-text-secondary">
             Los links de recuperación sirven una sola vez. Pedí uno nuevo para crear tu contraseña.
           </p>
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
     <AuthCard>
       <div className="space-y-6">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-white">Creá tu nueva contraseña</h2>
+          <h2 className="text-xl font-bold text-fg">Creá tu nueva contraseña</h2>
           <p className="mt-1 text-sm text-tbm-text-secondary">
             La vas a usar para entrar a la app de ahora en más.
           </p>
@@ -120,7 +120,7 @@ export default function ResetPasswordPage() {
               <button
                 type="button"
                 onClick={() => setShowPwd((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-fg"
               >
                 {showPwd ? "ocultar" : "ver"}
               </button>

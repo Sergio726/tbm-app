@@ -148,7 +148,7 @@ export function DeadlinePicker({
         className="flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition"
         style={{
           borderColor: open ? `${ACCENT}80` : "rgba(255,255,255,0.09)",
-          background: "rgba(255,255,255,0.035)",
+          background: "var(--elevated)",
           boxShadow: open ? `0 0 0 3px ${ACCENT}26` : "none",
           cursor: "pointer",
         }}
@@ -176,7 +176,7 @@ export function DeadlinePicker({
           size={16}
           style={{
             marginLeft: "auto",
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
             transform: open ? "rotate(90deg)" : "none",
             transition: "transform 0.2s",
           }}
@@ -191,15 +191,15 @@ export function DeadlinePicker({
             left: 0,
             width: 340,
             maxWidth: "calc(100vw - 48px)",
-            borderColor: "rgba(255,255,255,0.1)",
-            background: "linear-gradient(180deg, #141a2b, #0f1422)",
+            borderColor: "var(--border)",
+            background: "linear-gradient(180deg, #141a2b, var(--surface))",
             boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
           }}
         >
           {/* Atajos rápidos */}
           <div
             className="flex flex-wrap gap-2 border-b px-4 py-3"
-            style={{ borderColor: "rgba(255,255,255,0.06)" }}
+            style={{ borderColor: "var(--border)" }}
           >
             {[
               { label: "Hoy", off: 0 },
@@ -214,9 +214,9 @@ export function DeadlinePicker({
                 className="rounded-lg border px-2.5 py-1.5 transition-all"
                 style={{
                   fontSize: 12,
-                  borderColor: "rgba(255,255,255,0.08)",
-                  background: "rgba(255,255,255,0.03)",
-                  color: "rgba(255,255,255,0.7)",
+                  borderColor: "var(--border)",
+                  background: "var(--elevated)",
+                  color: "var(--fg-muted)",
                   cursor: "pointer",
                 }}
               >
@@ -227,7 +227,7 @@ export function DeadlinePicker({
 
           {/* Header de mes */}
           <div className="flex items-center justify-between px-4 pt-4">
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--fg)" }}>
               {MONTHS[viewMonth.getMonth()]} {viewMonth.getFullYear()}
             </span>
             <div className="flex items-center gap-1">
@@ -238,8 +238,8 @@ export function DeadlinePicker({
                     (v) => new Date(v.getFullYear(), v.getMonth() - 1, 1)
                   )
                 }
-                className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
-                style={{ color: "rgba(255,255,255,0.6)", cursor: "pointer" }}
+                className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-elevated"
+                style={{ color: "var(--fg-muted)", cursor: "pointer" }}
                 aria-label="Mes anterior"
               >
                 <ChevronLeft size={16} />
@@ -251,8 +251,8 @@ export function DeadlinePicker({
                     (v) => new Date(v.getFullYear(), v.getMonth() + 1, 1)
                   )
                 }
-                className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
-                style={{ color: "rgba(255,255,255,0.6)", cursor: "pointer" }}
+                className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-elevated"
+                style={{ color: "var(--fg-muted)", cursor: "pointer" }}
                 aria-label="Mes siguiente"
               >
                 <ChevronRight size={16} />
@@ -272,7 +272,7 @@ export function DeadlinePicker({
                 style={{
                   fontSize: 11,
                   fontWeight: 600,
-                  color: "rgba(255,255,255,0.62)",
+                  color: "var(--fg-muted)",
                   paddingBottom: 4,
                 }}
               >
@@ -328,16 +328,16 @@ export function DeadlinePicker({
           {/* Selector de hora */}
           <div
             className="border-t px-4 py-3.5"
-            style={{ borderColor: "rgba(255,255,255,0.06)" }}
+            style={{ borderColor: "var(--border)" }}
           >
             <div className="mb-2.5 flex items-center gap-2">
-              <Clock size={14} style={{ color: "rgba(255,255,255,0.5)" }} />
+              <Clock size={14} style={{ color: "var(--fg-subtle)" }} />
               <span
                 style={{
                   fontSize: 11.5,
                   fontWeight: 600,
                   letterSpacing: 0.2,
-                  color: "rgba(255,255,255,0.5)",
+                  color: "var(--fg-subtle)",
                 }}
               >
                 Hora límite
@@ -351,9 +351,9 @@ export function DeadlinePicker({
                   const [h, m] = e.target.value.split(":").map(Number);
                   if (!Number.isNaN(h) && !Number.isNaN(m)) handleTime(h, m);
                 }}
-                className="rounded-lg border bg-white/[0.04] px-3 py-2 text-sm text-white outline-none transition focus:border-[#f87171]/50"
+                className="rounded-lg border bg-white/[0.04] px-3 py-2 text-sm text-fg outline-none transition focus:border-[#f87171]/50"
                 style={{
-                  borderColor: "rgba(255,255,255,0.1)",
+                  borderColor: "var(--border)",
                   colorScheme: "dark",
                 }}
               />
@@ -390,9 +390,9 @@ export function DeadlinePicker({
           {/* Footer */}
           <div
             className="flex items-center justify-between border-t px-4 py-3"
-            style={{ borderColor: "rgba(255,255,255,0.06)" }}
+            style={{ borderColor: "var(--border)" }}
           >
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+            <span style={{ fontSize: 12, color: "var(--fg-muted)" }}>
               {parsed.date
                 ? `${parsed.date.getDate()}/${pad(parsed.date.getMonth() + 1)} · ${pad(parsed.hour)}:${pad(parsed.minute)}`
                 : "Sin fecha seleccionada"}
@@ -401,7 +401,7 @@ export function DeadlinePicker({
               type="button"
               onClick={() => setOpen(false)}
               disabled={!parsed.date}
-              className="rounded-lg px-4 py-1.5 text-white transition-opacity"
+              className="rounded-lg px-4 py-1.5 text-fg transition-opacity"
               style={{
                 fontSize: 13,
                 fontWeight: 600,

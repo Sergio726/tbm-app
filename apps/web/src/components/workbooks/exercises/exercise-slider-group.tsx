@@ -34,7 +34,7 @@ export function ExerciseSliderGroup({ exerciseKey, sliders, savedResponse, onSav
         return (
           <div key={slider.key}>
             <div className="mb-2 flex items-center justify-between">
-              <label className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
+              <label className="text-sm font-medium" style={{ color: "var(--fg-muted)" }}>
                 {slider.label}
               </label>
               <span className="text-sm font-bold" style={{ color, minWidth: 38, textAlign: "right" }}>
@@ -58,7 +58,7 @@ export function ExerciseSliderGroup({ exerciseKey, sliders, savedResponse, onSav
                 }}
               />
             </div>
-            <div className="mt-1 flex justify-between text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+            <div className="mt-1 flex justify-between text-xs" style={{ color: "var(--fg-muted)" }}>
               <span>0</span>
               <span>50</span>
               <span>100</span>
@@ -75,7 +75,7 @@ export function ExerciseSliderGroup({ exerciseKey, sliders, savedResponse, onSav
           style={{
             background: "rgba(91,138,255,0.2)",
             border: "1px solid rgba(91,138,255,0.4)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           {isPending ? "Guardando..." : "Guardar"}

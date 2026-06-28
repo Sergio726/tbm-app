@@ -71,13 +71,13 @@ export function ExerciseCounterTracker({
             key={i}
             className="rounded-xl border p-4"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.08)",
+              background: "var(--elevated)",
+              borderColor: "var(--border)",
             }}
           >
             <div
               className="mb-3 text-xs font-bold uppercase tracking-wider"
-              style={{ color: "rgba(255,255,255,0.62)" }}
+              style={{ color: "var(--fg-muted)" }}
             >
               Día {i + 1}
             </div>
@@ -89,9 +89,9 @@ export function ExerciseCounterTracker({
                 disabled={value <= 0}
                 className="flex h-9 w-9 items-center justify-center rounded-lg border transition disabled:opacity-30"
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  borderColor: "rgba(255,255,255,0.10)",
-                  color: "rgba(255,255,255,0.7)",
+                  background: "var(--elevated)",
+                  borderColor: "var(--border)",
+                  color: "var(--fg-muted)",
                 }}
               >
                 <Minus size={14} />
@@ -105,7 +105,7 @@ export function ExerciseCounterTracker({
                 style={{
                   background: "rgba(91,138,255,0.06)",
                   borderColor: "rgba(91,138,255,0.20)",
-                  color: "#fff",
+                  color: "var(--fg)",
                   fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
                   padding: "6px 4px",
                 }}
@@ -117,7 +117,7 @@ export function ExerciseCounterTracker({
                 style={{
                   background: "rgba(91,138,255,0.12)",
                   borderColor: "rgba(91,138,255,0.30)",
-                  color: "#bcd0ff",
+                  color: "var(--accent-text)",
                 }}
               >
                 <Plus size={14} />
@@ -135,9 +135,9 @@ export function ExerciseCounterTracker({
               placeholder="Nota (opcional)"
               className="w-full rounded-lg border bg-transparent px-3 py-2 text-xs outline-none transition"
               style={{
-                background: "rgba(255,255,255,0.025)",
-                borderColor: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.75)",
+                background: "var(--elevated)",
+                borderColor: "var(--border)",
+                color: "var(--fg-muted)",
               }}
             />
           </div>
@@ -150,15 +150,15 @@ export function ExerciseCounterTracker({
         style={{
           background: "rgba(91,138,255,0.06)",
           borderColor: "rgba(91,138,255,0.18)",
-          color: "rgba(255,255,255,0.7)",
+          color: "var(--fg-muted)",
         }}
       >
         <div className="flex items-center gap-2">
           <BarChart3 size={14} className="text-[#9fb9ff]" />
           <span>
-            <strong className="text-white">{total}</strong> {counterLabel} en {days}{" "}
+            <strong className="text-fg">{total}</strong> {counterLabel} en {days}{" "}
             día{days === 1 ? "" : "s"} · promedio{" "}
-            <strong className="text-white">{avg}</strong>/día
+            <strong className="text-fg">{avg}</strong>/día
           </span>
         </div>
       </div>
@@ -171,7 +171,7 @@ export function ExerciseCounterTracker({
           style={{
             background: "rgba(91,138,255,0.2)",
             border: "1px solid rgba(91,138,255,0.4)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           {isPending ? "Guardando..." : "Guardar"}

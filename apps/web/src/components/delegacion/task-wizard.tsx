@@ -51,7 +51,7 @@ const STEPS = [
     number: 1,
     key: "what_dod" as keyof WizardData,
     icon: CheckSquare,
-    iconColor: "#34d399",
+    iconColor: "var(--success-text)",
     label: "QUÉ",
     title: "Definition of Done",
     description:
@@ -64,7 +64,7 @@ const STEPS = [
     number: 2,
     key: "why_context" as keyof WizardData,
     icon: HelpCircle,
-    iconColor: "#fbbf24",
+    iconColor: "var(--warn-text)",
     label: "POR QUÉ",
     title: "Contexto e impacto",
     description:
@@ -77,7 +77,7 @@ const STEPS = [
     number: 3,
     key: "how_constraints" as keyof WizardData,
     icon: Settings,
-    iconColor: "#5b8aff",
+    iconColor: "var(--accent-text)",
     label: "CÓMO",
     title: "Restricciones y límites",
     description:
@@ -90,7 +90,7 @@ const STEPS = [
     number: 4,
     key: "when_deadline" as keyof WizardData,
     icon: Calendar,
-    iconColor: "#f87171",
+    iconColor: "var(--danger-text)",
     label: "CUÁNDO",
     title: "Fecha y hora límite",
     description:
@@ -218,7 +218,7 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
             borderColor: "rgba(248,113,113,0.3)",
             background: "rgba(248,113,113,0.08)",
             fontSize: 13,
-            color: "#f87171",
+            color: "var(--danger-text)",
           }}
         >
           {error}
@@ -233,9 +233,9 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
           disabled={step === 1}
           className="flex items-center gap-2 rounded-xl px-4 py-2.5 transition-opacity disabled:opacity-0"
           style={{
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            color: "rgba(255,255,255,0.7)",
+            background: "var(--elevated)",
+            border: "1px solid var(--border)",
+            color: "var(--fg-muted)",
             fontSize: 13.5,
             cursor: step === 1 ? "default" : "pointer",
           }}
@@ -249,7 +249,7 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
             type="button"
             onClick={handleSave}
             disabled={!allFilled || isPending}
-            className="flex items-center gap-2 rounded-xl px-6 py-2.5 text-white transition-opacity"
+            className="flex items-center gap-2 rounded-xl px-6 py-2.5 text-fg transition-opacity"
             style={{
               background:
                 allFilled && !isPending
@@ -281,7 +281,7 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
               setStep((s) => Math.min(STEPS.length, s + 1));
             }}
             disabled={!canAdvance}
-            className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-white transition-opacity"
+            className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-fg transition-opacity"
             style={{
               background: canAdvance
                 ? "linear-gradient(135deg, #5b8aff, #2c5fe6)"
@@ -383,9 +383,9 @@ function ProgressBar({
       </div>
 
       {/* Label del paso actual */}
-      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+      <p style={{ fontSize: 12, color: "var(--fg-muted)" }}>
         Paso {current} de {total} —{" "}
-        <span style={{ color: "rgba(255,255,255,0.65)" }}>
+        <span style={{ color: "var(--fg-muted)" }}>
           {steps[current - 1].label}: {steps[current - 1].title}
         </span>
       </p>
@@ -410,7 +410,7 @@ function StepCard({
     <div
       className={`relative mb-6 rounded-2xl border ${isDatetime ? "overflow-visible" : "overflow-hidden"}`}
       style={{
-        borderColor: "rgba(255,255,255,0.07)",
+        borderColor: "var(--border)",
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.008))",
         padding: "28px 28px 24px",
@@ -463,7 +463,7 @@ function StepCard({
           <p
             style={{
               fontSize: 13,
-              color: "rgba(255,255,255,0.55)",
+              color: "var(--fg-subtle)",
               lineHeight: 1.55,
               marginTop: 6,
               maxWidth: 580,
@@ -482,8 +482,8 @@ function StepCard({
           placeholder={step.placeholder}
           rows={4}
           autoFocus
-          className="w-full resize-y rounded-xl border bg-white/[0.035] px-4 py-3 text-sm leading-relaxed text-white outline-none transition placeholder:text-white/25 focus:border-[#5b8aff]/50 focus:ring-2 focus:ring-[#5b8aff]/15"
-          style={{ borderColor: "rgba(255,255,255,0.09)" }}
+          className="w-full resize-y rounded-xl border bg-white/[0.035] px-4 py-3 text-sm leading-relaxed text-fg outline-none transition placeholder:text-fg-subtle focus:border-[#5b8aff]/50 focus:ring-2 focus:ring-[#5b8aff]/15"
+          style={{ borderColor: "var(--border)" }}
         />
       ) : (
         <DeadlinePicker value={value} onChange={onChange} />
@@ -509,7 +509,7 @@ function AssigneeSelector({
     <div
       className="mb-6 rounded-2xl border p-6"
       style={{
-        borderColor: "rgba(255,255,255,0.07)",
+        borderColor: "var(--border)",
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
       }}
@@ -518,7 +518,7 @@ function AssigneeSelector({
         style={{
           fontSize: 14,
           fontWeight: 600,
-          color: "rgba(255,255,255,0.8)",
+          color: "var(--fg-muted)",
           marginBottom: 16,
         }}
       >
@@ -531,7 +531,7 @@ function AssigneeSelector({
           style={{
             fontSize: 11.5,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             letterSpacing: 0.2,
             display: "block",
             marginBottom: 8,
@@ -541,7 +541,7 @@ function AssigneeSelector({
         </label>
 
         {team.length === 0 ? (
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>
+          <p style={{ fontSize: 13, color: "var(--fg-muted)" }}>
             No hay colaboradores en tu equipo aún.
           </p>
         ) : (
@@ -589,7 +589,7 @@ function AssigneeSelector({
                   <span
                     style={{
                       fontSize: 11,
-                      color: "rgba(255,255,255,0.62)",
+                      color: "var(--fg-muted)",
                       marginLeft: 6,
                     }}
                   >
@@ -609,7 +609,7 @@ function AssigneeSelector({
             style={{
               fontSize: 11.5,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--fg-subtle)",
               letterSpacing: 0.2,
               display: "block",
               marginBottom: 4,
@@ -617,7 +617,7 @@ function AssigneeSelector({
           >
             Nivel de delegación mínimo requerido
           </label>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.38)" }}>
+          <p style={{ fontSize: 12, color: "var(--fg-subtle)" }}>
             Elegí la autonomía mínima que necesita la persona para completar esta tarea.
           </p>
         </div>

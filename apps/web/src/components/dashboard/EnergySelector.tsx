@@ -66,7 +66,7 @@ export default function EnergySelector({
       <p className="text-xs text-tbm-text-muted">
         Mi energía hoy{" "}
         {current && (
-          <span className="text-white font-medium">— {current.label}</span>
+          <span className="text-fg font-medium">— {current.label}</span>
         )}
       </p>
       <div className="flex gap-1">
@@ -88,7 +88,7 @@ export default function EnergySelector({
         ))}
       </div>
       {error && (
-        <p className="text-xs" style={{ color: "#f87171" }}>
+        <p className="text-xs" style={{ color: "var(--danger-text)" }}>
           {error}
         </p>
       )}

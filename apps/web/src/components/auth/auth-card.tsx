@@ -8,7 +8,7 @@ export function AuthCard({ children }: { children: React.ReactNode }) {
       {/* Fondo radial sutil */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#162238_0%,_#0A1628_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--elevated)_0%,_var(--bg)_60%)]"
       />
 
       {/* Card centrado */}
@@ -16,7 +16,7 @@ export function AuthCard({ children }: { children: React.ReactNode }) {
         {/* Brand */}
         <div className="mb-8 text-center">
           <div className="mb-2 inline-flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-gradient text-sm font-bold text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-gradient text-sm font-bold text-fg">
               TBM
             </div>
             <span className="text-lg font-semibold text-tbm-text-primary">

@@ -41,7 +41,7 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
   return (
     <div className="space-y-3">
       {team.length === 0 && (
-        <p className="text-sm" style={{ color: "rgba(255,255,255,0.62)" }}>
+        <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
           No hay miembros del equipo registrados.
         </p>
       )}
@@ -57,14 +57,14 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
             key={member.id}
             className="rounded-xl border p-4"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.08)",
+              background: "var(--elevated)",
+              borderColor: "var(--border)",
             }}
           >
             <div className="mb-3 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-white">{member.full_name}</p>
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+                <p className="text-sm font-semibold text-fg">{member.full_name}</p>
+                <p className="text-xs" style={{ color: "var(--fg-muted)" }}>
                   {member.cargo ?? "Sin cargo"}
                   {letter && (
                     <span
@@ -77,7 +77,7 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
                 </p>
               </div>
 
-              <div className="flex rounded-lg border overflow-hidden" style={{ borderColor: "rgba(255,255,255,0.12)" }}>
+              <div className="flex rounded-lg border overflow-hidden" style={{ borderColor: "var(--border-strong)" }}>
                 {(["luz", "sombra"] as const).map((state) => (
                   <button
                     key={state}
@@ -86,9 +86,9 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
                     style={
                       draft.disc_state === state
                         ? state === "luz"
-                          ? { background: "rgba(251,191,36,0.2)", color: "#fbbf24" }
+                          ? { background: "rgba(251,191,36,0.2)", color: "var(--warn-text)" }
                           : { background: "rgba(107,114,128,0.3)", color: "#9ca3af" }
-                        : { background: "transparent", color: "rgba(255,255,255,0.62)" }
+                        : { background: "transparent", color: "var(--fg-muted)" }
                     }
                   >
                     {state === "luz" ? "☀️ Luz" : "🌑 Sombra"}
@@ -103,7 +103,7 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
                 style={{
                   background: "rgba(107,114,128,0.1)",
                   borderColor: "rgba(107,114,128,0.2)",
-                  color: "rgba(255,255,255,0.5)",
+                  color: "var(--fg-subtle)",
                 }}
               >
                 <span className="font-semibold text-gray-400">Temor típico {letter}:</span>{" "}
@@ -114,7 +114,7 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
             <div>
               <label
                 className="mb-1 block text-xs"
-                style={{ color: "rgba(255,255,255,0.62)" }}
+                style={{ color: "var(--fg-muted)" }}
               >
                 Temor activo identificado
               </label>
@@ -125,9 +125,9 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
                 placeholder="¿Qué temor específico está activando la sombra de esta persona?"
                 className="w-full resize-none rounded-lg border bg-transparent px-3 py-2 text-sm leading-relaxed outline-none transition-all"
                 style={{
-                  background: "rgba(255,255,255,0.03)",
-                  borderColor: "rgba(255,255,255,0.1)",
-                  color: "rgba(255,255,255,0.8)",
+                  background: "var(--elevated)",
+                  borderColor: "var(--border)",
+                  color: "var(--fg-muted)",
                 }}
                 onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(91,138,255,0.4)")}
                 onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
@@ -142,7 +142,7 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
         style={{
           background: "rgba(91,138,255,0.06)",
           borderColor: "rgba(91,138,255,0.2)",
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--fg-subtle)",
         }}
       >
         Al guardar, el estado Luz/Sombra y el temor activo se actualizan en los perfiles del equipo.
@@ -156,7 +156,7 @@ export function ExerciseShadows({ exerciseKey, team, savedResponse, onSave, isPe
           style={{
             background: "rgba(91,138,255,0.2)",
             border: "1px solid rgba(91,138,255,0.4)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           {isPending ? "Guardando..." : "Guardar y Actualizar Perfiles"}

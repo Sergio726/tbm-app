@@ -81,7 +81,7 @@ export default function PreGameForm({
         borderRadius: 16,
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        border: "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid var(--border)",
       }}
     >
       {/* Header status */}
@@ -94,7 +94,7 @@ export default function PreGameForm({
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.3,
           }}
         >
@@ -106,7 +106,7 @@ export default function PreGameForm({
             style={{
               gap: 6,
               fontSize: 11.5,
-              color: "#34d399",
+              color: "var(--success-text)",
               padding: "4px 10px",
               borderRadius: 999,
               background: "rgba(52,211,153,0.10)",
@@ -125,7 +125,7 @@ export default function PreGameForm({
         <p
           style={{
             fontSize: 12.5,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             marginBottom: 12,
             lineHeight: 1.5,
           }}
@@ -153,11 +153,11 @@ export default function PreGameForm({
               style={{
                 gap: 6,
                 fontSize: 11,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
                 padding: "3px 9px",
                 borderRadius: 999,
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
               }}
             >
               <Lock size={11} />
@@ -168,7 +168,7 @@ export default function PreGameForm({
         <p
           style={{
             fontSize: 12.5,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             marginBottom: 10,
             lineHeight: 1.5,
           }}
@@ -187,7 +187,7 @@ export default function PreGameForm({
             background: marchLockedThisWeek
               ? "rgba(255,255,255,0.02)"
               : "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
             color: marchLockedThisWeek ? "rgba(255,255,255,0.55)" : "#fff",
             padding: "10px 14px",
@@ -238,10 +238,10 @@ export default function PreGameForm({
           rows={2}
           style={{
             width: "100%",
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "var(--elevated)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#fff",
+            color: "var(--fg)",
             padding: "10px 14px",
             fontSize: 13.5,
             resize: "vertical",
@@ -259,7 +259,7 @@ export default function PreGameForm({
             borderRadius: 10,
             background: "rgba(248,113,113,0.10)",
             border: "1px solid rgba(248,113,113,0.30)",
-            color: "#fca5a5",
+            color: "var(--danger-text)",
             fontSize: 13,
           }}
         >
@@ -271,7 +271,7 @@ export default function PreGameForm({
         <div
           style={{
             fontSize: 12,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
           }}
         >
           {savedAt
@@ -312,7 +312,7 @@ export default function PreGameForm({
         <p
           style={{
             fontSize: 12,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
             marginTop: 10,
             textAlign: "right",
           }}
@@ -330,7 +330,7 @@ function Label({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 13.5,
         fontWeight: 600,
-        color: "#fff",
+        color: "var(--fg)",
         marginBottom: 4,
       }}
     >
@@ -353,8 +353,8 @@ function BigWinInput({
       className="flex items-center"
       style={{
         gap: 10,
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "var(--elevated)",
+        border: "1px solid var(--border)",
         borderRadius: 10,
         padding: "0 14px",
       }}
@@ -378,7 +378,7 @@ function BigWinInput({
           background: "transparent",
           border: "none",
           outline: "none",
-          color: "#fff",
+          color: "var(--fg)",
           padding: "11px 0",
           fontSize: 13.5,
           fontFamily: "inherit",

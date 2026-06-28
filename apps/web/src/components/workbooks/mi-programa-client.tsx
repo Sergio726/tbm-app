@@ -64,12 +64,12 @@ export function MiProgramaClient({
             Mi Programa TBM
           </div>
           <h1
-            className="m-0 text-white"
+            className="m-0 text-fg"
             style={{ fontSize: 30, fontWeight: 800, letterSpacing: -0.6 }}
           >
             Tu transformación de 8 sesiones
           </h1>
-          <p className="mt-2 max-w-[640px] text-[13.5px] text-white/55">
+          <p className="mt-2 max-w-[640px] text-[13.5px] text-fg-muted">
             El programa entero en una vista: qué cerraste, qué falta, y cómo cambió tu
             empresa desde el Día 1 vs hoy.
           </p>
@@ -169,8 +169,8 @@ function StatCard({
     <div
       className="rounded-2xl border p-4"
       style={{
-        background: "rgba(255,255,255,0.025)",
-        borderColor: "rgba(255,255,255,0.06)",
+        background: "var(--elevated)",
+        borderColor: "var(--border)",
       }}
     >
       <div className="mb-2 flex items-center gap-2">
@@ -180,15 +180,15 @@ function StatCard({
         >
           <Icon size={14} strokeWidth={1.9} />
         </div>
-        <span className="text-[10.5px] font-bold uppercase tracking-[1.2px] text-white/50">
+        <span className="text-[10.5px] font-bold uppercase tracking-[1.2px] text-fg-muted">
           {label}
         </span>
       </div>
-      <div className="text-[22px] font-bold text-white" style={{ letterSpacing: -0.3 }}>
+      <div className="text-[22px] font-bold text-fg" style={{ letterSpacing: -0.3 }}>
         {value}
       </div>
       {hint && (
-        <div className="mt-1 text-[11.5px] text-white/65">{hint}</div>
+        <div className="mt-1 text-[11.5px] text-fg-muted">{hint}</div>
       )}
     </div>
   );
@@ -198,7 +198,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section className="mb-7">
       <h2
-        className="mb-3 text-[11px] font-bold uppercase tracking-[1.4px] text-white/65"
+        className="mb-3 text-[11px] font-bold uppercase tracking-[1.4px] text-fg-muted"
       >
         {title}
       </h2>
@@ -229,10 +229,10 @@ function SessionRow({
   const unlockedAt = progress?.unlocked_at;
 
   const tone = completed
-    ? { color: "#34d399", bg: "rgba(52,211,153,0.10)", border: "rgba(52,211,153,0.28)" }
+    ? { color: "var(--success-text)", bg: "rgba(52,211,153,0.10)", border: "rgba(52,211,153,0.28)" }
     : unlocked
-      ? { color: "#9fb9ff", bg: "rgba(91,138,255,0.08)", border: "rgba(91,138,255,0.24)" }
-      : { color: "rgba(255,255,255,0.62)", bg: "rgba(255,255,255,0.02)", border: "rgba(255,255,255,0.06)" };
+      ? { color: "var(--accent-text)", bg: "rgba(91,138,255,0.08)", border: "rgba(91,138,255,0.24)" }
+      : { color: "var(--fg-muted)", bg: "rgba(255,255,255,0.02)", border: "var(--border)" };
 
   return (
     <Link
@@ -271,12 +271,12 @@ function SessionRow({
         {/* info */}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2.5">
-            <span className="text-[14.5px] font-bold text-white">{title}</span>
+            <span className="text-[14.5px] font-bold text-fg">{title}</span>
             {progress?.commitment_done && (
               <span className="text-[10px] font-semibold text-[#34d399]">· compromiso cumplido</span>
             )}
           </div>
-          <p className="mt-0.5 truncate text-[12px] text-white/50">{subtitle}</p>
+          <p className="mt-0.5 truncate text-[12px] text-fg-muted">{subtitle}</p>
         </div>
 
         {/* progress + stats */}
@@ -285,11 +285,11 @@ function SessionRow({
             <span className="text-[11.5px] font-bold" style={{ color: tone.color }}>
               {pct}%
             </span>
-            <span className="text-[11px] text-white/65">
+            <span className="text-[11px] text-fg-muted">
               · {exercisesAnswered}/{exercisesTotal}
             </span>
           </div>
-          <div className="h-1 w-full overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <div className="h-1 w-full overflow-hidden rounded-full" style={{ background: "var(--elevated)" }}>
             <div
               className="h-full rounded-full"
               style={{
@@ -299,7 +299,7 @@ function SessionRow({
               }}
             />
           </div>
-          <span className="text-[10.5px] text-white/65" style={{ fontFamily: MONO }}>
+          <span className="text-[10.5px] text-fg-muted" style={{ fontFamily: MONO }}>
             {unlockedAt ? `desbloq. ${formatDate(unlockedAt)}` : "—"}
           </span>
         </div>
@@ -319,11 +319,11 @@ function ScoreCompare({
     <div
       className="rounded-2xl border p-4"
       style={{
-        background: "rgba(255,255,255,0.025)",
-        borderColor: "rgba(255,255,255,0.06)",
+        background: "var(--elevated)",
+        borderColor: "var(--border)",
       }}
     >
-      <div className="mb-3 flex items-center justify-between text-[11.5px] text-white/55">
+      <div className="mb-3 flex items-center justify-between text-[11.5px] text-fg-muted">
         <span>Día 1 · {formatDate(baseline.created_at)}</span>
         <span>Hoy · {formatDate(latest.created_at)}</span>
       </div>
@@ -337,8 +337,8 @@ function ScoreCompare({
           />
         ))}
       </div>
-      <div className="mt-4 flex items-center justify-between border-t pt-3 text-[12px]" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-        <span className="text-white/60">Promedio total</span>
+      <div className="mt-4 flex items-center justify-between border-t pt-3 text-[12px]" style={{ borderColor: "var(--border)" }}>
+        <span className="text-fg-muted">Promedio total</span>
         <ScoreCompareValues
           v0={baseline.total_score as number | null}
           v1={latest.total_score as number | null}
@@ -360,7 +360,7 @@ function ScoreCompareRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-[180px] truncate text-[12.5px] text-white/75">{label}</div>
+      <div className="w-[180px] truncate text-[12.5px] text-fg">{label}</div>
       <div className="flex flex-1 items-center gap-2.5">
         <Bar value={v0} tone="muted" />
         <Bar value={v1} tone="accent" />
@@ -373,7 +373,7 @@ function ScoreCompareRow({
 function Bar({ value, tone }: { value: number | null; tone: "muted" | "accent" }) {
   const pct = value != null ? (value / 5) * 100 : 0;
   return (
-    <div className="h-1.5 flex-1 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
+    <div className="h-1.5 flex-1 overflow-hidden rounded-full" style={{ background: "var(--elevated)" }}>
       <div
         className="h-full rounded-full"
         style={{
@@ -409,9 +409,9 @@ function ScoreCompareValues({
   const Icon = delta == null || delta === 0 ? Minus : delta > 0 ? TrendingUp : TrendingDown;
   return (
     <div className="flex items-center gap-2" style={{ minWidth: 130, fontFamily: MONO }}>
-      <span className="text-[11px] text-white/65">{v0 ?? "—"}</span>
-      <span className="text-white/65">→</span>
-      <span className={`text-[12px]${bold ? " font-bold" : ""} text-white/85`}>{v1 ?? "—"}</span>
+      <span className="text-[11px] text-fg-muted">{v0 ?? "—"}</span>
+      <span className="text-fg-muted">→</span>
+      <span className={`text-[12px]${bold ? " font-bold" : ""} text-fg`}>{v1 ?? "—"}</span>
       <span
         className="ml-1 flex items-center gap-0.5 text-[11px] font-bold"
         style={{ color: tone }}
@@ -426,12 +426,12 @@ function ScoreCompareValues({
 function EmptyComparative({ hasBaseline }: { hasBaseline: boolean }) {
   return (
     <div
-      className="rounded-2xl border border-dashed p-5 text-center text-[13px] text-white/55"
-      style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.12)" }}
+      className="rounded-2xl border border-dashed p-5 text-center text-[13px] text-fg-muted"
+      style={{ background: "var(--elevated)", borderColor: "var(--border-strong)" }}
     >
       {!hasBaseline ? (
         <>
-          <Circle className="mx-auto mb-2 text-white/65" size={18} />
+          <Circle className="mx-auto mb-2 text-fg-muted" size={18} />
           Todavía no hay diagnóstico inicial. Completá el primero desde{" "}
           <Link href="/onboarding" className="text-[#9fb9ff] underline">
             el onboarding
@@ -440,7 +440,7 @@ function EmptyComparative({ hasBaseline }: { hasBaseline: boolean }) {
         </>
       ) : (
         <>
-          <Calendar className="mx-auto mb-2 text-white/65" size={18} />
+          <Calendar className="mx-auto mb-2 text-fg-muted" size={18} />
           Para ver tu evolución, hacé un segundo diagnóstico desde el Workbook S1
           (la próxima vez que lo completes quedará registrado).
         </>

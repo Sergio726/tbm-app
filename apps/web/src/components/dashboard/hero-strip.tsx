@@ -139,7 +139,7 @@ function HeroTile({
             fontSize: 10.5,
             fontWeight: 700,
             letterSpacing: 1.2,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
           }}
         >
           {label}
@@ -149,7 +149,7 @@ function HeroTile({
         style={{
           fontSize: 22,
           fontWeight: 700,
-          color: "#fff",
+          color: "var(--fg)",
           letterSpacing: -0.4,
         }}
       >
@@ -159,7 +159,7 @@ function HeroTile({
         <div
           style={{
             fontSize: 12,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
             marginTop: 4,
           }}
         >
@@ -213,7 +213,7 @@ function CicloTile({
       <div
         style={{
           height: 4,
-          background: "rgba(255,255,255,0.06)",
+          background: "var(--elevated)",
           borderRadius: 99,
           marginTop: 10,
           overflow: "hidden",
@@ -234,7 +234,7 @@ function CicloTile({
           ...MONO,
           marginTop: 6,
           fontSize: 10.5,
-          color: "rgba(255,255,255,0.62)",
+          color: "var(--fg-muted)",
         }}
       >
         <span>
@@ -286,7 +286,7 @@ function RachaTile({
         <>
           <div
             className="mb-1.5 text-[10.5px] font-bold uppercase tracking-wide"
-            style={{ color: "rgba(255,255,255,0.62)" }}
+            style={{ color: "var(--fg-muted)" }}
           >
             Últimos 7 días
           </div>
@@ -304,7 +304,7 @@ function RachaTile({
                 />
                 <span
                   className="text-[9px]"
-                  style={{ color: "rgba(255,255,255,0.62)" }}
+                  style={{ color: "var(--fg-muted)" }}
                 >
                   {d.label}
                 </span>
@@ -314,11 +314,11 @@ function RachaTile({
           <div
             className="mt-1 border-t pt-1.5 text-[11.5px]"
             style={{
-              borderColor: "rgba(255,255,255,0.08)",
-              color: "rgba(255,255,255,0.6)",
+              borderColor: "var(--border)",
+              color: "var(--fg-muted)",
             }}
           >
-            Mejor racha: <strong className="text-white">{bestStreak} días</strong>
+            Mejor racha: <strong className="text-fg">{bestStreak} días</strong>
           </div>
         </>
       }
@@ -341,10 +341,10 @@ function MultiplicadorTile({
     pct === null
       ? null
       : pct >= 85
-        ? { label: "Multiplicador", color: "#34d399" }
+        ? { label: "Multiplicador", color: "var(--success-text)" }
         : pct >= 65
-          ? { label: "Disminuidor Accidental", color: "#fbbf24" }
-          : { label: "Disminuidor Activo", color: "#f87171" };
+          ? { label: "Disminuidor Accidental", color: "var(--warn-text)" }
+          : { label: "Disminuidor Activo", color: "var(--danger-text)" };
 
   return (
     <HeroTile
@@ -362,7 +362,7 @@ function MultiplicadorTile({
           <>
             <TooltipRow icon="📤">
               Delegación efectiva:{" "}
-              <strong className="text-white">
+              <strong className="text-fg">
                 {delegacionScore?.toFixed(1) ?? "—"}/5
               </strong>
             </TooltipRow>
@@ -376,8 +376,8 @@ function MultiplicadorTile({
             <div
               className="mt-1 border-t pt-1.5 text-[10.5px]"
               style={{
-                borderColor: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.62)",
+                borderColor: "var(--border)",
+                color: "var(--fg-muted)",
               }}
             >
               Proxy: delegación 40% · autonomía 40% · base 20%
@@ -439,7 +439,7 @@ function EquipoTile({
             >
               <span
                 className="truncate"
-                style={{ color: "rgba(255,255,255,0.75)", width: 110 }}
+                style={{ color: "var(--fg-muted)", width: 110 }}
               >
                 {m.name}
               </span>
@@ -476,8 +476,8 @@ function EquipoTile({
             <div
               className="mt-1 border-t pt-1.5 text-[11px]"
               style={{
-                borderColor: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.5)",
+                borderColor: "var(--border)",
+                color: "var(--fg-subtle)",
               }}
             >
               {sinRegistrar} sin registrar hoy
@@ -490,13 +490,13 @@ function EquipoTile({
         {shown.map((a, idx) => (
           <div
             key={a.id}
-            className="flex items-center justify-center text-white"
+            className="flex items-center justify-center text-fg"
             style={{
               width: 22,
               height: 22,
               borderRadius: "50%",
               background: a.color,
-              border: "2px solid #0a0e1a",
+              border: "2px solid var(--bg)",
               marginLeft: idx === 0 ? 0 : -6,
               fontSize: 10,
               fontWeight: 600,
@@ -513,12 +513,12 @@ function EquipoTile({
               width: 22,
               height: 22,
               borderRadius: "50%",
-              background: "rgba(255,255,255,0.06)",
-              border: "2px solid #0a0e1a",
+              background: "var(--elevated)",
+              border: "2px solid var(--bg)",
               marginLeft: shown.length === 0 ? 0 : -6,
               fontSize: 10,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.55)",
+              color: "var(--fg-subtle)",
             }}
           >
             +{total - shown.length}

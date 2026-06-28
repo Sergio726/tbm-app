@@ -386,7 +386,7 @@ export function PlanClient({
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -399,19 +399,19 @@ export function PlanClient({
             style={{
               background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
               border: "1px solid rgba(91,138,255,0.25)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <Target size={18} strokeWidth={1.6} />
           </div>
           <h1
-            className="text-white"
+            className="text-fg"
             style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}
           >
             Plan 90D
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "var(--fg-muted)", marginLeft: 52 }}>
           Rocas · BOS · Ideas · Decisiones — el sistema completo de ejecución estratégica
         </p>
       </div>
@@ -423,7 +423,7 @@ export function PlanClient({
           style={{
             background: "rgba(52,211,153,0.1)",
             borderColor: "rgba(52,211,153,0.3)",
-            color: "#34d399",
+            color: "var(--success-text)",
             fontSize: 13.5,
           }}
         >
@@ -436,7 +436,7 @@ export function PlanClient({
           style={{
             background: "rgba(248,113,113,0.1)",
             borderColor: "rgba(248,113,113,0.3)",
-            color: "#f87171",
+            color: "var(--danger-text)",
             fontSize: 13.5,
           }}
         >
@@ -448,7 +448,7 @@ export function PlanClient({
       <div className="mb-6 flex overflow-x-auto">
         <div
           className="flex gap-1 rounded-2xl p-1"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+          style={{ background: "var(--elevated)", border: "1px solid var(--border)" }}
         >
           {TABS.map((t) => (
             <button
@@ -459,11 +459,11 @@ export function PlanClient({
                 tab === t.key
                   ? {
                       background: "rgba(91,138,255,0.2)",
-                      color: "#9fb9ff",
+                      color: "var(--accent-text)",
                       border: "1px solid rgba(91,138,255,0.3)",
                     }
                   : {
-                      color: "rgba(255,255,255,0.62)",
+                      color: "var(--fg-muted)",
                       border: "1px solid transparent",
                     }
               }

@@ -36,17 +36,17 @@ export default async function NuevaTareaPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
-        color: "#fff",
+        color: "var(--fg)",
       }}
     >
       {/* Back */}
       <Link
         href="/delegacion"
         className="inline-flex items-center gap-1.5 transition-opacity hover:opacity-80"
-        style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 24 }}
+        style={{ fontSize: 13, color: "var(--fg-subtle)", marginBottom: 24 }}
       >
         <ArrowLeft size={14} />
         Delegación
@@ -59,7 +59,7 @@ export default async function NuevaTareaPage() {
           style={{
             background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
             border: "1px solid rgba(91,138,255,0.25)",
-            color: "#9fb9ff",
+            color: "var(--accent-text)",
           }}
         >
           <Send size={18} strokeWidth={1.6} />
@@ -68,7 +68,7 @@ export default async function NuevaTareaPage() {
           <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3 }}>
             Nueva tarea — Pase de Estafeta
           </h1>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
             Los 5 puntos son obligatorios. Si falta uno, el error es tuyo.
           </p>
         </div>

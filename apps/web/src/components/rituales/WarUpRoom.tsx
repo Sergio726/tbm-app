@@ -316,7 +316,7 @@ export default function WarUpRoom({
             }}
           />
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--fg)" }}>
               {isActive
                 ? "Sala en vivo"
                 : isClosed
@@ -326,7 +326,7 @@ export default function WarUpRoom({
             <div
               style={{
                 fontSize: 11.5,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
               }}
             >
               {entries.length} entrada{entries.length === 1 ? "" : "s"} ·{" "}
@@ -347,8 +347,8 @@ export default function WarUpRoom({
                 gap: 6,
                 padding: "4px 10px",
                 borderRadius: 999,
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.10)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
                 fontSize: 11.5,
                 color:
                   elapsedMin > (warUp.timer_duration_min ?? 15)
@@ -373,7 +373,7 @@ export default function WarUpRoom({
                 borderRadius: 999,
                 background: "rgba(248,113,113,0.10)",
                 border: "1px solid rgba(248,113,113,0.30)",
-                color: "#fca5a5",
+                color: "var(--danger-text)",
                 fontSize: 12,
                 fontWeight: 500,
                 cursor: isPending ? "not-allowed" : "pointer",
@@ -457,7 +457,7 @@ function PreGameLockBanner() {
         antes de iniciar la sala.{" "}
         <Link
           href="/rituales/pre-game"
-          style={{ color: "#fcd34d", textDecoration: "underline" }}
+          style={{ color: "var(--warn-text)", textDecoration: "underline" }}
         >
           Ir al Pre-game
         </Link>
@@ -527,7 +527,7 @@ function MyEntryForm({
         style={{
           fontSize: 11,
           fontWeight: 600,
-          color: "#bcd0ff",
+          color: "var(--accent-text)",
           letterSpacing: 1.3,
           marginBottom: 14,
         }}
@@ -569,7 +569,7 @@ function MyEntryForm({
       )}
 
       <div className="flex items-center justify-between" style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+        <div style={{ fontSize: 12, color: "var(--fg-subtle)" }}>
           {saved
             ? "Guardado en vivo ✓"
             : existing
@@ -619,7 +619,7 @@ function EntryField({
         style={{
           fontSize: 12,
           fontWeight: 700,
-          color: "#bcd0ff",
+          color: "var(--accent-text)",
           marginBottom: 2,
           letterSpacing: 0.6,
         }}
@@ -629,7 +629,7 @@ function EntryField({
       <p
         style={{
           fontSize: 11.5,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 6,
           lineHeight: 1.45,
         }}
@@ -642,10 +642,10 @@ function EntryField({
         rows={rows}
         style={{
           width: "100%",
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "var(--elevated)",
+          border: "1px solid var(--border)",
           borderRadius: 10,
-          color: "#fff",
+          color: "var(--fg)",
           padding: "9px 14px",
           fontSize: 13,
           resize: "vertical",
@@ -703,14 +703,14 @@ function EntryCard({
       >
         <div className="flex items-center" style={{ gap: 8 }}>
           <Circle size={7} fill={isMine ? "#5b8aff" : "rgba(255,255,255,0.3)"} stroke="none" />
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--fg)" }}>
             {name}
             {isMine && (
               <span
                 style={{
                   fontWeight: 400,
                   fontSize: 11,
-                  color: "rgba(255,255,255,0.5)",
+                  color: "var(--fg-subtle)",
                   marginLeft: 6,
                 }}
               >
@@ -804,7 +804,7 @@ function EntryCard({
                 borderRadius: 999,
                 background: "rgba(148,163,184,0.12)",
                 border: "1px solid rgba(148,163,184,0.28)",
-                color: "#cbd5e1",
+                color: "var(--fg-muted)",
                 fontSize: 11.5,
                 cursor: parkBusy ? "not-allowed" : "pointer",
                 opacity: parkBusy ? 0.6 : 1,
@@ -838,7 +838,7 @@ function Cell({ label, value }: { label: string; value: string | null }) {
       <span
         style={{
           fontSize: 13,
-          color: "rgba(255,255,255,0.85)",
+          color: "var(--fg)",
           lineHeight: 1.5,
         }}
       >
@@ -888,7 +888,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 11,
         fontWeight: 600,
-        color: "rgba(255,255,255,0.55)",
+        color: "var(--fg-subtle)",
         letterSpacing: 1.3,
         marginBottom: 12,
       }}
@@ -912,18 +912,18 @@ function EmptyState({
       style={{
         padding: "26px 28px",
         borderRadius: 14,
-        background: "rgba(255,255,255,0.025)",
-        border: "1px dashed rgba(255,255,255,0.10)",
+        background: "var(--elevated)",
+        border: "1px dashed var(--border)",
         textAlign: "center",
       }}
     >
-      <div style={{ fontSize: 15, fontWeight: 600, color: "#fff", marginBottom: 6 }}>
+      <div style={{ fontSize: 15, fontWeight: 600, color: "var(--fg)", marginBottom: 6 }}>
         {title}
       </div>
       <p
         style={{
           fontSize: 13,
-          color: "rgba(255,255,255,0.6)",
+          color: "var(--fg-muted)",
           lineHeight: 1.55,
           marginBottom: action ? 16 : 0,
         }}
@@ -949,7 +949,7 @@ function ErrorBanner({
         borderRadius: 10,
         background: "rgba(248,113,113,0.10)",
         border: "1px solid rgba(248,113,113,0.30)",
-        color: "#fca5a5",
+        color: "var(--danger-text)",
         fontSize: 13,
         marginTop: inline ? 0 : 14,
         marginBottom: inline ? 12 : 0,

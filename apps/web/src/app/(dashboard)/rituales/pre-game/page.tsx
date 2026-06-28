@@ -89,14 +89,14 @@ export default async function PreGamePage() {
   }
 
   return (
-    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 880 }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "var(--fg)", maxWidth: 880 }}>
       <Link
         href="/rituales"
         className="inline-flex items-center"
         style={{
           gap: 6,
           fontSize: 13,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 20,
         }}
       >
@@ -117,7 +117,7 @@ export default async function PreGamePage() {
               borderRadius: 11,
               background: "rgba(251,191,36,0.12)",
               border: "1px solid rgba(251,191,36,0.28)",
-              color: "#fbbf24",
+              color: "var(--warn-text)",
             }}
           >
             <Sunrise size={20} strokeWidth={1.6} />
@@ -135,7 +135,7 @@ export default async function PreGamePage() {
             <div
               style={{
                 fontSize: 12.5,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
               }}
             >
               {humanDate(today)} · Ritual matutino · Solo vos lo ves
@@ -145,7 +145,7 @@ export default async function PreGamePage() {
         <p
           style={{
             fontSize: 14,
-            color: "rgba(255,255,255,0.65)",
+            color: "var(--fg-muted)",
             lineHeight: 1.55,
             maxWidth: 680,
           }}
@@ -194,7 +194,7 @@ export default async function PreGamePage() {
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.4,
             marginBottom: 12,
           }}
@@ -234,7 +234,7 @@ export default async function PreGamePage() {
             gap: 18,
             marginTop: 12,
             fontSize: 11.5,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
           }}
         >
           <span className="flex items-center" style={{ gap: 6 }}>
@@ -255,8 +255,8 @@ export default async function PreGamePage() {
                 width: 10,
                 height: 10,
                 borderRadius: 3,
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
                 display: "inline-block",
               }}
             />

@@ -252,7 +252,7 @@ export function EquipoClient({
 
   return (
     <main
-      className="mx-auto w-full max-w-[1500px] px-5 py-[30px] pb-10 text-white md:px-10"
+      className="mx-auto w-full max-w-[1500px] px-5 py-[30px] pb-10 text-fg md:px-10"
       style={{ fontFamily: "Inter, system-ui, sans-serif" }}
     >
       {/* page header */}
@@ -266,14 +266,14 @@ export function EquipoClient({
             {isArquitecto ? "Mi Equipo" : "Mi Perfil"}
           </div>
           <h1
-            className="m-0 text-[34px] font-extrabold text-white"
+            className="m-0 text-[34px] font-extrabold text-fg"
             style={{ letterSpacing: -0.8 }}
           >
             {isArquitecto
               ? "Mapa DISC + Delegación del equipo"
               : "Mi perfil DISC + Delegación"}
           </h1>
-          <p className="mt-2 text-sm text-white/55">
+          <p className="mt-2 text-sm text-fg-muted">
             {isArquitecto
               ? `${team.length} ${team.length === 1 ? "persona" : "personas"} · perfil de comportamiento, nivel de autonomía y alineación de cada rol.`
               : "Tu perfil de comportamiento, tu nivel de delegación y tu alineación. Solo el Arquitecto puede editarlo."}
@@ -307,7 +307,7 @@ export function EquipoClient({
             <button
               type="button"
               onClick={() => setInviteOpen(true)}
-              className="inline-flex items-center gap-2.5 rounded-xl border-0 py-3 text-[13.5px] font-semibold text-white transition hover:-translate-y-px"
+              className="inline-flex items-center gap-2.5 rounded-xl border-0 py-3 text-[13.5px] font-semibold text-fg transition hover:-translate-y-px"
               style={{
                 background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
                 boxShadow:
@@ -394,7 +394,7 @@ export function EquipoClient({
                 initial={authorityMatrix}
                 editable={isArquitecto}
               />
-              <p className="px-1 text-[10.5px] text-white/65">
+              <p className="px-1 text-[10.5px] text-fg-muted">
                 Anticipo del módulo Delegación (S4).
               </p>
             </div>
@@ -421,21 +421,21 @@ export function EquipoClient({
           >
             <div className="mb-3 flex items-center gap-2.5">
               <AlertTriangle size={18} className="text-[#fca5a5]" />
-              <h2 id="confirm-regen-title" className="text-[15px] font-bold text-white">
+              <h2 id="confirm-regen-title" className="text-[15px] font-bold text-fg">
                 Re-hacer test DISC
               </h2>
             </div>
-            <p className="text-[13px] leading-relaxed text-white/70">
-              Esto va a <b className="text-white">borrar el perfil DISC actual</b> de{" "}
-              <b className="text-white">{selected.full_name ?? "esta persona"}</b> (letras, scores y
-              arquetipo) y a <b className="text-white">invalidar el link anterior</b>. Esta acción no
+            <p className="text-[13px] leading-relaxed text-fg">
+              Esto va a <b className="text-fg">borrar el perfil DISC actual</b> de{" "}
+              <b className="text-fg">{selected.full_name ?? "esta persona"}</b> (letras, scores y
+              arquetipo) y a <b className="text-fg">invalidar el link anterior</b>. Esta acción no
               se puede deshacer.
             </p>
             <div className="mt-5 flex justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => setConfirmRegen(false)}
-                className="rounded-[10px] border border-white/[0.12] bg-white/[0.04] px-4 py-2.5 text-[13px] font-semibold text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+                className="rounded-[10px] border border-white/[0.12] bg-white/[0.04] px-4 py-2.5 text-[13px] font-semibold text-fg transition hover:bg-white/[0.08] hover:text-fg"
               >
                 Cancelar
               </button>
@@ -444,7 +444,7 @@ export function EquipoClient({
                 onClick={handleGenerateLink}
                 disabled={generating}
                 autoFocus
-                className="rounded-[10px] bg-gradient-to-br from-[#f87171] to-[#dc2626] px-4 py-2.5 text-[13px] font-bold text-white transition hover:brightness-110 disabled:cursor-default disabled:opacity-60"
+                className="rounded-[10px] bg-gradient-to-br from-[#f87171] to-[#dc2626] px-4 py-2.5 text-[13px] font-bold text-fg transition hover:brightness-110 disabled:cursor-default disabled:opacity-60"
               >
                 {generating ? "Generando…" : "Sí, re-hacer test"}
               </button>
@@ -506,15 +506,15 @@ export function EquipoClient({
         <div
           className="fixed bottom-[90px] right-5 z-[60] max-w-[340px] tbm-slide-right"
         >
-          <div className="flex items-start gap-3 rounded-xl border border-[#34d399]/40 bg-[#0F1B2D] p-4 shadow-2xl">
+          <div className="flex items-start gap-3 rounded-xl border border-[#34d399]/40 bg-[var(--surface)] p-4 shadow-2xl">
             <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#34d399]/[0.15] text-[#34d399]">
               <Bell size={16} />
             </div>
             <div className="flex-1">
-              <div className="text-[13.5px] font-semibold text-white">
+              <div className="text-[13.5px] font-semibold text-fg">
                 {toast.name} completó su test DISC
               </div>
-              <div className="mt-0.5 text-xs text-white/55">
+              <div className="mt-0.5 text-xs text-fg-muted">
                 Actualizá para ver su perfil cargado.
               </div>
               <button
@@ -532,7 +532,7 @@ export function EquipoClient({
               type="button"
               onClick={() => setToast(null)}
               aria-label="Cerrar notificación"
-              className="text-white/65"
+              className="text-fg-muted"
             >
               <X size={16} />
             </button>

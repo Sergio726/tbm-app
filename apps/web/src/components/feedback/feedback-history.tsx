@@ -23,8 +23,8 @@ export function FeedbackHistory({
       <div
         className="flex h-full flex-col items-center justify-center rounded-2xl border py-16 text-center"
         style={{
-          borderColor: "rgba(255,255,255,0.06)",
-          background: "rgba(255,255,255,0.015)",
+          borderColor: "var(--border)",
+          background: "var(--elevated)",
           minHeight: 300,
         }}
       >
@@ -35,10 +35,10 @@ export function FeedbackHistory({
             border: "1px solid rgba(91,138,255,0.2)",
           }}
         >
-          <MessageSquare size={22} strokeWidth={1.5} style={{ color: "#5b8aff" }} />
+          <MessageSquare size={22} strokeWidth={1.5} style={{ color: "var(--accent-text)" }} />
         </div>
         <p
-          className="font-semibold text-white"
+          className="font-semibold text-fg"
           style={{ fontSize: 15, marginBottom: 6 }}
         >
           Historial de feedbacks
@@ -46,7 +46,7 @@ export function FeedbackHistory({
         <p
           style={{
             fontSize: 13,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
             maxWidth: 260,
             lineHeight: 1.6,
           }}
@@ -71,21 +71,21 @@ export function FeedbackHistory({
       <div
         className="flex items-center gap-3 rounded-xl border p-4"
         style={{
-          background: "rgba(255,255,255,0.025)",
-          borderColor: "rgba(255,255,255,0.07)",
+          background: "var(--elevated)",
+          borderColor: "var(--border)",
         }}
       >
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
-          style={{ background: "rgba(91,138,255,0.2)", color: "#9fb9ff" }}
+          style={{ background: "rgba(91,138,255,0.2)", color: "var(--accent-text)" }}
         >
           {initials}
         </div>
         <div>
-          <p className="font-semibold text-white" style={{ fontSize: 14 }}>
+          <p className="font-semibold text-fg" style={{ fontSize: 14 }}>
             {member.full_name}
           </p>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+          <p style={{ fontSize: 12, color: "var(--fg-muted)" }}>
             {member.cargo ?? "Sin cargo"} · {memberFeedbacks.length} feedback
             {memberFeedbacks.length !== 1 ? "s" : ""}
           </p>
@@ -100,11 +100,11 @@ export function FeedbackHistory({
         <div
           className="rounded-xl border py-10 text-center"
           style={{
-            borderColor: "rgba(255,255,255,0.06)",
-            background: "rgba(255,255,255,0.01)",
+            borderColor: "var(--border)",
+            background: "var(--elevated)",
           }}
         >
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>
+          <p style={{ fontSize: 13, color: "var(--fg-muted)" }}>
             Sin feedbacks todavía.
             <br />
             Construí el primero usando el panel izquierdo.

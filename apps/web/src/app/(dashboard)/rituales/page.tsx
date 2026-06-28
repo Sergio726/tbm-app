@@ -164,14 +164,14 @@ export default async function RitualesHubPage() {
   };
 
   return (
-    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff" }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "var(--fg)" }}>
       <header style={{ marginBottom: 32 }}>
         <div
           className="uppercase"
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.4,
             marginBottom: 6,
           }}
@@ -188,7 +188,7 @@ export default async function RitualesHubPage() {
         >
           Tu ritmo diario, sin improvisar
         </h1>
-        <p style={{ fontSize: 14.5, color: "rgba(255,255,255,0.6)", maxWidth: 720 }}>
+        <p style={{ fontSize: 14.5, color: "var(--fg-muted)", maxWidth: 720 }}>
           El ciclo TBM completo: Pre-game matutino personal → War Up en vivo con el equipo
           → Cool Down al cierre → Los 5 Grandes para preparar mañana. Lo que no encaja
           en una Roca se aparca, no se pierde.
@@ -210,12 +210,12 @@ export default async function RitualesHubPage() {
         >
           <AlertTriangle size={18} color="#f87171" />
           <div>
-            <div style={{ fontSize: 13.5, fontWeight: 600, color: "#fca5a5" }}>
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--danger-text)" }}>
               {lastWarUpDate
                 ? `Hace ${daysSinceLastWarUp} día${daysSinceLastWarUp === 1 ? "" : "s"} sin War Up`
                 : "No hay War Ups registrados en las últimas 2 semanas"}
             </div>
-            <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.6)" }}>
+            <div style={{ fontSize: 12.5, color: "var(--fg-muted)" }}>
               El ritual diario es lo que hace que el método funcione. Volvé a arrancarlo desde la card del War Up.
             </div>
           </div>
@@ -242,10 +242,10 @@ export default async function RitualesHubPage() {
                 borderRadius: 14,
                 background:
                   "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-                border: "1px solid rgba(255,255,255,0.06)",
+                border: "1px solid var(--border)",
                 transition: "all 0.15s",
                 textDecoration: "none",
-                color: "#fff",
+                color: "var(--fg)",
               }}
             >
               <div
@@ -273,7 +273,7 @@ export default async function RitualesHubPage() {
                       padding: "3px 8px",
                       borderRadius: 999,
                       background: "rgba(52,211,153,0.12)",
-                      color: "#34d399",
+                      color: "var(--success-text)",
                       border: "1px solid rgba(52,211,153,0.25)",
                       letterSpacing: 0.5,
                     }}
@@ -289,7 +289,7 @@ export default async function RitualesHubPage() {
                       padding: "3px 8px",
                       borderRadius: 999,
                       background: "rgba(91,138,255,0.15)",
-                      color: "#bcd0ff",
+                      color: "var(--accent-text)",
                       border: "1px solid rgba(91,138,255,0.35)",
                       letterSpacing: 0.5,
                     }}
@@ -323,7 +323,7 @@ export default async function RitualesHubPage() {
               <p
                 style={{
                   fontSize: 13,
-                  color: "rgba(255,255,255,0.6)",
+                  color: "var(--fg-muted)",
                   lineHeight: 1.5,
                   marginBottom: 14,
                 }}
@@ -335,7 +335,7 @@ export default async function RitualesHubPage() {
                 style={{
                   gap: 6,
                   fontSize: 12.5,
-                  color: "rgba(255,255,255,0.5)",
+                  color: "var(--fg-subtle)",
                 }}
               >
                 Abrir

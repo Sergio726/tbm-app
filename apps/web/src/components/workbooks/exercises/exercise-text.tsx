@@ -32,9 +32,9 @@ export function ExerciseText({
         placeholder={placeholder}
         className="w-full resize-none rounded-xl border bg-transparent p-4 text-sm leading-relaxed outline-none transition-all"
         style={{
-          background: "rgba(255,255,255,0.03)",
-          borderColor: "rgba(255,255,255,0.1)",
-          color: "rgba(255,255,255,0.85)",
+          background: "var(--elevated)",
+          borderColor: "var(--border)",
+          color: "var(--fg)",
         }}
         onFocus={(e) =>
           (e.currentTarget.style.borderColor = "rgba(91,138,255,0.4)")
@@ -50,7 +50,7 @@ export function ExerciseText({
           style={{
             background: "rgba(91,138,255,0.06)",
             borderColor: "rgba(91,138,255,0.2)",
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
           }}
         >
           Esta respuesta también se guardará en tu Pre-Game de hoy.
@@ -58,7 +58,7 @@ export function ExerciseText({
       )}
 
       <div className="flex items-center justify-between">
-        <span className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+        <span className="text-xs" style={{ color: "var(--fg-muted)" }}>
           {text.length > 0 ? `${text.length} caracteres` : ""}
         </span>
         <button

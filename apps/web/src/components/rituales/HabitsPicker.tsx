@@ -193,8 +193,8 @@ export default function HabitsPicker({
           maxHeight: "88vh",
           display: "flex",
           flexDirection: "column",
-          background: "#0F1B2D",
-          border: "1px solid rgba(255,255,255,0.10)",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 20,
           overflow: "hidden",
         }}
@@ -204,11 +204,11 @@ export default function HabitsPicker({
           className="flex items-center justify-between"
           style={{
             padding: "18px 20px",
-            borderBottom: "1px solid rgba(255,255,255,0.07)",
+            borderBottom: "1px solid var(--border)",
           }}
         >
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "var(--fg)" }}>
               Tus hábitos del Pre-game
             </div>
             <div
@@ -228,9 +228,9 @@ export default function HabitsPicker({
               width: 34,
               height: 34,
               borderRadius: 9,
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "rgba(255,255,255,0.7)",
+              background: "var(--elevated)",
+              border: "1px solid var(--border)",
+              color: "var(--fg-muted)",
             }}
             aria-label="Cerrar"
           >
@@ -298,10 +298,10 @@ export default function HabitsPicker({
                 disabled={atMax || newCustoms.length >= 2}
                 style={{
                   flex: 1,
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "var(--elevated)",
+                  border: "1px solid var(--border)",
                   borderRadius: 10,
-                  color: "#fff",
+                  color: "var(--fg)",
                   padding: "11px 14px",
                   fontSize: 16, // evita zoom de iOS
                   fontFamily: "inherit",
@@ -319,7 +319,7 @@ export default function HabitsPicker({
                   background: customDraft.trim() && !atMax
                     ? "rgba(91,138,255,0.16)"
                     : "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.10)",
+                  border: "1px solid var(--border)",
                   color: customDraft.trim() && !atMax ? "#9bb8ff" : "rgba(255,255,255,0.4)",
                 }}
                 aria-label="Agregar hábito"
@@ -334,7 +334,7 @@ export default function HabitsPicker({
         <div
           style={{
             padding: "14px 20px",
-            borderTop: "1px solid rgba(255,255,255,0.07)",
+            borderTop: "1px solid var(--border)",
           }}
         >
           {error && (
@@ -342,7 +342,7 @@ export default function HabitsPicker({
               style={{
                 marginBottom: 10,
                 fontSize: 12.5,
-                color: "#fca5a5",
+                color: "var(--danger-text)",
               }}
             >
               {error}
@@ -356,7 +356,7 @@ export default function HabitsPicker({
               padding: "13px",
               borderRadius: 11,
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-              color: "#fff",
+              color: "var(--fg)",
               border: "none",
               fontSize: 14.5,
               fontWeight: 600,
@@ -416,7 +416,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 11,
         fontWeight: 600,
-        color: "rgba(255,255,255,0.5)",
+        color: "var(--fg-subtle)",
         letterSpacing: 1.1,
         marginBottom: 9,
       }}

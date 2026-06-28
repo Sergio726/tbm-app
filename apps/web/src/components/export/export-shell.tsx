@@ -32,7 +32,7 @@ export function ExportShell({
             <p className="mt-1 text-[13px] text-slate-500">{subtitle}</p>
           </div>
           <div
-            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-[13px] font-bold text-white"
+            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-[13px] font-bold text-fg"
             style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}
           >
             TBM

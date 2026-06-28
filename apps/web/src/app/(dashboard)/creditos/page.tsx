@@ -73,7 +73,7 @@ export default async function CreditosPage() {
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -86,16 +86,16 @@ export default async function CreditosPage() {
             style={{
               background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
               border: "1px solid rgba(91,138,255,0.25)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <CreditCard size={18} strokeWidth={1.6} />
           </div>
-          <h1 className="text-white" style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}>
+          <h1 className="text-fg" style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}>
             Créditos
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "var(--fg-muted)", marginLeft: 52 }}>
           Cada crédito te habilita un test DISC para tu equipo.
         </p>
       </div>
@@ -113,20 +113,20 @@ export default async function CreditosPage() {
             <span style={{ fontSize: 52, fontWeight: 800, color: accent, lineHeight: 1 }}>
               {balance}
             </span>
-            <span style={{ fontSize: 15, color: "rgba(255,255,255,0.6)" }}>
+            <span style={{ fontSize: 15, color: "var(--fg-muted)" }}>
               {balance === 1 ? "crédito" : "créditos"}
             </span>
           </div>
-          <p style={{ marginTop: 12, fontSize: 12.5, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
+          <p style={{ marginTop: 12, fontSize: 12.5, color: "var(--fg-subtle)", lineHeight: 1.5 }}>
             1 crédito = 1 test DISC
           </p>
           {balance === 0 && (
-            <p style={{ marginTop: 8, fontSize: 12.5, color: "#fca5a5", lineHeight: 1.5 }}>
+            <p style={{ marginTop: 8, fontSize: 12.5, color: "var(--danger-text)", lineHeight: 1.5 }}>
               Te quedaste sin créditos: no vas a poder generar nuevos links DISC hasta cargar más.
             </p>
           )}
           {low && (
-            <p style={{ marginTop: 8, fontSize: 12.5, color: "#fbbf24", lineHeight: 1.5 }}>
+            <p style={{ marginTop: 8, fontSize: 12.5, color: "var(--warn-text)", lineHeight: 1.5 }}>
               Te quedan pocos créditos.
             </p>
           )}
@@ -143,7 +143,7 @@ export default async function CreditosPage() {
 
         {/* Cómo conseguir más */}
         <Card title="¿Necesitás más?" icon={<Mail size={16} strokeWidth={1.9} />}>
-          <p style={{ margin: "0 0 14px", fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.55 }}>
+          <p style={{ margin: "0 0 14px", fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.55 }}>
             Durante la beta cargamos los créditos a mano. Mandanos el pedido desde acá y te sumamos
             más para que sigas evaluando a tu equipo.
           </p>
@@ -152,10 +152,10 @@ export default async function CreditosPage() {
       </div>
 
       {/* Historial */}
-      <div className="mt-7 rounded-2xl border" style={{ borderColor: "rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}>
-        <div className="flex items-center gap-2 border-b px-5 py-4" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
-          <History size={16} strokeWidth={1.8} style={{ color: "#9fb9ff" }} />
-          <span className="font-semibold text-white" style={{ fontSize: 14 }}>
+      <div className="mt-7 rounded-2xl border" style={{ borderColor: "var(--border)", background: "var(--elevated)" }}>
+        <div className="flex items-center gap-2 border-b px-5 py-4" style={{ borderColor: "var(--border)" }}>
+          <History size={16} strokeWidth={1.8} style={{ color: "var(--accent-text)" }} />
+          <span className="font-semibold text-fg" style={{ fontSize: 14 }}>
             Historial de movimientos
           </span>
         </div>
@@ -170,7 +170,7 @@ export default async function CreditosPage() {
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
-                <tr style={{ color: "rgba(255,255,255,0.62)", textAlign: "left" }}>
+                <tr style={{ color: "var(--fg-muted)", textAlign: "left" }}>
                   <th scope="col" style={thStyle}>Fecha</th>
                   <th scope="col" style={thStyle}>Concepto</th>
                   <th scope="col" style={thStyle}>Detalle</th>
@@ -181,10 +181,10 @@ export default async function CreditosPage() {
                 {history.map((t) => {
                   const positive = t.delta >= 0;
                   return (
-                    <tr key={t.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                    <tr key={t.id} style={{ borderTop: "1px solid var(--border)" }}>
                       <td style={tdStyle}>{formatCreditDate(t.created_at)}</td>
-                      <td style={{ ...tdStyle, color: "rgba(255,255,255,0.9)" }}>{creditTypeLabel(t.type)}</td>
-                      <td style={{ ...tdStyle, color: "rgba(255,255,255,0.5)" }}>{t.reason ?? "—"}</td>
+                      <td style={{ ...tdStyle, color: "var(--fg)" }}>{creditTypeLabel(t.type)}</td>
+                      <td style={{ ...tdStyle, color: "var(--fg-subtle)" }}>{t.reason ?? "—"}</td>
                       <td
                         style={{
                           ...tdStyle,
@@ -220,12 +220,12 @@ function Card({
   return (
     <div
       className="rounded-2xl border p-6"
-      style={{ borderColor: "rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}
+      style={{ borderColor: "var(--border)", background: "var(--elevated)" }}
     >
-      <div className="mb-3 flex items-center gap-2" style={{ color: "#9fb9ff", fontSize: 13, fontWeight: 600 }}>
+      <div className="mb-3 flex items-center gap-2" style={{ color: "var(--accent-text)", fontSize: 13, fontWeight: 600 }}>
         {icon} {title}
       </div>
-      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.55 }}>{children}</div>
+      <div style={{ fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.55 }}>{children}</div>
     </div>
   );
 }
@@ -239,6 +239,6 @@ const thStyle: React.CSSProperties = {
 };
 const tdStyle: React.CSSProperties = {
   padding: "11px 18px",
-  color: "rgba(255,255,255,0.75)",
+  color: "var(--fg-muted)",
   whiteSpace: "nowrap",
 };

@@ -15,11 +15,11 @@ export function MemberSelector({ team, selected, onSelect }: MemberSelectorProps
       <div
         className="rounded-xl border py-8 text-center"
         style={{
-          borderColor: "rgba(255,255,255,0.07)",
-          background: "rgba(255,255,255,0.02)",
+          borderColor: "var(--border)",
+          background: "var(--elevated)",
         }}
       >
-        <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.62)" }}>
+        <p style={{ fontSize: 13.5, color: "var(--fg-muted)" }}>
           No hay colaboradores en tu empresa aún.
           <br />
           Invitá miembros desde Mi Equipo.
@@ -59,7 +59,7 @@ export function MemberSelector({ team, selected, onSelect }: MemberSelectorProps
             {/* Avatar */}
             <div
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold"
-              style={{ background: "rgba(91,138,255,0.2)", color: "#9fb9ff" }}
+              style={{ background: "rgba(91,138,255,0.2)", color: "var(--accent-text)" }}
             >
               {initials}
             </div>
@@ -67,14 +67,14 @@ export function MemberSelector({ team, selected, onSelect }: MemberSelectorProps
             {/* Info */}
             <div className="min-w-0 flex-1">
               <p
-                className="truncate font-medium text-white"
+                className="truncate font-medium text-fg"
                 style={{ fontSize: 13.5 }}
               >
                 {member.full_name ?? "Sin nombre"}
               </p>
               <p
                 className="truncate"
-                style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}
+                style={{ fontSize: 12, color: "var(--fg-muted)" }}
               >
                 {member.cargo ?? "Sin cargo"}
               </p>

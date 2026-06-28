@@ -31,7 +31,7 @@ export function LettersHintBox({ raw }: { raw: string }) {
   return (
     <div className="flex h-full flex-col justify-center rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
       <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
-        <span className="text-[12px] text-white/50">Se interpreta como</span>
+        <span className="text-[12px] text-fg-muted">Se interpreta como</span>
         <span
           className="rounded-md border px-1.5 py-0.5 text-[12px] font-bold"
           style={{
@@ -43,11 +43,11 @@ export function LettersHintBox({ raw }: { raw: string }) {
         >
           {norm || "—"}
         </span>
-        <span className="text-[13.5px] font-bold text-white">
+        <span className="text-[13.5px] font-bold text-fg">
           {arch.emoji} {arch.name}
         </span>
       </div>
-      <div className="text-[12.5px] leading-snug text-white/60">{arch.desc}</div>
+      <div className="text-[12.5px] leading-snug text-fg-muted">{arch.desc}</div>
     </div>
   );
 }

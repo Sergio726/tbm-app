@@ -10,10 +10,10 @@ import { redirect } from "next/navigation";
 function SuspendedScreen() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-tbm-bg p-6">
-      <div className="max-w-md rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
+      <div className="max-w-md rounded-2xl border border-border bg-white/[0.03] p-8 text-center">
         <div className="mb-3 text-3xl">⏸️</div>
-        <h1 className="mb-2 text-lg font-bold text-white">Cuenta suspendida</h1>
-        <p className="text-sm leading-relaxed text-white/55">
+        <h1 className="mb-2 text-lg font-bold text-fg">Cuenta suspendida</h1>
+        <p className="text-sm leading-relaxed text-fg-muted">
           El acceso de tu empresa está temporalmente suspendido. Si creés que es un error,
           contactá al equipo de The Business Multiplier para reactivarlo.
         </p>

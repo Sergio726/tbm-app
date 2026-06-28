@@ -21,6 +21,7 @@ import {
 import { createBrowserClient } from "@/lib/supabase/client";
 import { RestartTourButton } from "./restart-tour-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LIGHT_THEME_READY } from "@/lib/theme-flags";
 import type { Profile } from "@/types/database";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -209,7 +210,7 @@ function TimezoneSelect({
             <span className="font-medium truncate">
               {TIMEZONES.find((t) => t.value === value)?.country ?? value}
             </span>
-            <span className="font-mono text-[11px] text-white/65 truncate shrink-0">
+            <span className="font-mono text-[11px] text-fg-muted truncate shrink-0">
               {value}
             </span>
           </span>
@@ -509,7 +510,7 @@ export function AccountForm({
 
   return (
     <div
-      className="text-white"
+      className="text-fg"
       style={{
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px) 80px",
         maxWidth: 760,
@@ -520,11 +521,11 @@ export function AccountForm({
     >
       {/* ── Header ── */}
       <div className="mb-6">
-        <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[1.4px] text-white/50">
+        <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[1.4px] text-fg-muted">
           Mi cuenta
         </div>
         <h1 className="m-0 text-[30px] font-bold tracking-[-0.6px]">Perfil y cuenta</h1>
-        <p className="mt-1.5 text-sm text-white/55">
+        <p className="mt-1.5 text-sm text-fg-muted">
           Actualizá tus datos personales, tu foto y los accesos de tu cuenta.
         </p>
       </div>
@@ -552,11 +553,11 @@ export function AccountForm({
                 src={avatarUrl}
                 alt={`Avatar de ${fullName || email}`}
                 className="h-16 w-16 rounded-full object-cover"
-                style={{ border: "2px solid rgba(255,255,255,0.1)" }}
+                style={{ border: "2px solid var(--border)" }}
               />
             ) : (
               <div
-                className="flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white"
+                className="flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-fg"
                 style={{ background: "linear-gradient(135deg, #5b8aff, #2c5fe6)" }}
               >
                 {getInitials(fullName || email)}
@@ -571,12 +572,12 @@ export function AccountForm({
                 pointerEvents: "none",
               }}
             >
-              <Camera size={18} className="text-white" />
+              <Camera size={18} className="text-fg" />
             </div>
             {uploading && (
               <div className="absolute inset-0 flex items-center justify-center rounded-full"
                 style={{ background: "rgba(0,0,0,0.6)" }}>
-                <span className="text-[10px] text-white font-medium">...</span>
+                <span className="text-[10px] text-fg font-medium">...</span>
               </div>
             )}
           </div>
@@ -584,12 +585,12 @@ export function AccountForm({
           {/* Info */}
           <div className="min-w-0 flex-1">
             <div className="text-[17px] font-semibold truncate">
-              {fullName || <span className="text-white/65 italic">Sin nombre</span>}
+              {fullName || <span className="text-fg-muted italic">Sin nombre</span>}
             </div>
-            <div className="text-sm text-white/55 truncate">
-              {cargo || <span className="italic text-white/65">Sin cargo</span>}
+            <div className="text-sm text-fg-muted truncate">
+              {cargo || <span className="italic text-fg-muted">Sin cargo</span>}
             </div>
-            <div className="mt-1 text-xs text-white/65 truncate">{email}</div>
+            <div className="mt-1 text-xs text-fg-muted truncate">{email}</div>
           </div>
 
           {/* Badges */}
@@ -644,7 +645,7 @@ export function AccountForm({
             onClick={() => fileRef.current?.click()}
             disabled={uploading || removingAvatar}
             aria-label="Subir nueva foto de perfil"
-            className="inline-flex items-center gap-2 rounded-lg border border-tbm-border px-3.5 py-2 text-sm font-medium text-tbm-text-secondary transition-colors hover:bg-tbm-elevated hover:text-white disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg border border-tbm-border px-3.5 py-2 text-sm font-medium text-tbm-text-secondary transition-colors hover:bg-tbm-elevated hover:text-fg disabled:opacity-60"
           >
             <Camera size={14} />
             {uploading ? "Subiendo…" : "Cambiar foto"}
@@ -661,7 +662,7 @@ export function AccountForm({
               {removingAvatar ? "Quitando…" : "Quitar foto"}
             </button>
           )}
-          <p className="ml-auto text-[11px] text-white/65">JPG o PNG, hasta 4 MB.</p>
+          <p className="ml-auto text-[11px] text-fg-muted">JPG o PNG, hasta 4 MB.</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -735,7 +736,7 @@ export function AccountForm({
             onChange={(e) => setNewEmail(e.target.value)}
           />
         </Field>
-        <p className="mt-2 text-[11px] text-white/65">
+        <p className="mt-2 text-[11px] text-fg-muted">
           Al cambiar el email recibirás un correo de confirmación. El cambio se aplica cuando lo confirmés.
         </p>
         <button
@@ -765,7 +766,7 @@ export function AccountForm({
                 type="button"
                 onClick={() => setShowPass1((v) => !v)}
                 aria-label={showPass1 ? "Ocultar contraseña" : "Mostrar contraseña"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/65 hover:text-white/70 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg transition-colors"
               >
                 {showPass1 ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
@@ -784,7 +785,7 @@ export function AccountForm({
                 type="button"
                 onClick={() => setShowPass2((v) => !v)}
                 aria-label={showPass2 ? "Ocultar confirmación" : "Mostrar confirmación"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/65 hover:text-white/70 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg transition-colors"
               >
                 {showPass2 ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
@@ -796,7 +797,7 @@ export function AccountForm({
         {pass1.length > 0 && (
           <div className="mt-3">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] text-white/65">Fortaleza</span>
+              <span className="text-[11px] text-fg-muted">Fortaleza</span>
               <span
                 className="text-[11px] font-semibold"
                 style={{ color: strength.color }}
@@ -806,7 +807,7 @@ export function AccountForm({
             </div>
             <div
               className="h-1.5 w-full rounded-full overflow-hidden"
-              style={{ background: "rgba(255,255,255,0.08)" }}
+              style={{ background: "var(--elevated)" }}
             >
               <div
                 className="h-full rounded-full transition-all duration-300"
@@ -841,14 +842,16 @@ export function AccountForm({
         </button>
       </section>
 
-      {/* ── Apariencia — tema (theming base) ── */}
-      <section className="tbm-card mt-5 p-6 tbm-rise" style={{ animationDelay: "150ms" }}>
-        <SectionTitle Icon={Sun} label="Apariencia" color="#5b8aff" />
-        <p className="mb-3 text-[12.5px] leading-relaxed" style={{ color: "var(--fg-subtle)" }}>
-          Elegí el tema de la interfaz. &quot;Sistema&quot; sigue la configuración de tu dispositivo.
-        </p>
-        <ThemeToggle />
-      </section>
+      {/* ── Apariencia — tema (oculto hasta que el modo claro esté pulido) ── */}
+      {LIGHT_THEME_READY && (
+        <section className="tbm-card mt-5 p-6 tbm-rise" style={{ animationDelay: "150ms" }}>
+          <SectionTitle Icon={Sun} label="Apariencia" color="#5b8aff" />
+          <p className="mb-3 text-[12.5px] leading-relaxed" style={{ color: "var(--fg-subtle)" }}>
+            Elegí el tema de la interfaz. &quot;Sistema&quot; sigue la configuración de tu dispositivo.
+          </p>
+          <ThemeToggle />
+        </section>
+      )}
 
       {/* ── Ayuda — tour guiado (S11) ── */}
       <section
@@ -858,7 +861,7 @@ export function AccountForm({
         <SectionTitle Icon={Compass} label="Ayuda" color="#a78bfa" />
         <p
           className="mb-3 text-[12.5px] leading-relaxed"
-          style={{ color: "rgba(255,255,255,0.5)" }}
+          style={{ color: "var(--fg-subtle)" }}
         >
           ¿Te perdiste? Repetí el recorrido guiado por los módulos del sistema.
         </p>
@@ -978,12 +981,12 @@ function Toast({
       <span className="mt-0.5 shrink-0" style={{ color: c.icon }}>
         {icons[toast.type]}
       </span>
-      <span className="text-sm leading-snug text-white/90 flex-1">{toast.message}</span>
+      <span className="text-sm leading-snug text-fg flex-1">{toast.message}</span>
       <button
         type="button"
         onClick={() => onDismiss(toast.id)}
         aria-label="Cerrar notificación"
-        className="shrink-0 mt-0.5 text-white/65 hover:text-white/70 transition-colors"
+        className="shrink-0 mt-0.5 text-fg-muted hover:text-fg transition-colors"
       >
         <X size={13} />
       </button>

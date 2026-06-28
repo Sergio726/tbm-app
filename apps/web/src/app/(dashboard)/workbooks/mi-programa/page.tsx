@@ -56,7 +56,7 @@ export default async function MiProgramaPage() {
   return (
     <div
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         minHeight: "100vh",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px) 60px",
         fontFamily: "Inter, system-ui, sans-serif",
@@ -64,7 +64,7 @@ export default async function MiProgramaPage() {
     >
       <Link
         href="/workbooks"
-        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-white/55 hover:text-white/80"
+        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-fg-muted hover:text-fg"
       >
         <ArrowLeft size={14} />
         Workbooks

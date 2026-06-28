@@ -109,7 +109,7 @@ export default function RitualConfigForm({
         borderRadius: 16,
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        border: "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid var(--border)",
       }}
     >
       {/* Modo */}
@@ -133,7 +133,7 @@ export default function RitualConfigForm({
                 border: active
                   ? "1px solid rgba(91,138,255,0.35)"
                   : "1px solid rgba(255,255,255,0.06)",
-                color: "#fff",
+                color: "var(--fg)",
                 cursor: canEdit ? "pointer" : "default",
                 opacity: !canEdit && !active ? 0.5 : 1,
               }}
@@ -151,7 +151,7 @@ export default function RitualConfigForm({
               <div
                 style={{
                   fontSize: 12.5,
-                  color: "rgba(255,255,255,0.6)",
+                  color: "var(--fg-muted)",
                   lineHeight: 1.5,
                 }}
               >
@@ -211,7 +211,7 @@ export default function RitualConfigForm({
         style={{
           width: "100%",
           background: canEdit ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid var(--border)",
           borderRadius: 10,
           color: canEdit ? "#fff" : "rgba(255,255,255,0.5)",
           padding: "10px 14px",
@@ -222,7 +222,7 @@ export default function RitualConfigForm({
         }}
       >
         {TIMEZONES.map((tz) => (
-          <option key={tz} value={tz} style={{ background: "#0a0e18" }}>
+          <option key={tz} value={tz} style={{ background: "var(--bg)" }}>
             {tz}
           </option>
         ))}
@@ -235,7 +235,7 @@ export default function RitualConfigForm({
             borderRadius: 10,
             background: "rgba(248,113,113,0.10)",
             border: "1px solid rgba(248,113,113,0.30)",
-            color: "#fca5a5",
+            color: "var(--danger-text)",
             fontSize: 13,
             marginBottom: 14,
           }}
@@ -246,7 +246,7 @@ export default function RitualConfigForm({
 
       {canEdit && (
         <div className="flex items-center justify-between">
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+          <div style={{ fontSize: 12, color: "var(--fg-muted)" }}>
             {saved ? "Guardado." : initial.updated_at ? `Última edición · ${new Date(initial.updated_at).toLocaleString("es-AR")}` : "Sin cambios guardados"}
           </div>
           <button
@@ -257,7 +257,7 @@ export default function RitualConfigForm({
               padding: "10px 18px",
               borderRadius: 10,
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-              color: "#fff",
+              color: "var(--fg)",
               border: "none",
               fontSize: 13.5,
               fontWeight: 600,
@@ -280,7 +280,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 11,
         fontWeight: 600,
-        color: "rgba(255,255,255,0.55)",
+        color: "var(--fg-subtle)",
         letterSpacing: 1.3,
         marginBottom: 10,
       }}
@@ -309,7 +309,7 @@ function TimeField({
         style={{
           fontSize: 12.5,
           fontWeight: 600,
-          color: "#fff",
+          color: "var(--fg)",
           marginBottom: 4,
         }}
       >
@@ -318,7 +318,7 @@ function TimeField({
       <p
         style={{
           fontSize: 11.5,
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--fg-subtle)",
           marginBottom: 6,
           lineHeight: 1.45,
         }}
@@ -333,7 +333,7 @@ function TimeField({
         style={{
           width: "100%",
           background: disabled ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid var(--border)",
           borderRadius: 10,
           color: disabled ? "rgba(255,255,255,0.5)" : "#fff",
           padding: "9px 14px",

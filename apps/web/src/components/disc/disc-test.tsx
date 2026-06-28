@@ -37,8 +37,8 @@ function momentum(idx: number, total: number): string {
 
 function clockTone(s: number): { color: string; cls: string } {
   if (s < 180) return { color: "#64748B", cls: "" };
-  if (s < 300) return { color: "#F59E0B", cls: "tbm-heartbeat" };
-  return              { color: "#EF4444", cls: "tbm-heartbeat-strong" };
+  if (s < 300) return { color: "var(--warn-text)", cls: "tbm-heartbeat" };
+  return              { color: "var(--danger-text)", cls: "tbm-heartbeat-strong" };
 }
 
 export function DiscTest({
@@ -193,7 +193,7 @@ export function DiscTest({
         <div className="text-center mb-7 tbm-rise" style={{ animationDelay: "0ms" }}>
           <HeroCompass />
           {companyName && (
-            <span className="mb-2.5 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-tbm-text-muted">
+            <span className="mb-2.5 inline-block rounded-full border border-border bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-tbm-text-muted">
               Invitación de {companyName}
             </span>
           )}
@@ -222,7 +222,7 @@ export function DiscTest({
           <div className="mb-2 flex items-center gap-2">
             <span
               className="flex h-7 w-7 items-center justify-center rounded-lg"
-              style={{ background: "rgba(91,138,255,0.14)", color: "#9fb9ff" }}
+              style={{ background: "rgba(91,138,255,0.14)", color: "var(--accent-text)" }}
             >
               <Sparkles size={15} strokeWidth={2} />
             </span>
@@ -283,7 +283,7 @@ export function DiscTest({
               style={{ borderColor: "rgba(91,138,255,0.28)" }}
             >
               <span
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-bold text-white"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-bold text-fg"
                 style={{ background: "linear-gradient(135deg, #5b8aff, #2c5fe6)" }}
               >
                 {(name || "?")
@@ -454,7 +454,7 @@ export function DiscTest({
                     onClick={() => setMost(w)}
                     className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${isMost ? "tbm-tap" : ""}`}
                     style={{
-                      borderColor: isMost ? "#10B981" : "#1E3050",
+                      borderColor: isMost ? "#10B981" : "var(--border)",
                       background: isMost ? "#10B981" : "transparent",
                       color: isMost ? "#fff" : "#64748B",
                     }}
@@ -477,7 +477,7 @@ export function DiscTest({
                     onClick={() => setLeast(w)}
                     className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${isLeast ? "tbm-tap" : ""}`}
                     style={{
-                      borderColor: isLeast ? "#EF4444" : "#1E3050",
+                      borderColor: isLeast ? "#EF4444" : "var(--border)",
                       background: isLeast ? "#EF4444" : "transparent",
                       color: isLeast ? "#fff" : "#64748B",
                     }}
@@ -570,7 +570,7 @@ function EnergyCard({ d, delay }: { d: DiscDim; delay: number }) {
     >
       <div className="mb-1 flex items-center gap-2">
         <span
-          className="flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold text-white"
+          className="flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold text-fg"
           style={{ background: c }}
         >
           {d}

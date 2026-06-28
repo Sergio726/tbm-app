@@ -90,8 +90,8 @@ export function DiagnosticoForm({
             key={area.key}
             className="rounded-2xl border p-4"
             style={{
-              background: "rgba(255,255,255,0.025)",
-              borderColor: "rgba(255,255,255,0.07)",
+              background: "var(--elevated)",
+              borderColor: "var(--border)",
             }}
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -107,10 +107,10 @@ export function DiagnosticoForm({
                   <Icon size={16} strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[14px] font-semibold text-white">
+                  <div className="text-[14px] font-semibold text-fg">
                     {area.label}
                   </div>
-                  <div className="truncate text-[11.5px] text-white/65">
+                  <div className="truncate text-[11.5px] text-fg-muted">
                     {area.descripcion}
                   </div>
                 </div>
@@ -157,11 +157,11 @@ export function DiagnosticoForm({
       <div
         className="rounded-2xl border p-4"
         style={{
-          background: "rgba(255,255,255,0.025)",
-          borderColor: "rgba(255,255,255,0.07)",
+          background: "var(--elevated)",
+          borderColor: "var(--border)",
         }}
       >
-        <div className="mb-2 text-[12px] font-semibold text-white/60">
+        <div className="mb-2 text-[12px] font-semibold text-fg-muted">
           Reflexión libre (opcional)
         </div>
         <textarea
@@ -171,9 +171,9 @@ export function DiagnosticoForm({
           placeholder="¿Qué cambió desde la última evaluación? ¿Qué explicás de los números?"
           className="w-full resize-y rounded-xl border bg-transparent p-3 text-sm leading-relaxed outline-none transition"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "rgba(255,255,255,0.09)",
-            color: "rgba(255,255,255,0.85)",
+            background: "var(--elevated)",
+            borderColor: "var(--border)",
+            color: "var(--fg)",
           }}
         />
       </div>
@@ -184,7 +184,7 @@ export function DiagnosticoForm({
           style={{
             background: "rgba(248,113,113,0.10)",
             borderColor: "rgba(248,113,113,0.30)",
-            color: "#fca5a5",
+            color: "var(--danger-text)",
           }}
         >
           {error}
@@ -194,20 +194,20 @@ export function DiagnosticoForm({
       {/* Footer: promedio + guardar */}
       <div className="flex items-center justify-between pt-1">
         <div className="flex items-baseline gap-2">
-          <span className="text-[13px] text-white/50">Promedio</span>
+          <span className="text-[13px] text-fg-muted">Promedio</span>
           <span
             className="text-[20px] font-bold text-[#9fb9ff]"
             style={{ fontFamily: 'ui-monospace, "JetBrains Mono", monospace' }}
           >
             {avg}
           </span>
-          <span className="text-[12px] text-white/65">/5</span>
+          <span className="text-[12px] text-fg-muted">/5</span>
         </div>
         <button
           type="button"
           onClick={save}
           disabled={isPending}
-          className="inline-flex items-center gap-2 rounded-xl border-0 px-5 py-3 text-[13.5px] font-semibold text-white transition disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-xl border-0 px-5 py-3 text-[13.5px] font-semibold text-fg transition disabled:opacity-60"
           style={{
             background: "linear-gradient(180deg, #4f86ff, #2c5fe6)",
             boxShadow: "0 6px 18px rgba(54,114,255,0.3)",

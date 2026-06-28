@@ -66,7 +66,7 @@ function StatBar({
       </div>
       <div className="min-w-0 flex-1">
         <div className="mb-1.5 flex items-center gap-2">
-          <span className="text-[13px] font-semibold text-white">{name}</span>
+          <span className="text-[13px] font-semibold text-fg">{name}</span>
           {isPrimary && (
             <span
               className="rounded-[4px] border px-1.5 py-px text-[8.5px] font-extrabold uppercase tracking-wider"

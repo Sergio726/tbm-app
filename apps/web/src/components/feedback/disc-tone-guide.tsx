@@ -19,13 +19,13 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
       <div
         className="rounded-xl border p-4"
         style={{
-          borderColor: "rgba(255,255,255,0.06)",
-          background: "rgba(255,255,255,0.015)",
+          borderColor: "var(--border)",
+          background: "var(--elevated)",
         }}
       >
         <p
           className="text-center text-xs"
-          style={{ color: "rgba(255,255,255,0.62)", lineHeight: 1.6 }}
+          style={{ color: "var(--fg-muted)", lineHeight: 1.6 }}
         >
           Seleccioná un colaborador y el tipo de feedback para ver la guía de tono DISC.
         </p>
@@ -40,8 +40,8 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
     <div
       className="rounded-xl border p-4"
       style={{
-        borderColor: "rgba(255,255,255,0.08)",
-        background: "rgba(255,255,255,0.025)",
+        borderColor: "var(--border)",
+        background: "var(--elevated)",
       }}
     >
       {/* Header */}
@@ -68,7 +68,7 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
         </span>
         <span
           className="text-xs font-semibold"
-          style={{ color: "rgba(255,255,255,0.6)" }}
+          style={{ color: "var(--fg-muted)" }}
         >
           Guía de tono
         </span>
@@ -78,7 +78,7 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
         <>
           <p
             className="mb-3 font-semibold"
-            style={{ fontSize: 12.5, color: "rgba(255,255,255,0.75)" }}
+            style={{ fontSize: 12.5, color: "var(--fg-muted)" }}
           >
             {guide.title}
           </p>
@@ -87,7 +87,7 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
               <li
                 key={i}
                 className="flex gap-2"
-                style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", lineHeight: 1.5 }}
+                style={{ fontSize: 12, color: "var(--fg-subtle)", lineHeight: 1.5 }}
               >
                 <span style={{ color: typeColor, marginTop: 1 }}>•</span>
                 {tip}
@@ -106,16 +106,16 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
                 size={13}
                 strokeWidth={2}
                 className="shrink-0"
-                style={{ color: "#fbbf24", marginTop: 1 }}
+                style={{ color: "var(--warn-text)", marginTop: 1 }}
               />
-              <p style={{ fontSize: 11.5, color: "#fbbf24", lineHeight: 1.5 }}>
+              <p style={{ fontSize: 11.5, color: "var(--warn-text)", lineHeight: 1.5 }}>
                 {guide.warning}
               </p>
             </div>
           )}
         </>
       ) : (
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+        <p style={{ fontSize: 12, color: "var(--fg-muted)" }}>
           No hay guía para esta combinación.
         </p>
       )}

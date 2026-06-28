@@ -54,7 +54,7 @@ export default async function SistemaLostPage() {
         maxWidth: 1100,
         margin: "0 auto",
         width: "100%",
-        color: "#fff",
+        color: "var(--fg)",
       }}
     >
       {/* Header */}
@@ -84,7 +84,7 @@ export default async function SistemaLostPage() {
         <p
           style={{
             fontSize: 14.5,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
             lineHeight: 1.6,
             maxWidth: 720,
             marginTop: 10,
@@ -144,7 +144,7 @@ export default async function SistemaLostPage() {
                 fontSize: "clamp(8px, 1.8vw, 10px)",
                 fontWeight: 600,
                 letterSpacing: 0.6,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
                 marginTop: 6,
                 textAlign: "center",
               }}
@@ -183,9 +183,9 @@ export default async function SistemaLostPage() {
                     style={{
                       padding: "10px 13px",
                       borderRadius: 10,
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      color: "rgba(255,255,255,0.85)",
+                      background: "var(--elevated)",
+                      border: "1px solid var(--border)",
+                      color: "var(--fg)",
                       fontSize: 13.5,
                       fontWeight: 500,
                     }}
@@ -203,7 +203,7 @@ export default async function SistemaLostPage() {
       <p
         style={{
           fontSize: 12.5,
-          color: "rgba(255,255,255,0.62)",
+          color: "var(--fg-muted)",
           marginTop: 22,
           textAlign: "center",
         }}

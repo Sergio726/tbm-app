@@ -40,12 +40,12 @@ export function TeamSidebar({
     <div className="sticky top-6 flex flex-col gap-2.5">
       {/* squad summary */}
       <div className="flex items-center justify-between px-1 pb-1">
-        <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[1.3px] text-white/50">
+        <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[1.3px] text-fg-muted">
           <User size={13} strokeWidth={2} className="text-[#9fb9ff]" />
           Tu escuadrón
         </div>
         <span
-          className="text-[11px] font-semibold text-white/65"
+          className="text-[11px] font-semibold text-fg-muted"
           style={{ fontFamily: MONO }}
         >
           {team.length} {team.length === 1 ? "jugador" : "jugadores"}
@@ -56,7 +56,7 @@ export function TeamSidebar({
       {isArquitecto && team.length > 0 && (
         <div className="rounded-[14px] border border-white/[0.07] bg-white/[0.02] p-3.5">
           <div className="mb-1.5 flex items-center justify-between text-[11.5px]">
-            <span className="font-semibold text-white/70">Estado DISC del equipo</span>
+            <span className="font-semibold text-fg">Estado DISC del equipo</span>
             <span className="font-bold text-[#34d399]">{pct}%</span>
           </div>
           <div className="mb-2 h-2 overflow-hidden rounded-full bg-white/[0.06]">
@@ -65,7 +65,7 @@ export function TeamSidebar({
               style={{ width: `${pct}%`, background: "linear-gradient(90deg,#34d399,#10b981)" }}
             />
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-white/55">
+          <div className="flex items-center gap-3 text-[11px] text-fg-muted">
             <span className="inline-flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-[#34d399]" /> {ok} listos
             </span>
@@ -73,7 +73,7 @@ export function TeamSidebar({
               <span className="h-2 w-2 rounded-full bg-[#fbbf24]" /> {sent} enviados
             </span>
             <span className="inline-flex items-center gap-1">
-              <span className="h-2 w-2 rounded-full bg-white/30" /> {pending} sin test
+              <span className="h-2 w-2 rounded-full bg-elevated" /> {pending} sin test
             </span>
           </div>
         </div>
@@ -116,21 +116,21 @@ export function TeamSidebar({
       ))}
 
       {shown.length === 0 && (
-        <div className="rounded-[14px] border border-dashed border-white/10 p-4 text-center text-[12px] text-white/65">
+        <div className="rounded-[14px] border border-dashed border-border p-4 text-center text-[12px] text-fg-muted">
           {filter === "ok" ? "Nadie completó el test todavía." : "Todos completaron su DISC 🎉"}
         </div>
       )}
 
       {/* empty slot — recruit */}
-      <div className="flex items-center gap-3 rounded-[14px] border border-dashed border-white/10 p-4 text-white/50">
-        <div className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-full border border-dashed border-white/[0.18] text-white/65">
+      <div className="flex items-center gap-3 rounded-[14px] border border-dashed border-border p-4 text-fg-muted">
+        <div className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-full border border-dashed border-white/[0.18] text-fg-muted">
           <Plus size={18} strokeWidth={2} />
         </div>
         <div className="text-[12px] leading-snug">
           {isArquitecto ? (
             <>
               Usá{" "}
-              <b className="text-white/70">&quot;Invitar colaborador&quot;</b>{" "}
+              <b className="text-fg">&quot;Invitar colaborador&quot;</b>{" "}
               para sumar jugadores al escuadrón.
             </>
           ) : (
@@ -180,10 +180,10 @@ function RosterCard({
       {/* avatar with class ring */}
       <div className="relative flex-shrink-0">
         <div
-          className="flex h-[42px] w-[42px] items-center justify-center rounded-full text-base font-bold text-white"
+          className="flex h-[42px] w-[42px] items-center justify-center rounded-full text-base font-bold text-fg"
           style={{
             background: `linear-gradient(135deg, ${ring}, ${ring}88)`,
-            boxShadow: `0 0 0 2px #0a0e1a, 0 0 0 3.5px ${ring}66, inset 0 1px 0 rgba(255,255,255,0.25)`,
+            boxShadow: `0 0 0 2px var(--bg), 0 0 0 3.5px ${ring}66, inset 0 1px 0 rgba(255,255,255,0.25)`,
           }}
         >
           {initials(member.full_name)}
@@ -191,14 +191,14 @@ function RosterCard({
         {complete ? (
           <div
             className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2"
-            style={{ background: "#34d399", borderColor: "#0a0e1a", color: "#06281c" }}
+            style={{ background: "#34d399", borderColor: "var(--bg)", color: "#06281c" }}
           >
             <Check size={9} strokeWidth={3.2} />
           </div>
         ) : sent ? (
           <div
             className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2"
-            style={{ background: "#fbbf24", borderColor: "#0a0e1a", color: "#3a2a05" }}
+            style={{ background: "#fbbf24", borderColor: "var(--bg)", color: "#3a2a05" }}
             title="Test enviado, pendiente de completar"
           >
             <Clock size={9} strokeWidth={3} />
@@ -208,7 +208,7 @@ function RosterCard({
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-[14.5px] font-semibold text-white">
+          <span className="truncate text-[14.5px] font-semibold text-fg">
             {member.full_name ?? "Sin nombre"}
           </span>
           {isYou && (
@@ -217,7 +217,7 @@ function RosterCard({
             </span>
           )}
         </div>
-        <div className="mt-0.5 truncate text-[12px] text-white/55">
+        <div className="mt-0.5 truncate text-[12px] text-fg-muted">
           {displayEmoji} {displayName}
         </div>
       </div>
@@ -236,7 +236,7 @@ function RosterCard({
           {code || "—"}
         </span>
         <span
-          className="text-[10.5px] font-semibold text-white/65"
+          className="text-[10.5px] font-semibold text-fg-muted"
           style={{ fontFamily: MONO }}
         >
           N{member.los_level ?? 1}

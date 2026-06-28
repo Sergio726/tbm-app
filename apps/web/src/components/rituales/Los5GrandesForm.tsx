@@ -199,7 +199,7 @@ export default function Los5GrandesForm({
         borderRadius: 16,
         background:
           "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
-        border: "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid var(--border)",
       }}
     >
       <div
@@ -211,13 +211,13 @@ export default function Los5GrandesForm({
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.3,
           }}
         >
           {filledCount} / 5 prioridades
           {canMarkExecuted && executedCount > 0 && (
-            <span style={{ marginLeft: 12, color: "#34d399" }}>
+            <span style={{ marginLeft: 12, color: "var(--success-text)" }}>
               · {executedCount} ejecutadas
             </span>
           )}
@@ -266,7 +266,7 @@ export default function Los5GrandesForm({
           style={{
             width: "100%",
             background: canEdit ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
             color: canEdit ? "#fff" : "rgba(255,255,255,0.55)",
             padding: "10px 14px",
@@ -286,7 +286,7 @@ export default function Los5GrandesForm({
             borderRadius: 10,
             background: "rgba(248,113,113,0.10)",
             border: "1px solid rgba(248,113,113,0.30)",
-            color: "#fca5a5",
+            color: "var(--danger-text)",
             fontSize: 13,
           }}
         >
@@ -307,7 +307,7 @@ export default function Los5GrandesForm({
               padding: "10px 18px",
               borderRadius: 10,
               background: "linear-gradient(135deg, #818cf8, #6366f1)",
-              color: "#fff",
+              color: "var(--fg)",
               border: "none",
               fontSize: 13.5,
               fontWeight: 600,
@@ -385,7 +385,7 @@ function ItemRow({
               background: "transparent",
               border: "none",
               outline: "none",
-              color: "#fff",
+              color: "var(--fg)",
               fontSize: 14.5,
               fontWeight: 500,
               padding: 0,
@@ -402,7 +402,7 @@ function ItemRow({
               style={{
                 gap: 6,
                 fontSize: 12,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
                 flex: 1,
                 minWidth: 220,
               }}
@@ -418,7 +418,7 @@ function ItemRow({
                   background: "transparent",
                   border: "none",
                   outline: "none",
-                  color: "rgba(255,255,255,0.85)",
+                  color: "var(--fg)",
                   fontSize: 12,
                   padding: 0,
                   fontFamily: "inherit",
@@ -464,7 +464,7 @@ function ItemRow({
                   borderRadius: 999,
                   background: "rgba(148,163,184,0.12)",
                   border: "1px solid rgba(148,163,184,0.28)",
-                  color: "#cbd5e1",
+                  color: "var(--fg-muted)",
                   fontSize: 11.5,
                   cursor: parkBusy ? "not-allowed" : "pointer",
                   opacity: parkBusy ? 0.6 : 1,
@@ -484,10 +484,10 @@ function ItemRow({
               style={{
                 width: "100%",
                 marginTop: 8,
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
                 borderRadius: 8,
-                color: "rgba(255,255,255,0.85)",
+                color: "var(--fg)",
                 padding: "6px 10px",
                 fontSize: 12.5,
                 outline: "none",
@@ -507,7 +507,7 @@ function Label({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 13.5,
         fontWeight: 600,
-        color: "#fff",
+        color: "var(--fg)",
       }}
     >
       {children}

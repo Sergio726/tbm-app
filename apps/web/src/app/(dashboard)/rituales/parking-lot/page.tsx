@@ -40,14 +40,14 @@ export default async function ParkingLotPage() {
   }
 
   return (
-    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 980 }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "var(--fg)", maxWidth: 980 }}>
       <Link
         href="/rituales"
         className="inline-flex items-center"
         style={{
           gap: 6,
           fontSize: 13,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 20,
         }}
       >
@@ -65,7 +65,7 @@ export default async function ParkingLotPage() {
               borderRadius: 11,
               background: "rgba(148,163,184,0.12)",
               border: "1px solid rgba(148,163,184,0.28)",
-              color: "#cbd5e1",
+              color: "var(--fg-muted)",
             }}
           >
             <Inbox size={20} strokeWidth={1.6} />
@@ -83,7 +83,7 @@ export default async function ParkingLotPage() {
             <div
               style={{
                 fontSize: 12.5,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
               }}
             >
               Ideas y acciones que no encajan en una Roca del Plan 90D
@@ -93,7 +93,7 @@ export default async function ParkingLotPage() {
         <p
           style={{
             fontSize: 14,
-            color: "rgba(255,255,255,0.65)",
+            color: "var(--fg-muted)",
             lineHeight: 1.55,
             maxWidth: 720,
           }}

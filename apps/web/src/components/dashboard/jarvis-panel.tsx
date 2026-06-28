@@ -335,8 +335,8 @@ export function JarvisPanel({
           right: 0,
           bottom: 0,
           width: "min(440px, 100vw)",
-          background: "#0b1220",
-          borderLeft: "1px solid rgba(255,255,255,0.08)",
+          background: "var(--surface)",
+          borderLeft: "1px solid var(--border)",
           zIndex: 81,
           boxShadow: "-20px 0 60px rgba(0,0,0,0.5)",
           // Reset de herencia (el orbe vive dentro de un <h1> bold): texto normal.
@@ -344,13 +344,13 @@ export function JarvisPanel({
           fontSize: 14,
           letterSpacing: "normal",
           lineHeight: 1.5,
-          color: "rgba(255,255,255,0.92)",
+          color: "var(--fg)",
         }}
       >
         {/* Header */}
         <div
           className="flex items-center justify-between"
-          style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", gap: 12 }}
+          style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", gap: 12 }}
         >
           <div className="flex items-center" style={{ gap: 10 }}>
             <span style={{ position: "relative", width: 24, height: 24 }}>
@@ -358,8 +358,8 @@ export function JarvisPanel({
               <JarvisCore size={24} plain />
             </span>
             <div style={{ lineHeight: 1.15 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{persona.name}</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)" }}>Asistente · beta</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--fg)" }}>{persona.name}</div>
+              <div style={{ fontSize: 11, color: "var(--fg-muted)" }}>Asistente · beta</div>
             </div>
           </div>
           <div className="flex items-center" style={{ gap: 4 }}>
@@ -393,13 +393,13 @@ export function JarvisPanel({
         <div ref={scrollRef} className="flex-1" style={{ overflowY: "auto", padding: 16 }}>
           {showHistory ? (
             <div className="flex flex-col" style={{ gap: 6 }}>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", margin: "2px 0 8px" }}>
+              <div style={{ fontSize: 12, color: "var(--fg-muted)", margin: "2px 0 8px" }}>
                 Conversaciones anteriores
               </div>
               {loadingHistory ? (
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>Cargando…</div>
+                <div style={{ fontSize: 13, color: "var(--fg-muted)" }}>Cargando…</div>
               ) : conversations.length === 0 ? (
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>
+                <div style={{ fontSize: 13, color: "var(--fg-muted)" }}>
                   Todavía no hay conversaciones guardadas.
                 </div>
               ) : (
@@ -414,15 +414,15 @@ export function JarvisPanel({
                       borderRadius: 10,
                       background:
                         c.id === conversationId ? "rgba(91,138,255,0.12)" : "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.07)",
-                      color: "rgba(255,255,255,0.85)",
+                      border: "1px solid var(--border)",
+                      color: "var(--fg)",
                       cursor: "pointer",
                     }}
                   >
-                    <div style={{ fontSize: 13.5, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: 13.5, color: "var(--fg)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {c.title || "Conversación"}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)" }}>
+                    <div style={{ fontSize: 11, color: "var(--fg-muted)" }}>
                       {new Date(c.updated_at).toLocaleString("es-AR")}
                     </div>
                   </button>
@@ -431,7 +431,7 @@ export function JarvisPanel({
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col" style={{ gap: 10 }}>
-              <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
+              <p style={{ fontSize: 13.5, color: "var(--fg-muted)", lineHeight: 1.6 }}>
                 {persona.welcome}
               </p>
               {persona.suggestions.map((s) => (
@@ -471,7 +471,7 @@ export function JarvisPanel({
                       lineHeight: 1.55,
                       background: "rgba(91,138,255,0.18)",
                       border: "1px solid rgba(91,138,255,0.32)",
-                      color: "rgba(255,255,255,0.95)",
+                      color: "var(--fg)",
                       whiteSpace: "pre-wrap",
                     }
                   : m.error
@@ -483,7 +483,7 @@ export function JarvisPanel({
                         lineHeight: 1.55,
                         background: "rgba(248,113,113,0.1)",
                         border: "1px solid rgba(248,113,113,0.28)",
-                        color: "#fca5a5",
+                        color: "var(--danger-text)",
                         whiteSpace: "pre-wrap",
                       }
                     : {
@@ -492,7 +492,7 @@ export function JarvisPanel({
                         padding: 0,
                         fontSize: 15,
                         lineHeight: 1.65,
-                        color: "rgba(255,255,255,0.9)",
+                        color: "var(--fg)",
                       };
                 return (
                   <div
@@ -541,7 +541,7 @@ export function JarvisPanel({
                         className="jarvis-copy"
                         style={{
                           fontSize: 11,
-                          color: "rgba(255,255,255,0.62)",
+                          color: "var(--fg-muted)",
                           background: "transparent",
                           border: "none",
                           cursor: "pointer",
@@ -555,7 +555,7 @@ export function JarvisPanel({
                 );
               })}
               {pending && (
-                <div style={{ alignSelf: "flex-start", fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}>
+                <div style={{ alignSelf: "flex-start", fontSize: 12.5, color: "var(--fg-muted)" }}>
                   <span className="jarvis-cursor">▍</span> {persona.name} está pensando…
                 </div>
               )}
@@ -569,7 +569,7 @@ export function JarvisPanel({
             e.preventDefault();
             send(input);
           }}
-          style={{ padding: 12, borderTop: "1px solid rgba(255,255,255,0.08)" }}
+          style={{ padding: 12, borderTop: "1px solid var(--border)" }}
         >
           <div className="flex items-end" style={{ gap: 8 }}>
             <textarea
@@ -590,10 +590,10 @@ export function JarvisPanel({
               style={{
                 flex: 1,
                 resize: "none",
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
                 borderRadius: 12,
-                color: "#fff",
+                color: "var(--fg)",
                 padding: "10px 12px",
                 fontSize: 13.5,
                 lineHeight: 1.4,
@@ -602,7 +602,7 @@ export function JarvisPanel({
               }}
             />
             {streaming || pending ? (
-              <button type="button" onClick={stop} style={{ ...sendBtn, background: "rgba(248,113,113,0.18)", border: "1px solid rgba(248,113,113,0.4)", color: "#fca5a5" }}>
+              <button type="button" onClick={stop} style={{ ...sendBtn, background: "rgba(248,113,113,0.18)", border: "1px solid rgba(248,113,113,0.4)", color: "var(--danger-text)" }}>
                 Parar
               </button>
             ) : (
@@ -611,7 +611,7 @@ export function JarvisPanel({
               </button>
             )}
           </div>
-          <div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.62)", marginTop: 6, textAlign: "center" }}>
+          <div style={{ fontSize: 10.5, color: "var(--fg-muted)", marginTop: 6, textAlign: "center" }}>
             {persona.name} puede equivocarse. Verificá lo importante. · Enter envía · Shift+Enter salto de línea
           </div>
         </form>
@@ -647,20 +647,20 @@ function ProposalCard({
     >
       <div className="flex items-center" style={{ gap: 8, marginBottom: 10 }}>
         <span style={{ fontSize: 15 }}>⚡</span>
-        <div style={{ fontSize: 13.5, fontWeight: 700, color: "#fff" }}>{proposal.title}</div>
+        <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--fg)" }}>{proposal.title}</div>
       </div>
       <div className="flex flex-col" style={{ gap: 6, marginBottom: 12 }}>
         {proposal.details.map((d, j) => (
           <div key={j} style={{ display: "flex", gap: 8, fontSize: 12.5, lineHeight: 1.45 }}>
-            <span style={{ color: "rgba(255,255,255,0.62)", minWidth: 78, flexShrink: 0 }}>{d.label}</span>
-            <span style={{ color: "rgba(255,255,255,0.9)", wordBreak: "break-word" }}>{d.value}</span>
+            <span style={{ color: "var(--fg-muted)", minWidth: 78, flexShrink: 0 }}>{d.label}</span>
+            <span style={{ color: "var(--fg)", wordBreak: "break-word" }}>{d.value}</span>
           </div>
         ))}
       </div>
       {resolved === "confirmed" ? (
-        <div style={{ fontSize: 12.5, color: "#34d399" }}>✓ Confirmado</div>
+        <div style={{ fontSize: 12.5, color: "var(--success-text)" }}>✓ Confirmado</div>
       ) : resolved === "cancelled" ? (
-        <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}>Cancelado</div>
+        <div style={{ fontSize: 12.5, color: "var(--fg-muted)" }}>Cancelado</div>
       ) : (
         <div className="flex" style={{ gap: 8 }}>
           <button
@@ -689,8 +689,8 @@ function ProposalCard({
               padding: "8px 14px",
               borderRadius: 10,
               background: "transparent",
-              border: "1px solid rgba(255,255,255,0.14)",
-              color: "rgba(255,255,255,0.65)",
+              border: "1px solid var(--border-strong)",
+              color: "var(--fg-muted)",
               fontSize: 13,
               fontWeight: 600,
               cursor: busy ? "not-allowed" : "pointer",
@@ -742,7 +742,7 @@ function MarkdownLite({ text }: { text: string }) {
     } else if (heading) {
       flushList();
       blocks.push(
-        <div key={`h${blocks.length}`} style={{ fontWeight: 600, fontSize: 15, margin: "10px 0 2px", color: "#fff" }}>
+        <div key={`h${blocks.length}`} style={{ fontWeight: 600, fontSize: 15, margin: "10px 0 2px", color: "var(--fg)" }}>
           {inline(heading[1])}
         </div>
       );
@@ -773,13 +773,13 @@ function inline(text: string): ReactNode[] {
     const tok = m[0];
     if (tok.startsWith("**"))
       out.push(
-        <strong key={k++} style={{ fontWeight: 600, color: "#fff" }}>
+        <strong key={k++} style={{ fontWeight: 600, color: "var(--fg)" }}>
           {tok.slice(2, -2)}
         </strong>
       );
     else if (tok.startsWith("`"))
       out.push(
-        <code key={k++} style={{ background: "rgba(255,255,255,0.1)", borderRadius: 4, padding: "1px 5px", fontSize: 12.5 }}>
+        <code key={k++} style={{ background: "var(--elevated)", borderRadius: 4, padding: "1px 5px", fontSize: 12.5 }}>
           {tok.slice(1, -1)}
         </code>
       );
@@ -793,7 +793,7 @@ function inline(text: string): ReactNode[] {
 const iconBtn: React.CSSProperties = {
   background: "transparent",
   border: "none",
-  color: "rgba(255,255,255,0.55)",
+  color: "var(--fg-subtle)",
   cursor: "pointer",
   fontSize: 16,
   lineHeight: 1,
@@ -804,9 +804,9 @@ const chip: React.CSSProperties = {
   textAlign: "left",
   padding: "10px 12px",
   borderRadius: 12,
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  color: "rgba(255,255,255,0.8)",
+  background: "var(--elevated)",
+  border: "1px solid var(--border)",
+  color: "var(--fg-muted)",
   fontSize: 13,
   cursor: "pointer",
 };

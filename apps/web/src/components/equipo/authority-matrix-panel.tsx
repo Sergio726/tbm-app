@@ -107,9 +107,9 @@ export function AuthorityMatrixPanel({
     <div className="rounded-[14px] border border-white/[0.07] bg-white/[0.02] p-4">
       <div className="mb-2.5 flex items-center gap-2">
         <Scale size={15} className="text-[#9fb9ff]" />
-        <h3 className="text-[13.5px] font-semibold text-white">Matriz de Autoridad</h3>
+        <h3 className="text-[13.5px] font-semibold text-fg">Matriz de Autoridad</h3>
       </div>
-      <p className="mb-3 text-[12px] text-white/55">¿Cuánto puede gastar/decidir cada uno sin preguntar?</p>
+      <p className="mb-3 text-[12px] text-fg-muted">¿Cuánto puede gastar/decidir cada uno sin preguntar?</p>
 
       {/* Niveles */}
       <div className="space-y-2">
@@ -182,7 +182,7 @@ function Level({ color, label, desc }: { color: string; label: string; desc: str
         <span className="text-[12.5px] font-semibold" style={{ color }}>
           {label}
         </span>
-        <span className="text-[12.5px] text-white/65"> — {desc}</span>
+        <span className="text-[12.5px] text-fg-muted"> — {desc}</span>
       </div>
     </div>
   );
@@ -201,12 +201,12 @@ function NumField({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-[11px] font-medium text-white/50">{label}</label>
+      <label className="mb-1 block text-[11px] font-medium text-fg-muted">{label}</label>
       <input
         inputMode={text ? "text" : "decimal"}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-[9px] border border-white/[0.09] bg-white/[0.035] px-3 py-2 text-[13px] text-white outline-none transition focus:border-[#5b8aff]/60"
+        className="w-full rounded-[9px] border border-white/[0.09] bg-white/[0.035] px-3 py-2 text-[13px] text-fg outline-none transition focus:border-[#5b8aff]/60"
       />
     </div>
   );

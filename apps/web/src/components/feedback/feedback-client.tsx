@@ -191,7 +191,7 @@ export function FeedbackClient({
       <div
         className="min-h-screen"
         style={{
-          background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+          background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
           fontFamily: "Inter, system-ui, sans-serif",
           padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
         }}
@@ -210,7 +210,7 @@ export function FeedbackClient({
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -223,19 +223,19 @@ export function FeedbackClient({
             style={{
               background: "linear-gradient(135deg, #5b8aff22, #5b8aff0a)",
               border: "1px solid rgba(91,138,255,0.25)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
           >
             <MessageSquare size={18} strokeWidth={1.6} />
           </div>
           <h1
-            className="text-white"
+            className="text-fg"
             style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4 }}
           >
             Feedback S.E.C.
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "var(--fg-muted)", marginLeft: 52 }}>
           Sostener · Elevar · Corregir — nunca más improvisar un feedback
         </p>
       </div>
@@ -247,7 +247,7 @@ export function FeedbackClient({
           style={{
             background: "rgba(52,211,153,0.1)",
             borderColor: "rgba(52,211,153,0.3)",
-            color: "#34d399",
+            color: "var(--success-text)",
             fontSize: 13.5,
           }}
         >
@@ -260,7 +260,7 @@ export function FeedbackClient({
           style={{
             background: "rgba(248,113,113,0.1)",
             borderColor: "rgba(248,113,113,0.3)",
-            color: "#f87171",
+            color: "var(--danger-text)",
             fontSize: 13.5,
           }}
         >
@@ -343,7 +343,7 @@ function Section({
       className="rounded-2xl border p-5"
       style={{
         borderColor: done ? "rgba(91,138,255,0.2)" : "rgba(255,255,255,0.07)",
-        background: "rgba(255,255,255,0.02)",
+        background: "var(--elevated)",
       }}
     >
       <div className="mb-4 flex items-center gap-3">
@@ -356,13 +356,13 @@ function Section({
         >
           {step}
         </div>
-        <p className="font-semibold text-white" style={{ fontSize: 13.5 }}>
+        <p className="font-semibold text-fg" style={{ fontSize: 13.5 }}>
           {title}
         </p>
         {done && doneLabel && (
           <>
-            <ChevronRight size={13} style={{ color: "rgba(255,255,255,0.62)" }} />
-            <span style={{ fontSize: 12.5, color: "#9fb9ff" }}>{doneLabel}</span>
+            <ChevronRight size={13} style={{ color: "var(--fg-muted)" }} />
+            <span style={{ fontSize: 12.5, color: "var(--accent-text)" }}>{doneLabel}</span>
           </>
         )}
       </div>

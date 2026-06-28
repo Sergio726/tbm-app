@@ -51,8 +51,8 @@ export function ExerciseDiagnostic({ exerciseKey, savedResponse, onSave, isPendi
           <div key={area.key}>
             <div className="mb-2 flex items-center justify-between">
               <div>
-                <span className="text-sm font-semibold text-white">{area.label}</span>
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+                <span className="text-sm font-semibold text-fg">{area.label}</span>
+                <p className="text-xs" style={{ color: "var(--fg-muted)" }}>
                   {area.descripcion}
                 </p>
               </div>
@@ -76,9 +76,9 @@ export function ExerciseDiagnostic({ exerciseKey, savedResponse, onSave, isPendi
                           color: scoreColor(n),
                         }
                       : {
-                          background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          color: "rgba(255,255,255,0.5)",
+                          background: "var(--elevated)",
+                          border: "1px solid var(--border)",
+                          color: "var(--fg-subtle)",
                         }
                   }
                 >
@@ -95,7 +95,7 @@ export function ExerciseDiagnostic({ exerciseKey, savedResponse, onSave, isPendi
         style={{
           background: "rgba(91,138,255,0.06)",
           borderColor: "rgba(91,138,255,0.2)",
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--fg-subtle)",
         }}
       >
         Este diagnóstico también actualiza los semáforos del Dashboard de tu empresa.

@@ -43,11 +43,11 @@ export function ActivoForm({
       }}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-bold text-white">Nuevo activo del sistema</h3>
+        <h3 className="text-sm font-bold text-fg">Nuevo activo del sistema</h3>
         <button
           type="button"
           onClick={onCancel}
-          style={{ color: "rgba(255,255,255,0.62)" }}
+          style={{ color: "var(--fg-muted)" }}
         >
           <X size={16} />
         </button>
@@ -58,10 +58,10 @@ export function ActivoForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Nombre del proceso · ej. Onboarding de un cliente nuevo"
-          className="w-full rounded-xl border bg-transparent px-3.5 py-2.5 text-sm text-white outline-none"
+          className="w-full rounded-xl border bg-transparent px-3.5 py-2.5 text-sm text-fg outline-none"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "rgba(255,255,255,0.09)",
+            background: "var(--elevated)",
+            borderColor: "var(--border)",
           }}
           autoFocus
         />
@@ -71,52 +71,52 @@ export function ActivoForm({
           onChange={(e) => setDescription(e.target.value)}
           placeholder="¿Qué cubre este proceso? ¿Cuándo se usa?"
           rows={2}
-          className="w-full resize-y rounded-xl border bg-transparent px-3.5 py-2.5 text-sm text-white outline-none"
+          className="w-full resize-y rounded-xl border bg-transparent px-3.5 py-2.5 text-sm text-fg outline-none"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "rgba(255,255,255,0.09)",
+            background: "var(--elevated)",
+            borderColor: "var(--border)",
           }}
         />
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-[11px] font-semibold text-white/50">
+            <label className="mb-1 block text-[11px] font-semibold text-fg-muted">
               Categoría
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-xl border px-3 py-2.5 text-sm text-white outline-none"
+              className="w-full rounded-xl border px-3 py-2.5 text-sm text-fg outline-none"
               style={{
-                background: "rgba(255,255,255,0.03)",
-                borderColor: "rgba(255,255,255,0.09)",
+                background: "var(--elevated)",
+                borderColor: "var(--border)",
               }}
             >
               {ASSET_CATEGORIES.map((c) => (
-                <option key={c.key} value={c.key} style={{ background: "#0F1B2D" }}>
+                <option key={c.key} value={c.key} style={{ background: "var(--surface)" }}>
                   {c.label}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-[11px] font-semibold text-white/50">
+            <label className="mb-1 block text-[11px] font-semibold text-fg-muted">
               Responsable de mantenerlo
             </label>
             <select
               value={ownerId}
               onChange={(e) => setOwnerId(e.target.value)}
-              className="w-full rounded-xl border px-3 py-2.5 text-sm text-white outline-none"
+              className="w-full rounded-xl border px-3 py-2.5 text-sm text-fg outline-none"
               style={{
-                background: "rgba(255,255,255,0.03)",
-                borderColor: "rgba(255,255,255,0.09)",
+                background: "var(--elevated)",
+                borderColor: "var(--border)",
               }}
             >
-              <option value="" style={{ background: "#0F1B2D" }}>
+              <option value="" style={{ background: "var(--surface)" }}>
                 Sin asignar
               </option>
               {team.map((m) => (
-                <option key={m.id} value={m.id} style={{ background: "#0F1B2D" }}>
+                <option key={m.id} value={m.id} style={{ background: "var(--surface)" }}>
                   {m.full_name ?? "Sin nombre"}
                 </option>
               ))}
@@ -129,20 +129,20 @@ export function ActivoForm({
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
             placeholder="Link al video (Loom, YouTube…)"
-            className="w-full rounded-xl border bg-transparent px-3.5 py-2.5 text-sm text-white outline-none"
+            className="w-full rounded-xl border bg-transparent px-3.5 py-2.5 text-sm text-fg outline-none"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.09)",
+              background: "var(--elevated)",
+              borderColor: "var(--border)",
             }}
           />
           <input
             value={docUrl}
             onChange={(e) => setDocUrl(e.target.value)}
             placeholder="Link al documento (Notion, Drive…)"
-            className="w-full rounded-xl border bg-transparent px-3.5 py-2.5 text-sm text-white outline-none"
+            className="w-full rounded-xl border bg-transparent px-3.5 py-2.5 text-sm text-fg outline-none"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.09)",
+              background: "var(--elevated)",
+              borderColor: "var(--border)",
             }}
           />
         </div>
@@ -153,8 +153,8 @@ export function ActivoForm({
             onClick={onCancel}
             className="rounded-xl border px-3.5 py-2 text-xs font-semibold"
             style={{
-              borderColor: "rgba(255,255,255,0.1)",
-              color: "rgba(255,255,255,0.6)",
+              borderColor: "var(--border)",
+              color: "var(--fg-muted)",
             }}
           >
             Cancelar
@@ -172,7 +172,7 @@ export function ActivoForm({
                 owner_id: ownerId || null,
               })
             }
-            className="rounded-xl px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+            className="rounded-xl px-4 py-2 text-xs font-semibold text-fg disabled:opacity-50"
             style={{ background: "linear-gradient(180deg, #4f86ff, #2c5fe6)" }}
           >
             {isPending ? "Guardando…" : "Guardar activo"}

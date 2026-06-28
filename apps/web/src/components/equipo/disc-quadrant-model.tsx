@@ -39,10 +39,10 @@ export function DiscQuadrantModel({
   return (
     <div className="rounded-[14px] border border-white/[0.05] bg-white/[0.015] p-3.5">
       <div className="mb-3 text-center">
-        <div className="text-[10px] font-bold uppercase tracking-[1.4px] text-white/65">
+        <div className="text-[10px] font-bold uppercase tracking-[1.4px] text-fg-muted">
           Modelo DISC
         </div>
-        <div className="text-[11px] text-white/65">Los 4 estilos de comportamiento</div>
+        <div className="text-[11px] text-fg-muted">Los 4 estilos de comportamiento</div>
       </div>
 
       {/* Eje vertical · arriba */}
@@ -100,7 +100,7 @@ function QuadrantCard({
     >
       {isPrimary && (
         <span
-          className="absolute right-2 top-2 rounded-full px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-wide text-white"
+          className="absolute right-2 top-2 rounded-full px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-wide text-fg"
           style={{ background: color }}
         >
           Su estilo
@@ -117,14 +117,14 @@ function QuadrantCard({
           <span className="text-[16px] font-extrabold" style={{ color }}>
             {letter}
           </span>{" "}
-          <span className="text-[10.5px] font-bold uppercase tracking-wide text-white/70">
+          <span className="text-[10.5px] font-bold uppercase tracking-wide text-fg">
             {name}
           </span>
         </div>
       </div>
       <ul className="flex flex-col gap-1">
         {attrs.map((a) => (
-          <li key={a} className="flex items-start gap-1.5 text-[11px] leading-snug text-white/65">
+          <li key={a} className="flex items-start gap-1.5 text-[11px] leading-snug text-fg-muted">
             <Check size={11} strokeWidth={2.6} className="mt-[2px] flex-shrink-0" style={{ color }} />
             {a}
           </li>
@@ -136,7 +136,7 @@ function QuadrantCard({
 
 function AxisLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="py-1 text-center text-[9.5px] font-semibold uppercase tracking-[1.2px] text-white/65">
+    <div className="py-1 text-center text-[9.5px] font-semibold uppercase tracking-[1.2px] text-fg-muted">
       {children}
     </div>
   );
@@ -145,7 +145,7 @@ function AxisLabel({ children }: { children: React.ReactNode }) {
 function SideAxis({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="hidden items-center justify-center text-[9px] font-semibold uppercase tracking-[1px] text-white/65 sm:flex"
+      className="hidden items-center justify-center text-[9px] font-semibold uppercase tracking-[1px] text-fg-muted sm:flex"
       style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
     >
       {children}

@@ -101,7 +101,7 @@ export function IndicatorCard({
             className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
             style={{
               background: "rgba(91,138,255,0.15)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
             }}
             title={owner?.full_name ?? "Sin dueño"}
           >
@@ -120,7 +120,7 @@ export function IndicatorCard({
         </span>
         <span
           className="mb-0.5"
-          style={{ fontSize: 14, color: "rgba(255,255,255,0.62)" }}
+          style={{ fontSize: 14, color: "var(--fg-muted)" }}
         >
           / {indicator.weekly_target}
         </span>
@@ -129,7 +129,7 @@ export function IndicatorCard({
       {/* Progress bar */}
       <div
         className="h-1.5 w-full overflow-hidden rounded-full"
-        style={{ background: "rgba(255,255,255,0.07)" }}
+        style={{ background: "var(--elevated)" }}
       >
         <div
           className="h-full rounded-full transition-all duration-500"
@@ -143,9 +143,9 @@ export function IndicatorCard({
           onClick={handleEnterValue}
           className="rounded-xl py-2 text-xs font-semibold transition-colors"
           style={{
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            color: "rgba(255,255,255,0.6)",
+            background: "var(--elevated)",
+            border: "1px solid var(--border)",
+            color: "var(--fg-muted)",
           }}
         >
           Ingresar valor
@@ -161,10 +161,10 @@ export function IndicatorCard({
             placeholder={`Meta: ${indicator.weekly_target}`}
             min={0}
             autoFocus
-            className="flex-1 rounded-xl border px-3 py-2 text-sm text-white outline-none tabular-nums"
+            className="flex-1 rounded-xl border px-3 py-2 text-sm text-fg outline-none tabular-nums"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
+              background: "var(--elevated)",
+              borderColor: "var(--border-strong)",
             }}
           />
           <button
@@ -179,7 +179,7 @@ export function IndicatorCard({
             type="button"
             onClick={() => setShowInput(false)}
             className="rounded-xl px-2 py-2 text-xs"
-            style={{ color: "rgba(255,255,255,0.62)" }}
+            style={{ color: "var(--fg-muted)" }}
           >
             ✕
           </button>

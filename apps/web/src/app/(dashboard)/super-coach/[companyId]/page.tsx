@@ -72,7 +72,7 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
 
   return (
     <div
-      className="text-white"
+      className="text-fg"
       style={{
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px) 60px",
         maxWidth: 1000,
@@ -83,7 +83,7 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
     >
       <Link
         href="/super-coach"
-        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-white/55 transition hover:text-white/80"
+        className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-fg-muted transition hover:text-fg"
       >
         <ArrowLeft size={14} />
         Panel Super Coach
@@ -93,7 +93,7 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
         <h1 className="m-0 text-[26px] font-extrabold" style={{ letterSpacing: -0.5 }}>
           {company.name}
         </h1>
-        <p className="mt-1 text-[13px] text-white/55">
+        <p className="mt-1 text-[13px] text-fg-muted">
           {company.sector ? `${company.sector} · ` : ""}
           {(team ?? []).length} {(team ?? []).length === 1 ? "persona" : "personas"} ·{" "}
           {history.length} {history.length === 1 ? "diagnóstico" : "diagnósticos"}
@@ -106,8 +106,8 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
           <div
             className="rounded-2xl border p-4"
             style={{
-              background: "rgba(255,255,255,0.025)",
-              borderColor: "rgba(255,255,255,0.06)",
+              background: "var(--elevated)",
+              borderColor: "var(--border)",
             }}
           >
             <div className="flex flex-col gap-2">
@@ -117,12 +117,12 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
                 const delta = v0 !== null && v1 !== null ? v1 - v0 : null;
                 return (
                   <div key={area.key} className="flex items-center gap-3">
-                    <span className="w-[150px] truncate text-[12.5px] text-white/75">
+                    <span className="w-[150px] truncate text-[12.5px] text-fg">
                       {area.label}
                     </span>
                     <div
                       className="h-1.5 flex-1 overflow-hidden rounded-full"
-                      style={{ background: "rgba(255,255,255,0.05)" }}
+                      style={{ background: "var(--elevated)" }}
                     >
                       <div
                         className="h-full rounded-full"
@@ -136,9 +136,9 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
                       className="w-[90px] text-right text-[12px]"
                       style={{ fontFamily: 'ui-monospace, "JetBrains Mono", monospace' }}
                     >
-                      <span className="text-white/65">{v0 ?? "—"}</span>
-                      <span className="text-white/65"> → </span>
-                      <span className="font-bold text-white">{v1 ?? "—"}</span>
+                      <span className="text-fg-muted">{v0 ?? "—"}</span>
+                      <span className="text-fg-muted"> → </span>
+                      <span className="font-bold text-fg">{v1 ?? "—"}</span>
                       {delta !== null && delta !== 0 && (
                         <span
                           className="ml-1 font-bold"
@@ -170,12 +170,12 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
                 key={m.id}
                 className="flex items-center gap-3 rounded-xl border px-3.5 py-3"
                 style={{
-                  background: "rgba(255,255,255,0.02)",
-                  borderColor: "rgba(255,255,255,0.06)",
+                  background: "var(--elevated)",
+                  borderColor: "var(--border)",
                 }}
               >
                 <div
-                  className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white"
+                  className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-fg"
                   style={{ background: color }}
                 >
                   {(m.full_name ?? "?").trim().charAt(0).toUpperCase()}
@@ -191,10 +191,10 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
                       </span>
                     )}
                   </div>
-                  <div className="truncate text-[11.5px] text-white/50">
+                  <div className="truncate text-[11.5px] text-fg-muted">
                     {m.cargo ?? "Sin rol"} · N{m.los_level ?? 1} {los?.name ?? ""}
                     {!m.kpi_name && (
-                      <span style={{ color: "#fbbf24" }}> · sin KPI ⚠</span>
+                      <span style={{ color: "var(--warn-text)" }}> · sin KPI ⚠</span>
                     )}
                   </div>
                 </div>
@@ -226,7 +226,7 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
                 key={r.id}
                 className="rounded-xl border px-4 py-3"
                 style={{
-                  background: "rgba(255,255,255,0.02)",
+                  background: "var(--elevated)",
                   borderColor:
                     r.status === "active"
                       ? "rgba(167,139,250,0.25)"
@@ -248,7 +248,7 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
                 </div>
                 <div
                   className="mt-2 h-1 overflow-hidden rounded-full"
-                  style={{ background: "rgba(255,255,255,0.06)" }}
+                  style={{ background: "var(--elevated)" }}
                 >
                   <div
                     className="h-full rounded-full"
@@ -292,7 +292,7 @@ function Section({
     <section className="mb-7">
       <div className="mb-3 flex items-center gap-2">
         <Icon size={15} strokeWidth={1.9} style={{ color }} />
-        <h2 className="m-0 text-[13px] font-bold uppercase tracking-[1.2px] text-white/55">
+        <h2 className="m-0 text-[13px] font-bold uppercase tracking-[1.2px] text-fg-muted">
           {title}
         </h2>
       </div>
@@ -304,8 +304,8 @@ function Section({
 function Empty({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="rounded-2xl border border-dashed p-5 text-center text-[13px] text-white/65"
-      style={{ borderColor: "rgba(255,255,255,0.12)" }}
+      className="rounded-2xl border border-dashed p-5 text-center text-[13px] text-fg-muted"
+      style={{ borderColor: "var(--border-strong)" }}
     >
       {children}
     </div>

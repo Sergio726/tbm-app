@@ -15,10 +15,10 @@ interface RockCardProps {
 }
 
 const STATUS_ICONS: Record<string, React.ReactNode> = {
-  completed: <CheckCircle2 size={13} style={{ color: "#34d399" }} />,
-  failed: <XCircle size={13} style={{ color: "#f87171" }} />,
-  archived: <Archive size={13} style={{ color: "rgba(255,255,255,0.62)" }} />,
-  active: <Clock size={13} style={{ color: "#9fb9ff" }} />,
+  completed: <CheckCircle2 size={13} style={{ color: "var(--success-text)" }} />,
+  failed: <XCircle size={13} style={{ color: "var(--danger-text)" }} />,
+  archived: <Archive size={13} style={{ color: "var(--fg-muted)" }} />,
+  active: <Clock size={13} style={{ color: "var(--accent-text)" }} />,
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -55,7 +55,7 @@ export function RockCard({ rock, team, isPending, onUpdateProgress, onUpdateStat
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <p
-              className="font-semibold text-white leading-snug"
+              className="font-semibold text-fg leading-snug"
               style={{ fontSize: 14 }}
             >
               {rock.title}
@@ -63,7 +63,7 @@ export function RockCard({ rock, team, isPending, onUpdateProgress, onUpdateStat
             {rock.success_criteria && (
               <p
                 className="mt-1 line-clamp-2"
-                style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", lineHeight: 1.5 }}
+                style={{ fontSize: 12, color: "var(--fg-muted)", lineHeight: 1.5 }}
               >
                 {rock.success_criteria}
               </p>
@@ -74,7 +74,7 @@ export function RockCard({ rock, team, isPending, onUpdateProgress, onUpdateStat
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold"
             style={{
               background: "rgba(91,138,255,0.2)",
-              color: "#9fb9ff",
+              color: "var(--accent-text)",
               border: "1px solid rgba(91,138,255,0.3)",
             }}
             title={owner?.full_name ?? "Sin dueño"}
@@ -89,13 +89,13 @@ export function RockCard({ rock, team, isPending, onUpdateProgress, onUpdateStat
             <span className="text-xs font-semibold tabular-nums" style={{ color }}>
               {rock.progress}%
             </span>
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.62)" }}>
+            <span style={{ fontSize: 11, color: "var(--fg-muted)" }}>
               {isActive ? `Día ${dayNum} de 90` : STATUS_LABELS[rock.status]}
             </span>
           </div>
           <div
             className="h-1.5 w-full overflow-hidden rounded-full"
-            style={{ background: "rgba(255,255,255,0.08)" }}
+            style={{ background: "var(--elevated)" }}
           >
             <div
               className="h-full rounded-full transition-all duration-500"
@@ -108,7 +108,7 @@ export function RockCard({ rock, team, isPending, onUpdateProgress, onUpdateStat
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             {STATUS_ICONS[rock.status]}
-            <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)" }}>
+            <span style={{ fontSize: 11.5, color: "var(--fg-muted)" }}>
               {isActive
                 ? remaining > 0
                   ? `${remaining}d restantes`
@@ -126,7 +126,7 @@ export function RockCard({ rock, team, isPending, onUpdateProgress, onUpdateStat
                   style={{
                     background: "rgba(91,138,255,0.12)",
                     border: "1px solid rgba(91,138,255,0.2)",
-                    color: "#9fb9ff",
+                    color: "var(--accent-text)",
                   }}
                 >
                   <TrendingUp size={11} strokeWidth={2} />
@@ -141,7 +141,7 @@ export function RockCard({ rock, team, isPending, onUpdateProgress, onUpdateStat
                   style={{
                     background: "rgba(52,211,153,0.12)",
                     border: "1px solid rgba(52,211,153,0.25)",
-                    color: "#34d399",
+                    color: "var(--success-text)",
                   }}
                 >
                   Marcar completada

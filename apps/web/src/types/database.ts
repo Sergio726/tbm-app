@@ -2143,7 +2143,7 @@ export function scoreBandForTotal(total: number): {
       band: "multiplicador",
       emoji: "🟢",
       label: "Multiplicador Natural",
-      color: "#34d399",
+      color: "var(--success-text)",
       resumen: "Extraés cerca del 97% de la inteligencia de tu equipo. Sostené el estándar.",
     };
   }
@@ -2152,7 +2152,7 @@ export function scoreBandForTotal(total: number): {
       band: "accidental",
       emoji: "🟡",
       label: "Disminuidor Accidental",
-      color: "#fbbf24",
+      color: "var(--warn-text)",
       resumen: "Buenas intenciones, pero hay patrones que limitan a tu gente. Es corregible.",
     };
   }
@@ -2160,7 +2160,7 @@ export function scoreBandForTotal(total: number): {
     band: "disminuidor",
     emoji: "🔴",
     label: "Disminuidor en Acción",
-    color: "#f87171",
+    color: "var(--danger-text)",
     resumen: "Tu equipo opera al ~48% de su capacidad. Cada nómina rinde la mitad.",
   };
 }
