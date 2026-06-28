@@ -309,7 +309,7 @@ function ProductPreview() {
             style={{
               ...MONO,
               fontSize: 11,
-              color: "rgba(255,255,255,0.45)",
+              color: "rgba(255,255,255,0.62)",
               letterSpacing: 1.2,
             }}
           >
@@ -740,7 +740,7 @@ function RightPanel() {
             style={{
               ...MONO,
               fontSize: 11,
-              color: "rgba(255,255,255,0.4)",
+              color: "rgba(255,255,255,0.62)",
               letterSpacing: 1,
             }}
           >
@@ -932,7 +932,7 @@ function RightPanel() {
               ...MONO,
               gap: 8,
               fontSize: 11.5,
-              color: "rgba(255,255,255,0.35)",
+              color: "rgba(255,255,255,0.62)",
               marginTop: 4,
               letterSpacing: 0.3,
             }}
@@ -949,7 +949,7 @@ function RightPanel() {
         style={{
           ...MONO,
           fontSize: 11.5,
-          color: "rgba(255,255,255,0.35)",
+          color: "rgba(255,255,255,0.62)",
         }}
       >
         <div>© 2026 STLabs · TBM</div>

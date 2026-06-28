@@ -39,7 +39,7 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
         >
           {feedback.type}
         </span>
-        <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.35)" }}>
+        <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)" }}>
           {cfg.label}
         </span>
 
@@ -71,7 +71,7 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
       </div>
 
       {/* Date */}
-      <p className="mb-2 text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+      <p className="mb-2 text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
         {feedback.is_draft
           ? `Borrador — ${humanDate(feedback.created_at)}`
           : feedback.delivered_at

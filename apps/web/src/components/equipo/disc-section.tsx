@@ -120,7 +120,7 @@ export function DiscSection({
               </span>
             </p>
           ) : (
-            <p className="-mt-3 mb-[18px] text-[11.5px] text-white/40">
+            <p className="-mt-3 mb-[18px] text-[11.5px] text-white/65">
               Valores medidos en el test DISC.
             </p>
           )}
@@ -206,7 +206,7 @@ export function DiscSection({
           </div>
         </>
       ) : (
-        <p className="mt-3 text-[12.5px] text-white/45">
+        <p className="mt-3 text-[12.5px] text-white/65">
           Ingresá las letras DISC (del informe) para ver Luz/Sombra, temores y guía de
           liderazgo.
         </p>

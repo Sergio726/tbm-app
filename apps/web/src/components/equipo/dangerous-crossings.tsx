@@ -22,7 +22,7 @@ export function DangerousCrossings({ team }: { team: Profile[] }) {
       </div>
 
       {withDisc < 2 ? (
-        <p className="text-[12.5px] text-white/45">
+        <p className="text-[12.5px] text-white/65">
           Cargá el DISC de al menos 2 miembros para ver el mapa de conexiones del equipo.
         </p>
       ) : (
@@ -61,7 +61,7 @@ export function DangerousCrossings({ team }: { team: Profile[] }) {
           {/* Composición del equipo (señales secundarias) */}
           {composition.length > 0 && (
             <div className="space-y-2.5">
-              <p className="text-[11px] font-bold uppercase tracking-[1.2px] text-white/40">
+              <p className="text-[11px] font-bold uppercase tracking-[1.2px] text-white/65">
                 Composición del equipo
               </p>
               {composition.map((c, i) => {

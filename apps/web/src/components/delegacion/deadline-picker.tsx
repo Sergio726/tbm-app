@@ -176,7 +176,7 @@ export function DeadlinePicker({
           size={16}
           style={{
             marginLeft: "auto",
-            color: "rgba(255,255,255,0.35)",
+            color: "rgba(255,255,255,0.62)",
             transform: open ? "rotate(90deg)" : "none",
             transition: "transform 0.2s",
           }}
@@ -272,7 +272,7 @@ export function DeadlinePicker({
                 style={{
                   fontSize: 11,
                   fontWeight: 600,
-                  color: "rgba(255,255,255,0.35)",
+                  color: "rgba(255,255,255,0.62)",
                   paddingBottom: 4,
                 }}
               >
@@ -392,7 +392,7 @@ export function DeadlinePicker({
             className="flex items-center justify-between border-t px-4 py-3"
             style={{ borderColor: "rgba(255,255,255,0.06)" }}
           >
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
               {parsed.date
                 ? `${parsed.date.getDate()}/${pad(parsed.date.getMonth() + 1)} · ${pad(parsed.hour)}:${pad(parsed.minute)}`
                 : "Sin fecha seleccionada"}

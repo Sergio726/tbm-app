@@ -95,7 +95,7 @@ export default async function CreditosPage() {
             Créditos
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
           Cada crédito te habilita un test DISC para tu equipo.
         </p>
       </div>
@@ -170,7 +170,7 @@ export default async function CreditosPage() {
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
-                <tr style={{ color: "rgba(255,255,255,0.4)", textAlign: "left" }}>
+                <tr style={{ color: "rgba(255,255,255,0.62)", textAlign: "left" }}>
                   <th scope="col" style={thStyle}>Fecha</th>
                   <th scope="col" style={thStyle}>Concepto</th>
                   <th scope="col" style={thStyle}>Detalle</th>

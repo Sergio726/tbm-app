@@ -68,7 +68,7 @@ export default async function NuevaTareaPage() {
           <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3 }}>
             Nueva tarea — Pase de Estafeta
           </h1>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
             Los 5 puntos son obligatorios. Si falta uno, el error es tuyo.
           </p>
         </div>

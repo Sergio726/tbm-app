@@ -25,7 +25,7 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
       >
         <p
           className="text-center text-xs"
-          style={{ color: "rgba(255,255,255,0.3)", lineHeight: 1.6 }}
+          style={{ color: "rgba(255,255,255,0.62)", lineHeight: 1.6 }}
         >
           Seleccioná un colaborador y el tipo de feedback para ver la guía de tono DISC.
         </p>
@@ -115,7 +115,7 @@ export function DiscToneGuide({ feedbackType, discLetter }: DiscToneGuideProps) 
           )}
         </>
       ) : (
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
           No hay guía para esta combinación.
         </p>
       )}

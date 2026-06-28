@@ -55,14 +55,14 @@ export function MultiplicadorResult({
           >
             {total}
           </span>
-          <span className="text-[15px] text-white/40">/36</span>
+          <span className="text-[15px] text-white/65">/36</span>
         </div>
         <div className="mt-2 text-[17px] font-bold text-white">{band.label}</div>
         <p className="mx-auto mt-1.5 max-w-[460px] text-[13px] leading-relaxed text-white/60">
           {band.resumen}
         </p>
         {diagnostic.team_capacity_pct != null && (
-          <p className="mt-2 text-[11.5px] text-white/40">
+          <p className="mt-2 text-[11.5px] text-white/65">
             Capacidad del equipo en uso (tu percepción):{" "}
             <strong className="text-white/70">{diagnostic.team_capacity_pct}%</strong>
           </p>
@@ -74,7 +74,7 @@ export function MultiplicadorResult({
         className="rounded-2xl border p-5"
         style={{ background: "rgba(255,255,255,0.025)", borderColor: "rgba(255,255,255,0.07)" }}
       >
-        <div className="mb-3 text-[12px] font-bold uppercase tracking-[1px] text-white/45">
+        <div className="mb-3 text-[12px] font-bold uppercase tracking-[1px] text-white/65">
           Tu desglose por pecado
         </div>
         <div className="flex flex-col gap-3">
@@ -116,7 +116,7 @@ export function MultiplicadorResult({
         <div className="mb-1 text-[14px] font-semibold text-white">
           Tus herramientas para multiplicar
         </div>
-        <p className="mb-3.5 text-[12px] text-white/45">
+        <p className="mb-3.5 text-[12px] text-white/65">
           Aplicá una esta semana. El cambio es de hábito, no de personalidad.
         </p>
         <div className="flex flex-col gap-3">
@@ -149,7 +149,7 @@ export function MultiplicadorResult({
           className="rounded-2xl border p-5"
           style={{ background: "rgba(255,255,255,0.025)", borderColor: "rgba(255,255,255,0.07)" }}
         >
-          <div className="mb-3 text-[12px] font-bold uppercase tracking-[1px] text-white/45">
+          <div className="mb-3 text-[12px] font-bold uppercase tracking-[1px] text-white/65">
             Tu evolución
           </div>
           <div className="flex flex-col gap-2">
@@ -166,7 +166,7 @@ export function MultiplicadorResult({
                     <span style={{ color: b.color }} className="font-semibold">
                       {b.emoji} {h.total_score}/36
                     </span>
-                    <span className="text-white/40">{b.label}</span>
+                    <span className="text-white/65">{b.label}</span>
                   </span>
                 </div>
               );

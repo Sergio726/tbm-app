@@ -26,7 +26,7 @@ export function SearchTrigger() {
       <span style={{ flex: 1, textAlign: "left" }}>Buscar</span>
       <span
         className="flex"
-        style={{ gap: 3, fontSize: 10, color: "rgba(255,255,255,0.45)" }}
+        style={{ gap: 3, fontSize: 10, color: "rgba(255,255,255,0.62)" }}
       >
         <kbd
           style={{

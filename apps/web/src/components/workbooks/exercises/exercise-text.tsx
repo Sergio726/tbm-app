@@ -58,7 +58,7 @@ export function ExerciseText({
       )}
 
       <div className="flex items-center justify-between">
-        <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+        <span className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
           {text.length > 0 ? `${text.length} caracteres` : ""}
         </span>
         <button

@@ -65,7 +65,7 @@ export function RockForm({
         <button
           type="button"
           onClick={onCancel}
-          style={{ color: "rgba(255,255,255,0.4)" }}
+          style={{ color: "rgba(255,255,255,0.62)" }}
           className="hover:text-white transition-colors"
         >
           <X size={16} />
@@ -158,7 +158,7 @@ export function RockForm({
               style={{
                 background: "rgba(255,255,255,0.02)",
                 borderColor: "rgba(255,255,255,0.07)",
-                color: "rgba(255,255,255,0.4)",
+                color: "rgba(255,255,255,0.62)",
               }}
             />
           </div>

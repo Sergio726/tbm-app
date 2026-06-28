@@ -205,7 +205,7 @@ export default async function ReporteSemanalPage() {
                   style={{
                     ...MONO,
                     fontWeight: 400,
-                    color: "rgba(255,255,255,0.4)",
+                    color: "rgba(255,255,255,0.62)",
                     fontSize: 11,
                     marginLeft: 6,
                   }}
@@ -235,7 +235,7 @@ export default async function ReporteSemanalPage() {
                       style={{
                         ...MONO,
                         fontSize: 11,
-                        color: "rgba(255,255,255,0.4)",
+                        color: "rgba(255,255,255,0.62)",
                         marginRight: 10,
                       }}
                     >
@@ -310,13 +310,13 @@ export default async function ReporteSemanalPage() {
                         color: it.executed ? "#34d399" : "rgba(255,255,255,0.7)",
                       }}
                     >
-                      <span style={{ ...MONO, marginRight: 8, color: "rgba(255,255,255,0.4)" }}>
+                      <span style={{ ...MONO, marginRight: 8, color: "rgba(255,255,255,0.62)" }}>
                         {it.position}.
                       </span>
                       {it.executed && "✓ "}
                       {it.title}
                       {it.rock_label && (
-                        <span style={{ color: "rgba(255,255,255,0.4)" }}> · {it.rock_label}</span>
+                        <span style={{ color: "rgba(255,255,255,0.62)" }}> · {it.rock_label}</span>
                       )}
                     </li>
                   ))}
@@ -353,7 +353,7 @@ export default async function ReporteSemanalPage() {
                 style={{
                   fontSize: 11,
                   ...MONO,
-                  color: "rgba(255,255,255,0.45)",
+                  color: "rgba(255,255,255,0.62)",
                   marginBottom: 4,
                 }}
               >
@@ -450,7 +450,7 @@ function RitualStat({
         <div
           style={{
             fontSize: 12,
-            color: "rgba(255,255,255,0.4)",
+            color: "rgba(255,255,255,0.62)",
           }}
         >
           / {total} {unit ?? "días"}

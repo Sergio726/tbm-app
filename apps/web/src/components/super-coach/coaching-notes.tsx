@@ -100,7 +100,7 @@ export function CoachingNotes({
           </p>
         )}
         <div className="mt-2.5 flex items-center justify-between">
-          <span className="text-[11.5px] text-white/40">
+          <span className="text-[11.5px] text-white/65">
             El Arquitecto la recibe como notificación.
           </span>
           <button
@@ -122,7 +122,7 @@ export function CoachingNotes({
       {/* Historial */}
       {notes.length === 0 ? (
         <div
-          className="rounded-2xl border border-dashed p-4 text-center text-[12.5px] text-white/40"
+          className="rounded-2xl border border-dashed p-4 text-center text-[12.5px] text-white/65"
           style={{ borderColor: "rgba(255,255,255,0.12)" }}
         >
           Sin notas todavía. La primera observación marca el tono del acompañamiento.
@@ -141,7 +141,7 @@ export function CoachingNotes({
               <p className="m-0 text-[13px] leading-relaxed text-white/80">
                 {n.note}
               </p>
-              <span className="mt-1.5 block text-[11px] text-white/35">
+              <span className="mt-1.5 block text-[11px] text-white/65">
                 {timeAgo(n.created_at)}
               </span>
             </div>

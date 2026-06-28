@@ -10,37 +10,52 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Paleta base TBM ──────────────────────────────────────
+        // ── Alias semánticos (theme-aware) → tokens de globals.css ──
+        // Para componentes nuevos: bg-surface, text-fg-muted, border-border…
+        bg:               "rgb(var(--c-bg) / <alpha-value>)",
+        surface:          "rgb(var(--c-surface) / <alpha-value>)",
+        elevated:         "rgb(var(--c-elevated) / <alpha-value>)",
+        border:           "rgb(var(--c-border) / <alpha-value>)",
+        "border-strong":  "rgb(var(--c-border-strong) / <alpha-value>)",
+        fg:               "rgb(var(--c-fg) / <alpha-value>)",
+        "fg-muted":       "rgb(var(--c-fg-muted) / <alpha-value>)",
+        "fg-subtle":      "rgb(var(--c-fg-subtle) / <alpha-value>)",
+        "fg-faint":       "rgb(var(--c-fg-faint) / <alpha-value>)",
+        accent:           "rgb(var(--c-accent) / <alpha-value>)",
+        "accent-hover":   "rgb(var(--c-accent-hover) / <alpha-value>)",
+        "accent-text":    "rgb(var(--c-accent-text) / <alpha-value>)",
+        "accent-fg":      "rgb(var(--c-on-accent) / <alpha-value>)",
+        ring:             "rgb(var(--c-ring) / <alpha-value>)",
+        success:          "rgb(var(--c-success) / <alpha-value>)",
+        warn:             "rgb(var(--c-warn) / <alpha-value>)",
+        danger:           "rgb(var(--c-danger) / <alpha-value>)",
+
+        // ── Paleta TBM (compat) — re-apuntada a los mismos tokens ──
         tbm: {
-          // Fondos (dark mode)
-          bg:        "#0A1628", // fondo global (navy profundo)
-          surface:   "#0F1B2D", // superficie de cards
-          elevated:  "#162238", // hover / elementos elevados
-          border:    "#1E3050", // bordes sutiles
+          bg:        "rgb(var(--c-bg) / <alpha-value>)",
+          surface:   "rgb(var(--c-surface) / <alpha-value>)",
+          elevated:  "rgb(var(--c-elevated) / <alpha-value>)",
+          border:    "rgb(var(--c-border) / <alpha-value>)",
 
-          // Acento primario — Electric Blue
           blue: {
-            DEFAULT: "#2563EB",
-            light:   "#3B82F6",
-            dark:    "#1D4ED8",
-            muted:   "#1E3A8A",
+            DEFAULT: "rgb(var(--c-accent) / <alpha-value>)",
+            light:   "rgb(var(--c-accent-text) / <alpha-value>)",
+            dark:    "rgb(var(--c-accent-hover) / <alpha-value>)",
+            muted:   "rgb(var(--c-accent) / 0.22)",
           },
 
-          // Semáforo TBM
-          green:  "#10B981", // ≥100% de meta
-          yellow: "#F59E0B", // 85-99% de meta
-          red:    "#EF4444", // <85% de meta
+          green:  "rgb(var(--c-success) / <alpha-value>)",
+          yellow: "rgb(var(--c-warn) / <alpha-value>)",
+          red:    "rgb(var(--c-danger) / <alpha-value>)",
 
-          // Texto
           text: {
-            primary:   "#F8FAFC", // texto principal (casi blanco)
-            secondary: "#94A3B8", // texto secundario
-            muted:     "#64748B", // placeholder / hint
+            primary:   "rgb(var(--c-fg) / <alpha-value>)",
+            secondary: "rgb(var(--c-fg-muted) / <alpha-value>)",
+            muted:     "rgb(var(--c-fg-subtle) / <alpha-value>)",
           },
 
-          // Estados DISC
-          luz:    "#10B981", // verde (estado Luz)
-          sombra: "#64748B", // gris (estado Sombra)
+          luz:    "rgb(var(--c-success) / <alpha-value>)",
+          sombra: "rgb(var(--c-fg-faint) / <alpha-value>)",
         },
       },
       fontFamily: {

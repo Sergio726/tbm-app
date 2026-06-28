@@ -235,7 +235,7 @@ export function FeedbackClient({
             Feedback S.E.C.
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
           Sostener · Elevar · Corregir — nunca más improvisar un feedback
         </p>
       </div>
@@ -361,7 +361,7 @@ function Section({
         </p>
         {done && doneLabel && (
           <>
-            <ChevronRight size={13} style={{ color: "rgba(255,255,255,0.3)" }} />
+            <ChevronRight size={13} style={{ color: "rgba(255,255,255,0.62)" }} />
             <span style={{ fontSize: 12.5, color: "#9fb9ff" }}>{doneLabel}</span>
           </>
         )}

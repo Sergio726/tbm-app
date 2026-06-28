@@ -110,7 +110,7 @@ export function DiagnosticoForm({
                   <div className="text-[14px] font-semibold text-white">
                     {area.label}
                   </div>
-                  <div className="truncate text-[11.5px] text-white/45">
+                  <div className="truncate text-[11.5px] text-white/65">
                     {area.descripcion}
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export function DiagnosticoForm({
           >
             {avg}
           </span>
-          <span className="text-[12px] text-white/40">/5</span>
+          <span className="text-[12px] text-white/65">/5</span>
         </div>
         <button
           type="button"

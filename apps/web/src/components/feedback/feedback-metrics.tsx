@@ -80,7 +80,7 @@ export function FeedbackMetrics({ feedbacks: allFeedbacks }: FeedbackMetricsProp
             borderColor: "rgba(255,255,255,0.07)",
           }}
         >
-          <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+          <span className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
             Total
           </span>
           <span

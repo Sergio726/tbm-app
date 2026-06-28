@@ -42,7 +42,7 @@ export function BosPanel({
           <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
             BOS Dashboard
           </h2>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
             Semana del {weekLabel}
           </p>
         </div>
@@ -89,7 +89,7 @@ export function BosPanel({
             <p className="font-semibold text-white" style={{ fontSize: 14 }}>
               Sin indicadores de actividad
             </p>
-            <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.35)", marginTop: 4, maxWidth: 280 }}>
+            <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)", marginTop: 4, maxWidth: 280 }}>
               Los Leading Indicators miden las acciones que generan resultados, no los resultados en sí.
             </p>
           </div>
@@ -127,7 +127,7 @@ export function BosPanel({
           background: "rgba(255,255,255,0.015)",
         }}
       >
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", lineHeight: 1.6 }}>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", lineHeight: 1.6 }}>
           <strong style={{ color: "rgba(255,255,255,0.5)" }}>BOS —</strong> Los indicadores líderes predicen el resultado.
           Si la actividad está en verde esta semana, el resultado llegará. Si está en rojo, actuá ahora.
         </p>

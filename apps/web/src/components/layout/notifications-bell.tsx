@@ -141,12 +141,12 @@ export function NotificationsBell({
 
             <div className="max-h-[400px] overflow-y-auto">
               {loading && (
-                <p className="px-4 py-6 text-center text-[12.5px] text-white/40">
+                <p className="px-4 py-6 text-center text-[12.5px] text-white/65">
                   Cargando…
                 </p>
               )}
               {!loading && items.length === 0 && (
-                <p className="px-4 py-8 text-center text-[12.5px] text-white/40">
+                <p className="px-4 py-8 text-center text-[12.5px] text-white/65">
                   Sin notificaciones todavía.
                 </p>
               )}
@@ -169,7 +169,7 @@ export function NotificationsBell({
                         >
                           {n.title}
                         </span>
-                        <span className="shrink-0 text-[10.5px] text-white/35">
+                        <span className="shrink-0 text-[10.5px] text-white/65">
                           {timeAgo(n.created_at)}
                         </span>
                       </span>

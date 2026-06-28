@@ -52,7 +52,7 @@ export function ExerciseDiagnostic({ exerciseKey, savedResponse, onSave, isPendi
             <div className="mb-2 flex items-center justify-between">
               <div>
                 <span className="text-sm font-semibold text-white">{area.label}</span>
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
                   {area.descripcion}
                 </p>
               </div>

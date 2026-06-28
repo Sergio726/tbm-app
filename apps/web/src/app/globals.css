@@ -9,35 +9,86 @@
 
 @layer base {
   :root {
-    /* Fondos */
-    --bg-global:     #0A1628;
-    --bg-surface:    #0F1B2D;
-    --bg-elevated:   #162238;
-    --bg-card:       #111E30;
+    /* ───────────────────────────────────────────────────────────
+       Tokens de color — tripletas de canal "R G B" (theme-agnósticas).
+       Usar vía rgb(var(--c-x) / α) o, para color directo, los alias de abajo.
+       Dark = default (:root). Light = :root[data-theme="light"].
+       CAMBIAR LA PALETA = editar SOLO estos canales (un solo lugar).
+    ─────────────────────────────────────────────────────────── */
+    /* Superficies */
+    --c-bg:            10 22 40;     /* #0A1628 */
+    --c-surface:       15 27 45;     /* #0F1B2D */
+    --c-elevated:      22 34 56;     /* #162238 */
+    --c-overlay:        2  6 16;     /* scrim (se usa con α) */
 
     /* Bordes */
-    --border:        #1E3050;
-    --border-subtle: #152540;
+    --c-border:        30 48 80;     /* #1E3050 */
+    --c-border-strong: 51 71 110;    /* #33476E */
 
-    /* Texto */
-    --text-primary:   #F8FAFC;
-    --text-secondary: #94A3B8;
-    --text-muted:     #64748B;
+    /* Texto (contraste accesible sobre --bg) */
+    --c-fg:           248 250 252;   /* #F8FAFC — ~16:1 */
+    --c-fg-muted:     203 213 225;   /* #CBD5E1 — ~11:1 (secundario) */
+    --c-fg-subtle:    148 163 184;   /* #94A3B8 — ~5.9:1 (labels/captions) */
+    --c-fg-faint:     100 116 139;   /* #64748B — ~3.2:1 (decorativo, NO texto) */
+    --c-on-accent:    255 255 255;
 
-    /* Acento */
-    --accent:        #2563EB;
-    --accent-light:  #3B82F6;
-    --accent-muted:  #1E3A8A;
+    /* Acento (azul TBM) */
+    --c-accent:        37  99 235;   /* #2563EB */
+    --c-accent-hover:  29  78 216;   /* #1D4ED8 */
+    --c-accent-text:  159 185 255;   /* #9FB9FF — azul legible sobre --bg */
+    --c-ring:          91 138 255;   /* #5B8AFF */
 
-    /* Semáforo TBM */
-    --semaforo-verde:    #10B981;
-    --semaforo-amarillo: #F59E0B;
-    --semaforo-rojo:     #EF4444;
+    /* Estados */
+    --c-success:       16 185 129;   --c-success-text: 110 231 183;
+    --c-warn:         245 158  11;   --c-warn-text:    251 191  36;
+    --c-danger:       239  68  68;   --c-danger-text:  252 165 165;
 
-    /* Semáforo fondos (versiones oscurecidas para badges) */
-    --semaforo-verde-bg:    rgba(16, 185, 129, 0.12);
-    --semaforo-amarillo-bg: rgba(245, 158, 11, 0.12);
-    --semaforo-rojo-bg:     rgba(239, 68, 68, 0.12);
+    /* ── Alias de color listos para usar (resuelven a un color real) ── */
+    --bg:            rgb(var(--c-bg));
+    --surface:       rgb(var(--c-surface));
+    --elevated:      rgb(var(--c-elevated));
+    --overlay:       rgb(var(--c-overlay) / 0.6);
+    --border:        rgb(var(--c-border));
+    --border-strong: rgb(var(--c-border-strong));
+    --fg:            rgb(var(--c-fg));
+    --fg-muted:      rgb(var(--c-fg-muted));
+    --fg-subtle:     rgb(var(--c-fg-subtle));
+    --fg-faint:      rgb(var(--c-fg-faint));
+    --accent:        rgb(var(--c-accent));
+    --accent-hover:  rgb(var(--c-accent-hover));
+    --accent-text:   rgb(var(--c-accent-text));
+    --accent-fg:     rgb(var(--c-on-accent));
+    --accent-subtle: rgb(var(--c-accent) / 0.12);
+    --ring:          rgb(var(--c-ring));
+    --success:       rgb(var(--c-success));
+    --success-bg:    rgb(var(--c-success) / 0.12);
+    --success-text:  rgb(var(--c-success-text));
+    --warn:          rgb(var(--c-warn));
+    --warn-bg:       rgb(var(--c-warn) / 0.12);
+    --warn-text:     rgb(var(--c-warn-text));
+    --danger:        rgb(var(--c-danger));
+    --danger-bg:     rgb(var(--c-danger) / 0.12);
+    --danger-text:   rgb(var(--c-danger-text));
+
+    /* ── Compat: nombres viejos re-apuntados (flipan con el tema solos) ── */
+    --bg-global:      var(--bg);
+    --bg-surface:     var(--surface);
+    --bg-elevated:    var(--elevated);
+    --bg-card:        var(--surface);
+    --border-subtle:  rgb(var(--c-border) / 0.6);
+    --text-primary:   var(--fg);
+    --text-secondary: var(--fg-muted);
+    --text-muted:     var(--fg-subtle);
+    --accent-light:   var(--accent-text);
+    --accent-muted:   rgb(var(--c-accent) / 0.22);
+    --semaforo-verde:    var(--success);
+    --semaforo-amarillo: var(--warn);
+    --semaforo-rojo:     var(--danger);
+    --semaforo-verde-bg:    var(--success-bg);
+    --semaforo-amarillo-bg: var(--warn-bg);
+    --semaforo-rojo-bg:     var(--danger-bg);
+
+    color-scheme: dark;
 
     /* Radios */
     --radius: 0.5rem;
@@ -66,6 +117,34 @@
     --border-css:   217.2 32.6% 17.5%;
     --input:        217.2 32.6% 17.5%;
     --ring:         224.3 76.3% 48%;
+  }
+
+  /* ── Tema CLARO — override SOLO de los canales (los alias resuelven solos) ── */
+  :root[data-theme="light"] {
+    --c-bg:            247 248 251;  /* #F7F8FB */
+    --c-surface:       255 255 255;  /* #FFFFFF */
+    --c-elevated:      241 245 249;  /* #F1F5F9 */
+    --c-overlay:        15 23 42;    /* scrim oscuro */
+
+    --c-border:        226 232 240;  /* #E2E8F0 */
+    --c-border-strong: 203 213 225;  /* #CBD5E1 */
+
+    --c-fg:             15 23 42;    /* #0F172A — ~16:1 */
+    --c-fg-muted:       71 85 105;   /* #475569 — ~7:1 */
+    --c-fg-subtle:     100 116 139;  /* #64748B — ~4.6:1 */
+    --c-fg-faint:      148 163 184;  /* #94A3B8 — decorativo */
+    --c-on-accent:     255 255 255;
+
+    --c-accent:         37  99 235;  /* #2563EB */
+    --c-accent-hover:   29  78 216;  /* #1D4ED8 */
+    --c-accent-text:    29  78 216;  /* azul oscuro legible sobre claro */
+    --c-ring:           37  99 235;
+
+    --c-success:         5 150 105;  --c-success-text:   4 120  87;
+    --c-warn:          217 119   6;  --c-warn-text:    180  83   9;
+    --c-danger:        220  38  38;  --c-danger-text:  185  28  28;
+
+    color-scheme: light;
   }
 }
 

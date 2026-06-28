@@ -120,7 +120,7 @@ export function IndicatorCard({
         </span>
         <span
           className="mb-0.5"
-          style={{ fontSize: 14, color: "rgba(255,255,255,0.35)" }}
+          style={{ fontSize: 14, color: "rgba(255,255,255,0.62)" }}
         >
           / {indicator.weekly_target}
         </span>
@@ -179,7 +179,7 @@ export function IndicatorCard({
             type="button"
             onClick={() => setShowInput(false)}
             className="rounded-xl px-2 py-2 text-xs"
-            style={{ color: "rgba(255,255,255,0.4)" }}
+            style={{ color: "rgba(255,255,255,0.62)" }}
           >
             ✕
           </button>

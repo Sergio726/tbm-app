@@ -383,7 +383,7 @@ function ProgressBar({
       </div>
 
       {/* Label del paso actual */}
-      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
+      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
         Paso {current} de {total} —{" "}
         <span style={{ color: "rgba(255,255,255,0.65)" }}>
           {steps[current - 1].label}: {steps[current - 1].title}
@@ -541,7 +541,7 @@ function AssigneeSelector({
         </label>
 
         {team.length === 0 ? (
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)" }}>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>
             No hay colaboradores en tu equipo aún.
           </p>
         ) : (
@@ -589,7 +589,7 @@ function AssigneeSelector({
                   <span
                     style={{
                       fontSize: 11,
-                      color: "rgba(255,255,255,0.4)",
+                      color: "rgba(255,255,255,0.62)",
                       marginLeft: 6,
                     }}
                   >

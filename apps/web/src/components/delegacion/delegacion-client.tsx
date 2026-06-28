@@ -52,7 +52,7 @@ export function DelegacionClient({
               Delegación
             </h1>
           </div>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", marginLeft: 52 }}>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
             Pase de Estafeta — 5 puntos obligatorios por tarea
           </p>
         </div>
@@ -117,7 +117,7 @@ function EmptyState({ isArquitecto }: { isArquitecto: boolean }) {
       <p
         style={{
           fontSize: 13.5,
-          color: "rgba(255,255,255,0.45)",
+          color: "rgba(255,255,255,0.62)",
           maxWidth: 380,
           lineHeight: 1.6,
         }}

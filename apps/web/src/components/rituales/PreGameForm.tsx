@@ -271,7 +271,7 @@ export default function PreGameForm({
         <div
           style={{
             fontSize: 12,
-            color: "rgba(255,255,255,0.45)",
+            color: "rgba(255,255,255,0.62)",
           }}
         >
           {savedAt
@@ -312,7 +312,7 @@ export default function PreGameForm({
         <p
           style={{
             fontSize: 12,
-            color: "rgba(255,255,255,0.45)",
+            color: "rgba(255,255,255,0.62)",
             marginTop: 10,
             textAlign: "right",
           }}

@@ -145,17 +145,17 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
           className="flex items-center gap-3 border-b px-4 py-3.5"
           style={{ borderColor: "rgba(255,255,255,0.07)" }}
         >
-          <Search size={16} className="text-white/40" />
+          <Search size={16} className="text-white/65" />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Buscar o ir a…"
-            className="flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-white/35"
+            className="flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-white/65"
           />
           <kbd
-            className="rounded px-1.5 py-0.5 text-[10px] text-white/40"
+            className="rounded px-1.5 py-0.5 text-[10px] text-white/65"
             style={{ background: "rgba(255,255,255,0.06)" }}
           >
             Esc
@@ -165,7 +165,7 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
         {/* Resultados */}
         <div className="max-h-[380px] overflow-y-auto py-2">
           {sections.flat.length === 0 && (
-            <p className="px-4 py-6 text-center text-[13px] text-white/40">
+            <p className="px-4 py-6 text-center text-[13px] text-white/65">
               Sin resultados para &quot;{query}&quot;
             </p>
           )}
@@ -194,7 +194,7 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
 
         {/* Footer */}
         <div
-          className="flex items-center gap-3 border-t px-4 py-2.5 text-[10.5px] text-white/35"
+          className="flex items-center gap-3 border-t px-4 py-2.5 text-[10.5px] text-white/65"
           style={{ borderColor: "rgba(255,255,255,0.07)" }}
         >
           <span>↑↓ navegar</span>
@@ -224,7 +224,7 @@ function PaletteSection({
 }) {
   return (
     <div className="mb-1">
-      <div className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[1.2px] text-white/35">
+      <div className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[1.2px] text-white/65">
         {title}
       </div>
       {items.map((item, i) => {
@@ -252,7 +252,7 @@ function PaletteSection({
               {item.label}
             </span>
             {active && (
-              <span className="text-[11px] text-white/40">↵</span>
+              <span className="text-[11px] text-white/65">↵</span>
             )}
           </button>
         );

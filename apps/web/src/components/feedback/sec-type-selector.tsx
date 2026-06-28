@@ -49,7 +49,7 @@ export function SecTypeSelector({ value, onChange }: SecTypeSelectorProps) {
               >
                 {cfg.label}
               </p>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
                 {cfg.description}
               </p>
             </div>

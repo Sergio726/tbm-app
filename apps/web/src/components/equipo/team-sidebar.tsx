@@ -45,7 +45,7 @@ export function TeamSidebar({
           Tu escuadrón
         </div>
         <span
-          className="text-[11px] font-semibold text-white/45"
+          className="text-[11px] font-semibold text-white/65"
           style={{ fontFamily: MONO }}
         >
           {team.length} {team.length === 1 ? "jugador" : "jugadores"}
@@ -116,14 +116,14 @@ export function TeamSidebar({
       ))}
 
       {shown.length === 0 && (
-        <div className="rounded-[14px] border border-dashed border-white/10 p-4 text-center text-[12px] text-white/45">
+        <div className="rounded-[14px] border border-dashed border-white/10 p-4 text-center text-[12px] text-white/65">
           {filter === "ok" ? "Nadie completó el test todavía." : "Todos completaron su DISC 🎉"}
         </div>
       )}
 
       {/* empty slot — recruit */}
       <div className="flex items-center gap-3 rounded-[14px] border border-dashed border-white/10 p-4 text-white/50">
-        <div className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-full border border-dashed border-white/[0.18] text-white/40">
+        <div className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-full border border-dashed border-white/[0.18] text-white/65">
           <Plus size={18} strokeWidth={2} />
         </div>
         <div className="text-[12px] leading-snug">
@@ -236,7 +236,7 @@ function RosterCard({
           {code || "—"}
         </span>
         <span
-          className="text-[10.5px] font-semibold text-white/45"
+          className="text-[10.5px] font-semibold text-white/65"
           style={{ fontFamily: MONO }}
         >
           N{member.los_level ?? 1}

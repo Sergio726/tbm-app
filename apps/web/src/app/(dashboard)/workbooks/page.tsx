@@ -85,7 +85,7 @@ export default async function WorkbooksPage() {
             </h1>
           </div>
           <p
-            style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", marginLeft: 52 }}
+            style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}
           >
             Programa TBM — 8 sesiones interactivas que transforman el conocimiento en acción concreta
           </p>

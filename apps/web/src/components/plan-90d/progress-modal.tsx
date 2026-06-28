@@ -47,12 +47,12 @@ export function ProgressModal({
             </p>
             <p
               className="mt-0.5 line-clamp-1"
-              style={{ fontSize: 12.5, color: "rgba(255,255,255,0.45)" }}
+              style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}
             >
               {rockTitle}
             </p>
           </div>
-          <button onClick={onClose} style={{ color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">
+          <button onClick={onClose} style={{ color: "rgba(255,255,255,0.62)" }} className="hover:text-white transition-colors">
             <X size={18} />
           </button>
         </div>

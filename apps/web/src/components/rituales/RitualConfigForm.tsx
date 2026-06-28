@@ -246,7 +246,7 @@ export default function RitualConfigForm({
 
       {canEdit && (
         <div className="flex items-center justify-between">
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
             {saved ? "Guardado." : initial.updated_at ? `Última edición · ${new Date(initial.updated_at).toLocaleString("es-AR")}` : "Sin cambios guardados"}
           </div>
           <button

@@ -136,8 +136,8 @@ export default async function SuperCoachCompanyPage({ params }: Props) {
                       className="w-[90px] text-right text-[12px]"
                       style={{ fontFamily: 'ui-monospace, "JetBrains Mono", monospace' }}
                     >
-                      <span className="text-white/45">{v0 ?? "—"}</span>
-                      <span className="text-white/30"> → </span>
+                      <span className="text-white/65">{v0 ?? "—"}</span>
+                      <span className="text-white/65"> → </span>
                       <span className="font-bold text-white">{v1 ?? "—"}</span>
                       {delta !== null && delta !== 0 && (
                         <span
@@ -304,7 +304,7 @@ function Section({
 function Empty({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="rounded-2xl border border-dashed p-5 text-center text-[13px] text-white/45"
+      className="rounded-2xl border border-dashed p-5 text-center text-[13px] text-white/65"
       style={{ borderColor: "rgba(255,255,255,0.12)" }}
     >
       {children}

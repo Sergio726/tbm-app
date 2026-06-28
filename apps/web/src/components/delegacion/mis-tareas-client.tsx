@@ -117,7 +117,7 @@ export function MisTareasClient({ tasks: initialTasks, currentUserId }: MisTarea
         <Link
           href="/dashboard"
           className="mb-4 inline-flex items-center gap-1.5 transition-colors hover:text-white"
-          style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}
+          style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
           Dashboard
@@ -141,7 +141,7 @@ export function MisTareasClient({ tasks: initialTasks, currentUserId }: MisTarea
             >
               Mis tareas
             </h1>
-            <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.4)", marginTop: 1 }}>
+            <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.62)", marginTop: 1 }}>
               Tus tareas asignadas con los 5 puntos obligatorios
             </p>
           </div>
@@ -280,9 +280,9 @@ function TaskRow({
 
         {/* Chevron */}
         {isExpanded ? (
-          <ChevronUp size={15} strokeWidth={2} style={{ color: "rgba(255,255,255,0.35)", flexShrink: 0 }} />
+          <ChevronUp size={15} strokeWidth={2} style={{ color: "rgba(255,255,255,0.62)", flexShrink: 0 }} />
         ) : (
-          <ChevronDown size={15} strokeWidth={2} style={{ color: "rgba(255,255,255,0.35)", flexShrink: 0 }} />
+          <ChevronDown size={15} strokeWidth={2} style={{ color: "rgba(255,255,255,0.62)", flexShrink: 0 }} />
         )}
       </button>
 
@@ -374,7 +374,7 @@ function TaskRow({
                       fontSize: 10.5,
                       fontWeight: 700,
                       letterSpacing: 0.6,
-                      color: "rgba(255,255,255,0.3)",
+                      color: "rgba(255,255,255,0.62)",
                       textTransform: "uppercase",
                       marginBottom: 4,
                     }}
@@ -473,7 +473,7 @@ function EmptyState() {
       <p
         style={{
           fontSize: 13.5,
-          color: "rgba(255,255,255,0.45)",
+          color: "rgba(255,255,255,0.62)",
           maxWidth: 340,
           lineHeight: 1.6,
         }}

@@ -16,9 +16,11 @@ import {
   AlertCircle,
   X,
   Compass,
+  Sun,
 } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { RestartTourButton } from "./restart-tour-button";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { Profile } from "@/types/database";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -207,7 +209,7 @@ function TimezoneSelect({
             <span className="font-medium truncate">
               {TIMEZONES.find((t) => t.value === value)?.country ?? value}
             </span>
-            <span className="font-mono text-[11px] text-white/45 truncate shrink-0">
+            <span className="font-mono text-[11px] text-white/65 truncate shrink-0">
               {value}
             </span>
           </span>
@@ -582,12 +584,12 @@ export function AccountForm({
           {/* Info */}
           <div className="min-w-0 flex-1">
             <div className="text-[17px] font-semibold truncate">
-              {fullName || <span className="text-white/40 italic">Sin nombre</span>}
+              {fullName || <span className="text-white/65 italic">Sin nombre</span>}
             </div>
             <div className="text-sm text-white/55 truncate">
-              {cargo || <span className="italic text-white/30">Sin cargo</span>}
+              {cargo || <span className="italic text-white/65">Sin cargo</span>}
             </div>
-            <div className="mt-1 text-xs text-white/40 truncate">{email}</div>
+            <div className="mt-1 text-xs text-white/65 truncate">{email}</div>
           </div>
 
           {/* Badges */}
@@ -659,7 +661,7 @@ export function AccountForm({
               {removingAvatar ? "Quitando…" : "Quitar foto"}
             </button>
           )}
-          <p className="ml-auto text-[11px] text-white/30">JPG o PNG, hasta 4 MB.</p>
+          <p className="ml-auto text-[11px] text-white/65">JPG o PNG, hasta 4 MB.</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -733,7 +735,7 @@ export function AccountForm({
             onChange={(e) => setNewEmail(e.target.value)}
           />
         </Field>
-        <p className="mt-2 text-[11px] text-white/35">
+        <p className="mt-2 text-[11px] text-white/65">
           Al cambiar el email recibirás un correo de confirmación. El cambio se aplica cuando lo confirmés.
         </p>
         <button
@@ -763,7 +765,7 @@ export function AccountForm({
                 type="button"
                 onClick={() => setShowPass1((v) => !v)}
                 aria-label={showPass1 ? "Ocultar contraseña" : "Mostrar contraseña"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/65 hover:text-white/70 transition-colors"
               >
                 {showPass1 ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
@@ -782,7 +784,7 @@ export function AccountForm({
                 type="button"
                 onClick={() => setShowPass2((v) => !v)}
                 aria-label={showPass2 ? "Ocultar confirmación" : "Mostrar confirmación"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/65 hover:text-white/70 transition-colors"
               >
                 {showPass2 ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
@@ -794,7 +796,7 @@ export function AccountForm({
         {pass1.length > 0 && (
           <div className="mt-3">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] text-white/40">Fortaleza</span>
+              <span className="text-[11px] text-white/65">Fortaleza</span>
               <span
                 className="text-[11px] font-semibold"
                 style={{ color: strength.color }}
@@ -839,10 +841,19 @@ export function AccountForm({
         </button>
       </section>
 
+      {/* ── Apariencia — tema (theming base) ── */}
+      <section className="tbm-card mt-5 p-6 tbm-rise" style={{ animationDelay: "150ms" }}>
+        <SectionTitle Icon={Sun} label="Apariencia" color="#5b8aff" />
+        <p className="mb-3 text-[12.5px] leading-relaxed" style={{ color: "var(--fg-subtle)" }}>
+          Elegí el tema de la interfaz. &quot;Sistema&quot; sigue la configuración de tu dispositivo.
+        </p>
+        <ThemeToggle />
+      </section>
+
       {/* ── Ayuda — tour guiado (S11) ── */}
       <section
         className="tbm-card mt-5 p-6 tbm-rise"
-        style={{ animationDelay: "160ms" }}
+        style={{ animationDelay: "180ms" }}
       >
         <SectionTitle Icon={Compass} label="Ayuda" color="#a78bfa" />
         <p
@@ -972,7 +983,7 @@ function Toast({
         type="button"
         onClick={() => onDismiss(toast.id)}
         aria-label="Cerrar notificación"
-        className="shrink-0 mt-0.5 text-white/30 hover:text-white/70 transition-colors"
+        className="shrink-0 mt-0.5 text-white/65 hover:text-white/70 transition-colors"
       >
         <X size={13} />
       </button>

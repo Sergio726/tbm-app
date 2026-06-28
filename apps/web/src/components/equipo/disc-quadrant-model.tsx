@@ -39,10 +39,10 @@ export function DiscQuadrantModel({
   return (
     <div className="rounded-[14px] border border-white/[0.05] bg-white/[0.015] p-3.5">
       <div className="mb-3 text-center">
-        <div className="text-[10px] font-bold uppercase tracking-[1.4px] text-white/45">
+        <div className="text-[10px] font-bold uppercase tracking-[1.4px] text-white/65">
           Modelo DISC
         </div>
-        <div className="text-[11px] text-white/35">Los 4 estilos de comportamiento</div>
+        <div className="text-[11px] text-white/65">Los 4 estilos de comportamiento</div>
       </div>
 
       {/* Eje vertical · arriba */}
@@ -136,7 +136,7 @@ function QuadrantCard({
 
 function AxisLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="py-1 text-center text-[9.5px] font-semibold uppercase tracking-[1.2px] text-white/35">
+    <div className="py-1 text-center text-[9.5px] font-semibold uppercase tracking-[1.2px] text-white/65">
       {children}
     </div>
   );
@@ -145,7 +145,7 @@ function AxisLabel({ children }: { children: React.ReactNode }) {
 function SideAxis({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="hidden items-center justify-center text-[9px] font-semibold uppercase tracking-[1px] text-white/30 sm:flex"
+      className="hidden items-center justify-center text-[9px] font-semibold uppercase tracking-[1px] text-white/65 sm:flex"
       style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
     >
       {children}

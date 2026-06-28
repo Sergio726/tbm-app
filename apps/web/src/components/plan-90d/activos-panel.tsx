@@ -65,7 +65,7 @@ export function ActivosPanel({
           <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
             Activos del Sistema
           </h2>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
             Procesos documentados que permiten operar sin el Arquitecto
           </p>
         </div>
@@ -143,7 +143,7 @@ export function ActivosPanel({
           style={{ borderColor: "rgba(255,255,255,0.06)", borderStyle: "dashed" }}
         >
           <Library size={28} style={{ color: "rgba(255,255,255,0.15)" }} />
-          <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.4)" }}>
+          <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.62)" }}>
             {assets.length === 0
               ? "Todavía no documentaste ningún proceso"
               : "Sin activos en esta categoría"}
@@ -195,7 +195,7 @@ export function ActivosPanel({
                         className="mt-1.5"
                         style={{
                           fontSize: 12.5,
-                          color: "rgba(255,255,255,0.45)",
+                          color: "rgba(255,255,255,0.62)",
                           lineHeight: 1.5,
                         }}
                       >
@@ -232,7 +232,7 @@ export function ActivosPanel({
                   </div>
                   <div className="flex items-center gap-2.5">
                     {owner && (
-                      <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.35)" }}>
+                      <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)" }}>
                         mantiene {owner}
                       </span>
                     )}

@@ -203,7 +203,7 @@ export default async function SuperCoachPage() {
                 color="#fbbf24"
               />
 
-              <ArrowRight size={16} className="text-white/35" />
+              <ArrowRight size={16} className="text-white/65" />
             </div>
           </Link>
         ))}
@@ -232,7 +232,7 @@ function Metric({
         <Icon size={14} strokeWidth={1.9} />
       </div>
       <div>
-        <div className="text-[9.5px] font-bold uppercase tracking-wide text-white/40">
+        <div className="text-[9.5px] font-bold uppercase tracking-wide text-white/65">
           {label}
         </div>
         <div

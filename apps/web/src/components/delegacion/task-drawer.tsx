@@ -210,7 +210,7 @@ export function TaskDrawer({
                 fontSize: 10.5,
                 fontWeight: 700,
                 letterSpacing: 0.8,
-                color: "rgba(255,255,255,0.35)",
+                color: "rgba(255,255,255,0.62)",
                 textTransform: "uppercase",
                 marginBottom: 6,
               }}
@@ -300,7 +300,7 @@ export function TaskDrawer({
                       border: "1px dashed rgba(255,255,255,0.2)",
                     }}
                   >
-                    <User size={16} style={{ color: "rgba(255,255,255,0.3)" }} />
+                    <User size={16} style={{ color: "rgba(255,255,255,0.62)" }} />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
@@ -310,14 +310,14 @@ export function TaskDrawer({
                   >
                     {assignee?.full_name ?? "Sin asignar"}
                   </p>
-                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
                     {assignee?.cargo ?? "Tocá para asignar"}
                   </p>
                 </div>
                 <ChevronDown
                   size={16}
                   style={{
-                    color: "rgba(255,255,255,0.4)",
+                    color: "rgba(255,255,255,0.62)",
                     flexShrink: 0,
                     transform: assigneeMenuOpen ? "rotate(180deg)" : "none",
                     transition: "transform 0.2s",
@@ -370,7 +370,7 @@ export function TaskDrawer({
                         border: "1px dashed rgba(255,255,255,0.2)",
                       }}
                     >
-                      <User size={13} style={{ color: "rgba(255,255,255,0.35)" }} />
+                      <User size={13} style={{ color: "rgba(255,255,255,0.62)" }} />
                     </div>
                     <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
                       Sin asignar
@@ -413,7 +413,7 @@ export function TaskDrawer({
                             <p
                               style={{
                                 fontSize: 11,
-                                color: "rgba(255,255,255,0.4)",
+                                color: "rgba(255,255,255,0.62)",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                                 whiteSpace: "nowrap",
@@ -455,7 +455,7 @@ export function TaskDrawer({
                         fontSize: 10.5,
                         fontWeight: 700,
                         letterSpacing: 0.5,
-                        color: "rgba(255,255,255,0.4)",
+                        color: "rgba(255,255,255,0.62)",
                         textTransform: "uppercase",
                       }}
                     >
@@ -497,7 +497,7 @@ export function TaskDrawer({
               </div>
 
               {loadingBoomerang ? (
-                <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.4)" }}>
+                <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}>
                   Cargando opciones…
                 </p>
               ) : boomerang ? (
@@ -564,7 +564,7 @@ export function TaskDrawer({
                           fontSize: 10.5,
                           fontWeight: 700,
                           letterSpacing: 0.5,
-                          color: "rgba(255,255,255,0.35)",
+                          color: "rgba(255,255,255,0.62)",
                           textTransform: "uppercase",
                           marginBottom: 3,
                         }}
@@ -585,7 +585,7 @@ export function TaskDrawer({
                   )}
                 </div>
               ) : (
-                <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.4)" }}>
+                <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}>
                   El colaborador marcó esta tarea como bloqueada sin registrar opciones.
                 </p>
               )}
@@ -599,8 +599,8 @@ export function TaskDrawer({
           style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
         >
           <div className="mb-2.5 flex items-center gap-2">
-            <Clock size={13} style={{ color: "rgba(255,255,255,0.45)" }} />
-            <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.45)" }}>
+            <Clock size={13} style={{ color: "rgba(255,255,255,0.62)" }} />
+            <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)" }}>
               Cambiar estado
             </span>
           </div>
