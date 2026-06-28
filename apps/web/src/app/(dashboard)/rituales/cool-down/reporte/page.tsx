@@ -34,14 +34,14 @@ export default async function ReporteSemanalPage() {
 
   if (!report) {
     return (
-      <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 880 }}>
+      <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "var(--fg)", maxWidth: 880 }}>
         <Link
           href="/rituales/cool-down"
           className="inline-flex items-center"
           style={{
             gap: 6,
             fontSize: 13,
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--fg-subtle)",
             marginBottom: 20,
           }}
         >
@@ -54,7 +54,7 @@ export default async function ReporteSemanalPage() {
             borderRadius: 14,
             background: "rgba(255,255,255,0.025)",
             border: "1px solid rgba(255,255,255,0.06)",
-            color: "rgba(255,255,255,0.65)",
+            color: "var(--fg-muted)",
             fontSize: 14,
           }}
         >
@@ -70,14 +70,14 @@ export default async function ReporteSemanalPage() {
     total > 0 ? Math.round((n / total) * 100) : 0;
 
   return (
-    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 880 }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "var(--fg)", maxWidth: 880 }}>
       <Link
         href="/rituales/cool-down"
         className="inline-flex items-center"
         style={{
           gap: 6,
           fontSize: 13,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 20,
         }}
       >
@@ -95,7 +95,7 @@ export default async function ReporteSemanalPage() {
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--fg-subtle)",
               letterSpacing: 1.4,
               marginBottom: 6,
             }}
@@ -205,7 +205,7 @@ export default async function ReporteSemanalPage() {
                   style={{
                     ...MONO,
                     fontWeight: 400,
-                    color: "rgba(255,255,255,0.62)",
+                    color: "var(--fg-muted)",
                     fontSize: 11,
                     marginLeft: 6,
                   }}
@@ -219,7 +219,7 @@ export default async function ReporteSemanalPage() {
                   paddingLeft: 0,
                   listStyle: "none",
                   fontSize: 13,
-                  color: "rgba(255,255,255,0.8)",
+                  color: "var(--fg-muted)",
                   lineHeight: 1.55,
                 }}
               >
@@ -235,7 +235,7 @@ export default async function ReporteSemanalPage() {
                       style={{
                         ...MONO,
                         fontSize: 11,
-                        color: "rgba(255,255,255,0.62)",
+                        color: "var(--fg-muted)",
                         marginRight: 10,
                       }}
                     >
@@ -310,13 +310,13 @@ export default async function ReporteSemanalPage() {
                         color: it.executed ? "#34d399" : "rgba(255,255,255,0.7)",
                       }}
                     >
-                      <span style={{ ...MONO, marginRight: 8, color: "rgba(255,255,255,0.62)" }}>
+                      <span style={{ ...MONO, marginRight: 8, color: "var(--fg-muted)" }}>
                         {it.position}.
                       </span>
                       {it.executed && "✓ "}
                       {it.title}
                       {it.rock_label && (
-                        <span style={{ color: "rgba(255,255,255,0.62)" }}> · {it.rock_label}</span>
+                        <span style={{ color: "var(--fg-muted)" }}> · {it.rock_label}</span>
                       )}
                     </li>
                   ))}
@@ -345,7 +345,7 @@ export default async function ReporteSemanalPage() {
                 background: "rgba(251,146,60,0.04)",
                 border: "1px solid rgba(251,146,60,0.18)",
                 fontSize: 13,
-                color: "rgba(255,255,255,0.8)",
+                color: "var(--fg-muted)",
                 lineHeight: 1.5,
               }}
             >
@@ -353,7 +353,7 @@ export default async function ReporteSemanalPage() {
                 style={{
                   fontSize: 11,
                   ...MONO,
-                  color: "rgba(255,255,255,0.62)",
+                  color: "var(--fg-muted)",
                   marginBottom: 4,
                 }}
               >
@@ -401,7 +401,7 @@ function Empty({ children }: { children: React.ReactNode }) {
         borderRadius: 10,
         background: "rgba(255,255,255,0.02)",
         border: "1px dashed rgba(255,255,255,0.08)",
-        color: "rgba(255,255,255,0.5)",
+        color: "var(--fg-subtle)",
         fontSize: 12.5,
       }}
     >
@@ -438,19 +438,19 @@ function RitualStat({
     >
       <div className="flex items-center" style={{ gap: 8, marginBottom: 8 }}>
         <Icon size={14} color={color} />
-        <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.7)" }}>{label}</div>
+        <div style={{ fontSize: 12.5, color: "var(--fg-muted)" }}>{label}</div>
       </div>
       <div
         className="flex items-baseline"
         style={{ gap: 6, marginBottom: 6 }}
       >
-        <div style={{ fontSize: 22, fontWeight: 700, color: "#fff" }}>
+        <div style={{ fontSize: 22, fontWeight: 700, color: "var(--fg)" }}>
           {value}
         </div>
         <div
           style={{
             fontSize: 12,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
           }}
         >
           / {total} {unit ?? "días"}

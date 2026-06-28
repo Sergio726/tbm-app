@@ -46,7 +46,7 @@ export function IdeasPanel({
           <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
             Parqueadero de Ideas
           </h2>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
             Las ideas se liberan automáticamente al Día 91
           </p>
         </div>
@@ -97,8 +97,8 @@ export function IdeasPanel({
           className="flex flex-col items-center gap-3 rounded-2xl border py-10 text-center"
           style={{ borderColor: "rgba(255,255,255,0.06)", borderStyle: "dashed" }}
         >
-          <Lightbulb size={28} style={{ color: "rgba(255,255,255,0.15)" }} />
-          <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.62)" }}>
+          <Lightbulb size={28} style={{ color: "var(--fg-subtle)" }} />
+          <p style={{ fontSize: 13.5, color: "var(--fg-muted)" }}>
             Sin ideas parkeadas
           </p>
         </div>
@@ -140,7 +140,7 @@ export function IdeasPanel({
                         : {
                             background: "rgba(255,255,255,0.06)",
                             border: "1px solid rgba(255,255,255,0.1)",
-                            color: "rgba(255,255,255,0.5)",
+                            color: "var(--fg-subtle)",
                           }
                     }
                   >
@@ -150,13 +150,13 @@ export function IdeasPanel({
                 </div>
 
                 {idea.rationale && (
-                  <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 12.5, color: "var(--fg-muted)", lineHeight: 1.5 }}>
                     {idea.rationale}
                   </p>
                 )}
 
                 <div className="flex items-center justify-between">
-                  <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)" }}>
+                  <span style={{ fontSize: 11.5, color: "var(--fg-muted)" }}>
                     por {getProposer(idea.proposed_by)}
                   </span>
                   {isReady && (
@@ -201,7 +201,7 @@ export function IdeasPanel({
         <details>
           <summary
             className="cursor-pointer select-none text-xs font-semibold"
-            style={{ color: "rgba(255,255,255,0.62)" }}
+            style={{ color: "var(--fg-muted)" }}
           >
             Resueltas ({resolved.length})
           </summary>

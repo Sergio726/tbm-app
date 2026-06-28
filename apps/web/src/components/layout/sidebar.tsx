@@ -243,7 +243,7 @@ export function Sidebar({
             </p>
             <p
               className="truncate"
-              style={{ fontSize: 11.5, color: "rgba(255,255,255,0.55)" }}
+              style={{ fontSize: 11.5, color: "var(--fg-subtle)" }}
             >
               Business Multiplier
             </p>
@@ -424,7 +424,7 @@ export function Sidebar({
                 <p className="truncate" style={{ fontSize: 13, fontWeight: 500 }}>
                   {userName ?? "Mi cuenta"}
                 </p>
-                <p className="truncate" style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                <p className="truncate" style={{ fontSize: 11, color: "var(--fg-subtle)" }}>
                   {userRole ?? userStatusLabel ?? "En sesión"}
                 </p>
               </div>
@@ -435,7 +435,7 @@ export function Sidebar({
                 aria-label="Notificaciones"
                 className="relative flex items-center justify-center transition-colors hover:text-white"
                 style={{
-                  color: "rgba(255,255,255,0.55)",
+                  color: "var(--fg-subtle)",
                   padding: 4,
                   borderRadius: 6,
                 }}
@@ -463,7 +463,7 @@ export function Sidebar({
                 title="Ver tour de nuevo"
                 className="flex items-center justify-center transition-colors hover:text-white"
                 style={{
-                  color: "rgba(255,255,255,0.55)",
+                  color: "var(--fg-subtle)",
                   padding: 4,
                   borderRadius: 6,
                 }}
@@ -478,7 +478,7 @@ export function Sidebar({
                 title="Cerrar sesión"
                 className="flex items-center justify-center transition-colors hover:bg-red-400/10 hover:text-red-400 disabled:opacity-50"
                 style={{
-                  color: "rgba(255,255,255,0.55)",
+                  color: "var(--fg-subtle)",
                   padding: 4,
                   borderRadius: 6,
                   cursor: signingOut ? "not-allowed" : "pointer",

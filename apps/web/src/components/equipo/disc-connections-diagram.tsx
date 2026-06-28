@@ -75,7 +75,7 @@ export function DiscConnectionsDiagram({
           const col = DISC_COLORS[k];
           return (
             <g key={k}>
-              <circle cx={x} cy={y} r={13} fill="#0a0e1a" stroke={col} strokeWidth={1.5} />
+              <circle cx={x} cy={y} r={13} fill="var(--bg)" stroke={col} strokeWidth={1.5} />
               <text
                 x={x}
                 y={y + 4.5}

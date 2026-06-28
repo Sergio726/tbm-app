@@ -77,7 +77,7 @@ export function ExerciseCounterTracker({
           >
             <div
               className="mb-3 text-xs font-bold uppercase tracking-wider"
-              style={{ color: "rgba(255,255,255,0.62)" }}
+              style={{ color: "var(--fg-muted)" }}
             >
               Día {i + 1}
             </div>
@@ -91,7 +91,7 @@ export function ExerciseCounterTracker({
                 style={{
                   background: "rgba(255,255,255,0.04)",
                   borderColor: "rgba(255,255,255,0.10)",
-                  color: "rgba(255,255,255,0.7)",
+                  color: "var(--fg-muted)",
                 }}
               >
                 <Minus size={14} />
@@ -105,7 +105,7 @@ export function ExerciseCounterTracker({
                 style={{
                   background: "rgba(91,138,255,0.06)",
                   borderColor: "rgba(91,138,255,0.20)",
-                  color: "#fff",
+                  color: "var(--fg)",
                   fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
                   padding: "6px 4px",
                 }}
@@ -137,7 +137,7 @@ export function ExerciseCounterTracker({
               style={{
                 background: "rgba(255,255,255,0.025)",
                 borderColor: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.75)",
+                color: "var(--fg-muted)",
               }}
             />
           </div>
@@ -150,7 +150,7 @@ export function ExerciseCounterTracker({
         style={{
           background: "rgba(91,138,255,0.06)",
           borderColor: "rgba(91,138,255,0.18)",
-          color: "rgba(255,255,255,0.7)",
+          color: "var(--fg-muted)",
         }}
       >
         <div className="flex items-center gap-2">

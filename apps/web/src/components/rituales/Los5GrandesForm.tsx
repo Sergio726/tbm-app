@@ -211,7 +211,7 @@ export default function Los5GrandesForm({
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.3,
           }}
         >
@@ -307,7 +307,7 @@ export default function Los5GrandesForm({
               padding: "10px 18px",
               borderRadius: 10,
               background: "linear-gradient(135deg, #818cf8, #6366f1)",
-              color: "#fff",
+              color: "var(--fg)",
               border: "none",
               fontSize: 13.5,
               fontWeight: 600,
@@ -385,7 +385,7 @@ function ItemRow({
               background: "transparent",
               border: "none",
               outline: "none",
-              color: "#fff",
+              color: "var(--fg)",
               fontSize: 14.5,
               fontWeight: 500,
               padding: 0,
@@ -402,7 +402,7 @@ function ItemRow({
               style={{
                 gap: 6,
                 fontSize: 12,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
                 flex: 1,
                 minWidth: 220,
               }}
@@ -418,7 +418,7 @@ function ItemRow({
                   background: "transparent",
                   border: "none",
                   outline: "none",
-                  color: "rgba(255,255,255,0.85)",
+                  color: "var(--fg)",
                   fontSize: 12,
                   padding: 0,
                   fontFamily: "inherit",
@@ -487,7 +487,7 @@ function ItemRow({
                 background: "rgba(255,255,255,0.03)",
                 border: "1px solid rgba(255,255,255,0.07)",
                 borderRadius: 8,
-                color: "rgba(255,255,255,0.85)",
+                color: "var(--fg)",
                 padding: "6px 10px",
                 fontSize: 12.5,
                 outline: "none",
@@ -507,7 +507,7 @@ function Label({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 13.5,
         fontWeight: 600,
-        color: "#fff",
+        color: "var(--fg)",
       }}
     >
       {children}

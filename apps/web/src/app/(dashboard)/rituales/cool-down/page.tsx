@@ -42,14 +42,14 @@ export default async function CoolDownPage() {
     .maybeSingle();
 
   return (
-    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "#fff", maxWidth: 880 }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 40px)", color: "var(--fg)", maxWidth: 880 }}>
       <Link
         href="/rituales"
         className="inline-flex items-center"
         style={{
           gap: 6,
           fontSize: 13,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 20,
         }}
       >
@@ -85,7 +85,7 @@ export default async function CoolDownPage() {
             <div
               style={{
                 fontSize: 12.5,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
               }}
             >
               {humanDate(today)} · Cierre del día
@@ -95,7 +95,7 @@ export default async function CoolDownPage() {
         <p
           style={{
             fontSize: 14,
-            color: "rgba(255,255,255,0.65)",
+            color: "var(--fg-muted)",
             lineHeight: 1.55,
             maxWidth: 680,
           }}
@@ -140,7 +140,7 @@ export default async function CoolDownPage() {
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.4,
             marginBottom: 12,
           }}
@@ -159,7 +159,7 @@ export default async function CoolDownPage() {
                 "linear-gradient(135deg, rgba(251,146,60,0.12), rgba(251,146,60,0.04))",
               border: "1px solid rgba(251,146,60,0.28)",
               textDecoration: "none",
-              color: "#fff",
+              color: "var(--fg)",
             }}
           >
             <div className="flex items-center" style={{ gap: 12 }}>
@@ -172,7 +172,7 @@ export default async function CoolDownPage() {
                 <div
                   style={{
                     fontSize: 12,
-                    color: "rgba(255,255,255,0.55)",
+                    color: "var(--fg-subtle)",
                   }}
                 >
                   Generado{" "}
@@ -186,7 +186,7 @@ export default async function CoolDownPage() {
                 </div>
               </div>
             </div>
-            <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.55)" }}>
+            <div style={{ fontSize: 12.5, color: "var(--fg-subtle)" }}>
               Ver →
             </div>
           </Link>
@@ -197,7 +197,7 @@ export default async function CoolDownPage() {
               borderRadius: 12,
               background: "rgba(255,255,255,0.025)",
               border: "1px solid rgba(255,255,255,0.06)",
-              color: "rgba(255,255,255,0.55)",
+              color: "var(--fg-subtle)",
               fontSize: 13,
             }}
           >

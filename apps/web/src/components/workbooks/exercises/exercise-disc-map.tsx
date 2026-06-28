@@ -56,7 +56,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
         style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}
       >
         <p className="mb-1 text-sm font-semibold text-white">Conexiones y fricciones del equipo</p>
-        <p className="mb-3 text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+        <p className="mb-3 text-xs" style={{ color: "var(--fg-subtle)" }}>
           Primero el quién, luego el qué. El perímetro une perfiles que conectan naturalmente; las
           diagonales punteadas (D↔S · I↔C) son temperamentos cruzados que requieren acordar cómo
           comunicarse. A medida que cargás las letras, se resaltan las parejas presentes.
@@ -65,7 +65,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
       </div>
 
       {team.length === 0 && (
-        <p className="text-sm" style={{ color: "rgba(255,255,255,0.62)" }}>
+        <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
           No hay miembros del equipo registrados.
         </p>
       )}
@@ -87,7 +87,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
             <div className="mb-3 flex items-start justify-between">
               <div>
                 <p className="text-sm font-semibold text-white">{member.full_name}</p>
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+                <p className="text-xs" style={{ color: "var(--fg-muted)" }}>
                   {member.cargo ?? "Sin cargo"}
                 </p>
               </div>
@@ -105,7 +105,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
               <div className="flex-1">
                 <label
                   className="mb-1 block text-xs"
-                  style={{ color: "rgba(255,255,255,0.62)" }}
+                  style={{ color: "var(--fg-muted)" }}
                 >
                   Letras DISC
                 </label>
@@ -129,7 +129,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
               <div>
                 <label
                   className="mb-1 block text-xs"
-                  style={{ color: "rgba(255,255,255,0.62)" }}
+                  style={{ color: "var(--fg-muted)" }}
                 >
                   Estado
                 </label>
@@ -144,7 +144,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
                           ? state === "luz"
                             ? { background: "rgba(251,191,36,0.2)", color: "#fbbf24" }
                             : { background: "rgba(107,114,128,0.3)", color: "#9ca3af" }
-                          : { background: "transparent", color: "rgba(255,255,255,0.62)" }
+                          : { background: "transparent", color: "var(--fg-muted)" }
                       }
                     >
                       {state === "luz" ? "☀️ Luz" : "🌑 Sombra"}
@@ -162,7 +162,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
         style={{
           background: "rgba(91,138,255,0.06)",
           borderColor: "rgba(91,138,255,0.2)",
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--fg-subtle)",
         }}
       >
         Al guardar, los perfiles DISC del equipo se actualizan directamente en la sección Mi Equipo.

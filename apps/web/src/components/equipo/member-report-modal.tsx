@@ -80,7 +80,7 @@ export function MemberReportModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[calc(100vh-4rem)] w-full max-w-[680px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0F1B2D] shadow-2xl"
+        className="flex max-h-[calc(100vh-4rem)] w-full max-w-[680px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface)] shadow-2xl"
       >
         {/* Header */}
         <div className="flex flex-shrink-0 items-center gap-3.5 border-b border-white/[0.07] p-5">

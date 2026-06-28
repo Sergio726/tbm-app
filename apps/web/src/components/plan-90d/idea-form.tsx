@@ -41,18 +41,18 @@ export function IdeaForm({ isPending, onSubmit, onCancel }: IdeaFormProps) {
           <p className="font-semibold text-white" style={{ fontSize: 14 }}>
             Parkear idea
           </p>
-          <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
+          <p style={{ fontSize: 11.5, color: "var(--fg-muted)", marginTop: 2 }}>
             Revisión automática en 91 días
           </p>
         </div>
-        <button type="button" onClick={onCancel} style={{ color: "rgba(255,255,255,0.62)" }}>
+        <button type="button" onClick={onCancel} style={{ color: "var(--fg-muted)" }}>
           <X size={16} />
         </button>
       </div>
 
       <div className="flex flex-col gap-3">
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             La idea *
           </label>
           <textarea
@@ -70,7 +70,7 @@ export function IdeaForm({ isPending, onSubmit, onCancel }: IdeaFormProps) {
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             ¿Para qué sirve? (opcional)
           </label>
           <textarea
@@ -91,7 +91,7 @@ export function IdeaForm({ isPending, onSubmit, onCancel }: IdeaFormProps) {
             type="button"
             onClick={onCancel}
             className="flex-1 rounded-xl py-2 text-sm font-medium"
-            style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}
+            style={{ background: "rgba(255,255,255,0.06)", color: "var(--fg-muted)" }}
           >
             Cancelar
           </button>

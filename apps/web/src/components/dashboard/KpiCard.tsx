@@ -77,7 +77,7 @@ export default function KpiCard({ kpi }: Props) {
           style={{
             fontSize: 12,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.65)",
+            color: "var(--fg-muted)",
             letterSpacing: 1,
             maxWidth: "70%",
           }}
@@ -133,7 +133,7 @@ export default function KpiCard({ kpi }: Props) {
                   setEditing(false);
                 }}
                 className="text-xs hover:text-white"
-                style={{ color: "rgba(255,255,255,0.5)" }}
+                style={{ color: "var(--fg-subtle)" }}
               >
                 Cancelar
               </button>
@@ -150,7 +150,7 @@ export default function KpiCard({ kpi }: Props) {
                 style={{
                   fontSize: 30,
                   fontWeight: 700,
-                  color: "#fff",
+                  color: "var(--fg)",
                   letterSpacing: -0.6,
                   lineHeight: 1,
                 }}
@@ -160,7 +160,7 @@ export default function KpiCard({ kpi }: Props) {
                   <span
                     style={{
                       fontSize: 14,
-                      color: "rgba(255,255,255,0.5)",
+                      color: "var(--fg-subtle)",
                       marginLeft: 2,
                       fontWeight: 400,
                     }}
@@ -173,7 +173,7 @@ export default function KpiCard({ kpi }: Props) {
                 style={{
                   ...MONO,
                   fontSize: 13,
-                  color: "rgba(255,255,255,0.62)",
+                  color: "var(--fg-muted)",
                 }}
               >
                 / {kpi.weekly_target}
@@ -190,7 +190,7 @@ export default function KpiCard({ kpi }: Props) {
           <div
             style={{
               fontSize: 11.5,
-              color: "rgba(255,255,255,0.62)",
+              color: "var(--fg-muted)",
               marginTop: 4,
             }}
           >
@@ -226,7 +226,7 @@ export default function KpiCard({ kpi }: Props) {
             ...MONO,
             marginTop: 5,
             fontSize: 10.5,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
           }}
         >
           <span>{pct}% del objetivo</span>

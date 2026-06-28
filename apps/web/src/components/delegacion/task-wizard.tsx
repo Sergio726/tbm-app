@@ -235,7 +235,7 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
           style={{
             background: "rgba(255,255,255,0.06)",
             border: "1px solid rgba(255,255,255,0.08)",
-            color: "rgba(255,255,255,0.7)",
+            color: "var(--fg-muted)",
             fontSize: 13.5,
             cursor: step === 1 ? "default" : "pointer",
           }}
@@ -383,9 +383,9 @@ function ProgressBar({
       </div>
 
       {/* Label del paso actual */}
-      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+      <p style={{ fontSize: 12, color: "var(--fg-muted)" }}>
         Paso {current} de {total} —{" "}
-        <span style={{ color: "rgba(255,255,255,0.65)" }}>
+        <span style={{ color: "var(--fg-muted)" }}>
           {steps[current - 1].label}: {steps[current - 1].title}
         </span>
       </p>
@@ -463,7 +463,7 @@ function StepCard({
           <p
             style={{
               fontSize: 13,
-              color: "rgba(255,255,255,0.55)",
+              color: "var(--fg-subtle)",
               lineHeight: 1.55,
               marginTop: 6,
               maxWidth: 580,
@@ -518,7 +518,7 @@ function AssigneeSelector({
         style={{
           fontSize: 14,
           fontWeight: 600,
-          color: "rgba(255,255,255,0.8)",
+          color: "var(--fg-muted)",
           marginBottom: 16,
         }}
       >
@@ -531,7 +531,7 @@ function AssigneeSelector({
           style={{
             fontSize: 11.5,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             letterSpacing: 0.2,
             display: "block",
             marginBottom: 8,
@@ -541,7 +541,7 @@ function AssigneeSelector({
         </label>
 
         {team.length === 0 ? (
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>
+          <p style={{ fontSize: 13, color: "var(--fg-muted)" }}>
             No hay colaboradores en tu equipo aún.
           </p>
         ) : (
@@ -589,7 +589,7 @@ function AssigneeSelector({
                   <span
                     style={{
                       fontSize: 11,
-                      color: "rgba(255,255,255,0.62)",
+                      color: "var(--fg-muted)",
                       marginLeft: 6,
                     }}
                   >
@@ -609,7 +609,7 @@ function AssigneeSelector({
             style={{
               fontSize: 11.5,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--fg-subtle)",
               letterSpacing: 0.2,
               display: "block",
               marginBottom: 4,
@@ -617,7 +617,7 @@ function AssigneeSelector({
           >
             Nivel de delegación mínimo requerido
           </label>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.38)" }}>
+          <p style={{ fontSize: 12, color: "var(--fg-subtle)" }}>
             Elegí la autonomía mínima que necesita la persona para completar esta tarea.
           </p>
         </div>

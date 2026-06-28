@@ -46,7 +46,7 @@ export function FeedbackHistory({
         <p
           style={{
             fontSize: 13,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
             maxWidth: 260,
             lineHeight: 1.6,
           }}
@@ -85,7 +85,7 @@ export function FeedbackHistory({
           <p className="font-semibold text-white" style={{ fontSize: 14 }}>
             {member.full_name}
           </p>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+          <p style={{ fontSize: 12, color: "var(--fg-muted)" }}>
             {member.cargo ?? "Sin cargo"} · {memberFeedbacks.length} feedback
             {memberFeedbacks.length !== 1 ? "s" : ""}
           </p>
@@ -104,7 +104,7 @@ export function FeedbackHistory({
             background: "rgba(255,255,255,0.01)",
           }}
         >
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>
+          <p style={{ fontSize: 13, color: "var(--fg-muted)" }}>
             Sin feedbacks todavía.
             <br />
             Construí el primero usando el panel izquierdo.

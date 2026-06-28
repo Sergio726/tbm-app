@@ -232,7 +232,7 @@ function SessionRow({
     ? { color: "#34d399", bg: "rgba(52,211,153,0.10)", border: "rgba(52,211,153,0.28)" }
     : unlocked
       ? { color: "#9fb9ff", bg: "rgba(91,138,255,0.08)", border: "rgba(91,138,255,0.24)" }
-      : { color: "rgba(255,255,255,0.62)", bg: "rgba(255,255,255,0.02)", border: "rgba(255,255,255,0.06)" };
+      : { color: "var(--fg-muted)", bg: "rgba(255,255,255,0.02)", border: "rgba(255,255,255,0.06)" };
 
   return (
     <Link

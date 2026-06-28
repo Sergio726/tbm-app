@@ -335,7 +335,7 @@ export function WorkbookClient({
   return (
     <div
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
         minHeight: "100vh",
@@ -355,7 +355,7 @@ export function WorkbookClient({
             <BookOpen size={18} strokeWidth={1.6} />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.62)" }}>
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--fg-muted)" }}>
               Sesión {session.number}
             </p>
             <h1 className="text-white" style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.4 }}>
@@ -363,7 +363,7 @@ export function WorkbookClient({
             </h1>
           </div>
         </div>
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
+        <p style={{ fontSize: 13, color: "var(--fg-muted)", marginLeft: 52 }}>
           {session.subtitle}
         </p>
       </div>
@@ -381,7 +381,7 @@ export function WorkbookClient({
             {completedCount}/{totalExercises} ejercicios
           </span>
           <div className="flex items-center gap-3">
-            <span style={{ color: "rgba(255,255,255,0.62)", fontSize: 12 }}>
+            <span style={{ color: "var(--fg-muted)", fontSize: 12 }}>
               Día {dayInSession}/7 de esta sesión
             </span>
             <span
@@ -481,7 +481,7 @@ export function WorkbookClient({
                     {!isOpen && (
                       <p
                         className="truncate text-xs"
-                        style={{ color: "rgba(255,255,255,0.62)" }}
+                        style={{ color: "var(--fg-muted)" }}
                       >
                         {exercise.description}
                       </p>
@@ -502,7 +502,7 @@ export function WorkbookClient({
                 <div className="border-t px-5 pb-5 pt-4" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                   <p
                     className="mb-4 text-sm leading-relaxed"
-                    style={{ color: "rgba(255,255,255,0.55)" }}
+                    style={{ color: "var(--fg-subtle)" }}
                   >
                     {exercise.description}
                   </p>
@@ -595,7 +595,7 @@ export function WorkbookClient({
         }}
       >
         <h3 className="mb-1 text-sm font-bold text-white">Mi compromiso de esta semana</h3>
-        <p className="mb-3 text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+        <p className="mb-3 text-xs" style={{ color: "var(--fg-muted)" }}>
           ¿Cuál es la acción concreta que vas a ejecutar esta semana con lo que aprendiste en esta sesión?
         </p>
         <textarea
@@ -607,7 +607,7 @@ export function WorkbookClient({
           style={{
             background: "rgba(255,255,255,0.03)",
             borderColor: "rgba(255,255,255,0.1)",
-            color: "rgba(255,255,255,0.85)",
+            color: "var(--fg)",
           }}
           onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(91,138,255,0.4)")}
           onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
@@ -643,7 +643,7 @@ export function WorkbookClient({
               Completaste la sesión antes de tiempo
             </h3>
           </div>
-          <p className="mb-4 text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+          <p className="mb-4 text-xs leading-relaxed" style={{ color: "var(--fg-subtle)" }}>
             Terminaste todos los ejercicios. Normalmente la siguiente sesión se desbloquea al completar 7 días
             de práctica, pero podés solicitar avance anticipado ahora.
           </p>

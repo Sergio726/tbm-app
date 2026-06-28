@@ -65,7 +65,7 @@ export function RockForm({
         <button
           type="button"
           onClick={onCancel}
-          style={{ color: "rgba(255,255,255,0.62)" }}
+          style={{ color: "var(--fg-muted)" }}
           className="hover:text-white transition-colors"
         >
           <X size={16} />
@@ -74,7 +74,7 @@ export function RockForm({
 
       <div className="flex flex-col gap-3">
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             Resultado a lograr *
           </label>
           <input
@@ -92,7 +92,7 @@ export function RockForm({
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             Responsable *
           </label>
           <select
@@ -114,7 +114,7 @@ export function RockForm({
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             Criterio de éxito
           </label>
           <textarea
@@ -132,7 +132,7 @@ export function RockForm({
 
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
               Inicio
             </label>
             <input
@@ -147,7 +147,7 @@ export function RockForm({
             />
           </div>
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
               Fin (auto +90d)
             </label>
             <input
@@ -158,7 +158,7 @@ export function RockForm({
               style={{
                 background: "rgba(255,255,255,0.02)",
                 borderColor: "rgba(255,255,255,0.07)",
-                color: "rgba(255,255,255,0.62)",
+                color: "var(--fg-muted)",
               }}
             />
           </div>
@@ -171,7 +171,7 @@ export function RockForm({
             className="flex-1 rounded-xl py-2 text-sm font-medium transition-colors"
             style={{
               background: "rgba(255,255,255,0.06)",
-              color: "rgba(255,255,255,0.6)",
+              color: "var(--fg-muted)",
             }}
           >
             Cancelar

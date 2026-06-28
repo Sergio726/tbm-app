@@ -92,7 +92,7 @@ export default function HabitsChecklist({
       >
         <div className="flex items-center" style={{ gap: 9 }}>
           <ListChecks size={17} color="#9bb8ff" />
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--fg)" }}>
             Hábitos de hoy
           </h2>
         </div>
@@ -103,7 +103,7 @@ export default function HabitsChecklist({
             style={{
               gap: 6,
               fontSize: 12.5,
-              color: "rgba(255,255,255,0.6)",
+              color: "var(--fg-muted)",
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(255,255,255,0.09)",
               borderRadius: 9,
@@ -135,7 +135,7 @@ export default function HabitsChecklist({
           >
             <ProgressRing done={done} total={total} celebrate={allDone} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "var(--fg)" }}>
                 {done}/{total} hechos
               </div>
               <div
@@ -207,7 +207,7 @@ export default function HabitsChecklist({
                       border: isDone
                         ? "none"
                         : "1.5px solid rgba(255,255,255,0.2)",
-                      color: "#0A1628",
+                      color: "var(--bg)",
                     }}
                   >
                     {isDone && <Check size={16} strokeWidth={3} />}
@@ -243,13 +243,13 @@ function EmptyState({ onPick }: { onPick: () => void }) {
       }}
     >
       <div style={{ fontSize: 28, marginBottom: 8 }}>🌱</div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 6 }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--fg)", marginBottom: 6 }}>
         Sumá tus hábitos a la mañana
       </div>
       <p
         style={{
           fontSize: 13,
-          color: "rgba(255,255,255,0.6)",
+          color: "var(--fg-muted)",
           lineHeight: 1.55,
           maxWidth: 420,
           margin: "0 auto 16px",
@@ -264,7 +264,7 @@ function EmptyState({ onPick }: { onPick: () => void }) {
           padding: "11px 20px",
           borderRadius: 11,
           background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-          color: "#fff",
+          color: "var(--fg)",
           border: "none",
           fontSize: 14,
           fontWeight: 600,

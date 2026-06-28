@@ -73,7 +73,7 @@ export default async function CreditosPage() {
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -95,7 +95,7 @@ export default async function CreditosPage() {
             Créditos
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "var(--fg-muted)", marginLeft: 52 }}>
           Cada crédito te habilita un test DISC para tu equipo.
         </p>
       </div>
@@ -113,11 +113,11 @@ export default async function CreditosPage() {
             <span style={{ fontSize: 52, fontWeight: 800, color: accent, lineHeight: 1 }}>
               {balance}
             </span>
-            <span style={{ fontSize: 15, color: "rgba(255,255,255,0.6)" }}>
+            <span style={{ fontSize: 15, color: "var(--fg-muted)" }}>
               {balance === 1 ? "crédito" : "créditos"}
             </span>
           </div>
-          <p style={{ marginTop: 12, fontSize: 12.5, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
+          <p style={{ marginTop: 12, fontSize: 12.5, color: "var(--fg-subtle)", lineHeight: 1.5 }}>
             1 crédito = 1 test DISC
           </p>
           {balance === 0 && (
@@ -143,7 +143,7 @@ export default async function CreditosPage() {
 
         {/* Cómo conseguir más */}
         <Card title="¿Necesitás más?" icon={<Mail size={16} strokeWidth={1.9} />}>
-          <p style={{ margin: "0 0 14px", fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.55 }}>
+          <p style={{ margin: "0 0 14px", fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.55 }}>
             Durante la beta cargamos los créditos a mano. Mandanos el pedido desde acá y te sumamos
             más para que sigas evaluando a tu equipo.
           </p>
@@ -170,7 +170,7 @@ export default async function CreditosPage() {
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
-                <tr style={{ color: "rgba(255,255,255,0.62)", textAlign: "left" }}>
+                <tr style={{ color: "var(--fg-muted)", textAlign: "left" }}>
                   <th scope="col" style={thStyle}>Fecha</th>
                   <th scope="col" style={thStyle}>Concepto</th>
                   <th scope="col" style={thStyle}>Detalle</th>
@@ -183,8 +183,8 @@ export default async function CreditosPage() {
                   return (
                     <tr key={t.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                       <td style={tdStyle}>{formatCreditDate(t.created_at)}</td>
-                      <td style={{ ...tdStyle, color: "rgba(255,255,255,0.9)" }}>{creditTypeLabel(t.type)}</td>
-                      <td style={{ ...tdStyle, color: "rgba(255,255,255,0.5)" }}>{t.reason ?? "—"}</td>
+                      <td style={{ ...tdStyle, color: "var(--fg)" }}>{creditTypeLabel(t.type)}</td>
+                      <td style={{ ...tdStyle, color: "var(--fg-subtle)" }}>{t.reason ?? "—"}</td>
                       <td
                         style={{
                           ...tdStyle,
@@ -225,7 +225,7 @@ function Card({
       <div className="mb-3 flex items-center gap-2" style={{ color: "#9fb9ff", fontSize: 13, fontWeight: 600 }}>
         {icon} {title}
       </div>
-      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.55 }}>{children}</div>
+      <div style={{ fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.55 }}>{children}</div>
     </div>
   );
 }
@@ -239,6 +239,6 @@ const thStyle: React.CSSProperties = {
 };
 const tdStyle: React.CSSProperties = {
   padding: "11px 18px",
-  color: "rgba(255,255,255,0.75)",
+  color: "var(--fg-muted)",
   whiteSpace: "nowrap",
 };

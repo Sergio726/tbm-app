@@ -191,7 +191,7 @@ export function FeedbackClient({
       <div
         className="min-h-screen"
         style={{
-          background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+          background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
           fontFamily: "Inter, system-ui, sans-serif",
           padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
         }}
@@ -210,7 +210,7 @@ export function FeedbackClient({
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -235,7 +235,7 @@ export function FeedbackClient({
             Feedback S.E.C.
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "var(--fg-muted)", marginLeft: 52 }}>
           Sostener · Elevar · Corregir — nunca más improvisar un feedback
         </p>
       </div>
@@ -361,7 +361,7 @@ function Section({
         </p>
         {done && doneLabel && (
           <>
-            <ChevronRight size={13} style={{ color: "rgba(255,255,255,0.62)" }} />
+            <ChevronRight size={13} style={{ color: "var(--fg-muted)" }} />
             <span style={{ fontSize: 12.5, color: "#9fb9ff" }}>{doneLabel}</span>
           </>
         )}

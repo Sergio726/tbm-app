@@ -386,7 +386,7 @@ export function PlanClient({
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -411,7 +411,7 @@ export function PlanClient({
             Plan 90D
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "var(--fg-muted)", marginLeft: 52 }}>
           Rocas · BOS · Ideas · Decisiones — el sistema completo de ejecución estratégica
         </p>
       </div>
@@ -463,7 +463,7 @@ export function PlanClient({
                       border: "1px solid rgba(91,138,255,0.3)",
                     }
                   : {
-                      color: "rgba(255,255,255,0.62)",
+                      color: "var(--fg-muted)",
                       border: "1px solid transparent",
                     }
               }

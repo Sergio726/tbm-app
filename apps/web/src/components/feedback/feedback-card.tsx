@@ -39,7 +39,7 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
         >
           {feedback.type}
         </span>
-        <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)" }}>
+        <span style={{ fontSize: 11.5, color: "var(--fg-muted)" }}>
           {cfg.label}
         </span>
 
@@ -71,7 +71,7 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
       </div>
 
       {/* Date */}
-      <p className="mb-2 text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+      <p className="mb-2 text-xs" style={{ color: "var(--fg-muted)" }}>
         {feedback.is_draft
           ? `Borrador — ${humanDate(feedback.created_at)}`
           : feedback.delivered_at
@@ -80,7 +80,7 @@ export function FeedbackCard({ feedback, onDeliver, delivering }: FeedbackCardPr
       </p>
 
       {/* Content */}
-      <p style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.6 }}>
+      <p style={{ fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.6 }}>
         {expanded ? feedback.content : preview}
         {hasMore && !expanded && "…"}
       </p>

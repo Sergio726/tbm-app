@@ -47,7 +47,7 @@ export function ActivoForm({
         <button
           type="button"
           onClick={onCancel}
-          style={{ color: "rgba(255,255,255,0.62)" }}
+          style={{ color: "var(--fg-muted)" }}
         >
           <X size={16} />
         </button>
@@ -93,7 +93,7 @@ export function ActivoForm({
               }}
             >
               {ASSET_CATEGORIES.map((c) => (
-                <option key={c.key} value={c.key} style={{ background: "#0F1B2D" }}>
+                <option key={c.key} value={c.key} style={{ background: "var(--surface)" }}>
                   {c.label}
                 </option>
               ))}
@@ -112,11 +112,11 @@ export function ActivoForm({
                 borderColor: "rgba(255,255,255,0.09)",
               }}
             >
-              <option value="" style={{ background: "#0F1B2D" }}>
+              <option value="" style={{ background: "var(--surface)" }}>
                 Sin asignar
               </option>
               {team.map((m) => (
-                <option key={m.id} value={m.id} style={{ background: "#0F1B2D" }}>
+                <option key={m.id} value={m.id} style={{ background: "var(--surface)" }}>
                   {m.full_name ?? "Sin nombre"}
                 </option>
               ))}
@@ -154,7 +154,7 @@ export function ActivoForm({
             className="rounded-xl border px-3.5 py-2 text-xs font-semibold"
             style={{
               borderColor: "rgba(255,255,255,0.1)",
-              color: "rgba(255,255,255,0.6)",
+              color: "var(--fg-muted)",
             }}
           >
             Cancelar

@@ -82,7 +82,7 @@ export function NotificationsBell({
           border: open
             ? "1px solid rgba(91,138,255,0.3)"
             : "1px solid rgba(255,255,255,0.07)",
-          color: "rgba(255,255,255,0.7)",
+          color: "var(--fg-muted)",
           cursor: "pointer",
         }}
       >
@@ -98,7 +98,7 @@ export function NotificationsBell({
               padding: "0 4px",
               borderRadius: 99,
               background: "#f87171",
-              border: "2px solid #0a0e1a",
+              border: "2px solid var(--bg)",
             }}
           >
             {unread > 9 ? "9+" : unread}

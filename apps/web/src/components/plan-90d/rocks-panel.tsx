@@ -55,7 +55,7 @@ export function RocksPanel({
             Rocas del trimestre
           </h2>
           {quarterDay !== null && (
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
+            <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
               Día {Math.min(quarterDay, 90)} de 90 del trimestre
             </p>
           )}
@@ -101,12 +101,12 @@ export function RocksPanel({
             borderStyle: "dashed",
           }}
         >
-          <Target size={32} style={{ color: "rgba(255,255,255,0.15)" }} />
+          <Target size={32} style={{ color: "var(--fg-subtle)" }} />
           <div>
             <p className="font-semibold text-white" style={{ fontSize: 14 }}>
               Sin Rocas activas
             </p>
-            <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)", marginTop: 4 }}>
+            <p style={{ fontSize: 12.5, color: "var(--fg-muted)", marginTop: 4 }}>
               Las Rocas son los 1–5 resultados más importantes del trimestre.
             </p>
           </div>
@@ -138,7 +138,7 @@ export function RocksPanel({
         <details className="group">
           <summary
             className="cursor-pointer select-none text-xs font-semibold"
-            style={{ color: "rgba(255,255,255,0.62)" }}
+            style={{ color: "var(--fg-muted)" }}
           >
             Historial ({otherRocks.length})
           </summary>

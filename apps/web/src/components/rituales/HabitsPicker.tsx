@@ -193,7 +193,7 @@ export default function HabitsPicker({
           maxHeight: "88vh",
           display: "flex",
           flexDirection: "column",
-          background: "#0F1B2D",
+          background: "var(--surface)",
           border: "1px solid rgba(255,255,255,0.10)",
           borderRadius: 20,
           overflow: "hidden",
@@ -208,7 +208,7 @@ export default function HabitsPicker({
           }}
         >
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "var(--fg)" }}>
               Tus hábitos del Pre-game
             </div>
             <div
@@ -230,7 +230,7 @@ export default function HabitsPicker({
               borderRadius: 9,
               background: "rgba(255,255,255,0.05)",
               border: "1px solid rgba(255,255,255,0.08)",
-              color: "rgba(255,255,255,0.7)",
+              color: "var(--fg-muted)",
             }}
             aria-label="Cerrar"
           >
@@ -301,7 +301,7 @@ export default function HabitsPicker({
                   background: "rgba(255,255,255,0.04)",
                   border: "1px solid rgba(255,255,255,0.08)",
                   borderRadius: 10,
-                  color: "#fff",
+                  color: "var(--fg)",
                   padding: "11px 14px",
                   fontSize: 16, // evita zoom de iOS
                   fontFamily: "inherit",
@@ -356,7 +356,7 @@ export default function HabitsPicker({
               padding: "13px",
               borderRadius: 11,
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-              color: "#fff",
+              color: "var(--fg)",
               border: "none",
               fontSize: 14.5,
               fontWeight: 600,
@@ -416,7 +416,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 11,
         fontWeight: 600,
-        color: "rgba(255,255,255,0.5)",
+        color: "var(--fg-subtle)",
         letterSpacing: 1.1,
         marginBottom: 9,
       }}

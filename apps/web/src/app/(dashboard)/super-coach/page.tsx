@@ -142,7 +142,7 @@ export default async function SuperCoachPage() {
                 "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
               borderColor: `${tone.color}40`,
               textDecoration: "none",
-              color: "#fff",
+              color: "var(--fg)",
             }}
           >
             <div className="flex flex-wrap items-center gap-5">

@@ -183,7 +183,7 @@ function RosterCard({
           className="flex h-[42px] w-[42px] items-center justify-center rounded-full text-base font-bold text-white"
           style={{
             background: `linear-gradient(135deg, ${ring}, ${ring}88)`,
-            boxShadow: `0 0 0 2px #0a0e1a, 0 0 0 3.5px ${ring}66, inset 0 1px 0 rgba(255,255,255,0.25)`,
+            boxShadow: `0 0 0 2px var(--bg), 0 0 0 3.5px ${ring}66, inset 0 1px 0 rgba(255,255,255,0.25)`,
           }}
         >
           {initials(member.full_name)}
@@ -191,14 +191,14 @@ function RosterCard({
         {complete ? (
           <div
             className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2"
-            style={{ background: "#34d399", borderColor: "#0a0e1a", color: "#06281c" }}
+            style={{ background: "#34d399", borderColor: "var(--bg)", color: "#06281c" }}
           >
             <Check size={9} strokeWidth={3.2} />
           </div>
         ) : sent ? (
           <div
             className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2"
-            style={{ background: "#fbbf24", borderColor: "#0a0e1a", color: "#3a2a05" }}
+            style={{ background: "#fbbf24", borderColor: "var(--bg)", color: "#3a2a05" }}
             title="Test enviado, pendiente de completar"
           >
             <Clock size={9} strokeWidth={3} />

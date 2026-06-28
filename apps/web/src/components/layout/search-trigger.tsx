@@ -16,7 +16,7 @@ export function SearchTrigger() {
         borderRadius: 10,
         background: "rgba(255,255,255,0.025)",
         border: "1px solid rgba(255,255,255,0.07)",
-        color: "rgba(255,255,255,0.5)",
+        color: "var(--fg-subtle)",
         fontSize: 13,
         minWidth: 220,
         cursor: "pointer",
@@ -26,7 +26,7 @@ export function SearchTrigger() {
       <span style={{ flex: 1, textAlign: "left" }}>Buscar</span>
       <span
         className="flex"
-        style={{ gap: 3, fontSize: 10, color: "rgba(255,255,255,0.62)" }}
+        style={{ gap: 3, fontSize: 10, color: "var(--fg-muted)" }}
       >
         <kbd
           style={{

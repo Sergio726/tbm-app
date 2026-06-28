@@ -14,7 +14,7 @@ const BTN: React.CSSProperties = {
   padding: "11px 18px",
   fontSize: 13.5,
   fontWeight: 600,
-  color: "#fff",
+  color: "var(--fg)",
   border: "none",
   cursor: "pointer",
 };
@@ -24,7 +24,7 @@ const FIELD: React.CSSProperties = {
   background: "rgba(255,255,255,0.05)",
   border: "1px solid rgba(255,255,255,0.12)",
   borderRadius: 10,
-  color: "#fff",
+  color: "var(--fg)",
   padding: "9px 11px",
   fontSize: 13,
   outline: "none",
@@ -76,7 +76,7 @@ export function RequestCreditsButton({ hasPending }: { hasPending: boolean }) {
   return (
     <div className="flex flex-col gap-2.5">
       <div>
-        <label style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", display: "block", marginBottom: 5 }}>
+        <label style={{ fontSize: 12, color: "var(--fg-subtle)", display: "block", marginBottom: 5 }}>
           ¿Cuántos créditos? (opcional)
         </label>
         <input
@@ -90,7 +90,7 @@ export function RequestCreditsButton({ hasPending }: { hasPending: boolean }) {
         />
       </div>
       <div>
-        <label style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", display: "block", marginBottom: 5 }}>
+        <label style={{ fontSize: 12, color: "var(--fg-subtle)", display: "block", marginBottom: 5 }}>
           Nota (opcional)
         </label>
         <textarea
@@ -118,7 +118,7 @@ export function RequestCreditsButton({ hasPending }: { hasPending: boolean }) {
             borderRadius: 12,
             background: "transparent",
             border: "1px solid rgba(255,255,255,0.14)",
-            color: "rgba(255,255,255,0.6)",
+            color: "var(--fg-muted)",
             fontSize: 13,
             fontWeight: 600,
             cursor: "pointer",

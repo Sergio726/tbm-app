@@ -80,7 +80,7 @@ export function InviteModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[420px] rounded-2xl border border-white/10 bg-[#0F1B2D] p-6 shadow-2xl"
+        className="w-full max-w-[420px] rounded-2xl border border-white/10 bg-[var(--surface)] p-6 shadow-2xl"
       >
         <div className="mb-3.5 flex items-start justify-between">
           <div>

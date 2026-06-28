@@ -118,7 +118,7 @@ export default function CoolDownForm({
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.3,
           }}
         >
@@ -219,7 +219,7 @@ export default function CoolDownForm({
       )}
 
       <div className="flex items-center justify-between">
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+        <div style={{ fontSize: 12, color: "var(--fg-muted)" }}>
           {savedAt
             ? "Guardado · " +
               new Date(savedAt).toLocaleTimeString("es-AR", {
@@ -265,7 +265,7 @@ const TEXTAREA_STYLE: React.CSSProperties = {
   background: "rgba(255,255,255,0.04)",
   border: "1px solid rgba(255,255,255,0.08)",
   borderRadius: 10,
-  color: "#fff",
+  color: "var(--fg)",
   padding: "10px 14px",
   fontSize: 13.5,
   resize: "vertical",
@@ -290,7 +290,7 @@ function Field({
         style={{
           fontSize: 13.5,
           fontWeight: 600,
-          color: "#fff",
+          color: "var(--fg)",
           marginBottom: 2,
         }}
       >
@@ -302,7 +302,7 @@ function Field({
       <p
         style={{
           fontSize: 12.5,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           marginBottom: 4,
           lineHeight: 1.5,
         }}

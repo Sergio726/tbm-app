@@ -454,7 +454,7 @@ export function DiscTest({
                     onClick={() => setMost(w)}
                     className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${isMost ? "tbm-tap" : ""}`}
                     style={{
-                      borderColor: isMost ? "#10B981" : "#1E3050",
+                      borderColor: isMost ? "#10B981" : "var(--border)",
                       background: isMost ? "#10B981" : "transparent",
                       color: isMost ? "#fff" : "#64748B",
                     }}
@@ -477,7 +477,7 @@ export function DiscTest({
                     onClick={() => setLeast(w)}
                     className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${isLeast ? "tbm-tap" : ""}`}
                     style={{
-                      borderColor: isLeast ? "#EF4444" : "#1E3050",
+                      borderColor: isLeast ? "#EF4444" : "var(--border)",
                       background: isLeast ? "#EF4444" : "transparent",
                       color: isLeast ? "#fff" : "#64748B",
                     }}

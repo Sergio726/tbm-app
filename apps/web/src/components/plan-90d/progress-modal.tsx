@@ -47,12 +47,12 @@ export function ProgressModal({
             </p>
             <p
               className="mt-0.5 line-clamp-1"
-              style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}
+              style={{ fontSize: 12.5, color: "var(--fg-muted)" }}
             >
               {rockTitle}
             </p>
           </div>
-          <button onClick={onClose} style={{ color: "rgba(255,255,255,0.62)" }} className="hover:text-white transition-colors">
+          <button onClick={onClose} style={{ color: "var(--fg-muted)" }} className="hover:text-white transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -60,7 +60,7 @@ export function ProgressModal({
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <label className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+              <label className="text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
                 % de avance
               </label>
               <span
@@ -94,7 +94,7 @@ export function ProgressModal({
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
               Nota del check-in (opcional)
             </label>
             <textarea
@@ -117,7 +117,7 @@ export function ProgressModal({
               className="flex-1 rounded-xl py-2.5 text-sm font-medium"
               style={{
                 background: "rgba(255,255,255,0.06)",
-                color: "rgba(255,255,255,0.6)",
+                color: "var(--fg-muted)",
               }}
             >
               Cancelar

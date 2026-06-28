@@ -10,7 +10,7 @@ export function EmptyDetail() {
         padding: "60px 20px",
         borderRadius: 16,
         border: "1px dashed rgba(255,255,255,0.12)",
-        color: "rgba(255,255,255,0.5)",
+        color: "var(--fg-subtle)",
         minHeight: 320,
       }}
     >

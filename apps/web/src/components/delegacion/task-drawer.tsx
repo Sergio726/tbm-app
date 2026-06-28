@@ -210,7 +210,7 @@ export function TaskDrawer({
                 fontSize: 10.5,
                 fontWeight: 700,
                 letterSpacing: 0.8,
-                color: "rgba(255,255,255,0.62)",
+                color: "var(--fg-muted)",
                 textTransform: "uppercase",
                 marginBottom: 6,
               }}
@@ -228,7 +228,7 @@ export function TaskDrawer({
             type="button"
             onClick={onClose}
             className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
-            style={{ color: "rgba(255,255,255,0.55)", cursor: "pointer" }}
+            style={{ color: "var(--fg-subtle)", cursor: "pointer" }}
             aria-label="Cerrar"
           >
             <X size={18} />
@@ -300,7 +300,7 @@ export function TaskDrawer({
                       border: "1px dashed rgba(255,255,255,0.2)",
                     }}
                   >
-                    <User size={16} style={{ color: "rgba(255,255,255,0.62)" }} />
+                    <User size={16} style={{ color: "var(--fg-muted)" }} />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
@@ -310,14 +310,14 @@ export function TaskDrawer({
                   >
                     {assignee?.full_name ?? "Sin asignar"}
                   </p>
-                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+                  <p style={{ fontSize: 12, color: "var(--fg-muted)" }}>
                     {assignee?.cargo ?? "Tocá para asignar"}
                   </p>
                 </div>
                 <ChevronDown
                   size={16}
                   style={{
-                    color: "rgba(255,255,255,0.62)",
+                    color: "var(--fg-muted)",
                     flexShrink: 0,
                     transform: assigneeMenuOpen ? "rotate(180deg)" : "none",
                     transition: "transform 0.2s",
@@ -370,9 +370,9 @@ export function TaskDrawer({
                         border: "1px dashed rgba(255,255,255,0.2)",
                       }}
                     >
-                      <User size={13} style={{ color: "rgba(255,255,255,0.62)" }} />
+                      <User size={13} style={{ color: "var(--fg-muted)" }} />
                     </div>
-                    <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                    <span style={{ fontSize: 13, color: "var(--fg-muted)" }}>
                       Sin asignar
                     </span>
                   </AssigneeOption>
@@ -413,7 +413,7 @@ export function TaskDrawer({
                             <p
                               style={{
                                 fontSize: 11,
-                                color: "rgba(255,255,255,0.62)",
+                                color: "var(--fg-muted)",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                                 whiteSpace: "nowrap",
@@ -455,7 +455,7 @@ export function TaskDrawer({
                         fontSize: 10.5,
                         fontWeight: 700,
                         letterSpacing: 0.5,
-                        color: "rgba(255,255,255,0.62)",
+                        color: "var(--fg-muted)",
                         textTransform: "uppercase",
                       }}
                     >
@@ -465,7 +465,7 @@ export function TaskDrawer({
                   <p
                     style={{
                       fontSize: 13.5,
-                      color: "rgba(255,255,255,0.85)",
+                      color: "var(--fg)",
                       lineHeight: 1.55,
                       paddingLeft: 21,
                     }}
@@ -497,7 +497,7 @@ export function TaskDrawer({
               </div>
 
               {loadingBoomerang ? (
-                <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}>
+                <p style={{ fontSize: 12.5, color: "var(--fg-muted)" }}>
                   Cargando opciones…
                 </p>
               ) : boomerang ? (
@@ -547,7 +547,7 @@ export function TaskDrawer({
                           <p
                             style={{
                               fontSize: 12.5,
-                              color: "rgba(255,255,255,0.8)",
+                              color: "var(--fg-muted)",
                               lineHeight: 1.5,
                             }}
                           >
@@ -564,7 +564,7 @@ export function TaskDrawer({
                           fontSize: 10.5,
                           fontWeight: 700,
                           letterSpacing: 0.5,
-                          color: "rgba(255,255,255,0.62)",
+                          color: "var(--fg-muted)",
                           textTransform: "uppercase",
                           marginBottom: 3,
                         }}
@@ -574,7 +574,7 @@ export function TaskDrawer({
                       <p
                         style={{
                           fontSize: 12.5,
-                          color: "rgba(255,255,255,0.7)",
+                          color: "var(--fg-muted)",
                           lineHeight: 1.5,
                           fontStyle: "italic",
                         }}
@@ -585,7 +585,7 @@ export function TaskDrawer({
                   )}
                 </div>
               ) : (
-                <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}>
+                <p style={{ fontSize: 12.5, color: "var(--fg-muted)" }}>
                   El colaborador marcó esta tarea como bloqueada sin registrar opciones.
                 </p>
               )}
@@ -599,8 +599,8 @@ export function TaskDrawer({
           style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
         >
           <div className="mb-2.5 flex items-center gap-2">
-            <Clock size={13} style={{ color: "rgba(255,255,255,0.62)" }} />
-            <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)" }}>
+            <Clock size={13} style={{ color: "var(--fg-muted)" }} />
+            <span style={{ fontSize: 11.5, color: "var(--fg-muted)" }}>
               Cambiar estado
             </span>
           </div>

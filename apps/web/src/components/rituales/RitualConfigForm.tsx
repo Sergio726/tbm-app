@@ -133,7 +133,7 @@ export default function RitualConfigForm({
                 border: active
                   ? "1px solid rgba(91,138,255,0.35)"
                   : "1px solid rgba(255,255,255,0.06)",
-                color: "#fff",
+                color: "var(--fg)",
                 cursor: canEdit ? "pointer" : "default",
                 opacity: !canEdit && !active ? 0.5 : 1,
               }}
@@ -151,7 +151,7 @@ export default function RitualConfigForm({
               <div
                 style={{
                   fontSize: 12.5,
-                  color: "rgba(255,255,255,0.6)",
+                  color: "var(--fg-muted)",
                   lineHeight: 1.5,
                 }}
               >
@@ -246,7 +246,7 @@ export default function RitualConfigForm({
 
       {canEdit && (
         <div className="flex items-center justify-between">
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
+          <div style={{ fontSize: 12, color: "var(--fg-muted)" }}>
             {saved ? "Guardado." : initial.updated_at ? `Última edición · ${new Date(initial.updated_at).toLocaleString("es-AR")}` : "Sin cambios guardados"}
           </div>
           <button
@@ -257,7 +257,7 @@ export default function RitualConfigForm({
               padding: "10px 18px",
               borderRadius: 10,
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-              color: "#fff",
+              color: "var(--fg)",
               border: "none",
               fontSize: 13.5,
               fontWeight: 600,
@@ -280,7 +280,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 11,
         fontWeight: 600,
-        color: "rgba(255,255,255,0.55)",
+        color: "var(--fg-subtle)",
         letterSpacing: 1.3,
         marginBottom: 10,
       }}
@@ -309,7 +309,7 @@ function TimeField({
         style={{
           fontSize: 12.5,
           fontWeight: 600,
-          color: "#fff",
+          color: "var(--fg)",
           marginBottom: 4,
         }}
       >
@@ -318,7 +318,7 @@ function TimeField({
       <p
         style={{
           fontSize: 11.5,
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--fg-subtle)",
           marginBottom: 6,
           lineHeight: 1.45,
         }}

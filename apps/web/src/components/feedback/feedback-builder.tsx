@@ -38,7 +38,7 @@ export function FeedbackBuilder({
       <div>
         <label
           className="mb-2 block text-xs font-semibold"
-          style={{ color: "rgba(255,255,255,0.55)" }}
+          style={{ color: "var(--fg-subtle)" }}
         >
           Feedback para {member.full_name?.split(" ")[0] ?? "este colaborador"}
         </label>
@@ -53,12 +53,12 @@ export function FeedbackBuilder({
               ? "rgba(255,255,255,0.08)"
               : `${cfg.color}44`,
             background: "rgba(255,255,255,0.03)",
-            color: "rgba(255,255,255,0.85)",
+            color: "var(--fg)",
             lineHeight: 1.7,
             minHeight: 120,
           }}
         />
-        <p className="mt-1.5 text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
+        <p className="mt-1.5 text-xs" style={{ color: "var(--fg-subtle)" }}>
           Template pre-cargado según el tipo. Editá libremente — no hay límite de caracteres.
         </p>
       </div>
@@ -71,7 +71,7 @@ export function FeedbackBuilder({
           className="flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-opacity hover:opacity-80 disabled:opacity-40"
           style={{
             borderColor: "rgba(255,255,255,0.12)",
-            color: "rgba(255,255,255,0.6)",
+            color: "var(--fg-muted)",
             background: "rgba(255,255,255,0.04)",
           }}
         >

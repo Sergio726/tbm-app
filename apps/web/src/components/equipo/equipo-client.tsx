@@ -506,7 +506,7 @@ export function EquipoClient({
         <div
           className="fixed bottom-[90px] right-5 z-[60] max-w-[340px] tbm-slide-right"
         >
-          <div className="flex items-start gap-3 rounded-xl border border-[#34d399]/40 bg-[#0F1B2D] p-4 shadow-2xl">
+          <div className="flex items-start gap-3 rounded-xl border border-[#34d399]/40 bg-[var(--surface)] p-4 shadow-2xl">
             <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#34d399]/[0.15] text-[#34d399]">
               <Bell size={16} />
             </div>

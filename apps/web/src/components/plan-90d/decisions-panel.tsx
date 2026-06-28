@@ -32,7 +32,7 @@ export function DecisionsPanel({
           <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
             Decisiones — Filtro del 70%
           </h2>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
             Registrá cada decisión importante y cómo la tomaste
           </p>
         </div>
@@ -84,8 +84,8 @@ export function DecisionsPanel({
           className="flex flex-col items-center gap-3 rounded-2xl border py-10 text-center"
           style={{ borderColor: "rgba(255,255,255,0.06)", borderStyle: "dashed" }}
         >
-          <Zap size={28} style={{ color: "rgba(255,255,255,0.15)" }} />
-          <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.62)" }}>
+          <Zap size={28} style={{ color: "var(--fg-subtle)" }} />
+          <p style={{ fontSize: 13.5, color: "var(--fg-muted)" }}>
             Sin decisiones registradas
           </p>
         </div>
@@ -181,7 +181,7 @@ function DecisionCard({ decision }: { decision: Decision }) {
         )}
         <span
           className="ml-auto text-xs"
-          style={{ color: "rgba(255,255,255,0.25)" }}
+          style={{ color: "var(--fg-subtle)" }}
         >
           {date}
         </span>

@@ -23,7 +23,7 @@ const STATUS_DISPLAY: Record<
 > = {
   pending: {
     label: "Pendiente",
-    color: "rgba(255,255,255,0.6)",
+    color: "var(--fg-muted)",
     bg: "rgba(255,255,255,0.07)",
     border: "rgba(255,255,255,0.12)",
     accent: "rgba(255,255,255,0.3)",
@@ -107,7 +107,7 @@ export function MisTareasClient({ tasks: initialTasks, currentUserId }: MisTarea
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -117,7 +117,7 @@ export function MisTareasClient({ tasks: initialTasks, currentUserId }: MisTarea
         <Link
           href="/dashboard"
           className="mb-4 inline-flex items-center gap-1.5 transition-colors hover:text-white"
-          style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}
+          style={{ fontSize: 13, color: "var(--fg-muted)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
           Dashboard
@@ -141,7 +141,7 @@ export function MisTareasClient({ tasks: initialTasks, currentUserId }: MisTarea
             >
               Mis tareas
             </h1>
-            <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.62)", marginTop: 1 }}>
+            <p style={{ fontSize: 13.5, color: "var(--fg-muted)", marginTop: 1 }}>
               Tus tareas asignadas con los 5 puntos obligatorios
             </p>
           </div>
@@ -280,9 +280,9 @@ function TaskRow({
 
         {/* Chevron */}
         {isExpanded ? (
-          <ChevronUp size={15} strokeWidth={2} style={{ color: "rgba(255,255,255,0.62)", flexShrink: 0 }} />
+          <ChevronUp size={15} strokeWidth={2} style={{ color: "var(--fg-muted)", flexShrink: 0 }} />
         ) : (
-          <ChevronDown size={15} strokeWidth={2} style={{ color: "rgba(255,255,255,0.62)", flexShrink: 0 }} />
+          <ChevronDown size={15} strokeWidth={2} style={{ color: "var(--fg-muted)", flexShrink: 0 }} />
         )}
       </button>
 
@@ -374,7 +374,7 @@ function TaskRow({
                       fontSize: 10.5,
                       fontWeight: 700,
                       letterSpacing: 0.6,
-                      color: "rgba(255,255,255,0.62)",
+                      color: "var(--fg-muted)",
                       textTransform: "uppercase",
                       marginBottom: 4,
                     }}
@@ -384,7 +384,7 @@ function TaskRow({
                   <p
                     style={{
                       fontSize: 13.5,
-                      color: "rgba(255,255,255,0.85)",
+                      color: "var(--fg)",
                       lineHeight: 1.55,
                     }}
                   >
@@ -473,7 +473,7 @@ function EmptyState() {
       <p
         style={{
           fontSize: 13.5,
-          color: "rgba(255,255,255,0.62)",
+          color: "var(--fg-muted)",
           maxWidth: 340,
           lineHeight: 1.6,
         }}

@@ -37,7 +37,7 @@ export function SilenceOverlay({ onDone }: SilenceOverlayProps) {
       </div>
       <p
         className="text-center"
-        style={{ fontSize: 12.5, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, maxWidth: 200 }}
+        style={{ fontSize: 12.5, color: "var(--fg-subtle)", lineHeight: 1.6, maxWidth: 200 }}
       >
         Tomá un momento para reflexionar antes de ingresar el valor
       </p>

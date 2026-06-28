@@ -92,7 +92,7 @@ export function SessionsGrid({ allProgress }: Props) {
                     : days > 0
                     ? {
                         background: "rgba(255,255,255,0.06)",
-                        color: "rgba(255,255,255,0.62)",
+                        color: "var(--fg-muted)",
                       }
                     : {
                         background: "rgba(251,191,36,0.1)",
@@ -110,11 +110,11 @@ export function SessionsGrid({ allProgress }: Props) {
               </span>
             </div>
 
-            <div className="mb-1 text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.62)" }}>
+            <div className="mb-1 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--fg-muted)" }}>
               Sesión {session.number}
             </div>
             <h3 className="mb-1 text-base font-bold text-white">{session.title}</h3>
-            <p className="mb-4 text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.62)" }}>
+            <p className="mb-4 text-xs leading-relaxed" style={{ color: "var(--fg-muted)" }}>
               {session.subtitle}
             </p>
 
@@ -135,7 +135,7 @@ export function SessionsGrid({ allProgress }: Props) {
                     }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
+                <div className="flex items-center justify-between text-xs" style={{ color: "var(--fg-muted)" }}>
                   <span>{pct}% completado</span>
                   {dayInSession !== null && !completed && (
                     <span className="flex items-center gap-1">

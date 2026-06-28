@@ -211,7 +211,7 @@ export function KanbanBoard({ initialTasks, team }: KanbanBoardProps) {
                     className="rounded-xl border border-dashed py-8 text-center"
                     style={{ borderColor: "rgba(255,255,255,0.07)" }}
                   >
-                    <p style={{ fontSize: 12, color: "rgba(255,255,255,0.25)" }}>
+                    <p style={{ fontSize: 12, color: "var(--fg-subtle)" }}>
                       {col.emptyMsg}
                     </p>
                   </div>

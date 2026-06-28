@@ -35,9 +35,11 @@
 > - ✅ **Contraste (oscuro)**: pasada segura que subió el texto blanco ilegible (`text-white/30-45` →
 >   `/65`; `color: rgba(255,255,255,≤0.45)` → `0.62`) en **78 archivos**, sin tocar fondos/bordes.
 >   Medición previa: ~75 textos a 2.6–3.2:1 (fallaban AA). Umbrales en `docs/PLAN_BACKLOG_2026-06.md`.
-> - ⏳ **Fase 2 (diferido):** migrar el color **inline hardcodeado** (superficies/bordes) de los componentes
->   a tokens para pulir el **modo claro** en todas las pantallas (hoy lo no migrado se ve oscuro en claro,
->   no roto). Alinear `apps/admin`. `components/ui/empty-state` ya migrada como patrón.
+> - ✅ **Fase 2 (hecho, 2026-06-28):** codemod que migró el color **inline** a tokens en **88 archivos**:
+>   navy hardcodeado (`#0A1628/#0F1B2D/#162238/#1E3050…`) → `var(--bg/--surface/--elevated/--border)` y
+>   texto (`color: rgba(255,255,255,α)` / `#fff`) → `var(--fg/-muted/-subtle)` por banda. Ahora el **modo
+>   claro flipa superficies + texto** en casi toda la app. ⏳ Pulido restante (fase 3): bordes/tintes
+>   `rgba(255,255,255,baja)`, algunos colores de acento/estado literales, y alinear `apps/admin`.
 >
 > **Novedades 2026-06-28 (backlog Sebas N1–N6):** 6 mejoras pedidas por Sebas, decisiones cerradas +
 > plan en [`docs/PLAN_BACKLOG_2026-06.md`](docs/PLAN_BACKLOG_2026-06.md). Rama `backlog-n1-n6` (typecheck

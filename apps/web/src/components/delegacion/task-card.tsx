@@ -133,7 +133,7 @@ export function TaskCard({ task, assignee, onOpen }: TaskCardProps) {
                   border: "1px dashed rgba(255,255,255,0.2)",
                 }}
               >
-                <User size={11} style={{ color: "rgba(255,255,255,0.62)" }} />
+                <User size={11} style={{ color: "var(--fg-muted)" }} />
               </div>
             )}
 

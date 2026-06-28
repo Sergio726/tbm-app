@@ -26,7 +26,7 @@ export function DelegacionClient({
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -52,7 +52,7 @@ export function DelegacionClient({
               Delegación
             </h1>
           </div>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
+          <p style={{ fontSize: 14, color: "var(--fg-muted)", marginLeft: 52 }}>
             Pase de Estafeta — 5 puntos obligatorios por tarea
           </p>
         </div>
@@ -117,7 +117,7 @@ function EmptyState({ isArquitecto }: { isArquitecto: boolean }) {
       <p
         style={{
           fontSize: 13.5,
-          color: "rgba(255,255,255,0.62)",
+          color: "var(--fg-muted)",
           maxWidth: 380,
           lineHeight: 1.6,
         }}

@@ -56,7 +56,7 @@ export default async function MiProgramaPage() {
   return (
     <div
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         minHeight: "100vh",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px) 60px",
         fontFamily: "Inter, system-ui, sans-serif",

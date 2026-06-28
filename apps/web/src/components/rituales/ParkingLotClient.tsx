@@ -309,7 +309,7 @@ export default function ParkingLotClient({
             borderRadius: 12,
             background: "rgba(255,255,255,0.025)",
             border: "1px dashed rgba(255,255,255,0.10)",
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--fg-subtle)",
             fontSize: 13.5,
             textAlign: "center",
           }}
@@ -356,7 +356,7 @@ export default function ParkingLotClient({
                           padding: "2px 8px",
                           borderRadius: 999,
                           background: "rgba(255,255,255,0.05)",
-                          color: "rgba(255,255,255,0.6)",
+                          color: "var(--fg-muted)",
                           border: "1px solid rgba(255,255,255,0.10)",
                           letterSpacing: 0.5,
                           textTransform: "uppercase",
@@ -366,14 +366,14 @@ export default function ParkingLotClient({
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: "#fff" }}>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: "var(--fg)" }}>
                     {it.title}
                   </div>
                   {it.rationale && (
                     <div
                       style={{
                         fontSize: 12.5,
-                        color: "rgba(255,255,255,0.6)",
+                        color: "var(--fg-muted)",
                         marginTop: 4,
                         lineHeight: 1.5,
                       }}
@@ -395,7 +395,7 @@ export default function ParkingLotClient({
                   <div
                     style={{
                       fontSize: 11,
-                      color: "rgba(255,255,255,0.62)",
+                      color: "var(--fg-muted)",
                       marginTop: 6,
                     }}
                   >
@@ -447,7 +447,7 @@ const INPUT_STYLE: React.CSSProperties = {
   background: "rgba(255,255,255,0.04)",
   border: "1px solid rgba(255,255,255,0.08)",
   borderRadius: 10,
-  color: "#fff",
+  color: "var(--fg)",
   padding: "10px 14px",
   fontSize: 13.5,
   fontFamily: "inherit",
@@ -475,7 +475,7 @@ function StatBox({
       <div
         style={{
           fontSize: 11,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           textTransform: "uppercase",
           letterSpacing: 1.2,
           marginBottom: 4,

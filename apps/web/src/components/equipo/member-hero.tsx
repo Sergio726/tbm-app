@@ -72,7 +72,7 @@ export function MemberHero({
             className="flex h-[76px] w-[76px] items-center justify-center rounded-full text-[30px] font-extrabold text-white"
             style={{
               background: `linear-gradient(135deg, ${ring}, ${ring}99)`,
-              boxShadow: `0 0 0 3px #0a0e1a, 0 0 0 5px ${ring}77, 0 0 26px ${ring}55, inset 0 2px 0 rgba(255,255,255,0.25)`,
+              boxShadow: `0 0 0 3px var(--bg), 0 0 0 5px ${ring}77, 0 0 26px ${ring}55, inset 0 2px 0 rgba(255,255,255,0.25)`,
             }}
           >
             {initials(member.full_name)}
@@ -81,7 +81,7 @@ export function MemberHero({
             className="absolute -bottom-1.5 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border-2 px-2 py-0.5 text-[11px] font-bold tracking-wide text-white"
             style={{
               background: "linear-gradient(135deg, #5b8aff, #2c5fe6)",
-              borderColor: "#0a0e1a",
+              borderColor: "var(--bg)",
               boxShadow: "0 4px 12px rgba(91,138,255,0.4)",
               fontFamily: MONO,
             }}

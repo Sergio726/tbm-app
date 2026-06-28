@@ -858,7 +858,7 @@ export function AccountForm({
         <SectionTitle Icon={Compass} label="Ayuda" color="#a78bfa" />
         <p
           className="mb-3 text-[12.5px] leading-relaxed"
-          style={{ color: "rgba(255,255,255,0.5)" }}
+          style={{ color: "var(--fg-subtle)" }}
         >
           ¿Te perdiste? Repetí el recorrido guiado por los módulos del sistema.
         </p>

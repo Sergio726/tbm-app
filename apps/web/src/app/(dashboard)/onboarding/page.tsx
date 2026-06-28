@@ -204,13 +204,13 @@ function Stepper({ current }: { current: number }) {
                     ? "#34d399"
                     : active
                     ? "rgba(91,138,255,0.16)"
-                    : "#0a0e1a",
+                    : "var(--bg)",
                   border: completed
                     ? "1px solid #34d399"
                     : active
                     ? "1px solid #5b8aff"
                     : "1px solid rgba(255,255,255,0.1)",
-                  color: completed ? "#0a0e1a" : active ? "#5b8aff" : "rgba(255,255,255,0.45)",
+                  color: completed ? "var(--bg)" : active ? "#5b8aff" : "rgba(255,255,255,0.45)",
                   fontSize: 13,
                   fontWeight: 600,
                   boxShadow: active
@@ -271,14 +271,14 @@ function StepHeader({
         >
           <Icon size={20} strokeWidth={1.8} />
         </div>
-        <div style={{ fontSize: 22, fontWeight: 600, color: "#fff", letterSpacing: -0.3 }}>
+        <div style={{ fontSize: 22, fontWeight: 600, color: "var(--fg)", letterSpacing: -0.3 }}>
           {title}
         </div>
       </div>
       <div
         style={{
           fontSize: 14,
-          color: "rgba(255,255,255,0.55)",
+          color: "var(--fg-subtle)",
           lineHeight: 1.5,
           maxWidth: 560,
         }}
@@ -351,7 +351,7 @@ function ScoreSlider({
           width: 20,
           height: 20,
           borderRadius: "50%",
-          background: "#0a0e1a",
+          background: "var(--bg)",
           border: `2.5px solid ${color}`,
           boxShadow: `0 0 0 4px rgba(255,255,255,0.04), 0 4px 12px ${color}55`,
           transition: "left .15s ease, border-color .2s ease, box-shadow .2s ease",
@@ -385,7 +385,7 @@ function Step1Empresa({
           style={{
             fontSize: 12,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.2,
             marginBottom: 12,
           }}
@@ -430,7 +430,7 @@ function Step1Empresa({
                       height: 18,
                       borderRadius: "50%",
                       background: "#5b8aff",
-                      color: "#fff",
+                      color: "var(--fg)",
                     }}
                   >
                     <Check size={11} strokeWidth={3} />
@@ -448,7 +448,7 @@ function Step1Empresa({
           style={{
             fontSize: 12,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--fg-subtle)",
             letterSpacing: 1.2,
             marginBottom: 12,
           }}
@@ -525,7 +525,7 @@ function Step2Diagnostico({
                 className="flex items-baseline justify-between"
                 style={{ marginBottom: 4 }}
               >
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "var(--fg)" }}>
                   {area.label}
                 </div>
                 <div
@@ -535,7 +535,7 @@ function Step2Diagnostico({
                   <span
                     style={{
                       ...MONO,
-                      color: "rgba(255,255,255,0.85)",
+                      color: "var(--fg)",
                       background: "rgba(255,255,255,0.04)",
                       padding: "2px 8px",
                       borderRadius: 6,
@@ -550,7 +550,7 @@ function Step2Diagnostico({
               <div
                 style={{
                   fontSize: 12.5,
-                  color: "rgba(255,255,255,0.55)",
+                  color: "var(--fg-subtle)",
                   marginBottom: 14,
                   lineHeight: 1.5,
                 }}
@@ -563,7 +563,7 @@ function Step2Diagnostico({
                 style={{
                   marginTop: 8,
                   fontSize: 10.5,
-                  color: "rgba(255,255,255,0.62)",
+                  color: "var(--fg-muted)",
                   ...MONO,
                 }}
               >
@@ -627,7 +627,7 @@ function RitualCard({
       {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center" style={{ gap: 10, marginBottom: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: "var(--fg)" }}>
             {mode.title}
           </div>
           <div
@@ -647,7 +647,7 @@ function RitualCard({
             {mode.status.label}
           </div>
         </div>
-        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.5 }}>
           {mode.desc}
         </div>
       </div>
@@ -705,7 +705,7 @@ function RitualCard({
                   ...MONO,
                   fontSize: 9.5,
                   fontWeight: 600,
-                  color: "rgba(255,255,255,0.62)",
+                  color: "var(--fg-muted)",
                   letterSpacing: 0.4,
                 }}
               >
@@ -745,7 +745,7 @@ function Step3Rituales({
           border: "1px solid rgba(255,255,255,0.05)",
           marginBottom: 16,
           fontSize: 12,
-          color: "rgba(255,255,255,0.6)",
+          color: "var(--fg-muted)",
         }}
       >
         <div className="flex items-center" style={{ gap: 7 }}>
@@ -841,7 +841,7 @@ function Step4Equipo({
             background: "rgba(255,255,255,0.02)",
           }}
         >
-          <span style={{ color: "rgba(255,255,255,0.62)", marginRight: 10 }}>
+          <span style={{ color: "var(--fg-muted)", marginRight: 10 }}>
             <Mail size={16} strokeWidth={1.6} />
           </span>
           <input
@@ -865,7 +865,7 @@ function Step4Equipo({
               border: "none",
               outline: "none",
               padding: "13px 0",
-              color: "#fff",
+              color: "var(--fg)",
               fontSize: 14,
             }}
           />
@@ -884,7 +884,7 @@ function Step4Equipo({
               {valid ? "✓ válido" : "..."}
             </span>
           )}
-          <span style={{ ...MONO, fontSize: 10, color: "rgba(255,255,255,0.62)" }}>
+          <span style={{ ...MONO, fontSize: 10, color: "var(--fg-muted)" }}>
             <kbd
               style={{
                 padding: "2px 6px",
@@ -940,7 +940,7 @@ function Step4Equipo({
           <div
             style={{
               textAlign: "center",
-              color: "rgba(255,255,255,0.62)",
+              color: "var(--fg-muted)",
               fontSize: 13,
             }}
           >
@@ -955,7 +955,7 @@ function Step4Equipo({
                 padding: "6px 12px",
                 fontSize: 10.5,
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.62)",
+                color: "var(--fg-muted)",
                 letterSpacing: 1.2,
               }}
             >
@@ -988,8 +988,8 @@ function Step4Equipo({
                     {av.initial}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div style={{ fontSize: 13.5, color: "#fff" }}>{email}</div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)" }}>
+                    <div style={{ fontSize: 13.5, color: "var(--fg)" }}>{email}</div>
+                    <div style={{ fontSize: 11, color: "var(--fg-muted)" }}>
                       Pendiente — invitación al guardar
                     </div>
                   </div>
@@ -1015,7 +1015,7 @@ function Step4Equipo({
                     style={{
                       background: "transparent",
                       border: "none",
-                      color: "rgba(255,255,255,0.62)",
+                      color: "var(--fg-muted)",
                       cursor: "pointer",
                       padding: 6,
                       borderRadius: 6,
@@ -1040,7 +1040,7 @@ function Step4Equipo({
           background: "rgba(91,138,255,0.07)",
           border: "1px solid rgba(91,138,255,0.2)",
           fontSize: 12.5,
-          color: "rgba(255,255,255,0.75)",
+          color: "var(--fg-muted)",
           lineHeight: 1.5,
         }}
       >
@@ -1100,7 +1100,7 @@ function SetPasswordGate({
     background: "rgba(255,255,255,0.04)",
     border: "1px solid rgba(255,255,255,0.12)",
     borderRadius: 10,
-    color: "#fff",
+    color: "var(--fg)",
     padding: "12px 14px",
     fontSize: 15,
     outline: "none",
@@ -1111,7 +1111,7 @@ function SetPasswordGate({
       className="flex min-h-screen flex-col items-center justify-center text-white"
       style={{
         background:
-          "radial-gradient(circle at 20% 0%, rgba(91,138,255,0.06), transparent 50%), #0a0e1a",
+          "radial-gradient(circle at 20% 0%, rgba(91,138,255,0.06), transparent 50%), var(--bg)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "40px 24px",
       }}
@@ -1136,7 +1136,7 @@ function SetPasswordGate({
         <h1 style={{ fontSize: 22, fontWeight: 700, margin: "4px 0 6px", letterSpacing: -0.3 }}>
           Creá tu contraseña
         </h1>
-        <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.55)", lineHeight: 1.5, marginBottom: 22 }}>
+        <p style={{ fontSize: 13.5, color: "var(--fg-subtle)", lineHeight: 1.5, marginBottom: 22 }}>
           Entraste con una contraseña temporal. Definí una propia para asegurar tu cuenta.
         </p>
         <form onSubmit={submit} className="flex flex-col" style={{ gap: 12 }}>
@@ -1165,7 +1165,7 @@ function SetPasswordGate({
               padding: "12px",
               borderRadius: 11,
               background: loading ? "rgba(255,255,255,0.06)" : "linear-gradient(180deg, #4f86ff, #2c5fe6)",
-              color: "#fff",
+              color: "var(--fg)",
               border: "none",
               fontSize: 14.5,
               fontWeight: 600,
@@ -1326,7 +1326,7 @@ export default function OnboardingPage() {
       className="flex min-h-screen flex-col items-center text-white"
       style={{
         background:
-          "radial-gradient(circle at 20% 0%, rgba(91,138,255,0.06), transparent 50%), radial-gradient(circle at 90% 100%, rgba(91,138,255,0.04), transparent 50%), #0a0e1a",
+          "radial-gradient(circle at 20% 0%, rgba(91,138,255,0.06), transparent 50%), radial-gradient(circle at 90% 100%, rgba(91,138,255,0.04), transparent 50%), var(--bg)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "40px 24px 80px",
       }}
@@ -1363,12 +1363,12 @@ export default function OnboardingPage() {
       >
         Configurá tu sistema
       </h1>
-      <div style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", marginBottom: 36 }}>
+      <div style={{ fontSize: 14, color: "var(--fg-subtle)", marginBottom: 36 }}>
         <span style={MONO}>
           Paso {step} de {STEPS.length}
         </span>
         {" · "}
-        <span style={{ color: "rgba(255,255,255,0.7)" }}>{current.label}</span>
+        <span style={{ color: "var(--fg-muted)" }}>{current.label}</span>
       </div>
 
       {/* Stepper */}
@@ -1493,7 +1493,7 @@ export default function OnboardingPage() {
                 style={{
                   background: "transparent",
                   border: "none",
-                  color: "rgba(255,255,255,0.55)",
+                  color: "var(--fg-subtle)",
                   fontSize: 13,
                   fontWeight: 500,
                   cursor: "pointer",
@@ -1560,7 +1560,7 @@ export default function OnboardingPage() {
           ...MONO,
           marginTop: 24,
           fontSize: 11.5,
-          color: "rgba(255,255,255,0.62)",
+          color: "var(--fg-muted)",
           letterSpacing: 0.4,
         }}
       >

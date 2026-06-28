@@ -138,7 +138,7 @@ function ScoreCard({
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.7)",
+              color: "var(--fg-muted)",
               letterSpacing: 1.2,
             }}
           >
@@ -166,7 +166,7 @@ function ScoreCard({
             style={{
               fontSize: 38,
               fontWeight: 700,
-              color: "#fff",
+              color: "var(--fg)",
               letterSpacing: -1,
               lineHeight: 1,
             }}
@@ -177,7 +177,7 @@ function ScoreCard({
             style={{
               ...MONO,
               fontSize: 14,
-              color: "rgba(255,255,255,0.62)",
+              color: "var(--fg-muted)",
             }}
           >
             /5
@@ -199,7 +199,7 @@ function ScoreCard({
           style={{
             ...MONO,
             fontSize: 10.5,
-            color: "rgba(255,255,255,0.62)",
+            color: "var(--fg-muted)",
           }}
         >
           5 sem
@@ -274,7 +274,7 @@ function Avatars({ count, total }: { count: number; total: number }) {
               height: 22,
               borderRadius: "50%",
               background: colors[i],
-              border: "2px solid #0a0e1a",
+              border: "2px solid var(--bg)",
               marginLeft: i === 0 ? 0 : -6,
               fontSize: 10,
               fontWeight: 600,
@@ -292,11 +292,11 @@ function Avatars({ count, total }: { count: number; total: number }) {
               height: 22,
               borderRadius: "50%",
               background: "rgba(255,255,255,0.06)",
-              border: "2px solid #0a0e1a",
+              border: "2px solid var(--bg)",
               marginLeft: -6,
               fontSize: 9.5,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.55)",
+              color: "var(--fg-subtle)",
             }}
           >
             +{count - shown}
@@ -307,7 +307,7 @@ function Avatars({ count, total }: { count: number; total: number }) {
         style={{
           ...MONO,
           fontSize: 11.5,
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--fg-subtle)",
         }}
       >
         {count}/{total}
@@ -367,7 +367,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
           <div>
             <div
               className="flex items-center"
-              style={{ fontSize: 15.5, fontWeight: 600, color: "#fff", gap: 8 }}
+              style={{ fontSize: 15.5, fontWeight: 600, color: "var(--fg)", gap: 8 }}
             >
               {ritual.title}
               {isDone && (
@@ -378,7 +378,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
                     height: 16,
                     borderRadius: "50%",
                     background: "#34d399",
-                    color: "#0a0e1a",
+                    color: "var(--bg)",
                   }}
                 >
                   <Check size={10} strokeWidth={3} />
@@ -388,7 +388,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
             <div
               style={{
                 fontSize: 12.5,
-                color: "rgba(255,255,255,0.55)",
+                color: "var(--fg-subtle)",
                 marginTop: 2,
               }}
             >
@@ -404,7 +404,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
             border: "1px solid rgba(255,255,255,0.07)",
             fontSize: 10.5,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.6)",
+            color: "var(--fg-muted)",
             letterSpacing: 0.4,
           }}
         >
@@ -426,7 +426,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
           style={{
             ...MONO,
             gap: 6,
-            color: "rgba(255,255,255,0.6)",
+            color: "var(--fg-muted)",
             fontSize: 12,
           }}
         >
@@ -434,7 +434,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
           {ritual.time}
         </div>
         {ritual.solo ? (
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>· Personal</div>
+          <div style={{ fontSize: 12, color: "var(--fg-subtle)" }}>· Personal</div>
         ) : (
           <Avatars count={ritual.participants ?? 0} total={ritual.total ?? 0} />
         )}
@@ -466,7 +466,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
           />
           {ritual.statusLabel}
           {isDone && ritual.duration && (
-            <span style={{ color: "rgba(255,255,255,0.62)", fontWeight: 400 }}>
+            <span style={{ color: "var(--fg-muted)", fontWeight: 400 }}>
               · {ritual.duration}
             </span>
           )}
@@ -482,7 +482,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
             background: isLive
               ? "linear-gradient(180deg, #4f86ff, #2c5fe6)"
               : "transparent",
-            color: "#fff",
+            color: "var(--fg)",
             fontSize: 12.5,
             fontWeight: 600,
             cursor: "pointer",
@@ -864,7 +864,7 @@ export default async function DashboardPage() {
               ...MONO,
               gap: 10,
               fontSize: 12,
-              color: "rgba(255,255,255,0.62)",
+              color: "var(--fg-muted)",
               letterSpacing: 0.4,
               marginBottom: 8,
             }}
@@ -901,7 +901,7 @@ export default async function DashboardPage() {
               fontWeight: 700,
               margin: 0,
               letterSpacing: -0.6,
-              color: "#fff",
+              color: "var(--fg)",
               gap: 12,
             }}
           >
@@ -910,7 +910,7 @@ export default async function DashboardPage() {
           <div
             style={{
               fontSize: 14,
-              color: "rgba(255,255,255,0.55)",
+              color: "var(--fg-subtle)",
               marginTop: 6,
             }}
           >
@@ -1001,7 +1001,7 @@ export default async function DashboardPage() {
               height: 24,
               borderRadius: "50%",
               background: "#f87171",
-              color: "#0a0e1a",
+              color: "var(--bg)",
               flexShrink: 0,
               marginTop: 1,
             }}
@@ -1009,14 +1009,14 @@ export default async function DashboardPage() {
             <TrendingUp size={12} strokeWidth={2.6} style={{ transform: "rotate(180deg)" }} />
           </span>
           <div>
-            <p style={{ color: "#fff", fontWeight: 600, fontSize: 13.5 }}>
+            <p style={{ color: "var(--fg)", fontWeight: 600, fontSize: 13.5 }}>
               {areasCriticas.length === 1
                 ? "Hay un área crítica que necesita atención inmediata"
                 : `Hay ${areasCriticas.length} áreas críticas que necesitan atención`}
             </p>
             <p
               style={{
-                color: "rgba(255,255,255,0.6)",
+                color: "var(--fg-muted)",
                 fontSize: 12,
                 marginTop: 2,
               }}
@@ -1039,14 +1039,14 @@ export default async function DashboardPage() {
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.5)",
+                color: "var(--fg-subtle)",
                 letterSpacing: 1.4,
                 marginBottom: 4,
               }}
             >
               Diagnóstico Organizacional TBM
             </div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
+            <div style={{ fontSize: 13, color: "var(--fg-subtle)" }}>
               {latestScorecard
                 ? "Última actualización · " +
                   new Date(latestScorecard.created_at ?? today).toLocaleDateString("es-AR", {
@@ -1058,7 +1058,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center" style={{ gap: 12 }}>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
+            <div style={{ fontSize: 13, color: "var(--fg-subtle)" }}>
               Promedio
             </div>
             <div
@@ -1085,7 +1085,7 @@ export default async function DashboardPage() {
                 style={{
                   ...MONO,
                   fontSize: 12,
-                  color: "rgba(255,255,255,0.62)",
+                  color: "var(--fg-muted)",
                 }}
               >
                 /5
@@ -1100,7 +1100,7 @@ export default async function DashboardPage() {
                 border: "1px solid rgba(255,255,255,0.08)",
                 padding: "7px 12px",
                 borderRadius: 8,
-                color: "rgba(255,255,255,0.7)",
+                color: "var(--fg-muted)",
                 fontSize: 12.5,
                 fontWeight: 500,
                 textDecoration: "none",
@@ -1142,7 +1142,7 @@ export default async function DashboardPage() {
               border: "1px dashed rgba(255,255,255,0.10)",
             }}
           >
-            <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 14 }}>
+            <p style={{ color: "var(--fg-subtle)", fontSize: 14 }}>
               Completá el diagnóstico inicial para ver tus semáforos
             </p>
             <a
@@ -1173,14 +1173,14 @@ export default async function DashboardPage() {
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.5)",
+                color: "var(--fg-subtle)",
                 letterSpacing: 1.4,
                 marginBottom: 4,
               }}
             >
               KPIs de la semana
             </div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
+            <div style={{ fontSize: 13, color: "var(--fg-subtle)" }}>
               {kpis && kpis.length > 0
                 ? `${kpis.length} indicadores activos`
                 : "Todavía no configuraste KPIs para esta semana"}
@@ -1217,7 +1217,7 @@ export default async function DashboardPage() {
               borderRadius: 14,
               background: "transparent",
               border: "1.5px dashed rgba(255,255,255,0.10)",
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--fg-subtle)",
               gap: 10,
               minHeight: 168,
               textDecoration: "none",
@@ -1239,7 +1239,7 @@ export default async function DashboardPage() {
               className="text-center"
               style={{
                 fontSize: 11,
-                color: "rgba(255,255,255,0.62)",
+                color: "var(--fg-muted)",
                 maxWidth: 140,
               }}
             >
@@ -1261,14 +1261,14 @@ export default async function DashboardPage() {
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.5)",
+                color: "var(--fg-subtle)",
                 letterSpacing: 1.4,
                 marginBottom: 4,
               }}
             >
               Rituales de hoy
             </div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
+            <div style={{ fontSize: 13, color: "var(--fg-subtle)" }}>
               {ritualesCompletados} completado{ritualesCompletados === 1 ? "" : "s"} ·{" "}
               {ritualesEnVivo} en vivo · {ritualesPendientes} programado
               {ritualesPendientes === 1 ? "" : "s"}

@@ -49,14 +49,14 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
         <p className="font-semibold text-white" style={{ fontSize: 14 }}>
           Registrar decisión
         </p>
-        <button type="button" onClick={onCancel} style={{ color: "rgba(255,255,255,0.62)" }}>
+        <button type="button" onClick={onCancel} style={{ color: "var(--fg-muted)" }}>
           <X size={16} />
         </button>
       </div>
 
       <div className="flex flex-col gap-4">
         <div>
-          <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
             ¿Qué decisión tomaste? *
           </label>
           <textarea
@@ -75,7 +75,7 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
 
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <label className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <label className="text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
               % de información que tenías al decidir
             </label>
             <span
@@ -124,7 +124,7 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
           />
           <div>
             <p className="text-sm font-medium text-white">Apliqué la Regla del 70%</p>
-            <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)", lineHeight: 1.4 }}>
+            <p style={{ fontSize: 11.5, color: "var(--fg-muted)", lineHeight: 1.4 }}>
               Decidí con ≥70% de la info, sin esperar certeza total
             </p>
           </div>
@@ -139,7 +139,7 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
           />
           <div>
             <p className="text-sm font-medium text-white">Disagree & Commit</p>
-            <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)", lineHeight: 1.4 }}>
+            <p style={{ fontSize: 11.5, color: "var(--fg-muted)", lineHeight: 1.4 }}>
               Alguien no estuvo de acuerdo pero igual se ejecutó
             </p>
           </div>
@@ -147,7 +147,7 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
 
         {disagree && (
           <div>
-            <label className="mb-1 block text-xs font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
               ¿Quién no estuvo de acuerdo?
             </label>
             <input
@@ -169,7 +169,7 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
             type="button"
             onClick={onCancel}
             className="flex-1 rounded-xl py-2 text-sm font-medium"
-            style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}
+            style={{ background: "rgba(255,255,255,0.06)", color: "var(--fg-muted)" }}
           >
             Cancelar
           </button>

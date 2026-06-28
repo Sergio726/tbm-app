@@ -173,7 +173,7 @@ export function DiagnosticoForm({
           style={{
             background: "rgba(255,255,255,0.03)",
             borderColor: "rgba(255,255,255,0.09)",
-            color: "rgba(255,255,255,0.85)",
+            color: "var(--fg)",
           }}
         />
       </div>

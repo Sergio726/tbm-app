@@ -94,7 +94,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
       <div
         className="flex min-h-screen flex-col items-center justify-center"
         style={{
-          background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+          background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
           fontFamily: "Inter, system-ui, sans-serif",
         }}
       >
@@ -103,7 +103,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
           <h2 className="text-white" style={{ fontSize: 22, fontWeight: 700 }}>
             Escalado al líder
           </h2>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
+          <p style={{ fontSize: 14, color: "var(--fg-subtle)" }}>
             El Arquitecto verá tus 3 opciones y tomará una decisión.
           </p>
         </div>
@@ -115,7 +115,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(180deg, #0a0e1a 0%, #070a12 100%)",
+        background: "linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%)",
         fontFamily: "Inter, system-ui, sans-serif",
         padding: "clamp(20px, 4vw, 32px) clamp(18px, 5vw, 36px)",
       }}
@@ -125,7 +125,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
         <Link
           href="/delegacion/mis-tareas"
           className="mb-6 inline-flex items-center gap-1.5 transition-colors hover:text-white"
-          style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}
+          style={{ fontSize: 13, color: "var(--fg-muted)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
           Mis tareas
@@ -150,7 +150,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
             >
               Escudo Anti-Boomerang
             </h1>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
+            <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
               Antes de escalar, presentá tus 3 opciones al líder
             </p>
           </div>
@@ -169,7 +169,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
               fontSize: 10.5,
               fontWeight: 700,
               letterSpacing: 0.6,
-              color: "rgba(255,255,255,0.62)",
+              color: "var(--fg-muted)",
               textTransform: "uppercase",
               marginBottom: 6,
             }}
@@ -230,7 +230,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
                 style={{
                   fontSize: 11.5,
                   fontWeight: 600,
-                  color: "rgba(255,255,255,0.5)",
+                  color: "var(--fg-subtle)",
                   display: "block",
                   marginBottom: 6,
                 }}
@@ -260,7 +260,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
             style={{
               fontSize: 13.5,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.75)",
+              color: "var(--fg-muted)",
               marginBottom: 10,
             }}
           >
@@ -296,7 +296,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
             style={{
               fontSize: 11.5,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--fg-subtle)",
               display: "block",
               marginBottom: 6,
             }}
@@ -352,7 +352,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
         </button>
 
         {!canEscalate && (
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", marginTop: 8 }}>
+          <p style={{ fontSize: 12, color: "var(--fg-muted)", marginTop: 8 }}>
             Completá las 3 opciones, elegí una y justificá tu recomendación
           </p>
         )}
