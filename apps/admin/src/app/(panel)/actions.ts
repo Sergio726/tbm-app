@@ -44,8 +44,17 @@ export async function grantCredits(
       target_id: companyId,
       after: { amount: Math.trunc(amount), balance: res.balance ?? null, reason: reason.trim() || null },
     });
+    // N2: si la carga fue positiva, resolvé los pedidos pendientes de la empresa.
+    if (Math.trunc(amount) > 0) {
+      await admin
+        ?.from("credit_requests")
+        .update({ status: "granted", resolved_at: new Date().toISOString(), resolved_by: user.id })
+        .eq("company_id", companyId)
+        .eq("status", "pending");
+    }
   }
   revalidatePath("/empresas");
+  revalidatePath(`/empresas/${companyId}`);
   return res.ok
     ? { ok: true, balance: res.balance ?? 0 }
     : { ok: false, error: res.error ?? "error" };
