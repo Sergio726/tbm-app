@@ -219,7 +219,7 @@ export default function CoolDownForm({
       )}
 
       <div className="flex items-center justify-between">
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}>
           {savedAt
             ? "Guardado · " +
               new Date(savedAt).toLocaleTimeString("es-AR", {

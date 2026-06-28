@@ -563,7 +563,7 @@ function Step2Diagnostico({
                 style={{
                   marginTop: 8,
                   fontSize: 10.5,
-                  color: "rgba(255,255,255,0.35)",
+                  color: "rgba(255,255,255,0.62)",
                   ...MONO,
                 }}
               >
@@ -705,7 +705,7 @@ function RitualCard({
                   ...MONO,
                   fontSize: 9.5,
                   fontWeight: 600,
-                  color: "rgba(255,255,255,0.4)",
+                  color: "rgba(255,255,255,0.62)",
                   letterSpacing: 0.4,
                 }}
               >
@@ -841,7 +841,7 @@ function Step4Equipo({
             background: "rgba(255,255,255,0.02)",
           }}
         >
-          <span style={{ color: "rgba(255,255,255,0.4)", marginRight: 10 }}>
+          <span style={{ color: "rgba(255,255,255,0.62)", marginRight: 10 }}>
             <Mail size={16} strokeWidth={1.6} />
           </span>
           <input
@@ -884,7 +884,7 @@ function Step4Equipo({
               {valid ? "✓ válido" : "..."}
             </span>
           )}
-          <span style={{ ...MONO, fontSize: 10, color: "rgba(255,255,255,0.3)" }}>
+          <span style={{ ...MONO, fontSize: 10, color: "rgba(255,255,255,0.62)" }}>
             <kbd
               style={{
                 padding: "2px 6px",
@@ -940,7 +940,7 @@ function Step4Equipo({
           <div
             style={{
               textAlign: "center",
-              color: "rgba(255,255,255,0.35)",
+              color: "rgba(255,255,255,0.62)",
               fontSize: 13,
             }}
           >
@@ -955,7 +955,7 @@ function Step4Equipo({
                 padding: "6px 12px",
                 fontSize: 10.5,
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.45)",
+                color: "rgba(255,255,255,0.62)",
                 letterSpacing: 1.2,
               }}
             >
@@ -989,7 +989,7 @@ function Step4Equipo({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div style={{ fontSize: 13.5, color: "#fff" }}>{email}</div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)" }}>
                       Pendiente — invitación al guardar
                     </div>
                   </div>
@@ -1015,7 +1015,7 @@ function Step4Equipo({
                     style={{
                       background: "transparent",
                       border: "none",
-                      color: "rgba(255,255,255,0.4)",
+                      color: "rgba(255,255,255,0.62)",
                       cursor: "pointer",
                       padding: 6,
                       borderRadius: 6,
@@ -1560,7 +1560,7 @@ export default function OnboardingPage() {
           ...MONO,
           marginTop: 24,
           fontSize: 11.5,
-          color: "rgba(255,255,255,0.3)",
+          color: "rgba(255,255,255,0.62)",
           letterSpacing: 0.4,
         }}
       >

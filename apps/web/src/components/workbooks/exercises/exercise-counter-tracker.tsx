@@ -77,7 +77,7 @@ export function ExerciseCounterTracker({
           >
             <div
               className="mb-3 text-xs font-bold uppercase tracking-wider"
-              style={{ color: "rgba(255,255,255,0.45)" }}
+              style={{ color: "rgba(255,255,255,0.62)" }}
             >
               Día {i + 1}
             </div>

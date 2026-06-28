@@ -103,7 +103,7 @@ export function MultiplicadorClient({
         <div className="mb-1 text-[14.5px] font-semibold text-white">
           ¿Cuánto de la capacidad mental y creativa de tu equipo estás usando hoy?
         </div>
-        <p className="mb-3.5 text-[12px] text-white/45">
+        <p className="mb-3.5 text-[12px] text-white/65">
           Si marcás menos del 80%, estás perdiendo dinero en cada nómina.
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -126,7 +126,7 @@ export function MultiplicadorClient({
                 >
                   {r.label}
                 </div>
-                <div className="mt-0.5 text-[11.5px] leading-snug text-white/45">
+                <div className="mt-0.5 text-[11.5px] leading-snug text-white/65">
                   {r.desc}
                 </div>
               </button>
@@ -149,7 +149,7 @@ export function MultiplicadorClient({
             <div className="text-[15px] font-semibold text-white">
               {sin.emoji} {sin.label}
             </div>
-            <div className="text-[12px] text-white/45">
+            <div className="text-[12px] text-white/65">
               {sin.descripcion} · <span className="italic">{sin.sintoma}</span>
             </div>
           </div>
@@ -190,7 +190,7 @@ export function MultiplicadorClient({
         </section>
       ))}
 
-      <p className="text-[11.5px] text-white/40">
+      <p className="text-[11.5px] text-white/65">
         Escala: 1 = {MULTIPLICADOR_SCALE[0]} · 2 = {MULTIPLICADOR_SCALE[1]} · 3 ={" "}
         {MULTIPLICADOR_SCALE[2]} · 4 = {MULTIPLICADOR_SCALE[3]}
       </p>
@@ -210,7 +210,7 @@ export function MultiplicadorClient({
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-1">
-        <div className="text-[12.5px] text-white/45">
+        <div className="text-[12.5px] text-white/65">
           {answeredCount}/{allQuestions.length} respondidas
           {capacity == null && " · falta la pregunta de capacidad"}
         </div>

@@ -177,7 +177,7 @@ function ScoreCard({
             style={{
               ...MONO,
               fontSize: 14,
-              color: "rgba(255,255,255,0.4)",
+              color: "rgba(255,255,255,0.62)",
             }}
           >
             /5
@@ -199,7 +199,7 @@ function ScoreCard({
           style={{
             ...MONO,
             fontSize: 10.5,
-            color: "rgba(255,255,255,0.4)",
+            color: "rgba(255,255,255,0.62)",
           }}
         >
           5 sem
@@ -466,7 +466,7 @@ function RitualCard({ ritual }: { ritual: RitualDef }) {
           />
           {ritual.statusLabel}
           {isDone && ritual.duration && (
-            <span style={{ color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>
+            <span style={{ color: "rgba(255,255,255,0.62)", fontWeight: 400 }}>
               · {ritual.duration}
             </span>
           )}
@@ -864,7 +864,7 @@ export default async function DashboardPage() {
               ...MONO,
               gap: 10,
               fontSize: 12,
-              color: "rgba(255,255,255,0.45)",
+              color: "rgba(255,255,255,0.62)",
               letterSpacing: 0.4,
               marginBottom: 8,
             }}
@@ -1085,7 +1085,7 @@ export default async function DashboardPage() {
                 style={{
                   ...MONO,
                   fontSize: 12,
-                  color: "rgba(255,255,255,0.4)",
+                  color: "rgba(255,255,255,0.62)",
                 }}
               >
                 /5
@@ -1239,7 +1239,7 @@ export default async function DashboardPage() {
               className="text-center"
               style={{
                 fontSize: 11,
-                color: "rgba(255,255,255,0.35)",
+                color: "rgba(255,255,255,0.62)",
                 maxWidth: 140,
               }}
             >

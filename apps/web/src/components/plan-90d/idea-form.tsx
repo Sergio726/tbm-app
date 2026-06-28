@@ -41,11 +41,11 @@ export function IdeaForm({ isPending, onSubmit, onCancel }: IdeaFormProps) {
           <p className="font-semibold text-white" style={{ fontSize: 14 }}>
             Parkear idea
           </p>
-          <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+          <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
             Revisión automática en 91 días
           </p>
         </div>
-        <button type="button" onClick={onCancel} style={{ color: "rgba(255,255,255,0.4)" }}>
+        <button type="button" onClick={onCancel} style={{ color: "rgba(255,255,255,0.62)" }}>
           <X size={16} />
         </button>
       </div>

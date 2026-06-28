@@ -72,7 +72,7 @@ export default async function NotificacionesPage() {
 
       {notifications.length === 0 ? (
         <div
-          className="rounded-2xl border border-dashed p-10 text-center text-[13.5px] text-white/45"
+          className="rounded-2xl border border-dashed p-10 text-center text-[13.5px] text-white/65"
           style={{ borderColor: "rgba(255,255,255,0.12)" }}
         >
           Sin notificaciones todavía. Acá van a aparecer las tareas asignadas,
@@ -103,7 +103,7 @@ export default async function NotificacionesPage() {
                     >
                       {n.title}
                     </span>
-                    <span className="shrink-0 text-[11px] text-white/35">
+                    <span className="shrink-0 text-[11px] text-white/65">
                       {timeAgo(n.created_at)}
                     </span>
                   </div>

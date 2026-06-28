@@ -113,7 +113,7 @@ export function MemberHero({
           </div>
           {member.email && (
             <div className="mt-2 flex items-center gap-2 text-[13px] text-white/55">
-              <Mail size={14} strokeWidth={1.7} className="text-white/40" />
+              <Mail size={14} strokeWidth={1.7} className="text-white/65" />
               {member.email}
             </div>
           )}
@@ -198,7 +198,7 @@ function StatChip({
         <Icon size={15} strokeWidth={1.9} />
       </span>
       <div className="leading-[1.15]">
-        <div className="text-[9.5px] font-bold uppercase tracking-[0.8px] text-white/40">
+        <div className="text-[9.5px] font-bold uppercase tracking-[0.8px] text-white/65">
           {label}
         </div>
         <div className="text-[13px] font-semibold text-white">{value}</div>

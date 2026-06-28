@@ -286,7 +286,7 @@ function LevelRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="text-[13.5px] font-bold text-white">{name}</span>
-          {locked && <Lock size={12} strokeWidth={2} className="text-white/40" />}
+          {locked && <Lock size={12} strokeWidth={2} className="text-white/65" />}
         </div>
         <div className="mt-0.5 text-[12px] text-white/50">{desc}</div>
       </div>

@@ -173,7 +173,7 @@ export default function KpiCard({ kpi }: Props) {
                 style={{
                   ...MONO,
                   fontSize: 13,
-                  color: "rgba(255,255,255,0.4)",
+                  color: "rgba(255,255,255,0.62)",
                 }}
               >
                 / {kpi.weekly_target}
@@ -190,7 +190,7 @@ export default function KpiCard({ kpi }: Props) {
           <div
             style={{
               fontSize: 11.5,
-              color: "rgba(255,255,255,0.45)",
+              color: "rgba(255,255,255,0.62)",
               marginTop: 4,
             }}
           >
@@ -226,7 +226,7 @@ export default function KpiCard({ kpi }: Props) {
             ...MONO,
             marginTop: 5,
             fontSize: 10.5,
-            color: "rgba(255,255,255,0.4)",
+            color: "rgba(255,255,255,0.62)",
           }}
         >
           <span>{pct}% del objetivo</span>

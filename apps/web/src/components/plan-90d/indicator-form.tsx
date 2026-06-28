@@ -43,7 +43,7 @@ export function IndicatorForm({
         <p className="font-semibold text-white" style={{ fontSize: 14 }}>
           Nuevo Indicador
         </p>
-        <button type="button" onClick={onCancel} style={{ color: "rgba(255,255,255,0.4)" }}>
+        <button type="button" onClick={onCancel} style={{ color: "rgba(255,255,255,0.62)" }}>
           <X size={16} />
         </button>
       </div>

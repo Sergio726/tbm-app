@@ -42,7 +42,7 @@ const QUADRANTS = [
     key: "descarte" as const,
     label: "Descarte",
     subtitle: "Bajo impacto · No urgente",
-    color: "rgba(255,255,255,0.3)",
+    color: "rgba(255,255,255,0.62)",
     bg: "rgba(255,255,255,0.02)",
     border: "rgba(255,255,255,0.08)",
     action: null,
@@ -84,7 +84,7 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
         <h2 className="font-bold text-white" style={{ fontSize: 16 }}>
           Clasificador Rocas vs Arena
         </h2>
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
           Sesión de trabajo local — no se guarda en base de datos
         </p>
       </div>
@@ -114,7 +114,7 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
             }}
           />
         </div>
-        <p className="mt-2 text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+        <p className="mt-2 text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
           Escribí la iniciativa y luego hacé click en el cuadrante donde pertenece
         </p>
       </div>
@@ -141,7 +141,7 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
                   <p className="font-bold text-white" style={{ fontSize: 13 }}>
                     {q.label}
                   </p>
-                  <p style={{ fontSize: 10.5, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>
+                  <p style={{ fontSize: 10.5, color: "rgba(255,255,255,0.62)", marginTop: 1 }}>
                     {q.subtitle}
                   </p>
                 </div>
@@ -199,7 +199,7 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
                       <button
                         onClick={() => removeItem(item.id)}
                         className="rounded px-1 py-0.5 text-xs"
-                        style={{ color: "rgba(255,255,255,0.3)" }}
+                        style={{ color: "rgba(255,255,255,0.62)" }}
                       >
                         ✕
                       </button>
@@ -220,7 +220,7 @@ export function MatrixPanel({ isPending, onPromoteToRock }: MatrixPanelProps) {
         })}
       </div>
 
-      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>
+      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", textAlign: "center" }}>
         Las iniciativas clasificadas como Roca se pueden promover al Plan 90D con el botón →
       </p>
     </div>

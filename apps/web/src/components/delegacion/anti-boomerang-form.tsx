@@ -125,7 +125,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
         <Link
           href="/delegacion/mis-tareas"
           className="mb-6 inline-flex items-center gap-1.5 transition-colors hover:text-white"
-          style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}
+          style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
           Mis tareas
@@ -150,7 +150,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
             >
               Escudo Anti-Boomerang
             </h1>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginTop: 2 }}>
               Antes de escalar, presentá tus 3 opciones al líder
             </p>
           </div>
@@ -169,7 +169,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
               fontSize: 10.5,
               fontWeight: 700,
               letterSpacing: 0.6,
-              color: "rgba(255,255,255,0.3)",
+              color: "rgba(255,255,255,0.62)",
               textTransform: "uppercase",
               marginBottom: 6,
             }}
@@ -352,7 +352,7 @@ export function AntiBoomerangForm({ task, currentUserId }: AntiBoomerangFormProp
         </button>
 
         {!canEscalate && (
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 8 }}>
+          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", marginTop: 8 }}>
             Completá las 3 opciones, elegí una y justificá tu recomendación
           </p>
         )}

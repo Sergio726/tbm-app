@@ -137,7 +137,7 @@ export function MemberReportModal({
                           </span>{" "}
                           {DISC_DIMENSIONS[l].name}
                         </span>
-                        <span className="text-white/40">{seg}/7</span>
+                        <span className="text-white/65">{seg}/7</span>
                       </div>
                       <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
                         <div
@@ -304,9 +304,9 @@ function PeopleList({
   return (
     <div>
       <p className="text-[12px] font-semibold text-white/80">{label}</p>
-      <p className="mb-2 text-[11px] text-white/40">{hint}</p>
+      <p className="mb-2 text-[11px] text-white/65">{hint}</p>
       {people.length === 0 ? (
-        <p className="text-[12px] text-white/35">— Nadie por ahora.</p>
+        <p className="text-[12px] text-white/65">— Nadie por ahora.</p>
       ) : (
         <div className="flex flex-wrap gap-1.5">
           {people.map((p) => {

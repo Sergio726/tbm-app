@@ -145,13 +145,13 @@ export function JarvisIntro({
             }
             finish();
           }}
-          className="mt-6 text-[12px] text-white/40 underline-offset-2 transition hover:text-white/70 hover:underline"
+          className="mt-6 text-[12px] text-white/65 underline-offset-2 transition hover:text-white/70 hover:underline"
         >
           No volver a mostrar
         </button>
       </div>
 
-      <div className="absolute bottom-8 text-[11px] tracking-wide text-white/35">
+      <div className="absolute bottom-8 text-[11px] tracking-wide text-white/65">
         Click para saltar
       </div>
     </div>

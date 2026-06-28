@@ -65,7 +65,7 @@ export function ExerciseChecklist({ exerciseKey, items, savedResponse, onSave, i
       ))}
 
       <div className="flex items-center justify-between pt-1">
-        <span className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <span className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
           {checkedCount}/{items.length} completados
         </span>
         <button

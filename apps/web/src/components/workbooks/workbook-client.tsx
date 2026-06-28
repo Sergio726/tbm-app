@@ -355,7 +355,7 @@ export function WorkbookClient({
             <BookOpen size={18} strokeWidth={1.6} />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.62)" }}>
               Sesión {session.number}
             </p>
             <h1 className="text-white" style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.4 }}>
@@ -363,7 +363,7 @@ export function WorkbookClient({
             </h1>
           </div>
         </div>
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", marginLeft: 52 }}>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
           {session.subtitle}
         </p>
       </div>
@@ -381,7 +381,7 @@ export function WorkbookClient({
             {completedCount}/{totalExercises} ejercicios
           </span>
           <div className="flex items-center gap-3">
-            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>
+            <span style={{ color: "rgba(255,255,255,0.62)", fontSize: 12 }}>
               Día {dayInSession}/7 de esta sesión
             </span>
             <span
@@ -481,7 +481,7 @@ export function WorkbookClient({
                     {!isOpen && (
                       <p
                         className="truncate text-xs"
-                        style={{ color: "rgba(255,255,255,0.4)" }}
+                        style={{ color: "rgba(255,255,255,0.62)" }}
                       >
                         {exercise.description}
                       </p>
@@ -595,7 +595,7 @@ export function WorkbookClient({
         }}
       >
         <h3 className="mb-1 text-sm font-bold text-white">Mi compromiso de esta semana</h3>
-        <p className="mb-3 text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
+        <p className="mb-3 text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
           ¿Cuál es la acción concreta que vas a ejecutar esta semana con lo que aprendiste en esta sesión?
         </p>
         <textarea

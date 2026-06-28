@@ -159,7 +159,7 @@ function HeroTile({
         <div
           style={{
             fontSize: 12,
-            color: "rgba(255,255,255,0.45)",
+            color: "rgba(255,255,255,0.62)",
             marginTop: 4,
           }}
         >
@@ -234,7 +234,7 @@ function CicloTile({
           ...MONO,
           marginTop: 6,
           fontSize: 10.5,
-          color: "rgba(255,255,255,0.45)",
+          color: "rgba(255,255,255,0.62)",
         }}
       >
         <span>
@@ -286,7 +286,7 @@ function RachaTile({
         <>
           <div
             className="mb-1.5 text-[10.5px] font-bold uppercase tracking-wide"
-            style={{ color: "rgba(255,255,255,0.45)" }}
+            style={{ color: "rgba(255,255,255,0.62)" }}
           >
             Últimos 7 días
           </div>
@@ -304,7 +304,7 @@ function RachaTile({
                 />
                 <span
                   className="text-[9px]"
-                  style={{ color: "rgba(255,255,255,0.4)" }}
+                  style={{ color: "rgba(255,255,255,0.62)" }}
                 >
                   {d.label}
                 </span>
@@ -377,7 +377,7 @@ function MultiplicadorTile({
               className="mt-1 border-t pt-1.5 text-[10.5px]"
               style={{
                 borderColor: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.4)",
+                color: "rgba(255,255,255,0.62)",
               }}
             >
               Proxy: delegación 40% · autonomía 40% · base 20%

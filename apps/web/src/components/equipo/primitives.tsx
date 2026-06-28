@@ -86,7 +86,7 @@ export function FieldLabel({
         {children}
       </label>
       {hint && (
-        <span className="text-[11px] text-white/35">{hint}</span>
+        <span className="text-[11px] text-white/65">{hint}</span>
       )}
     </div>
   );

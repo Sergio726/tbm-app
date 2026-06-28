@@ -359,7 +359,7 @@ export function JarvisPanel({
             </span>
             <div style={{ lineHeight: 1.15 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{persona.name}</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Asistente · beta</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)" }}>Asistente · beta</div>
             </div>
           </div>
           <div className="flex items-center" style={{ gap: 4 }}>
@@ -393,13 +393,13 @@ export function JarvisPanel({
         <div ref={scrollRef} className="flex-1" style={{ overflowY: "auto", padding: 16 }}>
           {showHistory ? (
             <div className="flex flex-col" style={{ gap: 6 }}>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", margin: "2px 0 8px" }}>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", margin: "2px 0 8px" }}>
                 Conversaciones anteriores
               </div>
               {loadingHistory ? (
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}>Cargando…</div>
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>Cargando…</div>
               ) : conversations.length === 0 ? (
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)" }}>
                   Todavía no hay conversaciones guardadas.
                 </div>
               ) : (
@@ -422,7 +422,7 @@ export function JarvisPanel({
                     <div style={{ fontSize: 13.5, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {c.title || "Conversación"}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)" }}>
                       {new Date(c.updated_at).toLocaleString("es-AR")}
                     </div>
                   </button>
@@ -541,7 +541,7 @@ export function JarvisPanel({
                         className="jarvis-copy"
                         style={{
                           fontSize: 11,
-                          color: "rgba(255,255,255,0.4)",
+                          color: "rgba(255,255,255,0.62)",
                           background: "transparent",
                           border: "none",
                           cursor: "pointer",
@@ -555,7 +555,7 @@ export function JarvisPanel({
                 );
               })}
               {pending && (
-                <div style={{ alignSelf: "flex-start", fontSize: 12.5, color: "rgba(255,255,255,0.45)" }}>
+                <div style={{ alignSelf: "flex-start", fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}>
                   <span className="jarvis-cursor">▍</span> {persona.name} está pensando…
                 </div>
               )}
@@ -611,7 +611,7 @@ export function JarvisPanel({
               </button>
             )}
           </div>
-          <div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.3)", marginTop: 6, textAlign: "center" }}>
+          <div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.62)", marginTop: 6, textAlign: "center" }}>
             {persona.name} puede equivocarse. Verificá lo importante. · Enter envía · Shift+Enter salto de línea
           </div>
         </form>
@@ -652,7 +652,7 @@ function ProposalCard({
       <div className="flex flex-col" style={{ gap: 6, marginBottom: 12 }}>
         {proposal.details.map((d, j) => (
           <div key={j} style={{ display: "flex", gap: 8, fontSize: 12.5, lineHeight: 1.45 }}>
-            <span style={{ color: "rgba(255,255,255,0.45)", minWidth: 78, flexShrink: 0 }}>{d.label}</span>
+            <span style={{ color: "rgba(255,255,255,0.62)", minWidth: 78, flexShrink: 0 }}>{d.label}</span>
             <span style={{ color: "rgba(255,255,255,0.9)", wordBreak: "break-word" }}>{d.value}</span>
           </div>
         ))}
@@ -660,7 +660,7 @@ function ProposalCard({
       {resolved === "confirmed" ? (
         <div style={{ fontSize: 12.5, color: "#34d399" }}>✓ Confirmado</div>
       ) : resolved === "cancelled" ? (
-        <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.4)" }}>Cancelado</div>
+        <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.62)" }}>Cancelado</div>
       ) : (
         <div className="flex" style={{ gap: 8 }}>
           <button

@@ -65,7 +65,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
       </div>
 
       {team.length === 0 && (
-        <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <p className="text-sm" style={{ color: "rgba(255,255,255,0.62)" }}>
           No hay miembros del equipo registrados.
         </p>
       )}
@@ -87,7 +87,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
             <div className="mb-3 flex items-start justify-between">
               <div>
                 <p className="text-sm font-semibold text-white">{member.full_name}</p>
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
                   {member.cargo ?? "Sin cargo"}
                 </p>
               </div>
@@ -105,7 +105,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
               <div className="flex-1">
                 <label
                   className="mb-1 block text-xs"
-                  style={{ color: "rgba(255,255,255,0.45)" }}
+                  style={{ color: "rgba(255,255,255,0.62)" }}
                 >
                   Letras DISC
                 </label>
@@ -129,7 +129,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
               <div>
                 <label
                   className="mb-1 block text-xs"
-                  style={{ color: "rgba(255,255,255,0.45)" }}
+                  style={{ color: "rgba(255,255,255,0.62)" }}
                 >
                   Estado
                 </label>
@@ -144,7 +144,7 @@ export function ExerciseDiscMap({ exerciseKey, team, savedResponse, onSave, isPe
                           ? state === "luz"
                             ? { background: "rgba(251,191,36,0.2)", color: "#fbbf24" }
                             : { background: "rgba(107,114,128,0.3)", color: "#9ca3af" }
-                          : { background: "transparent", color: "rgba(255,255,255,0.35)" }
+                          : { background: "transparent", color: "rgba(255,255,255,0.62)" }
                       }
                     >
                       {state === "luz" ? "☀️ Luz" : "🌑 Sombra"}

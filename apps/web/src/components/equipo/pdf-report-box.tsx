@@ -52,7 +52,7 @@ export function PdfReportBox({
           <div className="text-[13px] font-semibold text-white/85">
             Informe DISC profesional
           </div>
-          <div className="text-[11.5px] text-white/45">
+          <div className="text-[11.5px] text-white/65">
             {pdfPath ? (
               <button
                 type="button"

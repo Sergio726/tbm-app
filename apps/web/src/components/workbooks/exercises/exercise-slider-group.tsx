@@ -58,7 +58,7 @@ export function ExerciseSliderGroup({ exerciseKey, sliders, savedResponse, onSav
                 }}
               />
             </div>
-            <div className="mt-1 flex justify-between text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+            <div className="mt-1 flex justify-between text-xs" style={{ color: "rgba(255,255,255,0.62)" }}>
               <span>0</span>
               <span>50</span>
               <span>100</span>

@@ -19,7 +19,7 @@ export function MemberSelector({ team, selected, onSelect }: MemberSelectorProps
           background: "rgba(255,255,255,0.02)",
         }}
       >
-        <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.4)" }}>
+        <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.62)" }}>
           No hay colaboradores en tu empresa aún.
           <br />
           Invitá miembros desde Mi Equipo.
@@ -74,7 +74,7 @@ export function MemberSelector({ team, selected, onSelect }: MemberSelectorProps
               </p>
               <p
                 className="truncate"
-                style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}
+                style={{ fontSize: 12, color: "rgba(255,255,255,0.62)" }}
               >
                 {member.cargo ?? "Sin cargo"}
               </p>

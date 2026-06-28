@@ -411,7 +411,7 @@ export function PlanClient({
             Plan 90D
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", marginLeft: 52 }}>
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", marginLeft: 52 }}>
           Rocas · BOS · Ideas · Decisiones — el sistema completo de ejecución estratégica
         </p>
       </div>
@@ -463,7 +463,7 @@ export function PlanClient({
                       border: "1px solid rgba(91,138,255,0.3)",
                     }
                   : {
-                      color: "rgba(255,255,255,0.4)",
+                      color: "rgba(255,255,255,0.62)",
                       border: "1px solid transparent",
                     }
               }

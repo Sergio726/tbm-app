@@ -394,7 +394,7 @@ export function EquipoClient({
                 initial={authorityMatrix}
                 editable={isArquitecto}
               />
-              <p className="px-1 text-[10.5px] text-white/35">
+              <p className="px-1 text-[10.5px] text-white/65">
                 Anticipo del módulo Delegación (S4).
               </p>
             </div>
@@ -532,7 +532,7 @@ export function EquipoClient({
               type="button"
               onClick={() => setToast(null)}
               aria-label="Cerrar notificación"
-              className="text-white/40"
+              className="text-white/65"
             >
               <X size={16} />
             </button>

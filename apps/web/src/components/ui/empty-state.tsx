@@ -23,7 +23,7 @@ export function EmptyState({
       className="flex flex-col items-center justify-center text-center"
       style={{ gap: 10, padding: "44px 24px" }}
     >
-      {icon ? <div style={{ color: "rgba(255,255,255,0.35)", marginBottom: 2 }}>{icon}</div> : null}
+      {icon ? <div style={{ color: "rgba(255,255,255,0.62)", marginBottom: 2 }}>{icon}</div> : null}
       <div style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.92)" }}>{title}</div>
       {hint ? (
         <div style={{ fontSize: 13.5, color: "rgba(255,255,255,0.5)", maxWidth: 420, lineHeight: 1.55 }}>

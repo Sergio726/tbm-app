@@ -49,7 +49,7 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
         <p className="font-semibold text-white" style={{ fontSize: 14 }}>
           Registrar decisión
         </p>
-        <button type="button" onClick={onCancel} style={{ color: "rgba(255,255,255,0.4)" }}>
+        <button type="button" onClick={onCancel} style={{ color: "rgba(255,255,255,0.62)" }}>
           <X size={16} />
         </button>
       </div>
@@ -124,7 +124,7 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
           />
           <div>
             <p className="text-sm font-medium text-white">Apliqué la Regla del 70%</p>
-            <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.4)", lineHeight: 1.4 }}>
+            <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)", lineHeight: 1.4 }}>
               Decidí con ≥70% de la info, sin esperar certeza total
             </p>
           </div>
@@ -139,7 +139,7 @@ export function DecisionForm({ isPending, onSubmit, onCancel }: DecisionFormProp
           />
           <div>
             <p className="text-sm font-medium text-white">Disagree & Commit</p>
-            <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.4)", lineHeight: 1.4 }}>
+            <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.62)", lineHeight: 1.4 }}>
               Alguien no estuvo de acuerdo pero igual se ejecutó
             </p>
           </div>

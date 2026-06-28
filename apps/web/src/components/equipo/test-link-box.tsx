@@ -116,7 +116,7 @@ export function TestLinkBox({
           <RotateCcw size={13} />
           {generating ? "Generando…" : "Generar nuevo link · re-hacer test"}
         </button>
-        <p className="mt-1.5 text-[11px] text-white/40">
+        <p className="mt-1.5 text-[11px] text-white/65">
           Genera un link nuevo y deja el perfil en blanco para volver a evaluarlo.
         </p>
       </div>

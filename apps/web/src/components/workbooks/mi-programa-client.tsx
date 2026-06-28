@@ -188,7 +188,7 @@ function StatCard({
         {value}
       </div>
       {hint && (
-        <div className="mt-1 text-[11.5px] text-white/45">{hint}</div>
+        <div className="mt-1 text-[11.5px] text-white/65">{hint}</div>
       )}
     </div>
   );
@@ -198,7 +198,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section className="mb-7">
       <h2
-        className="mb-3 text-[11px] font-bold uppercase tracking-[1.4px] text-white/45"
+        className="mb-3 text-[11px] font-bold uppercase tracking-[1.4px] text-white/65"
       >
         {title}
       </h2>
@@ -232,7 +232,7 @@ function SessionRow({
     ? { color: "#34d399", bg: "rgba(52,211,153,0.10)", border: "rgba(52,211,153,0.28)" }
     : unlocked
       ? { color: "#9fb9ff", bg: "rgba(91,138,255,0.08)", border: "rgba(91,138,255,0.24)" }
-      : { color: "rgba(255,255,255,0.4)", bg: "rgba(255,255,255,0.02)", border: "rgba(255,255,255,0.06)" };
+      : { color: "rgba(255,255,255,0.62)", bg: "rgba(255,255,255,0.02)", border: "rgba(255,255,255,0.06)" };
 
   return (
     <Link
@@ -285,7 +285,7 @@ function SessionRow({
             <span className="text-[11.5px] font-bold" style={{ color: tone.color }}>
               {pct}%
             </span>
-            <span className="text-[11px] text-white/45">
+            <span className="text-[11px] text-white/65">
               · {exercisesAnswered}/{exercisesTotal}
             </span>
           </div>
@@ -299,7 +299,7 @@ function SessionRow({
               }}
             />
           </div>
-          <span className="text-[10.5px] text-white/40" style={{ fontFamily: MONO }}>
+          <span className="text-[10.5px] text-white/65" style={{ fontFamily: MONO }}>
             {unlockedAt ? `desbloq. ${formatDate(unlockedAt)}` : "—"}
           </span>
         </div>
@@ -409,8 +409,8 @@ function ScoreCompareValues({
   const Icon = delta == null || delta === 0 ? Minus : delta > 0 ? TrendingUp : TrendingDown;
   return (
     <div className="flex items-center gap-2" style={{ minWidth: 130, fontFamily: MONO }}>
-      <span className="text-[11px] text-white/45">{v0 ?? "—"}</span>
-      <span className="text-white/30">→</span>
+      <span className="text-[11px] text-white/65">{v0 ?? "—"}</span>
+      <span className="text-white/65">→</span>
       <span className={`text-[12px]${bold ? " font-bold" : ""} text-white/85`}>{v1 ?? "—"}</span>
       <span
         className="ml-1 flex items-center gap-0.5 text-[11px] font-bold"
@@ -431,7 +431,7 @@ function EmptyComparative({ hasBaseline }: { hasBaseline: boolean }) {
     >
       {!hasBaseline ? (
         <>
-          <Circle className="mx-auto mb-2 text-white/40" size={18} />
+          <Circle className="mx-auto mb-2 text-white/65" size={18} />
           Todavía no hay diagnóstico inicial. Completá el primero desde{" "}
           <Link href="/onboarding" className="text-[#9fb9ff] underline">
             el onboarding
@@ -440,7 +440,7 @@ function EmptyComparative({ hasBaseline }: { hasBaseline: boolean }) {
         </>
       ) : (
         <>
-          <Calendar className="mx-auto mb-2 text-white/40" size={18} />
+          <Calendar className="mx-auto mb-2 text-white/65" size={18} />
           Para ver tu evolución, hacé un segundo diagnóstico desde el Workbook S1
           (la próxima vez que lo completes quedará registrado).
         </>
