@@ -104,17 +104,17 @@ function HeroTile({
         display: "block",
         background:
           tone === "accent"
-            ? "linear-gradient(135deg, rgba(91,138,255,0.16) 0%, rgba(91,138,255,0.04) 100%)"
-            : "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+            ? "linear-gradient(135deg, rgb(var(--c-ring) / 0.16) 0%, rgb(var(--c-ring) / 0.04) 100%)"
+            : "linear-gradient(180deg, rgb(var(--c-fg) / 0.025), rgb(var(--c-fg) / 0.005))",
         border: isHovered
           ? `1px solid ${accent}66`
           : tone === "accent"
-            ? "1px solid rgba(91,138,255,0.28)"
-            : "1px solid rgba(255,255,255,0.06)",
+            ? "1px solid rgb(var(--c-ring) / 0.28)"
+            : "1px solid var(--border)",
         boxShadow: isHovered
           ? `0 8px 24px ${accent}30`
           : tone === "accent"
-            ? "0 8px 24px rgba(91,138,255,0.16)"
+            ? "0 8px 24px rgb(var(--c-ring) / 0.16)"
             : "none",
         transition: "border-color .15s, box-shadow .15s",
       }}

@@ -10,37 +10,42 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Paleta base TBM ──────────────────────────────────────
+        bg: "rgb(var(--c-bg) / <alpha-value>)",
+        surface: "rgb(var(--c-surface) / <alpha-value>)",
+        elevated: "rgb(var(--c-elevated) / <alpha-value>)",
+        border: "rgb(var(--c-border) / <alpha-value>)",
+        fg: "rgb(var(--c-fg) / <alpha-value>)",
+        "fg-muted": "rgb(var(--c-fg-muted) / <alpha-value>)",
+        accent: "rgb(var(--c-accent) / <alpha-value>)",
+        success: "rgb(var(--c-success) / <alpha-value>)",
+        warn: "rgb(var(--c-warn) / <alpha-value>)",
+        danger: "rgb(var(--c-danger) / <alpha-value>)",
+
         tbm: {
-          // Fondos (dark mode)
-          bg:        "#0A1628", // fondo global (navy profundo)
-          surface:   "#0F1B2D", // superficie de cards
-          elevated:  "#162238", // hover / elementos elevados
-          border:    "#1E3050", // bordes sutiles
+          bg: "rgb(var(--c-bg) / <alpha-value>)",
+          surface: "rgb(var(--c-surface) / <alpha-value>)",
+          elevated: "rgb(var(--c-elevated) / <alpha-value>)",
+          border: "rgb(var(--c-border) / 0.08)",
 
-          // Acento primario — Electric Blue
           blue: {
-            DEFAULT: "#2563EB",
-            light:   "#3B82F6",
-            dark:    "#1D4ED8",
-            muted:   "#1E3A8A",
+            DEFAULT: "rgb(var(--c-accent) / <alpha-value>)",
+            light: "rgb(var(--c-accent-text) / <alpha-value>)",
+            dark: "rgb(var(--c-accent-hover) / <alpha-value>)",
+            muted: "rgb(var(--c-accent) / 0.22)",
           },
 
-          // Semáforo TBM
-          green:  "#10B981", // ≥100% de meta
-          yellow: "#F59E0B", // 85-99% de meta
-          red:    "#EF4444", // <85% de meta
+          green: "rgb(var(--c-success) / <alpha-value>)",
+          yellow: "rgb(var(--c-warn) / <alpha-value>)",
+          red: "rgb(var(--c-danger) / <alpha-value>)",
 
-          // Texto
           text: {
-            primary:   "#F8FAFC", // texto principal (casi blanco)
-            secondary: "#94A3B8", // texto secundario
-            muted:     "#64748B", // placeholder / hint
+            primary: "rgb(var(--c-fg) / 0.92)",
+            secondary: "rgb(var(--c-fg-muted) / 0.55)",
+            muted: "rgb(var(--c-fg-faint) / 0.38)",
           },
 
-          // Estados DISC
-          luz:    "#10B981", // verde (estado Luz)
-          sombra: "#64748B", // gris (estado Sombra)
+          luz: "rgb(var(--c-success) / <alpha-value>)",
+          sombra: "rgb(var(--c-fg-faint) / 0.38)",
         },
       },
       fontFamily: {
@@ -85,11 +90,13 @@ const config: Config = {
       },
       boxShadow: {
         "tbm-card": "0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.5)",
-        "tbm-glow": "0 0 20px rgba(37, 99, 235, 0.15)",
+        "tbm-glow": "0 0 20px rgb(var(--c-accent) / 0.15)",
       },
       backgroundImage: {
-        "tbm-gradient": "linear-gradient(135deg, #0A1628 0%, #0F1B2D 100%)",
-        "blue-gradient": "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
+        "tbm-gradient":
+          "linear-gradient(135deg, rgb(var(--c-bg)) 0%, rgb(var(--c-surface)) 100%)",
+        "blue-gradient":
+          "linear-gradient(135deg, rgb(var(--c-accent)) 0%, rgb(var(--c-accent-hover)) 100%)",
       },
     },
   },

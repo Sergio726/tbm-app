@@ -109,7 +109,7 @@ export function DcLauncher({ persona }: { persona: DcPublicPersona }) {
               background: "rgba(15,27,45,0.97)",
               border: "1px solid rgba(91,138,255,0.35)",
               color: "#cfe0ff",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.45)",
+              boxShadow: "var(--shadow-card)",
               maxWidth: hint ? 250 : "auto",
               whiteSpace: hint ? "normal" : "nowrap",
               lineHeight: 1.4,
@@ -136,7 +136,7 @@ export function DcLauncher({ persona }: { persona: DcPublicPersona }) {
               height: 52,
               background: "rgba(11,18,32,0.92)",
               border: "1px solid rgba(91,138,255,0.3)",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+              boxShadow: "var(--shadow-panel)",
               cursor: "pointer",
               backdropFilter: "blur(6px)",
             }}

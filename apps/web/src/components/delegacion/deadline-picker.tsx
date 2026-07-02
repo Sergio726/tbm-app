@@ -193,7 +193,7 @@ export function DeadlinePicker({
             maxWidth: "calc(100vw - 48px)",
             borderColor: "var(--border)",
             background: "linear-gradient(180deg, #141a2b, var(--surface))",
-            boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
+            boxShadow: "var(--shadow-panel)",
           }}
         >
           {/* Atajos rápidos */}

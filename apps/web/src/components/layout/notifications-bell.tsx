@@ -119,7 +119,7 @@ export function NotificationsBell({
               width: 360,
               background: "var(--surface)",
               borderColor: "var(--border)",
-              boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+              boxShadow: "var(--shadow-panel)",
             }}
           >
             <div

@@ -110,7 +110,7 @@ export function CoachingNotes({
             className="inline-flex items-center gap-2 rounded-xl border-0 px-4 py-2.5 text-[13px] font-semibold transition disabled:opacity-50"
             style={{
               background: "linear-gradient(135deg, #34d399, #10b981)",
-              color: "#04241a",
+              color: "var(--success-text)",
             }}
           >
             <Send size={13} strokeWidth={2.2} />

@@ -34,7 +34,7 @@ export function CompletionBar({
         background:
           "linear-gradient(180deg, rgba(18,24,40,0.92), rgba(12,16,28,0.96))",
         borderColor: ready ? "rgba(52,211,153,0.35)" : "rgba(255,255,255,0.10)",
-        boxShadow: "0 18px 50px rgba(0,0,0,0.55)",
+        boxShadow: "var(--shadow-panel)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
       }}
@@ -109,7 +109,7 @@ export function CompletionBar({
             ? "linear-gradient(135deg, #34d399, #10b981)"
             : "rgba(255,255,255,0.05)",
           border: canSave ? "none" : "1px solid rgba(255,255,255,0.1)",
-          color: canSave ? "#04241a" : "rgba(255,255,255,0.4)",
+          color: canSave ? "var(--success-text)" : "var(--fg-faint)",
           boxShadow: canSave ? "0 8px 24px rgba(52,211,153,0.35)" : "none",
         }}
         title={

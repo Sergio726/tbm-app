@@ -187,7 +187,7 @@ export function TaskDrawer({
       <div
         className="absolute inset-0"
         onClick={onClose}
-        style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(2px)" }}
+        style={{ background: "rgb(var(--c-overlay) / 0.55)", backdropFilter: "blur(2px)" }}
       />
 
       {/* Panel */}
@@ -196,7 +196,7 @@ export function TaskDrawer({
         style={{
           background: "linear-gradient(180deg, #121826, var(--bg))",
           borderLeft: "1px solid var(--border)",
-          boxShadow: "-24px 0 60px rgba(0,0,0,0.5)",
+          boxShadow: "-24px 0 60px var(--shadow-color)",
         }}
       >
         {/* Header */}
@@ -355,7 +355,7 @@ export function TaskDrawer({
                   style={{
                     background: "#161d2e",
                     borderColor: "var(--border)",
-                    boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
+                    boxShadow: "var(--shadow-panel)",
                   }}
                 >
                   {/* Sin asignar */}

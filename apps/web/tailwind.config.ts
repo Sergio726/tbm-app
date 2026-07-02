@@ -99,12 +99,16 @@ const config: Config = {
         "slide-in-left": "slide-in-left 0.25s ease-out",
       },
       boxShadow: {
-        "tbm-card": "0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.5)",
-        "tbm-glow": "0 0 20px rgba(37, 99, 235, 0.15)",
+        "tbm-card": "var(--shadow-card)",
+        "tbm-panel": "var(--shadow-panel)",
+        "tbm-modal": "var(--shadow-modal)",
+        "tbm-glow": "0 0 20px rgb(var(--c-accent) / 0.15)",
       },
       backgroundImage: {
-        "tbm-gradient": "linear-gradient(135deg, #0A1628 0%, #0F1B2D 100%)",
-        "blue-gradient": "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
+        "tbm-gradient":
+          "linear-gradient(135deg, rgb(var(--c-bg)) 0%, rgb(var(--c-surface)) 100%)",
+        "blue-gradient":
+          "linear-gradient(135deg, rgb(var(--c-accent)) 0%, rgb(var(--c-accent-hover)) 100%)",
       },
     },
   },

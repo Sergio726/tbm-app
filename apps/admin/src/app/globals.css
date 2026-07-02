@@ -2,22 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Admin panel — tokens alineados al web (dark-only, sin toggle de tema) */
 :root {
-  --bg: #0a0e17;
-  --bg-elev: #0d1220;
-  --panel: #111827;
-  --panel-2: #151d30;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.55);
-  --faint: rgba(255, 255, 255, 0.38);
-  --accent: #5b8aff;
-  --accent-soft: rgba(91, 138, 255, 0.16);
-  --ok: #34d399;
-  --warn: #fbbf24;
-  --bad: #f87171;
-  --sidebar-w: 236px;
+  --c-bg:            10  14  23;   /* #0a0e17 */
+  --c-surface:       17  24  39;   /* #111827 */
+  --c-elevated:      21  29  48;   /* #151d30 */
+  --c-overlay:        2   6  16;
+  --c-border:       255 255 255;
+  --c-border-strong: 255 255 255;
+  --c-fg:           255 255 255;
+  --c-fg-muted:     255 255 255;
+  --c-fg-subtle:    255 255 255;
+  --c-fg-faint:     255 255 255;
+  --c-accent:        91 138 255;   /* #5b8aff */
+  --c-accent-hover:  44  95 230;   /* #2c5fe6 */
+  --c-accent-text:  155 184 255;  /* #9bb8ff */
+  --c-success:       52 211 153;  /* #34d399 */
+  --c-warn:         251 191  36;  /* #fbbf24 */
+  --c-danger:       248 113 113;  /* #f87171 */
+
+  --bg:            rgb(var(--c-bg));
+  --bg-elev:       rgb(13 18 32);
+  --panel:         rgb(var(--c-surface));
+  --panel-2:       rgb(var(--c-elevated));
+  --border:        rgb(var(--c-border) / 0.08);
+  --border-strong: rgb(var(--c-border-strong) / 0.14);
+  --text:          rgb(var(--c-fg) / 0.92);
+  --muted:         rgb(var(--c-fg-muted) / 0.55);
+  --faint:         rgb(var(--c-fg-faint) / 0.38);
+  --accent:        rgb(var(--c-accent));
+  --accent-soft:   rgb(var(--c-accent) / 0.16);
+  --ok:            rgb(var(--c-success));
+  --warn:          rgb(var(--c-warn));
+  --bad:           rgb(var(--c-danger));
+  --sidebar-w:     236px;
+
+  color-scheme: dark;
 }
 
 html,
@@ -33,14 +53,14 @@ body {
 /* Scrollbar discreto acorde al tema oscuro */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  scrollbar-color: rgb(var(--c-fg) / 0.14) transparent;
 }
 *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgb(var(--c-fg) / 0.12);
   border-radius: 8px;
   border: 3px solid transparent;
   background-clip: content-box;
@@ -54,17 +74,17 @@ body {
 }
 .adm-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(var(--c-fg) / 0.05);
   border: 1px solid var(--border);
   border-radius: 10px;
-  color: #fff;
+  color: rgb(var(--c-fg));
   padding: 9px 12px;
   font-size: 13.5px;
   outline: none;
   transition: border-color 0.15s ease;
 }
 .adm-input:focus {
-  border-color: rgba(91, 138, 255, 0.5);
+  border-color: rgb(var(--c-accent) / 0.5);
 }
 .adm-btn {
   display: inline-flex;
@@ -80,11 +100,11 @@ body {
 }
 .adm-btn-primary {
   background: var(--accent-soft);
-  border: 1px solid rgba(91, 138, 255, 0.4);
-  color: #9bb8ff;
+  border: 1px solid rgb(var(--c-accent) / 0.4);
+  color: rgb(var(--c-accent-text));
 }
 .adm-btn-primary:hover {
-  background: rgba(91, 138, 255, 0.26);
+  background: rgb(var(--c-accent) / 0.26);
 }
 .adm-btn-ghost {
   background: transparent;
@@ -112,16 +132,16 @@ tbody tr {
   transition: background 0.12s ease;
 }
 tbody tr:hover {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgb(var(--c-fg) / 0.025);
 }
 
 /* Skeleton de carga */
 .adm-skeleton {
   background: linear-gradient(
     100deg,
-    rgba(255, 255, 255, 0.05) 30%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.05) 70%
+    rgb(var(--c-fg) / 0.05) 30%,
+    rgb(var(--c-fg) / 0.1) 50%,
+    rgb(var(--c-fg) / 0.05) 70%
   );
   background-size: 200% 100%;
   animation: adm-shimmer 1.4s ease-in-out infinite;

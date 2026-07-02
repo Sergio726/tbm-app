@@ -86,7 +86,7 @@ function StatBar({
             {value}
           </span>
         </div>
-        <div className="h-[7px] overflow-hidden rounded-full bg-white/[0.06]">
+        <div className="h-[7px] overflow-hidden rounded-full bg-elevated">
           <div
             className="h-full rounded-full"
             style={{

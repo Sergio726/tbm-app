@@ -209,8 +209,8 @@ function Stepper({ current }: { current: number }) {
                     ? "1px solid #34d399"
                     : active
                     ? "1px solid #5b8aff"
-                    : "1px solid rgba(255,255,255,0.1)",
-                  color: completed ? "var(--bg)" : active ? "#5b8aff" : "rgba(255,255,255,0.45)",
+                    : "1px solid var(--border)",
+                  color: completed ? "var(--bg)" : active ? "#5b8aff" : "var(--fg-subtle)",
                   fontSize: 13,
                   fontWeight: 600,
                   boxShadow: active
@@ -226,10 +226,10 @@ function Stepper({ current }: { current: number }) {
                   fontSize: 11.5,
                   fontWeight: active ? 600 : 500,
                   color: active
-                    ? "#fff"
+                    ? "var(--fg)"
                     : completed
-                    ? "rgba(255,255,255,0.7)"
-                    : "rgba(255,255,255,0.4)",
+                    ? "var(--fg-muted)"
+                    : "var(--fg-faint)",
                   letterSpacing: 0.1,
                   whiteSpace: "nowrap",
                 }}
@@ -266,7 +266,7 @@ function StepHeader({
               "linear-gradient(135deg, rgba(91,138,255,0.22), rgba(91,138,255,0.08))",
             border: "1px solid rgba(91,138,255,0.32)",
             color: "var(--accent-text)",
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
+            boxShadow: "inset 0 1px 0 rgb(var(--c-fg) / 0.06)",
           }}
         >
           <Icon size={20} strokeWidth={1.8} />
@@ -327,7 +327,7 @@ function ScoreSlider({
             width: 2,
             height: 2,
             borderRadius: 99,
-            background: n <= value ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.18)",
+            background: n <= value ? "rgb(var(--c-fg) / 0.6)" : "rgb(var(--c-fg) / 0.18)",
           }}
         />
       ))}
@@ -353,7 +353,7 @@ function ScoreSlider({
           borderRadius: "50%",
           background: "var(--bg)",
           border: `2.5px solid ${color}`,
-          boxShadow: `0 0 0 4px rgba(255,255,255,0.04), 0 4px 12px ${color}55`,
+          boxShadow: `0 0 0 4px rgb(var(--c-fg) / 0.04), 0 4px 12px ${color}55`,
           transition: "left .15s ease, border-color .2s ease, box-shadow .2s ease",
         }}
       />
@@ -407,11 +407,11 @@ function Step1Empresa({
                   borderRadius: 10,
                   border: isActive
                     ? "1px solid #5b8aff"
-                    : "1px solid rgba(255,255,255,0.08)",
+                    : "1px solid var(--border)",
                   background: isActive
                     ? "linear-gradient(135deg, rgba(91,138,255,0.18), rgba(91,138,255,0.04))"
-                    : "rgba(255,255,255,0.015)",
-                  color: isActive ? "#fff" : "rgba(255,255,255,0.75)",
+                    : "rgb(var(--c-fg) / 0.015)",
+                  color: isActive ? "var(--fg)" : "var(--fg-muted)",
                   fontSize: 13.5,
                   fontWeight: isActive ? 500 : 400,
                   boxShadow: isActive ? "0 4px 14px rgba(91,138,255,0.18)" : "none",
@@ -469,11 +469,11 @@ function Step1Empresa({
                   borderRadius: 10,
                   border: isActive
                     ? "1px solid #5b8aff"
-                    : "1px solid rgba(255,255,255,0.08)",
+                    : "1px solid var(--border)",
                   background: isActive
                     ? "linear-gradient(135deg, rgba(91,138,255,0.2), rgba(91,138,255,0.05))"
-                    : "rgba(255,255,255,0.015)",
-                  color: isActive ? "#fff" : "rgba(255,255,255,0.75)",
+                    : "rgb(var(--c-fg) / 0.015)",
+                  color: isActive ? "var(--fg)" : "var(--fg-muted)",
                   fontSize: 14,
                   fontWeight: isActive ? 600 : 500,
                   boxShadow: isActive ? "0 4px 14px rgba(91,138,255,0.18)" : "none",
@@ -599,10 +599,10 @@ function RitualCard({
       style={{
         padding: "18px 20px",
         borderRadius: 12,
-        border: selected ? "1px solid #5b8aff" : "1px solid rgba(255,255,255,0.07)",
+        border: selected ? "1px solid #5b8aff" : "1px solid var(--border)",
         background: selected
           ? "linear-gradient(135deg, rgba(91,138,255,0.16), rgba(91,138,255,0.04))"
-          : "rgba(255,255,255,0.02)",
+          : "rgb(var(--c-fg) / 0.02)",
         cursor: "pointer",
         boxShadow: selected ? "0 8px 24px rgba(91,138,255,0.18)" : "none",
         gap: 18,
@@ -616,8 +616,8 @@ function RitualCard({
           borderRadius: "50%",
           border: selected
             ? "5px solid #5b8aff"
-            : "1.5px solid rgba(255,255,255,0.2)",
-          background: selected ? "#fff" : "transparent",
+            : "1.5px solid rgb(var(--c-fg) / 0.2)",
+          background: selected ? "var(--fg)" : "transparent",
           flexShrink: 0,
           transition: "all .15s ease",
           boxShadow: selected ? "0 0 0 4px rgba(91,138,255,0.12)" : "none",
@@ -667,13 +667,13 @@ function RitualCard({
                   background: has
                     ? selected
                       ? "rgba(91,138,255,0.16)"
-                      : "rgba(255,255,255,0.04)"
+                      : "rgb(var(--c-fg) / 0.04)"
                     : "transparent",
                   border: has
                     ? selected
                       ? "1px solid rgba(91,138,255,0.35)"
-                      : "1px solid rgba(255,255,255,0.08)"
-                    : "1px dashed rgba(255,255,255,0.08)",
+                      : "1px solid var(--border)"
+                    : "1px dashed var(--border)",
                   gap: 2,
                 }}
               >
@@ -874,10 +874,10 @@ function Step4Equipo({
               style={{
                 ...MONO,
                 fontSize: 10.5,
-                color: valid ? "#34d399" : "rgba(255,255,255,0.35)",
+                color: valid ? "#34d399" : "var(--fg-faint)",
                 padding: "2px 7px",
                 borderRadius: 5,
-                background: valid ? "rgba(52,211,153,0.1)" : "rgba(255,255,255,0.04)",
+                background: valid ? "rgba(52,211,153,0.1)" : "rgb(var(--c-fg) / 0.04)",
                 marginRight: 4,
               }}
             >
@@ -906,8 +906,8 @@ function Step4Equipo({
             padding: "0 22px",
             borderRadius: 10,
             border: "none",
-            background: valid ? "#3672ff" : "rgba(255,255,255,0.05)",
-            color: valid ? "#fff" : "rgba(255,255,255,0.35)",
+            background: valid ? "#3672ff" : "rgb(var(--c-fg) / 0.05)",
+            color: valid ? "var(--fg)" : "var(--fg-faint)",
             fontSize: 14,
             fontWeight: 600,
             cursor: valid ? "pointer" : "not-allowed",
@@ -982,7 +982,7 @@ function Step4Equipo({
                       background: av.grad,
                       fontSize: 12,
                       fontWeight: 600,
-                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)",
+                      boxShadow: "inset 0 1px 0 rgb(var(--c-fg) / 0.18)",
                     }}
                   >
                     {av.initial}
@@ -1120,11 +1120,11 @@ function SetPasswordGate({
         className="w-full"
         style={{
           maxWidth: 420,
-          background: "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+          background: "linear-gradient(180deg, rgb(var(--c-fg) / 0.025), rgb(var(--c-fg) / 0.005))",
           border: "1px solid var(--border)",
           borderRadius: 18,
           padding: "32px 32px 28px",
-          boxShadow: "0 24px 60px rgba(0,0,0,0.4)",
+          boxShadow: "var(--shadow-panel)",
         }}
       >
         <div className="flex items-center" style={{ gap: 10, marginBottom: 6 }}>
@@ -1164,7 +1164,7 @@ function SetPasswordGate({
               marginTop: 4,
               padding: "12px",
               borderRadius: 11,
-              background: loading ? "rgba(255,255,255,0.06)" : "linear-gradient(180deg, #4f86ff, #2c5fe6)",
+              background: loading ? "rgb(var(--c-fg) / 0.06)" : "linear-gradient(180deg, #4f86ff, #2c5fe6)",
               color: "var(--fg)",
               border: "none",
               fontSize: 14.5,
@@ -1382,12 +1382,12 @@ export default function OnboardingPage() {
         style={{
           maxWidth: 720,
           background:
-            "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))",
+            "linear-gradient(180deg, rgb(var(--c-fg) / 0.025), rgb(var(--c-fg) / 0.005))",
           border: "1px solid var(--border)",
           borderRadius: 18,
           padding: "36px 40px",
           boxShadow:
-            "0 24px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
+            "var(--shadow-panel), inset 0 1px 0 rgb(var(--c-fg) / 0.05)",
         }}
       >
         {/* Subtle aurora at top */}
@@ -1401,7 +1401,7 @@ export default function OnboardingPage() {
             width: 400,
             height: 200,
             background:
-              "radial-gradient(ellipse, rgba(91,138,255,0.12), transparent 60%)",
+              "radial-gradient(ellipse, rgb(var(--c-ring) / 0.12), transparent 60%)",
             filter: "blur(20px)",
           }}
         />
@@ -1474,7 +1474,7 @@ export default function OnboardingPage() {
               borderRadius: 9,
               border: "none",
               background: "transparent",
-              color: step === 1 ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.7)",
+              color: step === 1 ? "var(--fg-faint)" : "var(--fg-muted)",
               fontSize: 13.5,
               fontWeight: 500,
               cursor: step === 1 ? "not-allowed" : "pointer",
@@ -1515,16 +1515,16 @@ export default function OnboardingPage() {
                 border: "none",
                 background:
                   !canAdvance() || loading
-                    ? "rgba(255,255,255,0.06)"
+                    ? "rgb(var(--c-fg) / 0.06)"
                     : "linear-gradient(180deg, #4f86ff 0%, #2c5fe6 100%)",
-                color: !canAdvance() || loading ? "rgba(255,255,255,0.35)" : "#fff",
+                color: !canAdvance() || loading ? "var(--fg-faint)" : "var(--fg)",
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: !canAdvance() || loading ? "not-allowed" : "pointer",
                 boxShadow:
                   !canAdvance() || loading
                     ? "none"
-                    : "0 8px 20px rgba(54,114,255,0.32), inset 0 1px 0 rgba(255,255,255,0.18)",
+                    : "0 8px 20px rgb(var(--c-accent) / 0.32), inset 0 1px 0 rgb(var(--c-fg) / 0.18)",
               }}
             >
               {loading ? (

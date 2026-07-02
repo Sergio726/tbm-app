@@ -119,7 +119,7 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
         position: "fixed",
         inset: 0,
         zIndex: 100,
-        background: "rgba(0,0,0,0.6)",
+        background: "var(--overlay)",
         backdropFilter: "blur(4px)",
         WebkitBackdropFilter: "blur(4px)",
       }}
@@ -136,7 +136,7 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
           background: "var(--surface)",
           border: "1px solid var(--border)",
           borderRadius: 16,
-          boxShadow: "0 24px 64px rgba(0,0,0,0.7)",
+          boxShadow: "var(--shadow-modal)",
           overflow: "hidden",
         }}
       >

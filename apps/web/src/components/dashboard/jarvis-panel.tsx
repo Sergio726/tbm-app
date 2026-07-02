@@ -320,7 +320,7 @@ export function JarvisPanel({
     <>
       <div
         onClick={onClose}
-        style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 80 }}
+        style={{ position: "fixed", inset: 0, background: "var(--overlay)", zIndex: 80 }}
         aria-hidden
       />
       <aside
@@ -338,7 +338,7 @@ export function JarvisPanel({
           background: "var(--surface)",
           borderLeft: "1px solid var(--border)",
           zIndex: 81,
-          boxShadow: "-20px 0 60px rgba(0,0,0,0.5)",
+          boxShadow: "-20px 0 60px var(--shadow-color)",
           // Reset de herencia (el orbe vive dentro de un <h1> bold): texto normal.
           fontWeight: 400,
           fontSize: 14,

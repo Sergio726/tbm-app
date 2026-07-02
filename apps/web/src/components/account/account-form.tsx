@@ -567,7 +567,7 @@ export function AccountForm({
             <div
               className="absolute inset-0 flex items-center justify-center rounded-full transition-opacity duration-150"
               style={{
-                background: "rgba(0,0,0,0.55)",
+                background: "var(--overlay)",
                 opacity: avatarHover && !uploading ? 1 : 0,
                 pointerEvents: "none",
               }}
@@ -576,7 +576,7 @@ export function AccountForm({
             </div>
             {uploading && (
               <div className="absolute inset-0 flex items-center justify-center rounded-full"
-                style={{ background: "rgba(0,0,0,0.6)" }}>
+                style={{ background: "var(--overlay)" }}>
                 <span className="text-[10px] text-fg font-medium">...</span>
               </div>
             )}

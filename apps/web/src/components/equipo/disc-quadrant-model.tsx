@@ -37,7 +37,7 @@ export function DiscQuadrantModel({
   const secondary = (norm[1] as DiscLetter | undefined) ?? null;
 
   return (
-    <div className="rounded-[14px] border border-white/[0.05] bg-white/[0.015] p-3.5">
+    <div className="rounded-[14px] border border-border bg-elevated/50 p-3.5">
       <div className="mb-3 text-center">
         <div className="text-[10px] font-bold uppercase tracking-[1.4px] text-fg-muted">
           Modelo DISC
@@ -92,8 +92,8 @@ function QuadrantCard({
     <div
       className="relative flex flex-col rounded-xl border p-2.5 transition"
       style={{
-        background: active ? `${color}14` : "rgba(255,255,255,0.02)",
-        borderColor: isPrimary ? `${color}cc` : isSecondary ? `${color}66` : "rgba(255,255,255,0.06)",
+        background: active ? `${color}14` : "rgb(var(--c-fg) / 0.02)",
+        borderColor: isPrimary ? `${color}cc` : isSecondary ? `${color}66` : "var(--border)",
         boxShadow: isPrimary ? `0 0 20px ${color}33` : "none",
         opacity: state === "dim" ? 0.5 : 1,
       }}

@@ -416,7 +416,7 @@ export function EquipoClient({
           onClick={() => setConfirmRegen(false)}
         >
           <div
-            className="w-full max-w-[420px] rounded-2xl border border-[#f87171]/30 bg-[#141b2b] p-6 shadow-2xl"
+            className="w-full max-w-[420px] rounded-2xl border border-danger/30 bg-surface p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-center gap-2.5">
@@ -459,7 +459,7 @@ export function EquipoClient({
           className="pointer-events-none fixed bottom-6 left-1/2 z-[50] inline-flex -translate-x-1/2 items-center gap-2.5 rounded-xl px-5 py-3 text-[13.5px] font-bold"
           style={{
             background: "linear-gradient(135deg, #34d399, #10b981)",
-            color: "#04241a",
+            color: "var(--success-text)",
             boxShadow: "0 12px 34px rgba(52,211,153,0.4)",
             animation: "tbm-rise .25s ease",
           }}
@@ -473,7 +473,7 @@ export function EquipoClient({
       {errorFlash && (
         <div
           className="fixed bottom-6 left-1/2 z-[55] inline-flex max-w-[90vw] -translate-x-1/2 items-center gap-2.5 rounded-xl border border-[#f87171]/40 bg-[#2a1416] px-5 py-3 text-[13px] font-semibold text-[#fca5a5]"
-          style={{ boxShadow: "0 12px 34px rgba(0,0,0,0.4)", animation: "tbm-rise .25s ease" }}
+          style={{ boxShadow: "var(--shadow-panel)", animation: "tbm-rise .25s ease" }}
           role="alert"
         >
           <AlertTriangle size={16} strokeWidth={2} />

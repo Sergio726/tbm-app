@@ -88,6 +88,13 @@
     --semaforo-amarillo-bg: var(--warn-bg);
     --semaforo-rojo-bg:     var(--danger-bg);
 
+    /* Sombras (theme-aware) */
+    --shadow-color:       rgba(0, 0, 0, 0.5);
+    --shadow-card-color:  rgba(0, 0, 0, 0.4);
+    --shadow-panel:       0 16px 40px rgba(0, 0, 0, 0.6);
+    --shadow-modal:       0 24px 64px rgba(0, 0, 0, 0.7);
+    --shadow-card:        0 1px 3px var(--shadow-card-color), 0 1px 2px var(--shadow-color);
+
     color-scheme: dark;
 
     /* Radios */
@@ -143,6 +150,12 @@
     --c-success:         5 150 105;  --c-success-text:   4 120  87;
     --c-warn:          217 119   6;  --c-warn-text:    180  83   9;
     --c-danger:        220  38  38;  --c-danger-text:  185  28  28;
+
+    --shadow-color:       rgba(15, 23, 42, 0.08);
+    --shadow-card-color:  rgba(15, 23, 42, 0.06);
+    --shadow-panel:       0 16px 40px rgba(15, 23, 42, 0.1);
+    --shadow-modal:       0 24px 64px rgba(15, 23, 42, 0.12);
+    --shadow-card:        0 1px 3px var(--shadow-card-color), 0 1px 2px var(--shadow-color);
 
     color-scheme: light;
   }
@@ -487,47 +500,47 @@ input.tbm-range:focus {
 
 /* ── Tour guiado (S11) — popover de driver.js con el design system ── */
 .driver-popover {
-  background: #111827 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--elevated) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 16px !important;
   font-family: Inter, system-ui, sans-serif !important;
-  color: rgba(255, 255, 255, 0.85) !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6) !important;
+  color: var(--fg-muted) !important;
+  box-shadow: var(--shadow-modal) !important;
   max-width: 340px;
 }
 .driver-popover-title {
   font-size: 15px !important;
   font-weight: 700 !important;
-  color: #fff !important;
+  color: var(--fg) !important;
 }
 .driver-popover-description {
   font-size: 13.5px !important;
   line-height: 1.6 !important;
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: var(--fg-subtle) !important;
 }
 .driver-popover-progress-text {
   font-size: 11px !important;
-  color: rgba(255, 255, 255, 0.4) !important;
+  color: var(--fg-faint) !important;
 }
 .driver-popover-navigation-btns button {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgb(var(--c-fg) / 0.05) !important;
+  border: 1px solid rgb(var(--c-fg) / 0.12) !important;
   border-radius: 10px !important;
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: var(--fg-muted) !important;
   font-weight: 600 !important;
   text-shadow: none !important;
   padding: 6px 12px !important;
 }
 .driver-popover-navigation-btns button.driver-popover-next-btn {
-  background: linear-gradient(135deg, #5b8aff, #2c5fe6) !important;
+  background: linear-gradient(135deg, rgb(var(--c-ring)), rgb(var(--c-accent-hover))) !important;
   border: none !important;
-  color: #fff !important;
+  color: var(--accent-fg) !important;
 }
-.driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: #111827 !important; }
-.driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: #111827 !important; }
-.driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: #111827 !important; }
-.driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: #111827 !important; }
-.driver-popover-close-btn { color: rgba(255, 255, 255, 0.4) !important; }
+.driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: var(--elevated) !important; }
+.driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: var(--elevated) !important; }
+.driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: var(--elevated) !important; }
+.driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: var(--elevated) !important; }
+.driver-popover-close-btn { color: var(--fg-faint) !important; }
 
 /* La opacidad/color del overlay se controla desde tour-provider.tsx
    (overlayColor + overlayOpacity). Resaltamos el elemento enfocado con un
@@ -600,13 +613,13 @@ input.tbm-range:focus {
   margin-left: -4px;
   margin-top: -4px;
   border-radius: 9999px;
-  background: #1E3050;
+  background: var(--border);
   transition: background .35s ease, box-shadow .35s ease, transform .35s ease;
   z-index: 1;
 }
 .tbm-notch[data-on="1"] {
-  background: #F8FAFC;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.35), 0 0 10px rgba(59,130,246,0.55);
+  background: var(--fg);
+  box-shadow: 0 0 0 3px rgb(var(--c-accent) / 0.35), 0 0 10px rgb(var(--c-accent) / 0.55);
   animation: tbm-pop .42s cubic-bezier(.34,1.56,.64,1) both;
 }
 

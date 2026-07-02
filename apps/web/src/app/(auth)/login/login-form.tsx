@@ -295,7 +295,7 @@ function ProductPreview() {
           "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))",
         border: "1px solid var(--border)",
         boxShadow:
-          "0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)",
+          "var(--shadow-panel), inset 0 1px 0 rgb(var(--c-fg) / 0.06)",
         maxWidth: 460,
       }}
     >
