@@ -22,6 +22,8 @@ export default function KpisPage() {
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isArquitecto, setIsArquitecto] = useState(false);
+  const [ownerNames, setOwnerNames] = useState<Record<string, string>>({});
 
   // Formulario nuevo KPI
   const [showForm, setShowForm] = useState(false);
@@ -40,13 +42,17 @@ export default function KpisPage() {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("company_id")
+      .select("company_id, role")
       .eq("id", user.id)
       .single();
 
     if (!profile?.company_id) return;
     setCompanyId(profile.company_id);
+    const arquitecto = profile.role === "arquitecto";
+    setIsArquitecto(arquitecto);
 
+    // RLS ya filtra: colaborador solo recibe sus propios KPIs;
+    // arquitecto recibe los de toda la empresa.
     const { data } = await supabase
       .from("kpis")
       .select("*")
@@ -56,7 +62,25 @@ export default function KpisPage() {
 
     setKpis(data ?? []);
     setLoading(false);
+
+    // Arquitecto ve el nombre de cada dueño (puede ver KPIs de todo el equipo)
+    if (arquitecto && data && data.length > 0) {
+      const ownerIds = [...new Set(data.map((k) => k.owner_id).filter(Boolean))];
+      if (ownerIds.length > 0) {
+        const { data: owners } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", ownerIds as string[]);
+        const map: Record<string, string> = {};
+        owners?.forEach((o) => {
+          map[o.id] = o.full_name ?? "Sin nombre";
+        });
+        setOwnerNames(map);
+      }
+    }
   }, [supabase, weekDate]);
+
+  const myKpis = kpis.filter((k) => k.owner_id === userId);
 
   useEffect(() => {
     loadKpis();
@@ -132,10 +156,13 @@ export default function KpisPage() {
               day: "numeric",
               month: "long",
             })}
+            {isArquitecto
+              ? " · tus indicadores + los de tu equipo"
+              : " · tus indicadores"}
           </p>
         </div>
 
-        {kpis.length < 5 && (
+        {myKpis.length < 5 && (
           <button
             onClick={() => setShowForm(true)}
             className="tbm-btn-primary flex items-center gap-2 text-sm"
@@ -253,7 +280,7 @@ export default function KpisPage() {
           <p className="text-3xl mb-3">📊</p>
           <p className="text-fg font-medium">Sin KPIs esta semana</p>
           <p className="text-tbm-text-secondary text-sm mt-1">
-            Agregá hasta 5 indicadores para trackear el progreso de tu equipo
+            Agregá hasta 5 indicadores propios para trackear tu progreso
           </p>
           <button
             onClick={() => setShowForm(true)}
@@ -293,6 +320,14 @@ export default function KpisPage() {
                       <span className="text-xs text-tbm-text-muted">
                         {kpi.type === "leading" ? "Leading" : "Lagging"}
                       </span>
+                      {isArquitecto && kpi.owner_id && (
+                        <span className="text-xs text-tbm-text-muted">
+                          ·{" "}
+                          {kpi.owner_id === userId
+                            ? "Tuyo"
+                            : ownerNames[kpi.owner_id] ?? "Colaborador"}
+                        </span>
+                      )}
                     </div>
                     <p className="font-medium text-fg text-sm">{kpi.name}</p>
                   </div>
@@ -339,9 +374,9 @@ export default function KpisPage() {
         </div>
       )}
 
-      {kpis.length >= 5 && (
+      {myKpis.length >= 5 && (
         <p className="text-xs text-tbm-text-muted text-center">
-          Máximo 5 KPIs por semana — enfocate en lo que más mueve la aguja
+          Máximo 5 KPIs propios por semana — enfocate en lo que más mueve la aguja
         </p>
       )}
     </div>

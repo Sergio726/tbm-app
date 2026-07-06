@@ -5,23 +5,40 @@
 
 ---
 
-## 1. Visibilidad de los KPIs (módulo `/dashboard/kpis`) — 🔍 EN REVISIÓN (2026-06-27)
+## 1. Visibilidad de los KPIs (módulo `/dashboard/kpis`) — ✅ DECIDIDO (2026-07-05)
 
-**Hoy:** los **KPIs son de la empresa y los ve TODO el equipo** (colaboradores incluidos). Es el
-diseño del método TBM (tablero compartido del equipo · Ley de Pearson: "lo que se mide se gestiona").
-Sebas detectó que el colaborador ve los KPIs que carga el Arquitecto y lo quiere revisar.
+**Decisión: (b) KPIs por colaborador**, con un matiz sobre la creación: cada colaborador
+puede **autocrear y ver solo sus propios KPIs**; el Arquitecto sigue viendo y creando los
+de toda la empresa (rol de supervisión). El tope de **5 KPIs/semana pasa a ser por
+persona**, no por empresa.
 
-**Cómo está armado (técnico):**
-- Tabla `kpis`: `company_id`, `owner_id`, `name`, `type` (leading/lagging), `unit`, `weekly_target`,
-  `current_value`, `week_date` (lunes), `is_active`. Semanal, **máx 5 por semana**.
-- RLS: **crear** = solo Arquitecto · **ver** = todos los miembros (`company_id = auth_company_id()`)
-  · **actualizar valor** = dueño (`owner_id = auth.uid()`) o Arquitecto.
-- UI: `apps/web/src/app/(dashboard)/dashboard/kpis/page.tsx`. Semáforo 🟢≥100% 🟡≥85% 🔴<85%.
+**Implementado** (migración `kpis_por_colaborador`, aplicada 2026-07-05):
+- RLS `SELECT`: `owner_id = auth.uid() OR (arquitecto AND company_id = propia)`.
+- RLS `INSERT`: `company_id = propia AND (owner_id = auth.uid() OR arquitecto)` — antes
+  solo el Arquitecto podía crear KPIs; ahora cada colaborador también autocrea los suyos.
+- RLS `UPDATE`: sin cambios funcionales (dueño o arquitecto).
+- UI (`apps/web/.../dashboard/kpis/page.tsx`): el tope "máx 5" y el botón "Nuevo KPI" ahora
+  se calculan sobre **los KPIs propios** (`myKpis`), no sobre el total visible. El Arquitecto
+  ve, junto a cada card, de quién es ("Tuyo" / nombre del colaborador) ya que su vista incluye
+  los de todo el equipo.
 
-**Opciones si se decide cambiar:**
-- **(a)** Dejar como está → tablero compartido del equipo (diseño del método). *Sin cambios.*
-- **(b)** KPIs por colaborador (cada uno ve/carga solo los suyos) → filtrar por `owner_id` + ajustar
-  la RLS de SELECT.
-- **(c)** Solo el Arquitecto los ve (tablero privado del líder) → RLS SELECT restringida a arquitecto.
+<details>
+<summary>Contexto original de la revisión (2026-06-27)</summary>
 
-**Pendiente:** Sebas confirma cuál. Hasta entonces, no se toca.
+**Hoy (antes del cambio):** los **KPIs eran de la empresa y los veía TODO el equipo**
+(colaboradores incluidos). Era el diseño del método TBM (tablero compartido del equipo ·
+Ley de Pearson: "lo que se mide se gestiona"). Sebas detectó que el colaborador veía los
+KPIs que cargaba el Arquitecto y lo quiso revisar.
+
+**Cómo estaba armado (técnico):**
+- Tabla `kpis`: `company_id`, `owner_id`, `name`, `type` (leading/lagging), `unit`,
+  `weekly_target`, `current_value`, `week_date` (lunes), `is_active`. Semanal, máx 5.
+- RLS: crear = solo Arquitecto · ver = todos los miembros (`company_id = auth_company_id()`)
+  · actualizar valor = dueño (`owner_id = auth.uid()`) o Arquitecto.
+
+**Opciones evaluadas:**
+- (a) Dejar como está → tablero compartido del equipo (diseño del método original).
+- (b) KPIs por colaborador (cada uno ve/carga solo los suyos) → **elegida**.
+- (c) Solo el Arquitecto los ve (tablero privado del líder).
+
+</details>

@@ -19,8 +19,14 @@
 >   por config del admin. Detalle: [`docs/QA_INVITACIONES_2026-06.md`](docs/QA_INVITACIONES_2026-06.md).
 > - ✅ **DC**: DC-9 (fixes QA), DC-1 (launcher global), DC-2 (persona configurable desde el admin).
 > - ✅ **Pre-beta #7**: vista de créditos del líder (`/creditos`).
-> - 🔍 **EN REVISIÓN**: visibilidad de KPIs (hoy todo el equipo los ve) → ver `PENDIENTES_REVISION.md`.
+> - ✅ **Visibilidad de KPIs → decidido y hecho (2026-07-05)**: KPIs por colaborador. Ver abajo.
 > - **Próximo:** pre-beta #3 mobile · #8 test DISC público · DC-5 (RAG por empresa) / DC-7 (proactividad).
+>
+> **Novedades 2026-07-05 (KPIs por colaborador):** decisión de `PENDIENTES_REVISION.md` §1 resuelta —
+> cada colaborador ve/autocrea **solo sus propios KPIs**; el Arquitecto sigue viendo y creando los de
+> toda la empresa. Migración `kpis_por_colaborador` (RLS `SELECT`/`INSERT` reescritas: dueño o
+> arquitecto). UI (`dashboard/kpis/page.tsx`): el tope de 5/semana pasa a ser **por persona**
+> (`myKpis`, no el total visible); el Arquitecto ve de quién es cada card ("Tuyo"/nombre).
 >
 > **Novedades 2026-06-28 (theming + contraste):** base para evolución de interfaz. Rama `theme-tokens`.
 > - ✅ **Tokens semánticos** en `globals.css` como canales `R G B` (dark `:root` + claro
