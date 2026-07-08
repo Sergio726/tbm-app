@@ -80,7 +80,14 @@ function textResponse(text: string, conversationId?: string | null) {
 
 // ── DC-6: historial + uso + rate-limit ────────────────────────────────────
 const DC_RATE_LIMIT = 50; // mensajes del usuario por hora
+// T7: tope de gasto por empresa (circuit-breaker). Mensajes de usuario por
+// empresa/mes; 0 = sin tope. El kill-switch global apaga DC sin tocar la BD.
+const DC_COMPANY_MONTHLY_LIMIT = Number(process.env.DC_COMPANY_MONTHLY_LIMIT ?? 2000);
+const DC_KILL_SWITCH = ["1", "true", "yes"].includes(
+  (process.env.DC_KILL_SWITCH ?? "").toLowerCase()
+);
 type RlsClient = Awaited<ReturnType<typeof createServerClientType>>;
+type AdminClient = NonNullable<ReturnType<typeof createAdminClient>>;
 
 /** ¿El usuario superó el tope de mensajes/hora? (RLS limita el conteo a sus mensajes). */
 async function overRateLimit(supabase: RlsClient): Promise<boolean> {
@@ -91,6 +98,20 @@ async function overRateLimit(supabase: RlsClient): Promise<boolean> {
     .eq("role", "user")
     .gte("created_at", since);
   return (count ?? 0) >= DC_RATE_LIMIT;
+}
+
+/** T7: ¿la EMPRESA superó su tope de mensajes en el mes? (circuit-breaker de costo). */
+async function overCompanyBudget(admin: AdminClient, companyId: string | null): Promise<boolean> {
+  if (!companyId || DC_COMPANY_MONTHLY_LIMIT <= 0) return false;
+  const now = new Date();
+  const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+  const { count } = await admin
+    .from("ai_messages")
+    .select("id, ai_conversations!inner(company_id)", { count: "exact", head: true })
+    .eq("role", "user")
+    .eq("ai_conversations.company_id", companyId)
+    .gte("created_at", monthStart);
+  return (count ?? 0) >= DC_COMPANY_MONTHLY_LIMIT;
 }
 
 /** Devuelve la conversación existente o crea una nueva (título = inicio del 1er mensaje). */
@@ -152,6 +173,11 @@ function resolveOrigin(req: Request, bodyOrigin: unknown): string {
 
 /** Chat de JARVIS en streaming (S18.3) + tool use con confirmación (DC-3). */
 export async function POST(req: Request) {
+  // T7: kill-switch global de gasto (apaga DC sin tocar la BD ni el deploy).
+  if (DC_KILL_SWITCH) {
+    return NextResponse.json({ error: "dc_paused" }, { status: 503 });
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -209,6 +235,11 @@ export async function POST(req: Request) {
   // DC-6: tope simple de mensajes por usuario/hora.
   if (await overRateLimit(supabase)) {
     return NextResponse.json({ error: "rate_limit" }, { status: 429 });
+  }
+
+  // T7: tope de gasto por empresa/mes (circuit-breaker de costo de IA).
+  if (await overCompanyBudget(admin, companyId)) {
+    return NextResponse.json({ error: "company_budget" }, { status: 429 });
   }
 
   const history = Array.isArray(body.messages) ? body.messages : [];
