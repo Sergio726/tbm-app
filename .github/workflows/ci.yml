@@ -1,0 +1,48 @@
+name: CI
+
+# Red de contención mínima (auditoria.md T8). Corre en cada PR y en push a main.
+# El type-check es gate DURO; el lint es informativo hasta la primera pasada de
+# limpieza (el código traía ~34k líneas nunca linteadas). Sumar `next build`
+# cuando haya envs dummy configuradas.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancela corridas viejas del mismo ref si llega un push nuevo.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    name: Type-check (web + admin)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Type-check web
+        run: npm run type-check -w tbm-app
+      - name: Type-check admin
+        run: npm run type-check -w tbm-admin
+
+  lint:
+    name: Lint web (informativo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # continue-on-error: da señal sin bloquear el merge hasta limpiar el stock
+      # de warnings/errores heredados. Quitar cuando el lint quede en verde.
+      - name: Lint web
+        run: npm run lint -w tbm-app
+        continue-on-error: true
