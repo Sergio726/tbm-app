@@ -15,6 +15,7 @@ import { TBM_METHOD_FRAMING } from "@/lib/tbm-disc-context";
 import { DC_DEFAULTS, toneLine, ragEnabled, actionsEnabled } from "@/lib/dc-persona";
 import { DC_TOOL_SPECS, isToolName, prepareProposal, executeTool } from "@/lib/jarvis-tools";
 import { NAV_SLUGS, parseNavMarker } from "@/lib/dc-navigation";
+import { trustedOrigin } from "@/lib/trusted-origin";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -133,11 +134,15 @@ async function saveMessage(
     .eq("id", conversationId);
 }
 
-/** Origin para armar links/invitaciones: prioriza el que manda el cliente, con fallback al request. */
+/**
+ * Origin de confianza para armar links con token. T2: se IGNORA el `origin`
+ * que manda el cliente (salvo localhost) — usar el del cliente permitía que un
+ * host atacante recibiera el token de invitación. Fallback al origin real del
+ * request (en Vercel es el del deployment, no manipulable por el body).
+ */
 function resolveOrigin(req: Request, bodyOrigin: unknown): string {
-  if (typeof bodyOrigin === "string" && /^https?:\/\//.test(bodyOrigin)) {
-    return bodyOrigin.replace(/\/+$/, "");
-  }
+  const trusted = trustedOrigin(bodyOrigin);
+  if (trusted) return trusted;
   try {
     return new URL(req.url).origin;
   } catch {

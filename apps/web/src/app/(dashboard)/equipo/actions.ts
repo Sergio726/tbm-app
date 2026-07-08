@@ -3,6 +3,7 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail, mailCanSendExternal } from "@/lib/email";
+import { trustedOrigin } from "@/lib/trusted-origin";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -120,9 +121,18 @@ export async function sendTeamInvite(input: {
     }
   }
 
+  // T2: NUNCA confiar en el origin del cliente para links con token embebido.
+  const origin = trustedOrigin(input.origin);
+  if (!origin) {
+    return {
+      ok: false,
+      error: "Falta configurar NEXT_PUBLIC_APP_URL en el servidor para enviar invitaciones.",
+    };
+  }
+
   const nextPath = `/accept-invite?company=${input.companyId}`;
-  const redirectTo = `${input.origin}${nextPath}`;
-  const confirmRedirect = `${input.origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`;
+  const redirectTo = `${origin}${nextPath}`;
+  const confirmRedirect = `${origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`;
 
   const admin = createAdminClient();
   if (!admin) {
@@ -132,7 +142,7 @@ export async function sendTeamInvite(input: {
   // Camino B: correo configurado con dominio verificado (admin o env) → email en
   // español + link cross-device.
   if (await mailCanSendExternal()) {
-    const inviteLink = await buildInviteLink(admin, input.origin, nextPath, email);
+    const inviteLink = await buildInviteLink(admin, origin, nextPath, email);
     if (!inviteLink) {
       return { ok: false, error: "No se pudo generar el link de invitación." };
     }
@@ -179,7 +189,7 @@ export async function sendTeamInvite(input: {
 
   console.error("sendTeamInvite: inviteUserByEmail falló", inviteErr.message);
 
-  const inviteLink = await buildInviteLink(admin, input.origin, nextPath, email);
+  const inviteLink = await buildInviteLink(admin, origin, nextPath, email);
   if (!inviteLink) {
     const detail = [otpErr.message, inviteErr.message].filter(Boolean).join(" · ");
     return { ok: false, error: detail || "No se pudo enviar la invitación." };
