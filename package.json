@@ -8,10 +8,13 @@
   ],
   "scripts": {
     "dev": "npm run dev -w tbm-app",
+    "dev:web": "npm run dev -w tbm-app",
+    "dev:admin": "npm run dev -w tbm-admin",
     "build": "npm run build -w tbm-app",
-    "start": "npm run start -w tbm-app",
-    "type-check": "npm run type-check -w tbm-app",
     "build:web": "npm run build -w tbm-app",
-    "dev:web": "npm run dev -w tbm-app"
+    "build:admin": "npm run build -w tbm-admin",
+    "start": "npm run start -w tbm-app",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "lint": "npm run lint -w tbm-app"
   }
 }
