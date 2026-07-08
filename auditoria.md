@@ -32,6 +32,8 @@
 Estos son los que confirmaron dos o más auditores de forma independiente. Son la prioridad absoluta.
 
 ### T1 🔴 CRÍTICO — Cualquier usuario se auto-promueve a Arquitecto de cualquier empresa (ruptura total del aislamiento multi-tenant)
+> 🛠️ **Remediado (2026-07-02) — falta aplicar la migración.** `supabase/migration_fase0_hardening.sql` agrega un trigger `BEFORE UPDATE` en `profiles` que congela `role`/`company_id` en sesiones de usuario, salvo la primera vinculación validada (dueño de su empresa o invitado con invitación real). No requiere cambios de código (register/accept-invite siguen igual). **Pendiente: correr la migración en el SQL Editor.**
+
 **Confirmado por:** BD (#1), Seguridad (C1).
 **Evidencia:** `supabase/schema.sql:105-107`
 ```sql
@@ -67,6 +69,8 @@ Alternativa complementaria: `revoke update (role, company_id) on public.profiles
 ---
 
 ### T2 🔴 CRÍTICO — `origin` controlado por el cliente termina dentro del magic link de invitación → robo de token / account takeover
+> ✅ **Resuelto (2026-07-02).** Nuevo `apps/web/src/lib/trusted-origin.ts`: el origin de los links con token se deriva de `NEXT_PUBLIC_APP_URL` (ignora el del cliente salvo localhost). Aplicado en `equipo/actions.ts` (`buildInviteLink` + redirects; aborta con error claro si falta la env) y en `resolveOrigin` de `api/jarvis/route.ts`.
+
 **Confirmado por:** Seguridad (A1), IA (#1).
 **Evidencia:** `apps/web/src/app/(dashboard)/equipo/actions.ts:47-68` arma el link **a mano** con el `hashed_token` real de Supabase embebido en un dominio arbitrario:
 ```ts
@@ -84,6 +88,8 @@ async function buildInviteLink(admin, origin, nextPath, email) {
 ---
 
 ### T3 🔴 CRÍTICO — El gating de créditos del DISC se puede saltar desde la consola del browser
+> 🛠️ **Remediado (2026-07-02) — falta aplicar la migración.** `migration_fase0_hardening.sql` dropea las policies insert/update/delete de arquitecto sobre `disc_assessments` y revoca esos permisos a `authenticated`/`anon` (queda solo SELECT). Verificado que ningún `.from("disc_assessments").insert/update/delete` existe en `apps/` → todo pasa por RPC, no rompe nada. **Pendiente: correr la migración.**
+
 **Confirmado por:** Créditos (#1). (Relacionado con T1: mismo patrón de RLS de escritura directa.)
 **Evidencia:** `supabase/migration_sprint3_disc.sql:51-64` — las policies pre-créditos siguen vigentes:
 ```sql
@@ -110,6 +116,8 @@ La Fase 2 solo reemplazó el INSERT **en el código de la app** (`migration_fase
 ---
 
 ### T5 🔴 CRÍTICO — Posible `role DEFAULT 'arquitecto'`: todo invitado nace como arquitecto (a verificar)
+> 🛠️ **Remediado (2026-07-02) — falta aplicar la migración.** `migration_fase0_hardening.sql` fija `profiles.role default 'colaborador'`, actualiza `handle_new_user` para asignar rol explícito, y re-aplica el fix de datos idempotente (dueños→arquitecto, resto→colaborador). Es equivalente a `sprint5_roles.sql`, seguro de correr aunque ya estuviera aplicado. **Pendiente: correr la migración.**
+
 **Confirmado por:** BD (#3).
 **Evidencia:** `supabase/README.md:21` marca `migration_sprint5_roles.sql` "⏳ pendiente" sobre el proyecto activo. `schema.sql:36` define `role text default 'arquitecto'` y el `handle_new_user` base (`schema.sql:127-141`) no setea role. Si sprint5 no se aplicó, **todo signup (incluidos invitados) nace arquitecto**, que es el bug exacto que sprint5 corrige (`migration_sprint5_roles.sql:3-7`). Combinado con T1, cualquier invitado tendría permisos de arquitecto desde el día cero.
 
@@ -131,6 +139,8 @@ Si devuelve `'arquitecto'`, aplicar `migration_sprint5_roles.sql` de inmediato. 
 ---
 
 ### T7 🔴 CRÍTICO — El asistente de IA no tiene tope de costo por empresa ni circuit-breaker de gasto
+> ✅ **Resuelto — mínimo viable (2026-07-02).** `api/jarvis/route.ts`: kill-switch global por env `DC_KILL_SWITCH` (apaga DC con 503 sin tocar la BD) + `overCompanyBudget()` que corta con 429 cuando la empresa supera `DC_COMPANY_MONTHLY_LIMIT` mensajes/mes (default 2000, 0 = sin tope). Documentado en `.env.local.example`. **Pendiente (fase posterior):** tope por *tokens* (no mensajes) + tabla de rollup + key/budget por empresa.
+
 **Confirmado por:** IA (#2, #14).
 **Evidencia:** `overRateLimit` (`api/jarvis/route.ts:85-93`) cuenta solo mensajes del **usuario** en la última hora (50/h). No existe ningún tope por `company_id`. `getAiUsage` (`asistente-ia/actions.ts:199-224`) suma tokens de **toda la plataforma**, sin desglose ni corte. Hay una sola API key global (`ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'`, `migration_jarvis_ai_config.sql:53-61`) → el costo de todas las empresas va a la misma cuenta sin segmentación. No hay gating por créditos en el chat.
 
@@ -555,13 +565,15 @@ Ver IA-10 (IA) + este (Supabase). `apps/web/src/lib/supabase/{server,client}.ts`
 
 El orden está pensado para **cerrar primero lo que sangra plata o datos, y montar la red de contención antes de refactorizar**. Cada fase es acumulativa.
 
-### Fase 0 — Contención inmediata (esta semana, ~1-2 días)
+### Fase 0 — Contención inmediata (esta semana, ~1-2 días) — 🟡 EN CURSO (2026-07-02)
 Cosas que se explotan hoy o que impiden verificar el resto. Casi todo son migraciones pequeñas.
-1. **T1** — `WITH CHECK` en `profiles` que congela `role`/`company_id` (+ mover accept-invite/register a RPC). *La grieta multi-tenant.*
-2. **T3** — dropear policies write de `disc_assessments` + revoke. *Bypass de créditos.*
-3. **T2** — dejar de usar el `origin` del cliente en links de invitación (server action + `/api/jarvis`). *Robo de token.*
-4. **T5** — verificar `role default` en la BD viva y aplicar `sprint5_roles` si hace falta.
-5. **T7 (mínimo)** — kill-switch global de gasto de IA + tope por empresa (aunque sea un count previo simple).
+1. 🛠️ **T1** — trigger en `profiles` que congela `role`/`company_id` (autocontenido, sin tocar código). *La grieta multi-tenant.* → **en `migration_fase0_hardening.sql`, falta aplicar.**
+2. 🛠️ **T3** — dropear policies write de `disc_assessments` + revoke. *Bypass de créditos.* → **misma migración, falta aplicar.**
+3. ✅ **T2** — `lib/trusted-origin.ts`: origin de confianza en invitaciones (`equipo/actions.ts` + `/api/jarvis`). *Robo de token.*
+4. 🛠️ **T5** — default `role='colaborador'` + `handle_new_user` + fix de datos. → **misma migración, falta aplicar.**
+5. ✅ **T7 (mínimo)** — kill-switch `DC_KILL_SWITCH` + tope `DC_COMPANY_MONTHLY_LIMIT` por empresa/mes en `/api/jarvis`.
+
+> **Para cerrar la Fase 0:** correr `supabase/migration_fase0_hardening.sql` en el SQL Editor (cubre T1+T3+T5, es idempotente) y deployar el código (T2+T7). El código es independiente de la migración: se puede deployar antes o después sin romper nada.
 
 ### Fase 1 — Red de contención y verificabilidad (semana 1-2)
 Sin esto, los refactors siguientes son a ciegas.
