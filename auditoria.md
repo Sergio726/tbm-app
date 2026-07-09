@@ -301,6 +301,7 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** `crypto.timingSafeEqual(Buffer.from(header ?? ""), Buffer.from(\`Bearer ${secret}\`))` con chequeo previo de longitudes.
 
 ### SEC-B2 ⚪ BAJO — Inyección de HTML en el email a soporte (`requestCredits`)
+> ✅ **Resuelto (2026-07-02):** se escapan `companyName`/`who`/`email`/`note` antes de interpolarlos en el HTML del correo al admin.
 **Evidencia:** `(dashboard)/creditos/actions.ts:64-75` interpola `companyName`, `who`, `profile.email` y `note` (input del usuario) sin escapar en el HTML del email al admin.
 **Recomendación:** escapar con el `escapeHtml` ya usado en `equipo/actions.ts:198-204`.
 
@@ -429,6 +430,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 **Recomendación:** cron **horario** (`0 * * * *`) + filtrar empresas cuya hora local sea la ventana objetivo. Combina con el fan-out de T6 (cada corrida procesa ~1/24 de las empresas).
 
 ### CRON-8 🟡 MEDIO — El fallback a env anula el kill-switch del admin y puede enviar con credenciales/remitente viejos
+> ✅ **Resuelto (2026-07-02):** si la fila `email_config` existe y `enabled=false`, `sendEmail` no envía (aunque haya env vars). El fallback a env queda solo para fila inexistente / DB caída.
 **Evidencia:** `email.ts:21-49` — `resolveMail()` parte de `process.env.RESEND_API_KEY/RESEND_FROM` y solo los pisa si `email_config.enabled === true`; el `catch` (`:45-47`) es silencioso.
 **Impacto:** poner `enabled=false` en `/correo` **no** apaga el envío; una key rotada en Vault pero con env vieja en Vercel sigue enviando con la key revocada y otro `from` (rompe SPF/DKIM de `send.stlabs.ar`).
 **Recomendación:** si existe fila `email_config` y `enabled===false` → **no enviar**; reservar el fallback a env solo para "fila inexistente". Loguear la fuente usada. Documentar borrar `RESEND_*` de Vercel tras verificar el panel.
@@ -477,6 +479,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 Ver DB-8 (mismo hallazgo). El ledger deja de ser fuente de verdad contable; sin invariante ni job que lo detecte.
 
 ### PAY-4 🟠 ALTO — Preparación para Stripe: no existe ninguna pieza estructural
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase4_billing_schema.sql` crea `webhook_events` (idempotencia por event.id), `billing_customers`, `credit_packages` (mapping precio→créditos) y `purchases` (+ `product` en el ledger). Aditivo, no integra Stripe todavía. Falta aplicar + escribir el handler del webhook.
 **Evidencia:** grep de `stripe|checkout|webhook|customer` en `apps/`+`supabase/` → solo docs. No hay `stripe_customer_id` en `companies` (`schema.sql:12-22`), ni tabla de eventos de webhook, ni catálogo precio→créditos, ni moneda, ni orders, ni distinción test/live. Solo el type `'purchase'` reservado como comentario (`migration_fase2_credits.sql:26`) y `platform_admins.role_interno 'finanzas'` decorativo.
 **Recomendación:** ver §10 — es la lista de lo que hay que crear **antes** de escribir código de Stripe para no rehacer el motor.
 
@@ -616,7 +619,7 @@ Cuatro migraciones en `supabase/` (idempotentes), cada una en su commit:
 16. ⬜ **DB-14, DB-15** — retención de tablas + denormalizar `user_id` en `ai_messages`. Pendiente.
 
 ### Fase 4 — Preparación para pagos y consolidación (antes de conectar Stripe)
-17. **PAY-4 + §10** — crear el schema de billing (webhook_events, billing_customers, credit_packages, purchases) **antes** de escribir código de Stripe.
+17. 🛠️ **PAY-4 + §10** — schema de billing listo (`migration_fase4_billing_schema.sql`: webhook_events, billing_customers, credit_packages, purchases + `product` en el ledger). **Falta aplicar + escribir el handler del webhook de Stripe.**
 18. **ARCH-6, IA-10, CRON-12** — unificar clientes Supabase, capa de IA y templates de email en `packages/shared`.
 19. **ARCH-5, ARCH-8** — terminar el theming (codemod de hex) y unificar el design system de admin; activar `LIGHT_THEME_READY`.
 20. **ARCH-9, ARCH-10, ARCH-11, ARCH-13** — romper monolitos, mover fetching a server, Sentry en admin.
