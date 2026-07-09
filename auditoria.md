@@ -151,6 +151,8 @@ Si devuelve `'arquitecto'`, aplicar `migration_sprint5_roles.sql` de inmediato. 
 ---
 
 ### T8 🟠 ALTO — Sin red de contención: push a `main` deploya a producción sin CI, sin tests y con el lint roto
+> ✅ **Resuelto en gran parte (2026-07-02).** `.github/workflows/ci.yml` corre en cada PR/push: type-check de web+admin y Vitest como **gates duros**, lint informativo. ESLint migrado a flat config nativo de `eslint-config-next`. Primeros tests (`lib/credits`, `lib/trusted-origin`) — 11 verdes. Validado local: type-check web+admin en 0. **Pendiente:** sumar `next build` al CI (con envs dummy) y limpiar los 29 errores de lint heredados (`react-hooks/purity`).
+
 **Confirmado por:** Monorepo (#1, #2).
 **Evidencia:** no existe `.github/`, ni `turbo.json`, ni workflows. `AGENTS.md:65,106`: cualquier push a `main` auto-deploya en Vercel (2 proyectos). `find apps packages -name "*.test.*"` → **0 resultados** sobre ~34.600 líneas de `.tsx` solo en web. Y el lint no corre: `apps/web/package.json:9` usa `next lint`, comando **eliminado en Next 16** (falla con "Invalid project directory"); `apps/admin` no tiene ESLint configurado.
 
@@ -548,6 +550,8 @@ Ver IA-10 (IA) + este (Supabase). `apps/web/src/lib/supabase/{server,client}.ts`
 **Recomendación:** mismo `withSentryConfig` en admin con DSN de un segundo proyecto Sentry.
 
 ### ARCH-14 ⚪ BAJO — Root `package.json` no orquesta admin ni shared; scripts duplicados; sin turborepo
+> ✅ **Resuelto (2026-07-02).** Root `package.json`: `+dev:admin`, `+build:admin`, `type-check --workspaces --if-present` (web+admin), `+lint`. Turborepo sigue opcional a esta escala.
+
 **Evidencia:** `package.json:10-15` — todos los scripts apuntan a `-w tbm-app`; `build` y `build:web` idénticos; sin `dev:admin`/`build:admin`/`type-check` global. Admin solo se buildea implícitamente en Vercel.
 **Recomendación:** agregar `dev:admin`, `build:admin`, `type-check: --workspaces --if-present`. Turborepo opcional; el CI (T8) no.
 
@@ -575,11 +579,11 @@ Cosas que se explotan hoy o que impiden verificar el resto. Casi todo son migrac
 
 > **Para cerrar la Fase 0:** correr `supabase/migration_fase0_hardening.sql` en el SQL Editor (cubre T1+T3+T5, es idempotente) y deployar el código (T2+T7). El código es independiente de la migración: se puede deployar antes o después sin romper nada.
 
-### Fase 1 — Red de contención y verificabilidad (semana 1-2)
+### Fase 1 — Red de contención y verificabilidad (semana 1-2) — 🟡 EN CURSO (2026-07-02)
 Sin esto, los refactors siguientes son a ciegas.
-6. **T8** — GitHub Actions: `tsc --noEmit` + `next build` de ambas apps en cada PR; migrar ESLint a flat config v9. Primeros tests sobre `lib/` puro.
-7. **T4** — `supabase link` + `db diff` → baseline en `supabase/migrations/`; a partir de ahí todo cambio es una migración versionada. Reconciliar el README con la BD real.
-8. **ARCH-3 / DB-19** — `supabase gen types` a `@tbm/shared`; ambas apps lo importan; borrar la copia manual de web.
+6. ✅ **T8** — CI en GitHub Actions (type-check web+admin + Vitest, gates; lint informativo) + ESLint flat config + primeros tests + scripts de root. **Pendiente:** `next build` en CI + ESLint en admin + limpiar 29 errores de lint.
+7. 🔒 **T4** — `supabase link` + `db diff` → baseline en `supabase/migrations/`. **Bloqueado: requiere conexión viva a Supabase (MCP no autenticado en esta sesión).**
+8. 🔒 **ARCH-3 / DB-19** — `supabase gen types` a `@tbm/shared`. **Bloqueado: requiere conexión viva a Supabase.**
 
 ### Fase 2 — Solidez del aislamiento y de los datos (semana 2-4)
 9. **DB-4, DB-5, DB-6, DB-7** — reescribir las policies `FOR ALL` en INSERT/UPDATE por comando con validación de autoría; RPC `accept_invitation`.
