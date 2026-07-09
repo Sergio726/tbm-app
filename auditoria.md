@@ -479,7 +479,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 Ver DB-8 (mismo hallazgo). El ledger deja de ser fuente de verdad contable; sin invariante ni job que lo detecte.
 
 ### PAY-4 🟠 ALTO — Preparación para Stripe: no existe ninguna pieza estructural
-> 🛠️ **Schema + webhook implementados (2026-07-02):** `migration_fase4_billing_schema.sql` (webhook_events, billing_customers, credit_packages, purchases + `product`) + `migration_fase4_billing_rpc.sql` (`apply_purchase_credits`, atómica/idempotente, service-role). Código: `lib/stripe.ts` (firma HMAC + checkout), `/api/stripe/webhook`, `startCheckout`. Type-check + lint OK. **Falta:** aplicar migraciones, cargar `credit_packages`, setear `STRIPE_*`, UI de compra en `/creditos`, y probar con Stripe CLI (`stripe listen`).
+> 🛠️ **Flujo completo en código (2026-07-02):** schema (`migration_fase4_billing_schema.sql`) + RPC (`migration_fase4_billing_rpc.sql`, `apply_purchase_credits`) + `lib/stripe.ts` (firma HMAC + checkout) + `/api/stripe/webhook` + `startCheckout` + **UI de compra en `/creditos`** (tarjetas de paquete → Checkout). Type-check + lint OK. **Falta solo config/prueba:** aplicar migraciones, cargar `credit_packages`, setear `STRIPE_*`, y probar con Stripe CLI (`stripe listen`).
 **Evidencia:** grep de `stripe|checkout|webhook|customer` en `apps/`+`supabase/` → solo docs. No hay `stripe_customer_id` en `companies` (`schema.sql:12-22`), ni tabla de eventos de webhook, ni catálogo precio→créditos, ni moneda, ni orders, ni distinción test/live. Solo el type `'purchase'` reservado como comentario (`migration_fase2_credits.sql:26`) y `platform_admins.role_interno 'finanzas'` decorativo.
 **Recomendación:** ver §10 — es la lista de lo que hay que crear **antes** de escribir código de Stripe para no rehacer el motor.
 
@@ -619,7 +619,7 @@ Cuatro migraciones en `supabase/` (idempotentes), cada una en su commit:
 16. ⬜ **DB-14, DB-15** — retención de tablas + denormalizar `user_id` en `ai_messages`. Pendiente.
 
 ### Fase 4 — Preparación para pagos y consolidación (antes de conectar Stripe)
-17. 🛠️ **PAY-4 + §10** — schema de billing + webhook de Stripe implementados (schema + RPC `apply_purchase_credits` + `lib/stripe.ts` + `/api/stripe/webhook` + `startCheckout`). **Falta:** aplicar migraciones, cargar paquetes, setear `STRIPE_*`, UI de compra y probar con Stripe CLI.
+17. 🛠️ **PAY-4 + §10** — flujo de pagos completo en código (schema + RPC + `lib/stripe.ts` + `/api/stripe/webhook` + `startCheckout` + UI de compra en `/creditos`). **Falta solo:** aplicar migraciones, cargar paquetes, setear `STRIPE_*` y probar con Stripe CLI.
 18. **ARCH-6, IA-10, CRON-12** — unificar clientes Supabase, capa de IA y templates de email en `packages/shared`.
 19. **ARCH-5, ARCH-8** — terminar el theming (codemod de hex) y unificar el design system de admin; activar `LIGHT_THEME_READY`.
 20. **ARCH-9, ARCH-10, ARCH-11, ARCH-13** — romper monolitos, mover fetching a server, Sentry en admin.
