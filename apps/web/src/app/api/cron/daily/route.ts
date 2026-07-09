@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server";
+import { timingSafeEqual } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
+
+/** CRON-14: comparación de secreto en tiempo constante. */
+function safeEqual(a: string, b: string): boolean {
+  const ba = Buffer.from(a);
+  const bb = Buffer.from(b);
+  if (ba.length !== bb.length) return false;
+  return timingSafeEqual(ba, bb);
+}
 
 /**
  * Cron diario (S9 — emails transaccionales + alerta 72h de S4 E7).
@@ -28,7 +37,7 @@ export async function GET(request: Request) {
       { status: 503 }
     );
   }
-  if (request.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!safeEqual(request.headers.get("authorization") ?? "", `Bearer ${secret}`)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 
@@ -42,15 +51,27 @@ export async function GET(request: Request) {
 
   const now = new Date();
   const cutoff72h = new Date(now.getTime() - 72 * 3_600_000).toISOString();
-  const stats = { companies: 0, overdueNotifs: 0, emails: 0, cycleReminders: 0 };
+  const stats = { companies: 0, overdueNotifs: 0, emails: 0, cycleReminders: 0, errors: 0 };
 
-  const { data: companies } = await supabase
+  // CRON-1: sin límite (procesa TODAS las empresas). El .limit(100) previo dejaba
+  // la empresa 101+ sin procesar en silencio. A gran escala este loop secuencial
+  // excede los 60s y hay que pasar al patrón dispatcher+worker (T6 en auditoria.md);
+  // en beta el volumen entra holgado.
+  const { data: companies, error: companiesErr } = await supabase
     .from("companies")
     .select("id, name")
-    .limit(100);
+    .order("created_at", { ascending: true });
+  if (companiesErr) {
+    return NextResponse.json(
+      { ok: false, error: "companies_query", detail: companiesErr.message },
+      { status: 500 }
+    );
+  }
 
   for (const company of companies ?? []) {
     stats.companies++;
+    // CRON-4: aislar el fallo de una empresa para que no tumbe a las demás.
+    try {
 
     const [{ data: profiles }, { data: config }] = await Promise.all([
       supabase
@@ -275,9 +296,14 @@ export async function GET(request: Request) {
         }
       }
     }
+    } catch (e) {
+      stats.errors++;
+      console.error(`[cron] empresa ${company.id} falló:`, e);
+    }
   }
 
-  return NextResponse.json({ ok: true, ...stats });
+  // CRON-4: si hubo errores, devolver ok:false para que el monitor de cron lo marque.
+  return NextResponse.json({ ok: stats.errors === 0, ...stats });
 }
 
 // ── helpers ──────────────────────────────────────────────────────
