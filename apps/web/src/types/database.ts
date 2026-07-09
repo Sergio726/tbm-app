@@ -1641,6 +1641,119 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_events: {
+        Row: {
+          id: string
+          type: string | null
+          payload: Json | null
+          status: string
+          error: string | null
+          created_at: string
+          processed_at: string | null
+        }
+        Insert: {
+          id: string
+          type?: string | null
+          payload?: Json | null
+          status?: string
+          error?: string | null
+          created_at?: string
+          processed_at?: string | null
+        }
+        Update: {
+          status?: string
+          error?: string | null
+          processed_at?: string | null
+        }
+        Relationships: []
+      }
+      billing_customers: {
+        Row: {
+          company_id: string
+          stripe_customer_id: string | null
+          livemode: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          stripe_customer_id?: string | null
+          livemode?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          stripe_customer_id?: string | null
+          livemode?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      credit_packages: {
+        Row: {
+          id: string
+          stripe_price_id: string
+          name: string
+          credits: number
+          amount_cents: number
+          currency: string
+          active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          stripe_price_id: string
+          name: string
+          credits: number
+          amount_cents: number
+          currency?: string
+          active?: boolean
+          created_at?: string
+        }
+        Update: {
+          name?: string
+          credits?: number
+          amount_cents?: number
+          currency?: string
+          active?: boolean
+        }
+        Relationships: []
+      }
+      purchases: {
+        Row: {
+          id: string
+          company_id: string
+          package_id: string | null
+          stripe_session_id: string | null
+          amount_cents: number | null
+          currency: string | null
+          credits: number | null
+          status: string
+          credit_tx_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          package_id?: string | null
+          stripe_session_id?: string | null
+          amount_cents?: number | null
+          currency?: string | null
+          credits?: number | null
+          status?: string
+          credit_tx_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          stripe_session_id?: string | null
+          status?: string
+          credit_tx_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       credit_requests: {
         Row: {
           id: string
@@ -1873,6 +1986,10 @@ export type Database = {
       }
       generate_disc_link: {
         Args: { p_profile_id: string }
+        Returns: Json
+      }
+      apply_purchase_credits: {
+        Args: { p_purchase_id: string; p_event_id: string }
         Returns: Json
       }
       ai_get_api_key: {

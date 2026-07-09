@@ -6,8 +6,11 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail, getSupportEmail } from "@/lib/email";
 import { SUPPORT_EMAIL } from "@/lib/credits";
+import { createCheckoutSession, stripeConfigured } from "@/lib/stripe";
+import { trustedOrigin } from "@/lib/trusted-origin";
 
 export type RequestCreditsResult = { ok: true } | { ok: false; error: string };
 
@@ -93,4 +96,80 @@ export async function requestCredits(input: {
 
   revalidatePath("/creditos");
   return { ok: true };
+}
+
+export type StartCheckoutResult = { ok: true; url: string } | { ok: false; error: string };
+
+/**
+ * Inicia la compra de un paquete de créditos: crea un `purchase` pendiente y una
+ * Checkout Session de Stripe, y devuelve la URL para redirigir. La acreditación
+ * la hace el webhook (PAY-4/§10), no acá.
+ */
+export async function startCheckout(packageId: string): Promise<StartCheckoutResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Tu sesión expiró. Recargá la página." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, company_id, email")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "arquitecto" || !profile.company_id) {
+    return { ok: false, error: "Solo el Arquitecto puede comprar créditos." };
+  }
+  const companyId = profile.company_id;
+
+  if (!stripeConfigured()) {
+    return { ok: false, error: "Los pagos todavía no están configurados." };
+  }
+  const origin = trustedOrigin(undefined);
+  if (!origin) {
+    return { ok: false, error: "Falta configurar NEXT_PUBLIC_APP_URL en el servidor." };
+  }
+  const admin = createAdminClient();
+  if (!admin) return { ok: false, error: "Falta configuración del servidor (service role)." };
+
+  const { data: pkg } = await admin
+    .from("credit_packages")
+    .select("id, stripe_price_id, credits, amount_cents, currency, active")
+    .eq("id", packageId)
+    .maybeSingle();
+  if (!pkg || !pkg.active) {
+    return { ok: false, error: "Ese paquete no está disponible." };
+  }
+
+  const { data: purchase, error: purErr } = await admin
+    .from("purchases")
+    .insert({
+      company_id: companyId,
+      package_id: pkg.id,
+      credits: pkg.credits,
+      amount_cents: pkg.amount_cents,
+      currency: pkg.currency,
+      status: "pending",
+    })
+    .select("id")
+    .single();
+  if (purErr || !purchase) {
+    console.error("startCheckout: purchase insert", purErr);
+    return { ok: false, error: "No se pudo iniciar la compra." };
+  }
+
+  const session = await createCheckoutSession({
+    priceId: pkg.stripe_price_id,
+    successUrl: `${origin}/creditos?compra=ok`,
+    cancelUrl: `${origin}/creditos?compra=cancelada`,
+    customerEmail: profile.email ?? undefined,
+    metadata: { purchase_id: purchase.id, company_id: companyId },
+  });
+  if (!session) {
+    await admin.from("purchases").update({ status: "failed" }).eq("id", purchase.id);
+    return { ok: false, error: "No se pudo crear el checkout. Probá de nuevo." };
+  }
+
+  await admin.from("purchases").update({ stripe_session_id: session.id }).eq("id", purchase.id);
+  return { ok: true, url: session.url };
 }
