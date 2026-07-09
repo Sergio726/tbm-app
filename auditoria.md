@@ -167,6 +167,7 @@ Si devuelve `'arquitecto'`, aplicar `migration_sprint5_roles.sql` de inmediato. 
 > Además de T1, T3, T4, T5 (arriba), que nacen en la capa de datos.
 
 ### DB-4 🟠 ALTO — Policies `FOR ALL` "company_isolation": cualquier miembro edita cualquier fila de su empresa
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase2b_policies_aislamiento.sql` separa las policies por comando + DELETE de arquitecto. UPDATE conservador (por empresa) donde el flujo por rol no es verificable sin la app. Falta aplicar.
 **Evidencia:** `migration_sprint10_plan90d.sql:18-20` (patrón repetido en `rock_updates`, `idea_parking`, `decisions`, `leading_indicators`, y en `migration_sprint9_feedback.sql:19-22`, `migration_sprint11_workbooks.sql:16-18`):
 ```sql
 CREATE POLICY "company_isolation" ON rocks
@@ -177,11 +178,13 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** separar por comando — SELECT company-wide, INSERT con `user_id = auth.uid()`, UPDATE restringido a autor/dueño/arquitecto. El patrón correcto ya existe en `migration_sprint12_activos.sql:36-46` (`process_assets`).
 
 ### DB-5 🟠 ALTO — Suplantación de autoría intra-tenant: `from_user`/`user_id` no se validan contra `auth.uid()`
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase2b_*` — INSERT exige `user_id/proposed_by/from_user = auth.uid()`. Verificado que el código ya setea esos campos → no rompe. Falta aplicar.
 **Evidencia:** `migration_sprint9_feedback.sql:19-21` (feedback S.E.C. con `from_user` libre), `rock_updates.user_id` (`migration_sprint10_plan90d.sql:32-36`), `decisions.user_id`, `workbook_responses.user_id`. Contraste correcto: `tasks_insert_company` sí valida `created_by = auth.uid()` (`migration_sprint8_delegacion.sql:70-72`).
 **Impacto:** cualquiera inserta feedback "firmado" por otro compañero o check-ins a nombre ajeno — integridad sensible en una herramienta de gestión de personas.
 **Recomendación:** `AND from_user = auth.uid()` / `user_id = auth.uid()` en el `WITH CHECK` de cada INSERT.
 
 ### DB-6 🟠 ALTO — Borradores de feedback visibles para toda la empresa, incluido el destinatario
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase2b_*` — la SELECT de feedbacks solo muestra borradores a su autor. Falta aplicar.
 **Evidencia:** `migration_sprint9_feedback.sql:12,19-21` — existe `is_draft boolean DEFAULT true` pero la única SELECT es company-wide, sin filtrar por draft.
 **Impacto:** el destinatario y cualquier tercero leen feedback correctivo a medio escribir. Rompe el flujo draft→delivered.
 **Recomendación:** SELECT `(NOT is_draft AND (to_user = auth.uid() OR from_user = auth.uid() OR auth_is_arquitecto())) OR from_user = auth.uid()`.
@@ -192,11 +195,13 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** reemplazar por RPC `accept_invitation(token)` `SECURITY DEFINER` que solo mueva `status/accepted_at`, valide expiración y asigne el role original. (Resuelve también SEC-M4.)
 
 ### DB-8 🟠 ALTO — Motor de créditos: el ledger puede divergir del balance
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase2c_ledger.sql` — `grant_credits` rechaza saldo negativo (mata el clamp), CHECK de type, `balance_after`. Falta aplicar.
 **Evidencia:** `migration_fase2_credits.sql:61-69` — con `p_amount` negativo (type 'adjust') y balance insuficiente, el balance se clampa con `greatest(0, …)` pero el ledger registra el delta completo → `sum(delta) ≠ balance` para siempre. `credit_transactions.type` (línea 26) no tiene CHECK.
 **Impacto:** el ledger deja de ser fuente de verdad contable justo cuando haya que auditar créditos cobrados. (Ver también PAY-3.)
 **Recomendación:** rechazar el ajuste si `balance + p_amount < 0` (en vez de clampear); `CHECK (type IN (...))`; columna `balance_after` + job de reconciliación por empresa.
 
 ### DB-9 🟠 ALTO — El lote Sprint 9–11 se creó sin un solo índice; múltiples FKs sin índice
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase2a_indices.sql` — índices sobre company_id (Plan 90D) y FKs sin índice. Aditivo. Falta aplicar.
 **Evidencia:** `migration_sprint10_plan90d.sql` (5 tablas), `migration_sprint9_feedback.sql` y `migration_sprint11_workbooks.sql` no tienen **ningún** `CREATE INDEX` — cero índices sobre `company_id`, que es el predicado de todas sus queries y policies. Otras FKs sin índice: `notifications.company_id`, `ai_conversations.company_id`, `coach_assignments.company_id`, `coaching_notes.coach_id`, `kpis.owner_id`, `invitations.invited_by`, `pre_games.company_id`, `credit_requests.requested_by`, `user_habits.company_id`.
 **Impacto:** cada render de Plan 90D/BOS/feedback es seq scan; los `ON DELETE CASCADE` desde `companies` escanean todas estas tablas. A 500 empresas × 2 años, degradación generalizada.
 **Recomendación:** índices `(company_id)` o compuestos `(company_id, created_at desc)` / `(company_id, week_date)` según patrón. El repo ya tiene el patrón bueno (sprint1/2 indexan todo).
@@ -243,6 +248,7 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** recalcular el scoring server-side dentro de `submit_disc` a partir de las 24 respuestas; CHECKs mínimos (`jsonb_typeof`) en payloads críticos.
 
 ### DB-19 🟡 MEDIO — UNIQUEs de negocio faltantes
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase2d_integridad.sql` — unique de baseline por empresa + (company_id,name,week_date) en kpis y leading_indicators (guard defensivo). Falta aplicar.
 **Evidencia:** `scorecards` sin unique parcial `(company_id) WHERE is_baseline` → N "Día 1" por empresa; `kpis`/`leading_indicators` sin `UNIQUE (company_id, name, week_date)` → métricas-semana duplicadas.
 **Recomendación:** `CREATE UNIQUE INDEX … ON scorecards(company_id) WHERE is_baseline;` + uniques compuestos en tablas semanales.
 
@@ -455,6 +461,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 > Además de T3 (bypass del gating). Ver §10 para el diseño recomendado antes de conectar Stripe.
 
 ### PAY-2 🟠 ALTO — `grant_credits` no es idempotente: retry o doble submit = doble carga
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase2c_ledger.sql` — `grant_credits` acepta `p_request_id` (unique) → idempotente. Base para el webhook de Stripe. Falta aplicar + pasar el `request_id` desde el código.
 **Evidencia:** `migration_fase2_credits.sql:40-74` suma al balance e inserta un tx sin clave de request. Única protección: UI (`grant-form.tsx:59` `disabled={isPending}`).
 **Impacto:** server action lento + reintento (refresh, dos pestañas, retry de red) = carga doble sin forma de detectarla salvo leyendo el ledger. **Este agujero se hereda directo al webhook de Stripe** si se reusa la RPC tal cual.
 **Recomendación:** `p_request_id uuid` en `grant_credits` + columna `request_id uuid unique` en `credit_transactions`; el form genera el UUID al montar; capturar `unique_violation` → devolver balance actual. El webhook usará `event.id` de Stripe como `request_id`.
@@ -484,6 +491,7 @@ Ver DB-8 (mismo hallazgo). El ledger deja de ser fuente de verdad contable; sin 
 **Recomendación:** `create unique index on credit_requests(company_id) where status='pending'`; tratar `23505` como "ya tenés un pedido pendiente".
 
 ### PAY-9 ⚪ BAJO — El ledger es legible por cualquier miembro de la empresa (contradice su comentario)
+> 🛠️ **Migración lista (2026-07-02):** `migration_fase2d_integridad.sql` — la SELECT de `credit_transactions` ahora exige `auth_is_arquitecto()`. Falta aplicar.
 **Evidencia:** `migration_fase2_credits.sql:35-37` — la policy es `using (company_id = auth_company_id())` sin `auth_is_arquitecto()`, pese a que el comentario dice "el arquitecto puede ver su propio historial". El mismo repo ya corrigió esto para `credit_requests` (`migration_credit_requests_select_arquitecto.sql:8-11`).
 **Impacto:** un colaborador lee montos, motivos y ritmo de compra; con `purchase` y plata real, es info comercial sensible.
 **Recomendación:** agregar `and public.auth_is_arquitecto()` a la SELECT de `credit_transactions`.
@@ -585,11 +593,14 @@ Sin esto, los refactors siguientes son a ciegas.
 7. 🔒 **T4** — `supabase link` + `db diff` → baseline en `supabase/migrations/`. **Bloqueado: requiere conexión viva a Supabase (MCP no autenticado en esta sesión).**
 8. 🔒 **ARCH-3 / DB-19** — `supabase gen types` a `@tbm/shared`. **Bloqueado: requiere conexión viva a Supabase.**
 
-### Fase 2 — Solidez del aislamiento y de los datos (semana 2-4)
-9. **DB-4, DB-5, DB-6, DB-7** — reescribir las policies `FOR ALL` en INSERT/UPDATE por comando con validación de autoría; RPC `accept_invitation`.
-10. **DB-8 / PAY-3, PAY-2, PAY-6** — endurecer el ledger (idempotencia, CHECK de type, `balance_after`, no-negativo, `assessment_id`).
-11. **DB-9, DB-10** — índices sobre `company_id`/FKs; optimizar RLS con `(select …)`.
-12. **DB-13, DB-16, DB-19** — policy de compañeros, CHECKs de dominios, uniques de negocio.
+### Fase 2 — Solidez del aislamiento y de los datos (semana 2-4) — 🛠️ MIGRACIONES LISTAS (2026-07-02, falta aplicar)
+Cuatro migraciones en `supabase/` (idempotentes), cada una en su commit:
+9. 🛠️ **DB-4/5/6** (`migration_fase2b_policies_aislamiento.sql`) — policies por comando + autoría en INSERT + borradores de feedback privados + DELETE de arquitecto. **DB-7** (RPC `accept_invitation`) queda pendiente (ya mitigado en parte por el trigger de T1). UPDATE conservador (ver nota en el archivo).
+10. 🛠️ **DB-8 / PAY-2/3/6/5/11** (`migration_fase2c_ledger.sql`) — `grant_credits` idempotente + no-negativo + tope; `request_id`/`balance_after`/CHECK de type; `ref`=assessment_id; unique de pendiente por perfil. Falta el lado código (pasar `request_id`).
+11. 🛠️ **DB-9** (`migration_fase2a_indices.sql`) — índices sobre `company_id` y FKs. **DB-10** parcial: las policies reescritas en 2B usan `(select …)`; el resto de la RLS legacy queda por optimizar.
+12. 🛠️ **DB-19 + PAY-9** (`migration_fase2d_integridad.sql`) — uniques de negocio (baseline, kpis, leading_indicators) + ledger solo-arquitecto. **DB-13** (ver compañeros) y **DB-16** (CHECKs de dominio) quedan fuera: el primero choca con la privacidad del DISC (necesita vista), el segundo requiere confirmar dominios con la app.
+
+> **Para aplicar la Fase 2:** correr en orden `migration_fase2a_indices.sql` → `2b_policies_aislamiento` → `2c_ledger` → `2d_integridad` en el SQL Editor. Todas idempotentes; los uniques avisan por NOTICE (sin abortar) si encuentran datos duplicados.
 
 ### Fase 3 — Escalabilidad operativa (semana 3-5)
 13. **T6 + CRON-3/4/5/6/7** — refactor del cron a dispatcher + worker por empresa (cron horario, idempotente, con dedup persistente, backoff de Resend, batch). Es un solo diseño que cierra 6 hallazgos.
