@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { creditTypeLabel, formatCreditDate } from "@/lib/credits";
 import { RequestCreditsButton } from "./request-credits-button";
+import { BuyCredits, type CreditPackage } from "./buy-credits";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,12 @@ type Tx = {
   created_at: string;
 };
 
-export default async function CreditosPage() {
+export default async function CreditosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ compra?: string }>;
+}) {
+  const { compra } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,29 +37,37 @@ export default async function CreditosPage() {
   // Los créditos son de la empresa y solo el Arquitecto los gestiona.
   if (profile?.role !== "arquitecto" || !profile.company_id) redirect("/dashboard");
 
-  const [{ data: credits }, { data: txs }, { count: pendingCount }] = await Promise.all([
-    supabase
-      .from("company_credits")
-      .select("balance")
-      .eq("company_id", profile.company_id)
-      .maybeSingle(),
-    supabase
-      .from("credit_transactions")
-      .select("id, delta, type, reason, created_at")
-      .eq("company_id", profile.company_id)
-      .order("created_at", { ascending: false })
-      .limit(50),
-    // N2: ¿ya hay un pedido de créditos pendiente? → el form lo refleja.
-    supabase
-      .from("credit_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("company_id", profile.company_id)
-      .eq("status", "pending"),
-  ]);
+  const [{ data: credits }, { data: txs }, { count: pendingCount }, { data: pkgs }] =
+    await Promise.all([
+      supabase
+        .from("company_credits")
+        .select("balance")
+        .eq("company_id", profile.company_id)
+        .maybeSingle(),
+      supabase
+        .from("credit_transactions")
+        .select("id, delta, type, reason, created_at")
+        .eq("company_id", profile.company_id)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      // N2: ¿ya hay un pedido de créditos pendiente? → el form lo refleja.
+      supabase
+        .from("credit_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("company_id", profile.company_id)
+        .eq("status", "pending"),
+      // PAY-4: paquetes de compra (vacío si la tabla aún no existe → no rompe).
+      supabase
+        .from("credit_packages")
+        .select("id, name, credits, amount_cents, currency")
+        .eq("active", true)
+        .order("amount_cents", { ascending: true }),
+    ]);
 
   const balance = credits?.balance ?? 0;
   const history = (txs ?? []) as Tx[];
   const hasPending = (pendingCount ?? 0) > 0;
+  const packages = (pkgs ?? []) as CreditPackage[];
   const low = balance > 0 && balance <= 3;
   const accent = balance === 0 ? "#fca5a5" : low ? "#fbbf24" : "#9bb8ff";
   const accentBg =
@@ -100,6 +114,27 @@ export default async function CreditosPage() {
         </p>
       </div>
 
+      {compra === "ok" && (
+        <div
+          className="mb-5 rounded-xl border px-4 py-3"
+          style={{ background: "rgba(52,211,153,0.1)", borderColor: "rgba(52,211,153,0.3)" }}
+        >
+          <span style={{ fontSize: 13, color: "#6ee7b7" }}>
+            ¡Gracias por tu compra! Los créditos se acreditan en unos segundos.
+          </span>
+        </div>
+      )}
+      {compra === "cancelada" && (
+        <div
+          className="mb-5 rounded-xl border px-4 py-3"
+          style={{ background: "rgba(251,191,36,0.08)", borderColor: "rgba(251,191,36,0.28)" }}
+        >
+          <span style={{ fontSize: 13, color: "var(--warn-text)" }}>
+            Cancelaste el pago. Podés intentarlo de nuevo cuando quieras.
+          </span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3" style={{ alignItems: "start" }}>
         {/* Saldo */}
         <div
@@ -141,14 +176,20 @@ export default async function CreditosPage() {
           </ul>
         </Card>
 
-        {/* Cómo conseguir más */}
-        <Card title="¿Necesitás más?" icon={<Mail size={16} strokeWidth={1.9} />}>
-          <p style={{ margin: "0 0 14px", fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.55 }}>
-            Durante la beta cargamos los créditos a mano. Mandanos el pedido desde acá y te sumamos
-            más para que sigas evaluando a tu equipo.
-          </p>
-          <RequestCreditsButton hasPending={hasPending} />
-        </Card>
+        {/* Cómo conseguir más: compra directa si hay paquetes, sino pedido manual (beta) */}
+        {packages.length > 0 ? (
+          <Card title="Comprar créditos" icon={<CreditCard size={16} strokeWidth={1.9} />}>
+            <BuyCredits packages={packages} />
+          </Card>
+        ) : (
+          <Card title="¿Necesitás más?" icon={<Mail size={16} strokeWidth={1.9} />}>
+            <p style={{ margin: "0 0 14px", fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.55 }}>
+              Durante la beta cargamos los créditos a mano. Mandanos el pedido desde acá y te sumamos
+              más para que sigas evaluando a tu equipo.
+            </p>
+            <RequestCreditsButton hasPending={hasPending} />
+          </Card>
+        )}
       </div>
 
       {/* Historial */}
