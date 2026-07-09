@@ -131,6 +131,8 @@ Si devuelve `'arquitecto'`, aplicar `migration_sprint5_roles.sql` de inmediato. 
 ---
 
 ### T6 🔴 CRÍTICO — El cron diario no escala: cap duro de 100 empresas + monolito secuencial vs. timeout de 60s
+> 🟡 **Parcial (2026-07-02):** el cap de 100 (CRON-1) se quitó y el cron ganó robustez (try/catch por empresa, `ok:false` si hay errores). **El refactor arquitectónico a dispatcher + worker por empresa sigue pendiente** — es el que resuelve el timeout de 60s a gran escala; conviene hacerlo con capacidad de test / cambio de infra (Supabase Queues / QStash).
+
 **Confirmado por:** Cron (#1, #2).
 **Evidencia:** `apps/web/src/app/api/cron/daily/route.ts:47-50` limita a `.limit(100)` sin orden ni paginación → la empresa 101+ nunca se procesa y el cron devuelve `ok:true` igual. `route.ts:52` itera **secuencialmente** (`for … of companies`), y por empresa gasta ~8 round-trips DB + varios emails (cada email = 2 queries + 1 RPC Vault + 1 HTTP a Resend, sin cache — ver CRON-9). Con `maxDuration = 60` (`route.ts:6`, además el máximo en plan Hobby), el timeout se agota con **~15-30 empresas activas**. Al cortar por timeout no hay registro de dónde quedó: las restantes pierden el día.
 
@@ -313,6 +315,7 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 > Además de T2 (origin) y T7 (tope de costo).
 
 ### IA-3 🟠 ALTO — El adapter de streaming no tiene timeout ni AbortController: cuelga hasta el hard-limit de Vercel
+> ✅ **Resuelto (2026-07-02):** `chatStream` de openrouter y anthropic usan un `AbortController` con idle-timeout de 30s que se rearma en cada chunk. Type-check OK.
 **Evidencia:** `chat()`/`chatWithTools()` usan `AbortController` con 30s (`openrouter.ts:27-28`, `anthropic.ts:37`), pero **`chatStream()` no** (`openrouter.ts:61`, `anthropic.ts:73` hacen `fetch` sin `signal`). El route declara `maxDuration = 60`. Si el proveedor se cuelga, no hay corte hasta los 60s.
 **Impacto:** funciones serverless colgadas consumen concurrencia; bajo carga, agotamiento de instancias y 5xx en cascada.
 **Recomendación:** `AbortController` con idle-timeout entre chunks en `chatStream`, propagando el `signal` del cliente.
@@ -323,6 +326,7 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** en el `catch`, enqueue directo sin sumar a `acc`; marcar el mensaje como incompleto o no persistirlo; estimar prompt tokens del `messages` armado, no 0.
 
 ### IA-5 🟠 ALTO — Sin manejo diferenciado de errores del proveedor (429/5xx/timeout), sin reintentos ni fallback
+> 🟡 **Parcial (2026-07-02):** el mensaje al usuario ahora varía según el status (429/401/otro) vía `providerErrorText`. **Pendiente:** retry con backoff y fallback al segundo proveedor.
 **Evidencia:** el path de tools (`route.ts:310-312`) y el stream (`:335`) usan `catch {}` genérico. `AIError` conserva `status` (`types.ts:98-105`) pero el route nunca lo lee. No hay retry con backoff ni fallback al segundo proveedor del registry (`ai/index.ts:10-13`).
 **Impacto:** ante un 429 del proveedor no hay degradación elegante; picos se traducen 1:1 en fallos de UX.
 **Recomendación:** distinguir por `e.status` (429 → "reintentá"; 401 → alertar admin; 5xx/timeout → 1 retry con backoff); fallback opcional al segundo proveedor configurado.
@@ -402,6 +406,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 **Recomendación:** registrar el envío del digest (fila `type:'daily_digest'` con dedup por `(user_id, fecha local)` o tabla `email_log`). Prerequisito de cualquier arquitectura con retries.
 
 ### CRON-4 🟠 ALTO — Errores de DB silenciados: el cron puede devolver `ok:true` sin haber hecho nada
+> ✅ **Resuelto (2026-07-02):** cada empresa corre en su try/catch (un fallo no tumba a las demás), se cuenta `stats.errors` y el endpoint devuelve `ok:false` si hubo errores. La query de companies también chequea su error.
 **Evidencia:** todas las queries destructuran solo `{ data }` e ignoran `error` (`route.ts:47,55,74,85,97,131,206,244`); sin `try/catch` por empresa. supabase-js no lanza: si `companies` falla, es `null`, el loop itera 0 veces y responde `{ ok:true, companies:0 }`.
 **Impacto:** falsos éxitos invisibles; un fallo de red/RLS produce un día sin notificaciones sin señal.
 **Recomendación:** chequear `error` en cada query; `try/catch` por empresa; devolver `ok:false`/500 si hubo errores para que el monitor de cron lo marque.
@@ -602,11 +607,11 @@ Cuatro migraciones en `supabase/` (idempotentes), cada una en su commit:
 
 > **Para aplicar la Fase 2:** correr en orden `migration_fase2a_indices.sql` → `2b_policies_aislamiento` → `2c_ledger` → `2d_integridad` en el SQL Editor. Todas idempotentes; los uniques avisan por NOTICE (sin abortar) si encuentran datos duplicados.
 
-### Fase 3 — Escalabilidad operativa (semana 3-5)
-13. **T6 + CRON-3/4/5/6/7** — refactor del cron a dispatcher + worker por empresa (cron horario, idempotente, con dedup persistente, backoff de Resend, batch). Es un solo diseño que cierra 6 hallazgos.
-14. **CRON-10, CRON-11** — `email_log` + webhook de bounces + `notification_prefs` + `List-Unsubscribe`.
-15. **IA-3, IA-4, IA-5, IA-6** — timeout/abort en el stream, no persistir errores como respuesta, manejo por `status`, cache de contexto.
-16. **DB-14, DB-15** — retención de `ai_messages`/`notifications`/`audit_log`; denormalizar `user_id` en `ai_messages`.
+### Fase 3 — Escalabilidad operativa (semana 3-5) — 🟡 EN CURSO (2026-07-02)
+13. 🟡 **CRON** — hechos los fixes quirúrgicos de robustez: **CRON-1** (sin cap de 100), **CRON-4** (try/catch por empresa + `ok:false` si hay errores), **CRON-14** (secreto timing-safe). **Pendiente el refactor arquitectónico T6** (dispatcher + worker, cron horario) y **CRON-3/5/6** (dedup del digest, backoff de Resend, índice de dedup) — necesitan capacidad de test / cambio de infra.
+14. ⬜ **CRON-10, CRON-11** — `email_log` + webhook de bounces + `notification_prefs` + `List-Unsubscribe`. Pendiente.
+15. ✅ **IA-3/4/5/15** — idle-timeout en el stream (openrouter+anthropic), errores por status, prompt tokens estimados. **IA-6** (cache del contexto) pendiente.
+16. ⬜ **DB-14, DB-15** — retención de tablas + denormalizar `user_id` en `ai_messages`. Pendiente.
 
 ### Fase 4 — Preparación para pagos y consolidación (antes de conectar Stripe)
 17. **PAY-4 + §10** — crear el schema de billing (webhook_events, billing_customers, credit_packages, purchases) **antes** de escribir código de Stripe.
