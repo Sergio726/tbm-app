@@ -12,11 +12,15 @@ const API_URL = "https://api.resend.com/emails";
 
 export type SendEmailResult = { ok: true; id?: string } | { ok: false; error: string };
 
-type MailRuntime = { apiKey?: string; from?: string; replyTo?: string };
+type MailRuntime = { apiKey?: string; from?: string; replyTo?: string; disabled?: boolean };
 
 /**
  * Resuelve la config efectiva: email_config (si está `enabled`) pisa a las env
  * vars. Tolerante a fallos: si la DB no responde, sigue con env.
+ *
+ * CRON-8: si la fila email_config EXISTE y está `enabled = false`, el envío
+ * queda desactivado (aunque haya env vars) → el kill-switch del panel manda.
+ * El fallback a env se reserva para cuando NO hay fila (o la DB no responde).
  */
 async function resolveMail(): Promise<MailRuntime> {
   let apiKey = process.env.RESEND_API_KEY;
@@ -31,6 +35,9 @@ async function resolveMail(): Promise<MailRuntime> {
         .select("from_name, from_email, reply_to, enabled, api_key_ref")
         .eq("scope", "platform")
         .maybeSingle();
+      if (data && data.enabled === false) {
+        return { disabled: true };
+      }
       if (data?.enabled) {
         if (data.from_email) {
           from = data.from_name ? `${data.from_name} <${data.from_email}>` : data.from_email;
@@ -97,7 +104,11 @@ export async function sendEmail(input: {
   subject: string;
   html: string;
 }): Promise<SendEmailResult> {
-  const { apiKey, from, replyTo } = await resolveMail();
+  const { apiKey, from, replyTo, disabled } = await resolveMail();
+
+  if (disabled) {
+    return { ok: false, error: "El envío de emails está desactivado en el panel de correo." };
+  }
 
   if (!apiKey || !from) {
     return {
