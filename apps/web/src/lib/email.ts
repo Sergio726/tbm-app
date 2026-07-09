@@ -107,46 +107,66 @@ export async function sendEmail(input: {
     };
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
+  const payload = JSON.stringify({
+    from,
+    to: [input.to],
+    subject: input.subject,
+    html: input.html,
+    ...(replyTo ? { reply_to: replyTo } : {}),
+  });
 
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        from,
-        to: [input.to],
-        subject: input.subject,
-        html: input.html,
-        ...(replyTo ? { reply_to: replyTo } : {}),
-      }),
-      signal: controller.signal,
-    });
+  // CRON-5: Resend limita a ~2 req/s. En ráfaga (cron) el 429 es esperable →
+  // reintentar con backoff respetando `retry-after` en vez de perder el email.
+  const MAX_ATTEMPTS = 3;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${apiKey}`,
+        },
+        body: payload,
+        signal: controller.signal,
+      });
 
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      console.error("email: Resend respondió", res.status, detail);
-      try {
-        const parsed = JSON.parse(detail) as { message?: string };
-        if (parsed.message) {
-          return { ok: false, error: parsed.message };
-        }
-      } catch {
-        // respuesta no JSON
+      if (res.status === 429 && attempt < MAX_ATTEMPTS) {
+        const retryAfter = Number(res.headers.get("retry-after"));
+        const waitMs = retryAfter > 0 ? retryAfter * 1000 : 500 * attempt;
+        await sleep(waitMs);
+        continue;
       }
-      return { ok: false, error: "No se pudo enviar el email. Revisá la configuración de Resend." };
-    }
 
-    const data = (await res.json()) as { id?: string };
-    return { ok: true, id: data.id };
-  } catch (e) {
-    console.error("email: error enviando", e);
-    return { ok: false, error: "No se pudo enviar el email (error de red o timeout)." };
-  } finally {
-    clearTimeout(timeout);
+      if (!res.ok) {
+        const detail = await res.text().catch(() => "");
+        console.error("email: Resend respondió", res.status, detail);
+        try {
+          const parsed = JSON.parse(detail) as { message?: string };
+          if (parsed.message) {
+            return { ok: false, error: parsed.message };
+          }
+        } catch {
+          // respuesta no JSON
+        }
+        return { ok: false, error: "No se pudo enviar el email. Revisá la configuración de Resend." };
+      }
+
+      const data = (await res.json()) as { id?: string };
+      return { ok: true, id: data.id };
+    } catch (e) {
+      if (attempt >= MAX_ATTEMPTS) {
+        console.error("email: error enviando", e);
+        return { ok: false, error: "No se pudo enviar el email (error de red o timeout)." };
+      }
+      await sleep(300 * attempt);
+    } finally {
+      clearTimeout(timeout);
+    }
   }
+
+  return { ok: false, error: "No se pudo enviar el email (reintentos agotados)." };
 }
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
