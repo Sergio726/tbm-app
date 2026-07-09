@@ -412,11 +412,13 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 **Recomendación:** chequear `error` en cada query; `try/catch` por empresa; devolver `ok:false`/500 si hubo errores para que el monitor de cron lo marque.
 
 ### CRON-5 🟠 ALTO — Resend sin rate limiting ni reintentos: emails perdidos en silencio
+> ✅ **Resuelto (2026-07-02):** `sendEmail` reintenta hasta 3 veces ante 429, respetando el header `retry-after` (backoff). Type-check OK. Pendiente opcional: endpoint batch de Resend para digests.
 **Evidencia:** `email.ts:114-148` — un solo `fetch` sin manejo de 429, sin backoff, sin retry. En el cron el fallo solo deja de sumar al contador (`route.ts:126,194,271`).
 **Impacto:** el rate limit default de Resend es **2 req/s**; el cron dispara en ráfaga → 429 inevitables, cada uno = email perdido sin registro.
 **Recomendación:** detectar `429` y reintentar con backoff; throttle global 2 req/s; usar el endpoint batch de Resend (`/emails/batch`, hasta 100) para digests; registrar cada fallo (CRON-10).
 
 ### CRON-6 🟠 ALTO — Dedup 72h: sin índice que la soporte y con carrera check-then-insert
+> 🟡 **Parcial (2026-07-02):** `migration_fase3_cron_dedup_index.sql` agrega el índice `(type, href, created_at)` que soporta el count de dedup. **Pendiente:** la carrera check-then-insert (columna `dedup_key` con unique + upsert) — se resuelve junto con el refactor T6.
 **Evidencia:** `route.ts:85-91` hace `count exact` por `(type, href, created_at)`; los únicos índices de `notifications` son `(user_id, read_at)` y `(user_id, created_at)` (`migration_sprint13_notifications.sql:19-24`).
 **Impacto:** cada tarea vencida ejecuta un count que degenera en seq scan sobre una tabla que solo crece; el check-then-insert no es atómico (retry duplica).
 **Recomendación:** índice `(type, href, created_at)`, o mejor columna `dedup_key` con unique parcial + `upsert … ignoreDuplicates` (atómico, idempotente).
