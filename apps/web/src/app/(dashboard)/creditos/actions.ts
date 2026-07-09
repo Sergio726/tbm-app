@@ -11,6 +11,14 @@ import { SUPPORT_EMAIL } from "@/lib/credits";
 
 export type RequestCreditsResult = { ok: true } | { ok: false; error: string };
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export async function requestCredits(input: {
   amount?: number | null;
   note?: string | null;
@@ -61,16 +69,22 @@ export async function requestCredits(input: {
   try {
     const to = (await getSupportEmail()) ?? SUPPORT_EMAIL;
     const who = profile.full_name?.trim() || profile.email || "Un arquitecto";
+    // SEC-B2: escapar todo lo que viene del usuario (companyName, who, email,
+    // note) para no inyectar HTML/markup en el correo que lee el admin.
+    const safeCompany = escapeHtml(companyName);
+    const safeWho = escapeHtml(who);
+    const safeEmail = profile.email ? escapeHtml(profile.email) : "";
+    const safeNote = note ? escapeHtml(note) : "—";
     await sendEmail({
       to,
       subject: `Pedido de créditos · ${companyName}`,
       html: `
         <h2>Nuevo pedido de créditos</h2>
-        <p><strong>Empresa:</strong> ${companyName}</p>
-        <p><strong>Solicita:</strong> ${who}${profile.email ? ` (${profile.email})` : ""}</p>
+        <p><strong>Empresa:</strong> ${safeCompany}</p>
+        <p><strong>Solicita:</strong> ${safeWho}${safeEmail ? ` (${safeEmail})` : ""}</p>
         <p><strong>Cantidad pedida:</strong> ${amount ?? "sin especificar"}</p>
-        <p><strong>Nota:</strong> ${note ?? "—"}</p>
-        <p>Cargá los créditos desde el panel admin (Empresas → ${companyName}).</p>
+        <p><strong>Nota:</strong> ${safeNote}</p>
+        <p>Cargá los créditos desde el panel admin (Empresas → ${safeCompany}).</p>
       `,
     });
   } catch (e) {
