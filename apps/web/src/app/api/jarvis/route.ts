@@ -171,6 +171,15 @@ function resolveOrigin(req: Request, bodyOrigin: unknown): string {
   }
 }
 
+/** IA-5: mensaje para el usuario según el status del error del proveedor. */
+function providerErrorText(e: unknown): string {
+  const status = (e as { status?: number } | null)?.status;
+  if (status === 429) return "Estoy recibiendo muchas consultas. Probá de nuevo en un momento.";
+  if (status === 401 || status === 403)
+    return "Hay un problema de configuración del asistente. Avisá al administrador.";
+  return "No pude procesar eso ahora. Probá de nuevo en un momento.";
+}
+
 /** Chat de JARVIS en streaming (S18.3) + tool use con confirmación (DC-3). */
 export async function POST(req: Request) {
   // T7: kill-switch global de gasto (apaga DC sin tocar la BD ni el deploy).
@@ -343,8 +352,8 @@ export async function POST(req: Request) {
           result.usage ?? { promptTokens: 0, completionTokens: estimateTokens(finalText) }
         );
       return textResponse(finalText, conversationId);
-    } catch {
-      return textResponse("No pude procesar eso ahora. Probá de nuevo en un momento.", conversationId);
+    } catch (e) {
+      return textResponse(providerErrorText(e), conversationId);
     }
   }
 
@@ -368,8 +377,8 @@ export async function POST(req: Request) {
           acc += r.value;
           controller.enqueue(encoder.encode(r.value));
         }
-      } catch {
-        controller.enqueue(encoder.encode("\n\n[No pude completar la respuesta. Probá de nuevo.]"));
+      } catch (e) {
+        controller.enqueue(encoder.encode(`\n\n[${providerErrorText(e)}]`));
       } finally {
         // DC-6: persistir ANTES de close() — en Vercel el trabajo post-close puede no completarse.
         // N1: guardar el texto SIN el marcador [[IR:…]] (no recargar botones viejos del historial).
@@ -381,7 +390,9 @@ export async function POST(req: Request) {
               "assistant",
               parseNavMarker(acc).clean,
               cfg.model,
-              usage ?? { promptTokens: 0, completionTokens: estimateTokens(acc) }
+              // IA-15: si el proveedor no devolvió usage, estimar también los
+              // prompt tokens (system + historial), no solo la salida.
+              usage ?? { promptTokens: estimateTokens(system), completionTokens: estimateTokens(acc) }
             );
           } catch {
             /* no romper la respuesta por un fallo de persistencia */

@@ -58,38 +58,54 @@ export const openrouterProvider: AIProvider = {
     apiKey: string
   ): AsyncGenerator<string, TokenUsage | undefined, void> {
     const messages = opts.messages.map((m) => ({ role: m.role, content: m.content }));
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: HEADERS(apiKey),
-      body: JSON.stringify({
-        model: opts.model,
-        max_tokens: opts.maxTokens ?? 1024,
-        temperature: opts.temperature ?? 0.7,
-        stream: true,
-        stream_options: { include_usage: true }, // DC-6: el chunk final trae usage
-        messages,
-      }),
-    });
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      throw new AIError(res.status, body || `HTTP ${res.status}`);
-    }
-    let usage: TokenUsage | undefined;
-    for await (const ev of parseSSE(res)) {
-      const e = ev as {
-        choices?: { delta?: { content?: string } }[];
-        usage?: { prompt_tokens?: number; completion_tokens?: number };
-      };
-      const token = e?.choices?.[0]?.delta?.content;
-      if (token) yield token;
-      if (e?.usage) {
-        usage = {
-          promptTokens: e.usage.prompt_tokens ?? 0,
-          completionTokens: e.usage.completion_tokens ?? 0,
-        };
+    // IA-3: idle-timeout entre chunks (se rearma en cada evento). Sin esto un
+    // stream colgado del proveedor deja la función serverless viva hasta el
+    // hard-limit de Vercel.
+    const controller = new AbortController();
+    const IDLE_MS = 30000;
+    let timer: ReturnType<typeof setTimeout> = setTimeout(() => controller.abort(), IDLE_MS);
+    const rearm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => controller.abort(), IDLE_MS);
+    };
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: HEADERS(apiKey),
+        body: JSON.stringify({
+          model: opts.model,
+          max_tokens: opts.maxTokens ?? 1024,
+          temperature: opts.temperature ?? 0.7,
+          stream: true,
+          stream_options: { include_usage: true }, // DC-6: el chunk final trae usage
+          messages,
+        }),
+        signal: controller.signal,
+      });
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        throw new AIError(res.status, body || `HTTP ${res.status}`);
       }
+      let usage: TokenUsage | undefined;
+      for await (const ev of parseSSE(res)) {
+        rearm();
+        const e = ev as {
+          choices?: { delta?: { content?: string } }[];
+          usage?: { prompt_tokens?: number; completion_tokens?: number };
+        };
+        const token = e?.choices?.[0]?.delta?.content;
+        if (token) yield token;
+        if (e?.usage) {
+          usage = {
+            promptTokens: e.usage.prompt_tokens ?? 0,
+            completionTokens: e.usage.completion_tokens ?? 0,
+          };
+        }
+      }
+      return usage;
+    } finally {
+      clearTimeout(timer);
     }
-    return usage;
   },
 
   // DC-3: un turno con tools (formato OpenAI). No-streaming.
