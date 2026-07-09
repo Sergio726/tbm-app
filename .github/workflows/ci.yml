@@ -1,8 +1,8 @@
 name: CI
 
 # Red de contención mínima (auditoria.md T8). Corre en cada PR y en push a main.
-# El type-check es gate DURO; el lint es informativo hasta la primera pasada de
-# limpieza (el código traía ~34k líneas nunca linteadas). Sumar `next build`
+# type-check, tests y lint son gates DUROS (el lint falla solo ante errores; los
+# ~34 warnings heredados de react-hooks 7 no bloquean). Sumar `next build`
 # cuando haya envs dummy configuradas.
 
 on:
@@ -45,7 +45,7 @@ jobs:
         run: npm run test -w tbm-app
 
   lint:
-    name: Lint web (informativo)
+    name: Lint web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,9 +54,5 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      # continue-on-error: da señal sin bloquear el merge hasta limpiar el stock
-      # de errores heredados (29 al 2026-07-02, react-hooks/purity). Quitar
-      # cuando el lint quede en verde.
       - name: Lint web
         run: npm run lint -w tbm-app
-        continue-on-error: true

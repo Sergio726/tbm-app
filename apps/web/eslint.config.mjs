@@ -14,6 +14,20 @@ import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 export default [
   ...nextCoreWebVitals,
   {
+    // Reglas nuevas y estrictas de react-hooks 7 (React Compiler). Marcan ~26
+    // patrones del código heredado (setState dentro de useEffect, Date.now() en
+    // render, etc.) que funcionan pero no son idempotentes. Se degradan a `warn`
+    // para adoptarlas GRADUALMENTE, sin refactorizar 26 componentes a ciegas; el
+    // resto del lint queda como gate duro. Subir a `error` por módulo al limpiar.
+    rules: {
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/immutability": "warn",
+      "react-hooks/error-boundaries": "warn",
+      "react-hooks/preserve-manual-memoization": "warn",
+    },
+  },
+  {
     ignores: [".next/**", "node_modules/**", "next-env.d.ts", "public/**"],
   },
 ];
