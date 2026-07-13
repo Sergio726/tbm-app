@@ -1,7 +1,7 @@
 # Auditoría de estructura y escalabilidad — TBM App
 
 > **Objetivo:** dejar las bases sólidas para escalar el producto (multi-empresa · multi-usuario · pasarela de pagos · cron de emails · asistente de IA).
-> **Fecha:** 2026-07-02 · **Alcance:** monorepo `tbm-app` completo (`apps/web`, `apps/admin`, `packages/shared`, `supabase/`).
+> **Fecha:** 2026-07-13 · **Alcance:** monorepo `tbm-app` completo (`apps/web`, `apps/admin`, `packages/shared`, `supabase/`).
 > **Método:** 6 auditorías paralelas (BD/multi-tenancy, seguridad/auth, asistente IA, cron/emails, créditos/pagos, monorepo/frontend). Cada hallazgo fue verificado leyendo el código real; se cita `archivo:línea`. Lo no verificable desde el repo (estado vivo de la BD, envs de Vercel) está marcado como **a verificar**.
 
 ---
@@ -27,12 +27,21 @@
 
 ---
 
+## 📌 Estado de remediación (2026-07-13)
+
+- **Las 8 migraciones (fase0–fase4) se aplicaron en producción sin errores.** Cerraron: **T1, T3, T5, DB-4, DB-5, DB-6, DB-8, DB-9, DB-19, PAY-2, PAY-3, PAY-6, PAY-9, CRON-6** + el schema/RPC de billing (**PAY-4**).
+- **Fixes de código en la rama `develop`** (mergeándose a `main`): **T2, T7, IA-3/4/5/15, CRON-1/4/5/8/14, SEC-B2, T8, ARCH-14** + flujo de Stripe (checkout + webhook + UI).
+- **Pendiente inmediato:** smoke test de los flujos que tocan RLS/onboarding (ver [`CHECKLIST_POST_MIGRACION.md`](CHECKLIST_POST_MIGRACION.md)), setear envs en Vercel (`NEXT_PUBLIC_APP_URL`, Stripe), y cargar `credit_packages` para activar la compra.
+- **Sin empezar (necesitan BD viva, refactor con test, o decisión de producto):** T4, ARCH-3, DB-16 · T6 (dispatcher del cron), ARCH-6/IA-10 (unificar `packages/shared`), ARCH-9/10 (monolitos) · DB-13, DB-7.
+
+---
+
 ## §1 · Hallazgos transversales (aparecieron en varias auditorías)
 
 Estos son los que confirmaron dos o más auditores de forma independiente. Son la prioridad absoluta.
 
 ### T1 🔴 CRÍTICO — Cualquier usuario se auto-promueve a Arquitecto de cualquier empresa (ruptura total del aislamiento multi-tenant)
-> 🛠️ **Remediado (2026-07-02) — falta aplicar la migración.** `supabase/migration_fase0_hardening.sql` agrega un trigger `BEFORE UPDATE` en `profiles` que congela `role`/`company_id` en sesiones de usuario, salvo la primera vinculación validada (dueño de su empresa o invitado con invitación real). No requiere cambios de código (register/accept-invite siguen igual). **Pendiente: correr la migración en el SQL Editor.**
+> ✅ **Aplicado (2026-07-13) — migración corrida sin errores.** `supabase/migration_fase0_hardening.sql` agrega un trigger `BEFORE UPDATE` en `profiles` que congela `role`/`company_id` en sesiones de usuario, salvo la primera vinculación validada (dueño de su empresa o invitado con invitación real). No requiere cambios de código (register/accept-invite siguen igual). **Pendiente: correr la migración en el SQL Editor.**
 
 **Confirmado por:** BD (#1), Seguridad (C1).
 **Evidencia:** `supabase/schema.sql:105-107`
@@ -69,7 +78,7 @@ Alternativa complementaria: `revoke update (role, company_id) on public.profiles
 ---
 
 ### T2 🔴 CRÍTICO — `origin` controlado por el cliente termina dentro del magic link de invitación → robo de token / account takeover
-> ✅ **Resuelto (2026-07-02).** Nuevo `apps/web/src/lib/trusted-origin.ts`: el origin de los links con token se deriva de `NEXT_PUBLIC_APP_URL` (ignora el del cliente salvo localhost). Aplicado en `equipo/actions.ts` (`buildInviteLink` + redirects; aborta con error claro si falta la env) y en `resolveOrigin` de `api/jarvis/route.ts`.
+> ✅ **Resuelto (2026-07-13).** Nuevo `apps/web/src/lib/trusted-origin.ts`: el origin de los links con token se deriva de `NEXT_PUBLIC_APP_URL` (ignora el del cliente salvo localhost). Aplicado en `equipo/actions.ts` (`buildInviteLink` + redirects; aborta con error claro si falta la env) y en `resolveOrigin` de `api/jarvis/route.ts`.
 
 **Confirmado por:** Seguridad (A1), IA (#1).
 **Evidencia:** `apps/web/src/app/(dashboard)/equipo/actions.ts:47-68` arma el link **a mano** con el `hashed_token` real de Supabase embebido en un dominio arbitrario:
@@ -88,7 +97,7 @@ async function buildInviteLink(admin, origin, nextPath, email) {
 ---
 
 ### T3 🔴 CRÍTICO — El gating de créditos del DISC se puede saltar desde la consola del browser
-> 🛠️ **Remediado (2026-07-02) — falta aplicar la migración.** `migration_fase0_hardening.sql` dropea las policies insert/update/delete de arquitecto sobre `disc_assessments` y revoca esos permisos a `authenticated`/`anon` (queda solo SELECT). Verificado que ningún `.from("disc_assessments").insert/update/delete` existe en `apps/` → todo pasa por RPC, no rompe nada. **Pendiente: correr la migración.**
+> ✅ **Aplicado (2026-07-13) — migración corrida sin errores.** `migration_fase0_hardening.sql` dropea las policies insert/update/delete de arquitecto sobre `disc_assessments` y revoca esos permisos a `authenticated`/`anon` (queda solo SELECT). Verificado que ningún `.from("disc_assessments").insert/update/delete` existe en `apps/` → todo pasa por RPC, no rompe nada. **Pendiente: correr la migración.**
 
 **Confirmado por:** Créditos (#1). (Relacionado con T1: mismo patrón de RLS de escritura directa.)
 **Evidencia:** `supabase/migration_sprint3_disc.sql:51-64` — las policies pre-créditos siguen vigentes:
@@ -116,7 +125,7 @@ La Fase 2 solo reemplazó el INSERT **en el código de la app** (`migration_fase
 ---
 
 ### T5 🔴 CRÍTICO — Posible `role DEFAULT 'arquitecto'`: todo invitado nace como arquitecto (a verificar)
-> 🛠️ **Remediado (2026-07-02) — falta aplicar la migración.** `migration_fase0_hardening.sql` fija `profiles.role default 'colaborador'`, actualiza `handle_new_user` para asignar rol explícito, y re-aplica el fix de datos idempotente (dueños→arquitecto, resto→colaborador). Es equivalente a `sprint5_roles.sql`, seguro de correr aunque ya estuviera aplicado. **Pendiente: correr la migración.**
+> ✅ **Aplicado (2026-07-13) — migración corrida sin errores.** `migration_fase0_hardening.sql` fija `profiles.role default 'colaborador'`, actualiza `handle_new_user` para asignar rol explícito, y re-aplica el fix de datos idempotente (dueños→arquitecto, resto→colaborador). Es equivalente a `sprint5_roles.sql`, seguro de correr aunque ya estuviera aplicado. **Pendiente: correr la migración.**
 
 **Confirmado por:** BD (#3).
 **Evidencia:** `supabase/README.md:21` marca `migration_sprint5_roles.sql` "⏳ pendiente" sobre el proyecto activo. `schema.sql:36` define `role text default 'arquitecto'` y el `handle_new_user` base (`schema.sql:127-141`) no setea role. Si sprint5 no se aplicó, **todo signup (incluidos invitados) nace arquitecto**, que es el bug exacto que sprint5 corrige (`migration_sprint5_roles.sql:3-7`). Combinado con T1, cualquier invitado tendría permisos de arquitecto desde el día cero.
@@ -131,7 +140,7 @@ Si devuelve `'arquitecto'`, aplicar `migration_sprint5_roles.sql` de inmediato. 
 ---
 
 ### T6 🔴 CRÍTICO — El cron diario no escala: cap duro de 100 empresas + monolito secuencial vs. timeout de 60s
-> 🟡 **Parcial (2026-07-02):** el cap de 100 (CRON-1) se quitó y el cron ganó robustez (try/catch por empresa, `ok:false` si hay errores). **El refactor arquitectónico a dispatcher + worker por empresa sigue pendiente** — es el que resuelve el timeout de 60s a gran escala; conviene hacerlo con capacidad de test / cambio de infra (Supabase Queues / QStash).
+> 🟡 **Parcial (2026-07-13):** el cap de 100 (CRON-1) se quitó y el cron ganó robustez (try/catch por empresa, `ok:false` si hay errores). **El refactor arquitectónico a dispatcher + worker por empresa sigue pendiente** — es el que resuelve el timeout de 60s a gran escala; conviene hacerlo con capacidad de test / cambio de infra (Supabase Queues / QStash).
 
 **Confirmado por:** Cron (#1, #2).
 **Evidencia:** `apps/web/src/app/api/cron/daily/route.ts:47-50` limita a `.limit(100)` sin orden ni paginación → la empresa 101+ nunca se procesa y el cron devuelve `ok:true` igual. `route.ts:52` itera **secuencialmente** (`for … of companies`), y por empresa gasta ~8 round-trips DB + varios emails (cada email = 2 queries + 1 RPC Vault + 1 HTTP a Resend, sin cache — ver CRON-9). Con `maxDuration = 60` (`route.ts:6`, además el máximo en plan Hobby), el timeout se agota con **~15-30 empresas activas**. Al cortar por timeout no hay registro de dónde quedó: las restantes pierden el día.
@@ -141,7 +150,7 @@ Si devuelve `'arquitecto'`, aplicar `migration_sprint5_roles.sql` de inmediato. 
 ---
 
 ### T7 🔴 CRÍTICO — El asistente de IA no tiene tope de costo por empresa ni circuit-breaker de gasto
-> ✅ **Resuelto — mínimo viable (2026-07-02).** `api/jarvis/route.ts`: kill-switch global por env `DC_KILL_SWITCH` (apaga DC con 503 sin tocar la BD) + `overCompanyBudget()` que corta con 429 cuando la empresa supera `DC_COMPANY_MONTHLY_LIMIT` mensajes/mes (default 2000, 0 = sin tope). Documentado en `.env.local.example`. **Pendiente (fase posterior):** tope por *tokens* (no mensajes) + tabla de rollup + key/budget por empresa.
+> ✅ **Resuelto — mínimo viable (2026-07-13).** `api/jarvis/route.ts`: kill-switch global por env `DC_KILL_SWITCH` (apaga DC con 503 sin tocar la BD) + `overCompanyBudget()` que corta con 429 cuando la empresa supera `DC_COMPANY_MONTHLY_LIMIT` mensajes/mes (default 2000, 0 = sin tope). Documentado en `.env.local.example`. **Pendiente (fase posterior):** tope por *tokens* (no mensajes) + tabla de rollup + key/budget por empresa.
 
 **Confirmado por:** IA (#2, #14).
 **Evidencia:** `overRateLimit` (`api/jarvis/route.ts:85-93`) cuenta solo mensajes del **usuario** en la última hora (50/h). No existe ningún tope por `company_id`. `getAiUsage` (`asistente-ia/actions.ts:199-224`) suma tokens de **toda la plataforma**, sin desglose ni corte. Hay una sola API key global (`ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'`, `migration_jarvis_ai_config.sql:53-61`) → el costo de todas las empresas va a la misma cuenta sin segmentación. No hay gating por créditos en el chat.
@@ -153,7 +162,7 @@ Si devuelve `'arquitecto'`, aplicar `migration_sprint5_roles.sql` de inmediato. 
 ---
 
 ### T8 🟠 ALTO — Sin red de contención: push a `main` deploya a producción sin CI, sin tests y con el lint roto
-> ✅ **Resuelto en gran parte (2026-07-02).** `.github/workflows/ci.yml` corre en cada PR/push: type-check de web+admin y Vitest como **gates duros**, lint informativo. ESLint migrado a flat config nativo de `eslint-config-next`. Primeros tests (`lib/credits`, `lib/trusted-origin`) — 11 verdes. Validado local: type-check web+admin en 0. **Pendiente:** sumar `next build` al CI (con envs dummy) y limpiar los 29 errores de lint heredados (`react-hooks/purity`).
+> ✅ **Resuelto en gran parte (2026-07-13).** `.github/workflows/ci.yml` corre en cada PR/push: type-check de web+admin y Vitest como **gates duros**, lint informativo. ESLint migrado a flat config nativo de `eslint-config-next`. Primeros tests (`lib/credits`, `lib/trusted-origin`) — 11 verdes. Validado local: type-check web+admin en 0. **Pendiente:** sumar `next build` al CI (con envs dummy) y limpiar los 29 errores de lint heredados (`react-hooks/purity`).
 
 **Confirmado por:** Monorepo (#1, #2).
 **Evidencia:** no existe `.github/`, ni `turbo.json`, ni workflows. `AGENTS.md:65,106`: cualquier push a `main` auto-deploya en Vercel (2 proyectos). `find apps packages -name "*.test.*"` → **0 resultados** sobre ~34.600 líneas de `.tsx` solo en web. Y el lint no corre: `apps/web/package.json:9` usa `next lint`, comando **eliminado en Next 16** (falla con "Invalid project directory"); `apps/admin` no tiene ESLint configurado.
@@ -169,7 +178,7 @@ Si devuelve `'arquitecto'`, aplicar `migration_sprint5_roles.sql` de inmediato. 
 > Además de T1, T3, T4, T5 (arriba), que nacen en la capa de datos.
 
 ### DB-4 🟠 ALTO — Policies `FOR ALL` "company_isolation": cualquier miembro edita cualquier fila de su empresa
-> 🛠️ **Migración lista (2026-07-02):** `migration_fase2b_policies_aislamiento.sql` separa las policies por comando + DELETE de arquitecto. UPDATE conservador (por empresa) donde el flujo por rol no es verificable sin la app. Falta aplicar.
+> ✅ **Aplicada (2026-07-13):** `migration_fase2b_policies_aislamiento.sql` separa las policies por comando + DELETE de arquitecto. UPDATE conservador (por empresa) donde el flujo por rol no es verificable sin la app. Falta aplicar.
 **Evidencia:** `migration_sprint10_plan90d.sql:18-20` (patrón repetido en `rock_updates`, `idea_parking`, `decisions`, `leading_indicators`, y en `migration_sprint9_feedback.sql:19-22`, `migration_sprint11_workbooks.sql:16-18`):
 ```sql
 CREATE POLICY "company_isolation" ON rocks
@@ -180,13 +189,13 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** separar por comando — SELECT company-wide, INSERT con `user_id = auth.uid()`, UPDATE restringido a autor/dueño/arquitecto. El patrón correcto ya existe en `migration_sprint12_activos.sql:36-46` (`process_assets`).
 
 ### DB-5 🟠 ALTO — Suplantación de autoría intra-tenant: `from_user`/`user_id` no se validan contra `auth.uid()`
-> 🛠️ **Migración lista (2026-07-02):** `migration_fase2b_*` — INSERT exige `user_id/proposed_by/from_user = auth.uid()`. Verificado que el código ya setea esos campos → no rompe. Falta aplicar.
+> ✅ **Aplicada (2026-07-13):** `migration_fase2b_*` — INSERT exige `user_id/proposed_by/from_user = auth.uid()`. Verificado que el código ya setea esos campos → no rompe. Falta aplicar.
 **Evidencia:** `migration_sprint9_feedback.sql:19-21` (feedback S.E.C. con `from_user` libre), `rock_updates.user_id` (`migration_sprint10_plan90d.sql:32-36`), `decisions.user_id`, `workbook_responses.user_id`. Contraste correcto: `tasks_insert_company` sí valida `created_by = auth.uid()` (`migration_sprint8_delegacion.sql:70-72`).
 **Impacto:** cualquiera inserta feedback "firmado" por otro compañero o check-ins a nombre ajeno — integridad sensible en una herramienta de gestión de personas.
 **Recomendación:** `AND from_user = auth.uid()` / `user_id = auth.uid()` en el `WITH CHECK` de cada INSERT.
 
 ### DB-6 🟠 ALTO — Borradores de feedback visibles para toda la empresa, incluido el destinatario
-> 🛠️ **Migración lista (2026-07-02):** `migration_fase2b_*` — la SELECT de feedbacks solo muestra borradores a su autor. Falta aplicar.
+> ✅ **Aplicada (2026-07-13):** `migration_fase2b_*` — la SELECT de feedbacks solo muestra borradores a su autor. Falta aplicar.
 **Evidencia:** `migration_sprint9_feedback.sql:12,19-21` — existe `is_draft boolean DEFAULT true` pero la única SELECT es company-wide, sin filtrar por draft.
 **Impacto:** el destinatario y cualquier tercero leen feedback correctivo a medio escribir. Rompe el flujo draft→delivered.
 **Recomendación:** SELECT `(NOT is_draft AND (to_user = auth.uid() OR from_user = auth.uid() OR auth_is_arquitecto())) OR from_user = auth.uid()`.
@@ -197,13 +206,13 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** reemplazar por RPC `accept_invitation(token)` `SECURITY DEFINER` que solo mueva `status/accepted_at`, valide expiración y asigne el role original. (Resuelve también SEC-M4.)
 
 ### DB-8 🟠 ALTO — Motor de créditos: el ledger puede divergir del balance
-> 🛠️ **Migración lista (2026-07-02):** `migration_fase2c_ledger.sql` — `grant_credits` rechaza saldo negativo (mata el clamp), CHECK de type, `balance_after`. Falta aplicar.
+> ✅ **Aplicada (2026-07-13):** `migration_fase2c_ledger.sql` — `grant_credits` rechaza saldo negativo (mata el clamp), CHECK de type, `balance_after`. Falta aplicar.
 **Evidencia:** `migration_fase2_credits.sql:61-69` — con `p_amount` negativo (type 'adjust') y balance insuficiente, el balance se clampa con `greatest(0, …)` pero el ledger registra el delta completo → `sum(delta) ≠ balance` para siempre. `credit_transactions.type` (línea 26) no tiene CHECK.
 **Impacto:** el ledger deja de ser fuente de verdad contable justo cuando haya que auditar créditos cobrados. (Ver también PAY-3.)
 **Recomendación:** rechazar el ajuste si `balance + p_amount < 0` (en vez de clampear); `CHECK (type IN (...))`; columna `balance_after` + job de reconciliación por empresa.
 
 ### DB-9 🟠 ALTO — El lote Sprint 9–11 se creó sin un solo índice; múltiples FKs sin índice
-> 🛠️ **Migración lista (2026-07-02):** `migration_fase2a_indices.sql` — índices sobre company_id (Plan 90D) y FKs sin índice. Aditivo. Falta aplicar.
+> ✅ **Aplicada (2026-07-13):** `migration_fase2a_indices.sql` — índices sobre company_id (Plan 90D) y FKs sin índice. Aditivo. Falta aplicar.
 **Evidencia:** `migration_sprint10_plan90d.sql` (5 tablas), `migration_sprint9_feedback.sql` y `migration_sprint11_workbooks.sql` no tienen **ningún** `CREATE INDEX` — cero índices sobre `company_id`, que es el predicado de todas sus queries y policies. Otras FKs sin índice: `notifications.company_id`, `ai_conversations.company_id`, `coach_assignments.company_id`, `coaching_notes.coach_id`, `kpis.owner_id`, `invitations.invited_by`, `pre_games.company_id`, `credit_requests.requested_by`, `user_habits.company_id`.
 **Impacto:** cada render de Plan 90D/BOS/feedback es seq scan; los `ON DELETE CASCADE` desde `companies` escanean todas estas tablas. A 500 empresas × 2 años, degradación generalizada.
 **Recomendación:** índices `(company_id)` o compuestos `(company_id, created_at desc)` / `(company_id, week_date)` según patrón. El repo ya tiene el patrón bueno (sprint1/2 indexan todo).
@@ -250,7 +259,7 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** recalcular el scoring server-side dentro de `submit_disc` a partir de las 24 respuestas; CHECKs mínimos (`jsonb_typeof`) en payloads críticos.
 
 ### DB-19 🟡 MEDIO — UNIQUEs de negocio faltantes
-> 🛠️ **Migración lista (2026-07-02):** `migration_fase2d_integridad.sql` — unique de baseline por empresa + (company_id,name,week_date) en kpis y leading_indicators (guard defensivo). Falta aplicar.
+> ✅ **Aplicada (2026-07-13):** `migration_fase2d_integridad.sql` — unique de baseline por empresa + (company_id,name,week_date) en kpis y leading_indicators (guard defensivo). Falta aplicar.
 **Evidencia:** `scorecards` sin unique parcial `(company_id) WHERE is_baseline` → N "Día 1" por empresa; `kpis`/`leading_indicators` sin `UNIQUE (company_id, name, week_date)` → métricas-semana duplicadas.
 **Recomendación:** `CREATE UNIQUE INDEX … ON scorecards(company_id) WHERE is_baseline;` + uniques compuestos en tablas semanales.
 
@@ -301,7 +310,7 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** `crypto.timingSafeEqual(Buffer.from(header ?? ""), Buffer.from(\`Bearer ${secret}\`))` con chequeo previo de longitudes.
 
 ### SEC-B2 ⚪ BAJO — Inyección de HTML en el email a soporte (`requestCredits`)
-> ✅ **Resuelto (2026-07-02):** se escapan `companyName`/`who`/`email`/`note` antes de interpolarlos en el HTML del correo al admin.
+> ✅ **Resuelto (2026-07-13):** se escapan `companyName`/`who`/`email`/`note` antes de interpolarlos en el HTML del correo al admin.
 **Evidencia:** `(dashboard)/creditos/actions.ts:64-75` interpola `companyName`, `who`, `profile.email` y `note` (input del usuario) sin escapar en el HTML del email al admin.
 **Recomendación:** escapar con el `escapeHtml` ya usado en `equipo/actions.ts:198-204`.
 
@@ -316,7 +325,7 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 > Además de T2 (origin) y T7 (tope de costo).
 
 ### IA-3 🟠 ALTO — El adapter de streaming no tiene timeout ni AbortController: cuelga hasta el hard-limit de Vercel
-> ✅ **Resuelto (2026-07-02):** `chatStream` de openrouter y anthropic usan un `AbortController` con idle-timeout de 30s que se rearma en cada chunk. Type-check OK.
+> ✅ **Resuelto (2026-07-13):** `chatStream` de openrouter y anthropic usan un `AbortController` con idle-timeout de 30s que se rearma en cada chunk. Type-check OK.
 **Evidencia:** `chat()`/`chatWithTools()` usan `AbortController` con 30s (`openrouter.ts:27-28`, `anthropic.ts:37`), pero **`chatStream()` no** (`openrouter.ts:61`, `anthropic.ts:73` hacen `fetch` sin `signal`). El route declara `maxDuration = 60`. Si el proveedor se cuelga, no hay corte hasta los 60s.
 **Impacto:** funciones serverless colgadas consumen concurrencia; bajo carga, agotamiento de instancias y 5xx en cascada.
 **Recomendación:** `AbortController` con idle-timeout entre chunks en `chatStream`, propagando el `signal` del cliente.
@@ -327,7 +336,7 @@ Sin `FOR` explícito = aplica a todos los comandos; con `GRANT … UPDATE`.
 **Recomendación:** en el `catch`, enqueue directo sin sumar a `acc`; marcar el mensaje como incompleto o no persistirlo; estimar prompt tokens del `messages` armado, no 0.
 
 ### IA-5 🟠 ALTO — Sin manejo diferenciado de errores del proveedor (429/5xx/timeout), sin reintentos ni fallback
-> 🟡 **Parcial (2026-07-02):** el mensaje al usuario ahora varía según el status (429/401/otro) vía `providerErrorText`. **Pendiente:** retry con backoff y fallback al segundo proveedor.
+> 🟡 **Parcial (2026-07-13):** el mensaje al usuario ahora varía según el status (429/401/otro) vía `providerErrorText`. **Pendiente:** retry con backoff y fallback al segundo proveedor.
 **Evidencia:** el path de tools (`route.ts:310-312`) y el stream (`:335`) usan `catch {}` genérico. `AIError` conserva `status` (`types.ts:98-105`) pero el route nunca lo lee. No hay retry con backoff ni fallback al segundo proveedor del registry (`ai/index.ts:10-13`).
 **Impacto:** ante un 429 del proveedor no hay degradación elegante; picos se traducen 1:1 en fallos de UX.
 **Recomendación:** distinguir por `e.status` (429 → "reintentá"; 401 → alertar admin; 5xx/timeout → 1 retry con backoff); fallback opcional al segundo proveedor configurado.
@@ -407,19 +416,19 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 **Recomendación:** registrar el envío del digest (fila `type:'daily_digest'` con dedup por `(user_id, fecha local)` o tabla `email_log`). Prerequisito de cualquier arquitectura con retries.
 
 ### CRON-4 🟠 ALTO — Errores de DB silenciados: el cron puede devolver `ok:true` sin haber hecho nada
-> ✅ **Resuelto (2026-07-02):** cada empresa corre en su try/catch (un fallo no tumba a las demás), se cuenta `stats.errors` y el endpoint devuelve `ok:false` si hubo errores. La query de companies también chequea su error.
+> ✅ **Resuelto (2026-07-13):** cada empresa corre en su try/catch (un fallo no tumba a las demás), se cuenta `stats.errors` y el endpoint devuelve `ok:false` si hubo errores. La query de companies también chequea su error.
 **Evidencia:** todas las queries destructuran solo `{ data }` e ignoran `error` (`route.ts:47,55,74,85,97,131,206,244`); sin `try/catch` por empresa. supabase-js no lanza: si `companies` falla, es `null`, el loop itera 0 veces y responde `{ ok:true, companies:0 }`.
 **Impacto:** falsos éxitos invisibles; un fallo de red/RLS produce un día sin notificaciones sin señal.
 **Recomendación:** chequear `error` en cada query; `try/catch` por empresa; devolver `ok:false`/500 si hubo errores para que el monitor de cron lo marque.
 
 ### CRON-5 🟠 ALTO — Resend sin rate limiting ni reintentos: emails perdidos en silencio
-> ✅ **Resuelto (2026-07-02):** `sendEmail` reintenta hasta 3 veces ante 429, respetando el header `retry-after` (backoff). Type-check OK. Pendiente opcional: endpoint batch de Resend para digests.
+> ✅ **Resuelto (2026-07-13):** `sendEmail` reintenta hasta 3 veces ante 429, respetando el header `retry-after` (backoff). Type-check OK. Pendiente opcional: endpoint batch de Resend para digests.
 **Evidencia:** `email.ts:114-148` — un solo `fetch` sin manejo de 429, sin backoff, sin retry. En el cron el fallo solo deja de sumar al contador (`route.ts:126,194,271`).
 **Impacto:** el rate limit default de Resend es **2 req/s**; el cron dispara en ráfaga → 429 inevitables, cada uno = email perdido sin registro.
 **Recomendación:** detectar `429` y reintentar con backoff; throttle global 2 req/s; usar el endpoint batch de Resend (`/emails/batch`, hasta 100) para digests; registrar cada fallo (CRON-10).
 
 ### CRON-6 🟠 ALTO — Dedup 72h: sin índice que la soporte y con carrera check-then-insert
-> 🟡 **Parcial (2026-07-02):** `migration_fase3_cron_dedup_index.sql` agrega el índice `(type, href, created_at)` que soporta el count de dedup. **Pendiente:** la carrera check-then-insert (columna `dedup_key` con unique + upsert) — se resuelve junto con el refactor T6.
+> 🟡 **Parcial (2026-07-13):** `migration_fase3_cron_dedup_index.sql` agrega el índice `(type, href, created_at)` que soporta el count de dedup. **Pendiente:** la carrera check-then-insert (columna `dedup_key` con unique + upsert) — se resuelve junto con el refactor T6.
 **Evidencia:** `route.ts:85-91` hace `count exact` por `(type, href, created_at)`; los únicos índices de `notifications` son `(user_id, read_at)` y `(user_id, created_at)` (`migration_sprint13_notifications.sql:19-24`).
 **Impacto:** cada tarea vencida ejecuta un count que degenera en seq scan sobre una tabla que solo crece; el check-then-insert no es atómico (retry duplica).
 **Recomendación:** índice `(type, href, created_at)`, o mejor columna `dedup_key` con unique parcial + `upsert … ignoreDuplicates` (atómico, idempotente).
@@ -430,7 +439,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 **Recomendación:** cron **horario** (`0 * * * *`) + filtrar empresas cuya hora local sea la ventana objetivo. Combina con el fan-out de T6 (cada corrida procesa ~1/24 de las empresas).
 
 ### CRON-8 🟡 MEDIO — El fallback a env anula el kill-switch del admin y puede enviar con credenciales/remitente viejos
-> ✅ **Resuelto (2026-07-02):** si la fila `email_config` existe y `enabled=false`, `sendEmail` no envía (aunque haya env vars). El fallback a env queda solo para fila inexistente / DB caída.
+> ✅ **Resuelto (2026-07-13):** si la fila `email_config` existe y `enabled=false`, `sendEmail` no envía (aunque haya env vars). El fallback a env queda solo para fila inexistente / DB caída.
 **Evidencia:** `email.ts:21-49` — `resolveMail()` parte de `process.env.RESEND_API_KEY/RESEND_FROM` y solo los pisa si `email_config.enabled === true`; el `catch` (`:45-47`) es silencioso.
 **Impacto:** poner `enabled=false` en `/correo` **no** apaga el envío; una key rotada en Vault pero con env vieja en Vercel sigue enviando con la key revocada y otro `from` (rompe SPF/DKIM de `send.stlabs.ar`).
 **Recomendación:** si existe fila `email_config` y `enabled===false` → **no enviar**; reservar el fallback a env solo para "fila inexistente". Loguear la fuente usada. Documentar borrar `RESEND_*` de Vercel tras verificar el panel.
@@ -470,7 +479,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 > Además de T3 (bypass del gating). Ver §10 para el diseño recomendado antes de conectar Stripe.
 
 ### PAY-2 🟠 ALTO — `grant_credits` no es idempotente: retry o doble submit = doble carga
-> 🛠️ **Migración lista (2026-07-02):** `migration_fase2c_ledger.sql` — `grant_credits` acepta `p_request_id` (unique) → idempotente. Base para el webhook de Stripe. Falta aplicar + pasar el `request_id` desde el código.
+> ✅ **Aplicada (2026-07-13):** `migration_fase2c_ledger.sql` — `grant_credits` acepta `p_request_id` (unique) → idempotente. Base para el webhook de Stripe. Falta aplicar + pasar el `request_id` desde el código.
 **Evidencia:** `migration_fase2_credits.sql:40-74` suma al balance e inserta un tx sin clave de request. Única protección: UI (`grant-form.tsx:59` `disabled={isPending}`).
 **Impacto:** server action lento + reintento (refresh, dos pestañas, retry de red) = carga doble sin forma de detectarla salvo leyendo el ledger. **Este agujero se hereda directo al webhook de Stripe** si se reusa la RPC tal cual.
 **Recomendación:** `p_request_id uuid` en `grant_credits` + columna `request_id uuid unique` en `credit_transactions`; el form genera el UUID al montar; capturar `unique_violation` → devolver balance actual. El webhook usará `event.id` de Stripe como `request_id`.
@@ -479,7 +488,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 Ver DB-8 (mismo hallazgo). El ledger deja de ser fuente de verdad contable; sin invariante ni job que lo detecte.
 
 ### PAY-4 🟠 ALTO — Preparación para Stripe: no existe ninguna pieza estructural
-> 🛠️ **Flujo completo en código (2026-07-02):** schema (`migration_fase4_billing_schema.sql`) + RPC (`migration_fase4_billing_rpc.sql`, `apply_purchase_credits`) + `lib/stripe.ts` (firma HMAC + checkout) + `/api/stripe/webhook` + `startCheckout` + **UI de compra en `/creditos`** (tarjetas de paquete → Checkout). Type-check + lint OK. **Falta solo config/prueba:** aplicar migraciones, cargar `credit_packages`, setear `STRIPE_*`, y probar con Stripe CLI (`stripe listen`).
+> 🛠️ **Flujo completo en código (2026-07-13):** schema (`migration_fase4_billing_schema.sql`) + RPC (`migration_fase4_billing_rpc.sql`, `apply_purchase_credits`) + `lib/stripe.ts` (firma HMAC + checkout) + `/api/stripe/webhook` + `startCheckout` + **UI de compra en `/creditos`** (tarjetas de paquete → Checkout). Type-check + lint OK. **Falta solo config/prueba:** aplicar migraciones, cargar `credit_packages`, setear `STRIPE_*`, y probar con Stripe CLI (`stripe listen`).
 **Evidencia:** grep de `stripe|checkout|webhook|customer` en `apps/`+`supabase/` → solo docs. No hay `stripe_customer_id` en `companies` (`schema.sql:12-22`), ni tabla de eventos de webhook, ni catálogo precio→créditos, ni moneda, ni orders, ni distinción test/live. Solo el type `'purchase'` reservado como comentario (`migration_fase2_credits.sql:26`) y `platform_admins.role_interno 'finanzas'` decorativo.
 **Recomendación:** ver §10 — es la lista de lo que hay que crear **antes** de escribir código de Stripe para no rehacer el motor.
 
@@ -501,7 +510,7 @@ Ver DB-8 (mismo hallazgo). El ledger deja de ser fuente de verdad contable; sin 
 **Recomendación:** `create unique index on credit_requests(company_id) where status='pending'`; tratar `23505` como "ya tenés un pedido pendiente".
 
 ### PAY-9 ⚪ BAJO — El ledger es legible por cualquier miembro de la empresa (contradice su comentario)
-> 🛠️ **Migración lista (2026-07-02):** `migration_fase2d_integridad.sql` — la SELECT de `credit_transactions` ahora exige `auth_is_arquitecto()`. Falta aplicar.
+> ✅ **Aplicada (2026-07-13):** `migration_fase2d_integridad.sql` — la SELECT de `credit_transactions` ahora exige `auth_is_arquitecto()`. Falta aplicar.
 **Evidencia:** `migration_fase2_credits.sql:35-37` — la policy es `using (company_id = auth_company_id())` sin `auth_is_arquitecto()`, pese a que el comentario dice "el arquitecto puede ver su propio historial". El mismo repo ya corrigió esto para `credit_requests` (`migration_credit_requests_select_arquitecto.sql:8-11`).
 **Impacto:** un colaborador lee montos, motivos y ritmo de compra; con `purchase` y plata real, es info comercial sensible.
 **Recomendación:** agregar `and public.auth_is_arquitecto()` a la SELECT de `credit_transactions`.
@@ -568,7 +577,7 @@ Ver IA-10 (IA) + este (Supabase). `apps/web/src/lib/supabase/{server,client}.ts`
 **Recomendación:** mismo `withSentryConfig` en admin con DSN de un segundo proyecto Sentry.
 
 ### ARCH-14 ⚪ BAJO — Root `package.json` no orquesta admin ni shared; scripts duplicados; sin turborepo
-> ✅ **Resuelto (2026-07-02).** Root `package.json`: `+dev:admin`, `+build:admin`, `type-check --workspaces --if-present` (web+admin), `+lint`. Turborepo sigue opcional a esta escala.
+> ✅ **Resuelto (2026-07-13).** Root `package.json`: `+dev:admin`, `+build:admin`, `type-check --workspaces --if-present` (web+admin), `+lint`. Turborepo sigue opcional a esta escala.
 
 **Evidencia:** `package.json:10-15` — todos los scripts apuntan a `-w tbm-app`; `build` y `build:web` idénticos; sin `dev:admin`/`build:admin`/`type-check` global. Admin solo se buildea implícitamente en Vercel.
 **Recomendación:** agregar `dev:admin`, `build:admin`, `type-check: --workspaces --if-present`. Turborepo opcional; el CI (T8) no.
@@ -587,7 +596,7 @@ Ver IA-10 (IA) + este (Supabase). `apps/web/src/lib/supabase/{server,client}.ts`
 
 El orden está pensado para **cerrar primero lo que sangra plata o datos, y montar la red de contención antes de refactorizar**. Cada fase es acumulativa.
 
-### Fase 0 — Contención inmediata (esta semana, ~1-2 días) — 🟡 EN CURSO (2026-07-02)
+### Fase 0 — Contención inmediata — ✅ COMPLETA (migración aplicada 2026-07-13 · código en `develop`)
 Cosas que se explotan hoy o que impiden verificar el resto. Casi todo son migraciones pequeñas.
 1. 🛠️ **T1** — trigger en `profiles` que congela `role`/`company_id` (autocontenido, sin tocar código). *La grieta multi-tenant.* → **en `migration_fase0_hardening.sql`, falta aplicar.**
 2. 🛠️ **T3** — dropear policies write de `disc_assessments` + revoke. *Bypass de créditos.* → **misma migración, falta aplicar.**
@@ -595,24 +604,24 @@ Cosas que se explotan hoy o que impiden verificar el resto. Casi todo son migrac
 4. 🛠️ **T5** — default `role='colaborador'` + `handle_new_user` + fix de datos. → **misma migración, falta aplicar.**
 5. ✅ **T7 (mínimo)** — kill-switch `DC_KILL_SWITCH` + tope `DC_COMPANY_MONTHLY_LIMIT` por empresa/mes en `/api/jarvis`.
 
-> **Para cerrar la Fase 0:** correr `supabase/migration_fase0_hardening.sql` en el SQL Editor (cubre T1+T3+T5, es idempotente) y deployar el código (T2+T7). El código es independiente de la migración: se puede deployar antes o después sin romper nada.
+> ✅ **Fase 0 aplicada (2026-07-13):** `migration_fase0_hardening.sql` corrió sin errores. Código (T2+T7) en `develop`. **Pendiente:** smoke test del onboarding (register + accept-invite) tras el trigger de T1.
 
-### Fase 1 — Red de contención y verificabilidad (semana 1-2) — 🟡 EN CURSO (2026-07-02)
+### Fase 1 — Red de contención y verificabilidad (semana 1-2) — 🟡 EN CURSO (2026-07-13)
 Sin esto, los refactors siguientes son a ciegas.
 6. ✅ **T8** — CI en GitHub Actions (type-check web+admin + Vitest, gates; lint informativo) + ESLint flat config + primeros tests + scripts de root. **Pendiente:** `next build` en CI + ESLint en admin + limpiar 29 errores de lint.
 7. 🔒 **T4** — `supabase link` + `db diff` → baseline en `supabase/migrations/`. **Bloqueado: requiere conexión viva a Supabase (MCP no autenticado en esta sesión).**
 8. 🔒 **ARCH-3 / DB-19** — `supabase gen types` a `@tbm/shared`. **Bloqueado: requiere conexión viva a Supabase.**
 
-### Fase 2 — Solidez del aislamiento y de los datos (semana 2-4) — 🛠️ MIGRACIONES LISTAS (2026-07-02, falta aplicar)
+### Fase 2 — Solidez del aislamiento y de los datos — ✅ MIGRACIONES APLICADAS (2026-07-13)
 Cuatro migraciones en `supabase/` (idempotentes), cada una en su commit:
 9. 🛠️ **DB-4/5/6** (`migration_fase2b_policies_aislamiento.sql`) — policies por comando + autoría en INSERT + borradores de feedback privados + DELETE de arquitecto. **DB-7** (RPC `accept_invitation`) queda pendiente (ya mitigado en parte por el trigger de T1). UPDATE conservador (ver nota en el archivo).
 10. 🛠️ **DB-8 / PAY-2/3/6/5/11** (`migration_fase2c_ledger.sql`) — `grant_credits` idempotente + no-negativo + tope; `request_id`/`balance_after`/CHECK de type; `ref`=assessment_id; unique de pendiente por perfil. Falta el lado código (pasar `request_id`).
 11. 🛠️ **DB-9** (`migration_fase2a_indices.sql`) — índices sobre `company_id` y FKs. **DB-10** parcial: las policies reescritas en 2B usan `(select …)`; el resto de la RLS legacy queda por optimizar.
 12. 🛠️ **DB-19 + PAY-9** (`migration_fase2d_integridad.sql`) — uniques de negocio (baseline, kpis, leading_indicators) + ledger solo-arquitecto. **DB-13** (ver compañeros) y **DB-16** (CHECKs de dominio) quedan fuera: el primero choca con la privacidad del DISC (necesita vista), el segundo requiere confirmar dominios con la app.
 
-> **Para aplicar la Fase 2:** correr en orden `migration_fase2a_indices.sql` → `2b_policies_aislamiento` → `2c_ledger` → `2d_integridad` en el SQL Editor. Todas idempotentes; los uniques avisan por NOTICE (sin abortar) si encuentran datos duplicados.
+> ✅ **Fase 2 aplicada (2026-07-13):** las 4 migraciones corrieron sin errores. **Pendiente:** smoke test de las policies nuevas (crear Roca/Feedback/Workbook) y confirmar que `grant_credits` (firma nueva) sigue acreditando desde el admin.
 
-### Fase 3 — Escalabilidad operativa (semana 3-5) — 🟡 EN CURSO (2026-07-02)
+### Fase 3 — Escalabilidad operativa (semana 3-5) — 🟡 EN CURSO (2026-07-13)
 13. 🟡 **CRON** — hechos los fixes quirúrgicos de robustez: **CRON-1** (sin cap de 100), **CRON-4** (try/catch por empresa + `ok:false` si hay errores), **CRON-14** (secreto timing-safe). **Pendiente el refactor arquitectónico T6** (dispatcher + worker, cron horario) y **CRON-3/5/6** (dedup del digest, backoff de Resend, índice de dedup) — necesitan capacidad de test / cambio de infra.
 14. ⬜ **CRON-10, CRON-11** — `email_log` + webhook de bounces + `notification_prefs` + `List-Unsubscribe`. Pendiente.
 15. ✅ **IA-3/4/5/15** — idle-timeout en el stream (openrouter+anthropic), errores por status, prompt tokens estimados. **IA-6** (cache del contexto) pendiente.
