@@ -1,0 +1,2 @@
+# El panel admin no tiene assets estáticos propios todavía, pero la carpeta
+# public/ debe existir para que el COPY del Dockerfile (runner) no falle.
