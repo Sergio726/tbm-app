@@ -7,6 +7,11 @@ const MONOREPO_ROOT = path.join(__dirname, "..", "..");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Docker/Dokploy: server autónomo mínimo. outputFileTracingRoot = raíz del
+  // monorepo para que el standalone incluya @tbm/shared y el workspace.
+  output: "standalone",
+  outputFileTracingRoot: MONOREPO_ROOT,
+
   turbopack: { root: MONOREPO_ROOT },
   // El paquete @tbm/shared se distribuye como TS fuente → Next lo transpila.
   transpilePackages: ["@tbm/shared"],
