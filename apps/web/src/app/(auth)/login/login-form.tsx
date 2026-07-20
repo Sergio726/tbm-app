@@ -7,7 +7,6 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { readRememberClient, writeRememberClient } from "@/lib/supabase/remember";
 import { capture } from "@/lib/analytics";
@@ -488,7 +487,6 @@ function Field({
 // Panel derecho — form de login
 // =============================================================
 function RightPanel() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [showPwd, setShowPwd] = useState(false);
@@ -540,8 +538,12 @@ function RightPanel() {
     } catch {
       /* ignore */
     }
-    router.push("/dashboard");
-    router.refresh();
+    // Navegación DURA (no router.push): tras signInWithPassword las cookies de
+    // auth se escriben vía document.cookie del lado del cliente. Safari (ITP) NO
+    // las adjunta en el fetch RSC de una navegación soft, así que el middleware
+    // server-side no ve la sesión y rebota a /login. Un load completo del
+    // documento fuerza a Safari a mandar las cookies → el middleware ve la sesión.
+    window.location.assign("/dashboard");
   };
 
   const handleSSO = async (provider: "google" | "azure") => {
