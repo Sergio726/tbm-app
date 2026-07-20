@@ -113,6 +113,7 @@ export default async function DashboardLayout({
         isArquitecto={profile?.role === "arquitecto"}
         avatarUrl={profile?.avatar_url ?? undefined}
         isCoach={isCoach}
+        hasCompany={!!profile?.company_id}
       />
 
       {/* Contenido principal */}
@@ -128,7 +129,12 @@ export default async function DashboardLayout({
       <DcLauncher persona={dcPersona} />
 
       {/* Command Palette global (⌘K / Ctrl+K) */}
-      <CommandPalette userRole={profile?.role ?? "colaborador"} userId={user.id} />
+      <CommandPalette
+        userRole={profile?.role ?? "colaborador"}
+        userId={user.id}
+        hasCompany={!!profile?.company_id}
+        isCoach={isCoach}
+      />
 
       {/* Tour guiado de onboarding (S11) — auto-arranca la primera vez */}
       <TourProvider

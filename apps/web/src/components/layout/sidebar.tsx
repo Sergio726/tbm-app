@@ -59,6 +59,13 @@ interface SidebarProps {
   avatarUrl?: string;
   /** true si el usuario tiene empresas asignadas como coach (S9). */
   isCoach?: boolean;
+  /**
+   * true si el usuario pertenece a una empresa (company_id no nulo). Un coach
+   * dedicado no tiene empresa: en ese caso se ocultan los módulos de empresa
+   * (Rituales, Plan 90D, etc.), que de todos modos sus guardas rebotan a
+   * /onboarding o /dashboard. El coach opera solo desde el panel Super Coach.
+   */
+  hasCompany?: boolean;
 }
 
 /**
@@ -77,8 +84,12 @@ export function Sidebar({
   userRole,
   isArquitecto,
   avatarUrl,
+  hasCompany = true,
 }: SidebarProps) {
   const pathname = usePathname();
+  // Coach dedicado (sin empresa): solo ve el panel Super Coach. Los módulos de
+  // empresa se ocultan porque sus guardas server-side lo rebotarían igual.
+  const visibleModules = hasCompany ? MODULES : [];
   const router = useRouter();
   const { restart: restartTour } = useRestartTour(userId);
   const [signingOut, setSigningOut] = useState(false);
@@ -255,7 +266,7 @@ export function Sidebar({
           data-tour="sidebar-nav"
           className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-[14px] py-1.5"
         >
-          {MODULES.map(({ href, label: moduleLabel, Icon }) => {
+          {visibleModules.map(({ href, label: moduleLabel, Icon }) => {
             // El colaborador ve "/equipo" como su propia ficha → "Mi Perfil".
             const label =
               href === "/equipo" && !isArquitecto ? "Mi Perfil" : moduleLabel;

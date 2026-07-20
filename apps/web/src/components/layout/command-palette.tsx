@@ -52,7 +52,17 @@ function matches(item: PaletteItem, q: string): boolean {
     .every((word) => hay.includes(word));
 }
 
-export function CommandPalette({ userRole, userId }: { userRole: string; userId: string }) {
+export function CommandPalette({
+  userRole,
+  userId,
+  hasCompany = true,
+  isCoach = false,
+}: {
+  userRole: string;
+  userId: string;
+  hasCompany?: boolean;
+  isCoach?: boolean;
+}) {
   const { open, setOpen } = useCommandPalette();
   const router = useRouter();
   const { restart } = useRestartTour(userId);
@@ -61,6 +71,11 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
   const inputRef = useRef<HTMLInputElement>(null);
 
   const byRole = (item: PaletteItem) => !item.role || item.role === userRole;
+  // Coach dedicado (sin empresa): los módulos de empresa rebotan sus guardas, así
+  // que solo se listan los ítems que no dependen de una empresa (Mi cuenta +
+  // acciones sin href). Su navegación real vive en el panel Super Coach.
+  const byCompany = (item: PaletteItem) =>
+    hasCompany || !item.href || item.href === "/cuenta";
   // El colaborador ve "/equipo" como su propia ficha → "Mi Perfil".
   const relabel = (item: PaletteItem): PaletteItem =>
     item.href === "/equipo" && userRole !== "arquitecto"
@@ -68,11 +83,23 @@ export function CommandPalette({ userRole, userId }: { userRole: string; userId:
       : item;
 
   const sections = useMemo(() => {
-    const mods = MODULES.filter(byRole).filter((m) => matches(m, query)).map(relabel);
-    const actions = QUICK_ACTIONS.filter(byRole).filter((a) => matches(a, query));
+    const base = isCoach
+      ? [
+          { label: "Super Coach", href: "/super-coach", icon: "🎓", keywords: ["empresas", "alumnos", "coach", "panel"] },
+          ...MODULES,
+        ]
+      : MODULES;
+    const mods = base
+      .filter(byRole)
+      .filter(byCompany)
+      .filter((m) => matches(m, query))
+      .map(relabel);
+    const actions = QUICK_ACTIONS.filter(byRole)
+      .filter(byCompany)
+      .filter((a) => matches(a, query));
     return { mods, actions, flat: [...mods, ...actions] };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, userRole]);
+  }, [query, userRole, hasCompany, isCoach]);
 
   // Reset al abrir
   useEffect(() => {
