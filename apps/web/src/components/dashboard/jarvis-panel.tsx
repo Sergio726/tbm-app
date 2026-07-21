@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { Send } from "lucide-react";
 import { JarvisCore } from "./jarvis-core";
 import type { ChatMessage } from "@/lib/ai";
 import type { DcPublicPersona } from "@/lib/dc-persona";
@@ -335,22 +336,36 @@ export function JarvisPanel({
           right: 0,
           bottom: 0,
           width: "min(440px, 100vw)",
-          background: "var(--surface)",
-          borderLeft: "1px solid var(--border)",
+          background: "rgba(8,11,20,0.82)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderLeft: "1px solid rgba(91,138,255,0.35)",
           zIndex: 81,
-          boxShadow: "-20px 0 60px rgba(0,0,0,0.5)",
+          boxShadow: "-20px 0 60px rgba(0,0,0,0.55)",
           // Reset de herencia (el orbe vive dentro de un <h1> bold): texto normal.
           fontWeight: 400,
           fontSize: 14,
           letterSpacing: "normal",
           lineHeight: 1.5,
-          color: "var(--fg)",
+          color: "#F1F5F9",
         }}
       >
+        {/* Capa decorativa (S18.4): gradiente casi negro que respira + partículas.
+            Va detrás del contenido (zIndex 0), no interactúa ni afecta a11y. */}
+        <div
+          aria-hidden
+          style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}
+        >
+          <div className="jarvis-panel-glow" style={{ position: "absolute", inset: 0 }} />
+          <PanelParticles />
+        </div>
+        {/* Borde con glow azul fijo — por encima de todo, no captura clicks. */}
+        <div className="jarvis-panel-edge" aria-hidden style={{ position: "absolute", inset: 0, zIndex: 5 }} />
+
         {/* Header */}
         <div
           className="flex items-center justify-between"
-          style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", gap: 12 }}
+          style={{ position: "relative", zIndex: 1, padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.10)", gap: 12 }}
         >
           <div className="flex items-center" style={{ gap: 10 }}>
             <span style={{ position: "relative", width: 24, height: 24 }}>
@@ -358,8 +373,8 @@ export function JarvisPanel({
               <JarvisCore size={24} plain />
             </span>
             <div style={{ lineHeight: 1.15 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--fg)" }}>{persona.name}</div>
-              <div style={{ fontSize: 11, color: "var(--fg-muted)" }}>Asistente · beta</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#F1F5F9" }}>{persona.name}</div>
+              <div style={{ fontSize: 11, color: "#9FB0C9" }}>Asistente · beta</div>
             </div>
           </div>
           <div className="flex items-center" style={{ gap: 4 }}>
@@ -390,16 +405,16 @@ export function JarvisPanel({
         </div>
 
         {/* Mensajes */}
-        <div ref={scrollRef} className="flex-1" style={{ overflowY: "auto", padding: 16 }}>
+        <div ref={scrollRef} className="flex-1" style={{ position: "relative", zIndex: 1, overflowY: "auto", padding: 16 }}>
           {showHistory ? (
             <div className="flex flex-col" style={{ gap: 6 }}>
-              <div style={{ fontSize: 12, color: "var(--fg-muted)", margin: "2px 0 8px" }}>
+              <div style={{ fontSize: 12, color: "#9FB0C9", margin: "2px 0 8px" }}>
                 Conversaciones anteriores
               </div>
               {loadingHistory ? (
-                <div style={{ fontSize: 13, color: "var(--fg-muted)" }}>Cargando…</div>
+                <div style={{ fontSize: 13, color: "#9FB0C9" }}>Cargando…</div>
               ) : conversations.length === 0 ? (
-                <div style={{ fontSize: 13, color: "var(--fg-muted)" }}>
+                <div style={{ fontSize: 13, color: "#9FB0C9" }}>
                   Todavía no hay conversaciones guardadas.
                 </div>
               ) : (
@@ -414,15 +429,15 @@ export function JarvisPanel({
                       borderRadius: 10,
                       background:
                         c.id === conversationId ? "rgba(91,138,255,0.12)" : "rgba(255,255,255,0.03)",
-                      border: "1px solid var(--border)",
-                      color: "var(--fg)",
+                      border: "1px solid rgba(255,255,255,0.10)",
+                      color: "#F1F5F9",
                       cursor: "pointer",
                     }}
                   >
-                    <div style={{ fontSize: 13.5, color: "var(--fg)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: 13.5, color: "#F1F5F9", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {c.title || "Conversación"}
                     </div>
-                    <div style={{ fontSize: 11, color: "var(--fg-muted)" }}>
+                    <div style={{ fontSize: 11, color: "#9FB0C9" }}>
                       {new Date(c.updated_at).toLocaleString("es-AR")}
                     </div>
                   </button>
@@ -431,7 +446,7 @@ export function JarvisPanel({
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col" style={{ gap: 10 }}>
-              <p style={{ fontSize: 13.5, color: "var(--fg-muted)", lineHeight: 1.6 }}>
+              <p style={{ fontSize: 13.5, color: "#9FB0C9", lineHeight: 1.6 }}>
                 {persona.welcome}
               </p>
               {persona.suggestions.map((s) => (
@@ -471,7 +486,9 @@ export function JarvisPanel({
                       lineHeight: 1.55,
                       background: "rgba(91,138,255,0.18)",
                       border: "1px solid rgba(91,138,255,0.32)",
-                      color: "var(--fg)",
+                      backdropFilter: "blur(4px)",
+                      WebkitBackdropFilter: "blur(4px)",
+                      color: "#F1F5F9",
                       whiteSpace: "pre-wrap",
                     }
                   : m.error
@@ -483,7 +500,7 @@ export function JarvisPanel({
                         lineHeight: 1.55,
                         background: "rgba(248,113,113,0.1)",
                         border: "1px solid rgba(248,113,113,0.28)",
-                        color: "var(--danger-text)",
+                        color: "#FCA5A5",
                         whiteSpace: "pre-wrap",
                       }
                     : {
@@ -492,7 +509,7 @@ export function JarvisPanel({
                         padding: 0,
                         fontSize: 15,
                         lineHeight: 1.65,
-                        color: "var(--fg)",
+                        color: "#F1F5F9",
                       };
                 return (
                   <div
@@ -541,7 +558,7 @@ export function JarvisPanel({
                         className="jarvis-copy"
                         style={{
                           fontSize: 11,
-                          color: "var(--fg-muted)",
+                          color: "#9FB0C9",
                           background: "transparent",
                           border: "none",
                           cursor: "pointer",
@@ -555,8 +572,12 @@ export function JarvisPanel({
                 );
               })}
               {pending && (
-                <div style={{ alignSelf: "flex-start", fontSize: 12.5, color: "var(--fg-muted)" }}>
-                  <span className="jarvis-cursor">▍</span> {persona.name} está pensando…
+                <div
+                  className="flex items-center"
+                  style={{ alignSelf: "flex-start", gap: 8, fontSize: 12.5, color: "#9FB0C9" }}
+                >
+                  <JarvisCore size={18} plain />
+                  {persona.name} está pensando…
                 </div>
               )}
             </div>
@@ -569,7 +590,7 @@ export function JarvisPanel({
             e.preventDefault();
             send(input);
           }}
-          style={{ padding: 12, borderTop: "1px solid var(--border)" }}
+          style={{ position: "relative", zIndex: 1, padding: 12, borderTop: "1px solid rgba(255,255,255,0.10)" }}
         >
           <div className="flex items-end" style={{ gap: 8 }}>
             <textarea
@@ -590,10 +611,10 @@ export function JarvisPanel({
               style={{
                 flex: 1,
                 resize: "none",
-                background: "var(--elevated)",
-                border: "1px solid var(--border)",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.10)",
                 borderRadius: 12,
-                color: "var(--fg)",
+                color: "#F1F5F9",
                 padding: "10px 12px",
                 fontSize: 13.5,
                 lineHeight: 1.4,
@@ -602,16 +623,23 @@ export function JarvisPanel({
               }}
             />
             {streaming || pending ? (
-              <button type="button" onClick={stop} style={{ ...sendBtn, background: "rgba(248,113,113,0.18)", border: "1px solid rgba(248,113,113,0.4)", color: "var(--danger-text)" }}>
+              <button type="button" onClick={stop} style={{ ...sendBtn, background: "rgba(248,113,113,0.18)", border: "1px solid rgba(248,113,113,0.4)", color: "#FCA5A5" }}>
                 Parar
               </button>
             ) : (
-              <button type="submit" disabled={!input.trim()} style={{ ...sendBtn, opacity: input.trim() ? 1 : 0.5, cursor: input.trim() ? "pointer" : "not-allowed" }}>
-                Enviar
+              <button
+                type="submit"
+                disabled={!input.trim()}
+                aria-label="Enviar"
+                title="Enviar"
+                className="flex items-center justify-center"
+                style={{ ...sendBtn, padding: 10, opacity: input.trim() ? 1 : 0.5, cursor: input.trim() ? "pointer" : "not-allowed" }}
+              >
+                <Send style={{ width: 17, height: 17 }} />
               </button>
             )}
           </div>
-          <div style={{ fontSize: 10.5, color: "var(--fg-muted)", marginTop: 6, textAlign: "center" }}>
+          <div style={{ fontSize: 10.5, color: "#9FB0C9", marginTop: 6, textAlign: "center" }}>
             {persona.name} puede equivocarse. Verificá lo importante. · Enter envía · Shift+Enter salto de línea
           </div>
         </form>
@@ -647,20 +675,20 @@ function ProposalCard({
     >
       <div className="flex items-center" style={{ gap: 8, marginBottom: 10 }}>
         <span style={{ fontSize: 15 }}>⚡</span>
-        <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--fg)" }}>{proposal.title}</div>
+        <div style={{ fontSize: 13.5, fontWeight: 700, color: "#F1F5F9" }}>{proposal.title}</div>
       </div>
       <div className="flex flex-col" style={{ gap: 6, marginBottom: 12 }}>
         {proposal.details.map((d, j) => (
           <div key={j} style={{ display: "flex", gap: 8, fontSize: 12.5, lineHeight: 1.45 }}>
-            <span style={{ color: "var(--fg-muted)", minWidth: 78, flexShrink: 0 }}>{d.label}</span>
-            <span style={{ color: "var(--fg)", wordBreak: "break-word" }}>{d.value}</span>
+            <span style={{ color: "#9FB0C9", minWidth: 78, flexShrink: 0 }}>{d.label}</span>
+            <span style={{ color: "#F1F5F9", wordBreak: "break-word" }}>{d.value}</span>
           </div>
         ))}
       </div>
       {resolved === "confirmed" ? (
-        <div style={{ fontSize: 12.5, color: "var(--success-text)" }}>✓ Confirmado</div>
+        <div style={{ fontSize: 12.5, color: "#6EE7B7" }}>✓ Confirmado</div>
       ) : resolved === "cancelled" ? (
-        <div style={{ fontSize: 12.5, color: "var(--fg-muted)" }}>Cancelado</div>
+        <div style={{ fontSize: 12.5, color: "#9FB0C9" }}>Cancelado</div>
       ) : (
         <div className="flex" style={{ gap: 8 }}>
           <button
@@ -689,8 +717,8 @@ function ProposalCard({
               padding: "8px 14px",
               borderRadius: 10,
               background: "transparent",
-              border: "1px solid var(--border-strong)",
-              color: "var(--fg-muted)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              color: "#9FB0C9",
               fontSize: 13,
               fontWeight: 600,
               cursor: busy ? "not-allowed" : "pointer",
@@ -742,7 +770,7 @@ function MarkdownLite({ text }: { text: string }) {
     } else if (heading) {
       flushList();
       blocks.push(
-        <div key={`h${blocks.length}`} style={{ fontWeight: 600, fontSize: 15, margin: "10px 0 2px", color: "var(--fg)" }}>
+        <div key={`h${blocks.length}`} style={{ fontWeight: 600, fontSize: 15, margin: "10px 0 2px", color: "#F1F5F9" }}>
           {inline(heading[1])}
         </div>
       );
@@ -773,13 +801,13 @@ function inline(text: string): ReactNode[] {
     const tok = m[0];
     if (tok.startsWith("**"))
       out.push(
-        <strong key={k++} style={{ fontWeight: 600, color: "var(--fg)" }}>
+        <strong key={k++} style={{ fontWeight: 600, color: "#F1F5F9" }}>
           {tok.slice(2, -2)}
         </strong>
       );
     else if (tok.startsWith("`"))
       out.push(
-        <code key={k++} style={{ background: "var(--elevated)", borderRadius: 4, padding: "1px 5px", fontSize: 12.5 }}>
+        <code key={k++} style={{ background: "rgba(255,255,255,0.06)", borderRadius: 4, padding: "1px 5px", fontSize: 12.5 }}>
           {tok.slice(1, -1)}
         </code>
       );
@@ -790,10 +818,53 @@ function inline(text: string): ReactNode[] {
   return out;
 }
 
+// ── Partículas decorativas del panel (S18.3) ─────────────────────────────────
+// Posiciones fijas (deterministas): estables entre renders y sin desajuste de
+// hidratación. La animación (deriva + fade) la aporta la clase `.jarvis-particle`.
+const PANEL_PARTICLES = [
+  { left: "8%", size: 3, dur: 7, delay: 0 },
+  { left: "16%", size: 2, dur: 9, delay: 1.5 },
+  { left: "23%", size: 4, dur: 8, delay: 3 },
+  { left: "31%", size: 2, dur: 10, delay: 0.8 },
+  { left: "38%", size: 3, dur: 7.5, delay: 2.2 },
+  { left: "45%", size: 2, dur: 9.5, delay: 4 },
+  { left: "52%", size: 4, dur: 8.5, delay: 1 },
+  { left: "59%", size: 2, dur: 11, delay: 2.8 },
+  { left: "66%", size: 3, dur: 12, delay: 5 },
+  { left: "72%", size: 2, dur: 10.5, delay: 3.6 },
+  { left: "79%", size: 3, dur: 8.2, delay: 1.8 },
+  { left: "85%", size: 2, dur: 9.8, delay: 4.6 },
+  { left: "91%", size: 4, dur: 7.8, delay: 0.4 },
+  { left: "96%", size: 2, dur: 11.5, delay: 2.4 },
+  { left: "35%", size: 2, dur: 13, delay: 6 },
+  { left: "62%", size: 2, dur: 12.5, delay: 5.4 },
+];
+
+function PanelParticles() {
+  return (
+    <>
+      {PANEL_PARTICLES.map((p, i) => (
+        <span
+          key={i}
+          className="jarvis-particle"
+          style={{
+            left: p.left,
+            bottom: "-6%",
+            width: p.size,
+            height: p.size,
+            animationDuration: `${p.dur}s`,
+            animationDelay: `${p.delay}s`,
+          }}
+        />
+      ))}
+    </>
+  );
+}
+
 const iconBtn: React.CSSProperties = {
   background: "transparent",
   border: "none",
-  color: "var(--fg-subtle)",
+  color: "#7C8CA8",
   cursor: "pointer",
   fontSize: 16,
   lineHeight: 1,
@@ -804,9 +875,9 @@ const chip: React.CSSProperties = {
   textAlign: "left",
   padding: "10px 12px",
   borderRadius: 12,
-  background: "var(--elevated)",
-  border: "1px solid var(--border)",
-  color: "var(--fg-muted)",
+  background: "rgba(255,255,255,0.06)",
+  border: "1px solid rgba(255,255,255,0.10)",
+  color: "#9FB0C9",
   fontSize: 13,
   cursor: "pointer",
 };

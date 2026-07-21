@@ -134,9 +134,9 @@ export function DcLauncher({ persona }: { persona: DcPublicPersona }) {
             style={{
               width: 52,
               height: 52,
-              background: "rgba(11,18,32,0.92)",
-              border: "1px solid rgba(91,138,255,0.3)",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+              background: "rgba(6,10,20,0.9)",
+              border: "1px solid rgba(91,138,255,0.4)",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.5), 0 0 22px rgba(37,99,235,0.35)",
               cursor: "pointer",
               backdropFilter: "blur(6px)",
             }}

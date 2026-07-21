@@ -14,29 +14,17 @@ import { motion } from "motion/react";
  * el header del panel de chat) usar `plain` → renderiza un `<span>` SIN layoutId.
  */
 export function JarvisCore({ size = 28, plain = false }: { size?: number; plain?: boolean }) {
+  // Esfera de energía neón (S17.E). Un wrapper respira (scale) y adentro el
+  // anillo gira (rotate) → se evita el choque de `transform`. El `fontSize`
+  // habilita el escalado del box-shadow expresado en `em` dentro de la keyframe.
   const inner = (
-    <>
-      {/* Halo de glow (respira) */}
+    <span className="jarvis-breathe absolute inset-0">
       <span
-        className="jarvis-breathe absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 42%, rgba(96,165,250,0.85), rgba(37,99,235,0.32) 55%, transparent 72%)",
-          filter: "blur(1.5px)",
-        }}
+        aria-hidden
+        className="jarvis-orb-ring absolute inset-0 rounded-full"
+        style={{ fontSize: size }}
       />
-      {/* Núcleo */}
-      <span
-        className="absolute rounded-full"
-        style={{
-          inset: "20%",
-          background:
-            "radial-gradient(circle at 34% 28%, #eff6ff, #3b82f6 55%, #1d4ed8)",
-          boxShadow:
-            "0 0 14px rgba(59,130,246,0.75), inset 0 0 6px rgba(255,255,255,0.55)",
-        }}
-      />
-    </>
+    </span>
   );
 
   if (plain) {
