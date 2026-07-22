@@ -50,6 +50,36 @@ La marca de trabajo del servicio en este kit es **"Clona"** (provisional — ver
 
 ---
 
+## Activos listos para usar (los 14 entregables)
+
+Además de los 9 documentos de estrategia, ya tenés **materiales terminados** para ejecutar:
+
+**🎨 Piezas visuales (`assets/`)** — abrí los `.html` en el navegador; son autónomos y deployables:
+- `assets/landing.html` — **Landing page** completa (reemplazá `[MARCA]`, `[AGENDA_LINK]`, `[VIDEO_DEMO]`, `[EMAIL]` y subila).
+- `assets/diagnostico.html` — **Lead magnet interactivo** "¿Tu método es clonable con IA?" (cuestionario + resultado + CTA).
+- `assets/caso-tbm.html` — **One-pager del caso TBM** (imprimible a PDF; mandalo como prueba).
+
+**✍️ Contenido (`contenido/`):**
+- `contenido/posts.md` — **10 posts** finales listos para publicar.
+- `contenido/guion_demo.md` — **Guion del video demo** de TBM, pantalla por pantalla.
+- `contenido/calendario_90_dias.md` — **Calendario de contenido** de 90 días.
+
+**💼 Ventas (`ventas/`):**
+- `ventas/planilla_50_coaches.csv` + `ventas/planilla_instrucciones.md` — **Lista de caza** de 50 coaches.
+- `ventas/secuencia_outreach.md` — **Mensajes de contacto** (DM + follow-ups + respuestas a réplicas).
+- `ventas/plantilla_propuesta.md` — **Propuesta de 1 página** editable.
+- `ventas/tarjetas_objeciones.md` — **Chuleta de objeciones** para las llamadas.
+- `ventas/podcasts_pitch_y_lista.md` — **Pitch para podcasts** + a quién apuntar.
+
+**🏷️ Marca (`marca/`):**
+- `marca/nombre_y_marca.md` — **Chequeo de nombre** (¡ojo!: "Clona" está ocupado — leelo), logo y tagline.
+- `marca/bios_redes.md` — **Bios optimizadas** de LinkedIn e Instagram.
+
+**📈 Finanzas (`finanzas/`):**
+- `finanzas/modelo_simple.md` — **Modelo financiero**: cuántos clientes necesitás para tus metas.
+
+---
+
 ## Reglas de oro (para no perderte)
 
 1. **Un solo nicho primero.** Coaches/consultores de negocios con método y clientes. Nada de "todos los coaches".

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>¿Tu método es clonable con IA? · Diagnóstico gratis</title>
+<meta name="description" content="Descubrí en 2 minutos qué tan listo está tu método de coaching para convertirse en una app con IA." />
+<!--
+  ========================================================================
+  LEAD MAGNET — Diagnóstico "¿Tu método es clonable con IA?"
+  QUÉ HACE: 8 preguntas, calcula un puntaje y muestra un resultado + próximos pasos + CTA.
+  CÓMO USARLO:
+   1) Reemplazá [MARCA], [AGENDA_LINK].
+   2) Captura de email: el formulario final NO envía a ningún lado por sí solo.
+      Conectalo a tu herramienta (Mailerlite, Beehiiv, Google Forms, etc.) cambiando
+      el atributo action del <form id="capture"> — está señalado con un comentario.
+   3) Subilo como página aparte (ej. tudominio.com/diagnostico) y linkealo desde tu bio/landing.
+  ========================================================================
+-->
+<style>
+  :root{
+    --bg:#070b16;--card:#0e1830;--card2:#111c38;--border:rgba(120,150,220,.18);--border2:rgba(120,150,220,.34);
+    --fg:#eef3ff;--muted:#a9b7d6;--subtle:#7d8cb0;--accent:#4f86ff;--accent2:#7aa2ff;--accent-strong:#2c5fe6;
+    --good:#34d399;--warn:#fbbf24;--bad:#f87171;--radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1000px 500px at 70% -10%,rgba(79,134,255,.18),transparent 60%),var(--bg);
+    color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:680px;margin:0 auto;padding:clamp(28px,6vw,56px) clamp(18px,5vw,24px)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;margin-bottom:28px}
+  .brand .dot{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent-strong));box-shadow:0 4px 14px rgba(44,95,230,.5)}
+  h1{font-size:clamp(26px,5vw,38px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+  .sub{color:var(--muted);font-size:clamp(16px,2.2vw,18px);margin-top:14px}
+  .btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;background:linear-gradient(180deg,var(--accent),var(--accent-strong));
+    color:#fff;font-weight:700;font-size:16px;text-decoration:none;padding:14px 26px;border-radius:12px;border:none;cursor:pointer;
+    box-shadow:0 10px 30px rgba(44,95,230,.4);transition:transform .15s ease}
+  .btn:hover{transform:translateY(-2px)} .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:var(--radius);padding:clamp(22px,4vw,32px)}
+  .progress{height:8px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:22px 0}
+  .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s ease}
+  .q{font-size:clamp(19px,3vw,24px);font-weight:700;margin-bottom:20px}
+  .opts{display:flex;flex-direction:column;gap:12px}
+  .opt{text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--fg);border-radius:12px;padding:15px 18px;font-size:16px;cursor:pointer;transition:all .15s ease;font-family:inherit}
+  .opt:hover{border-color:var(--border2);background:rgba(79,134,255,.08)}
+  .qmeta{color:var(--subtle);font-size:13px;margin-bottom:18px;letter-spacing:.04em;text-transform:uppercase}
+  .hidden{display:none}
+  .result-badge{display:inline-block;font-weight:800;font-size:13px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
+  .score-num{font-size:52px;font-weight:800;line-height:1}
+  .reco{list-style:none;margin:20px 0}
+  .reco li{padding:10px 0;color:var(--muted);display:flex;gap:10px;border-bottom:1px solid var(--border)}
+  .reco li::before{content:"→";color:var(--accent2);font-weight:800}
+  form{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+  form input{flex:1;min-width:200px;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;color:var(--fg);font-size:16px;font-family:inherit}
+  form input::placeholder{color:var(--subtle)}
+  .foot{color:var(--subtle);font-size:13px;margin-top:26px;text-align:center}
+  a.link{color:var(--accent2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="dot"></span> [MARCA]</div>
+
+  <!-- INTRO -->
+  <div id="intro" class="card">
+    <h1>¿Tu método es clonable con IA?</h1>
+    <p class="sub">8 preguntas, 2 minutos. Al final te digo qué tan listo está tu método para convertirse en una app con inteligencia artificial — y qué te falta.</p>
+    <div style="margin-top:26px"><button class="btn" onclick="start()">Empezar el diagnóstico →</button></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="card hidden">
+    <div class="qmeta"><span id="qnum">Pregunta 1</span> de 8</div>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="q" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="result" class="card hidden">
+    <div id="badge" class="result-badge"></div>
+    <div><span class="score-num" id="scoreNum"></span> <span style="color:var(--subtle)">/ 100</span></div>
+    <h1 id="rtitle" style="margin-top:14px"></h1>
+    <p class="sub" id="rtext"></p>
+    <ul class="reco" id="reco"></ul>
+    <div class="card" style="background:linear-gradient(135deg,rgba(79,134,255,.12),rgba(79,134,255,.03));border-color:var(--border2)">
+      <strong style="font-size:17px">¿Querés ver tu método hecho app?</strong>
+      <p class="sub" style="margin-top:8px">Te muestro el demo y cómo se vería el tuyo, sin compromiso. Tomo 5 coaches fundadores este trimestre.</p>
+      <!-- CONECTAR: cambiá action por tu herramienta de email, o dejá que el botón lleve a agendar -->
+      <form id="capture" onsubmit="return capture(event)">
+        <input type="email" name="email" placeholder="Tu email" required />
+        <button class="btn" type="submit">Quiero ver el demo →</button>
+      </form>
+    </div>
+    <button class="opt" style="margin-top:16px;text-align:center" onclick="restart()">↺ Volver a empezar</button>
+  </div>
+
+  <p class="foot">Un servicio de StLabs · Cloná tu método. Está con tus clientes 24/7.</p>
+</div>
+
+<script>
+  // Cada pregunta suma hasta cierto puntaje. Total máximo = 100.
+  var QS = [
+    {t:"¿Tenés una forma estructurada y repetible de llevar a un cliente de A a B?",
+     o:[["Sí, un método claro con etapas",18],["Más o menos, lo hago intuitivo",9],["No, cada cliente es distinto",0]]},
+    {t:"¿Cuánto de tu método está documentado (escrito, en videos, en materiales)?",
+     o:[["Bastante: tengo materiales",15],["Algo suelto (PDFs, notas)",8],["Casi nada, está en mi cabeza",2]]},
+    {t:"¿Tenés clientes pagando hoy?",
+     o:[["Sí, cartera activa",15],["Algunos / arrancando",7],["Todavía no",0]]},
+    {t:"¿Sentís que tu tiempo es el techo de tu negocio?",
+     o:[["Sí, no doy abasto / rechazo clientes",15],["A veces",8],["No, tengo margen",3]]},
+    {t:"Entre sesión y sesión, ¿tus clientes avanzan solos?",
+     o:[["Poco: se enfrían sin mí",14],["Depende del cliente",7],["Sí, son autónomos",3]]},
+    {t:"¿Te gustaría atender a más clientes sin trabajar más horas?",
+     o:[["Sí, es mi objetivo",8],["Me interesa explorarlo",5],["No es prioridad ahora",1]]},
+    {t:"¿Qué tan abierto estás a usar IA en tu práctica?",
+     o:[["Muy abierto, quiero innovar",8],["Con dudas, pero curioso",5],["Reticente",1]]},
+    {t:"¿Pensás tu método como un posible producto/activo (no solo un servicio)?",
+     o:[["Sí, quiero empaquetarlo",7],["Nunca lo pensé así, pero me gusta",4],["No",1]]}
+  ];
+  var idx=0, score=0;
+  function start(){document.getElementById('intro').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');render();}
+  function render(){
+    var q=QS[idx];
+    document.getElementById('qnum').textContent='Pregunta '+(idx+1);
+    document.getElementById('qtext').textContent=q.t;
+    document.getElementById('bar').style.width=((idx)/QS.length*100)+'%';
+    var box=document.getElementById('opts');box.innerHTML='';
+    q.o.forEach(function(opt){
+      var b=document.createElement('button');b.className='opt';b.textContent=opt[0];
+      b.onclick=function(){score+=opt[1];next();};
+      box.appendChild(b);
+    });
+  }
+  function next(){idx++;if(idx<QS.length){render();}else{finish();}}
+  function finish(){
+    document.getElementById('quiz').classList.add('hidden');
+    var r=document.getElementById('result');r.classList.remove('hidden');
+    document.getElementById('scoreNum').textContent=score;
+    var badge=document.getElementById('badge'),title=document.getElementById('rtitle'),text=document.getElementById('rtext'),reco=document.getElementById('reco');
+    var band;
+    if(score>=70){band={c:'var(--good)',bg:'rgba(52,211,153,.15)',t:'Listo para clonar 🚀',
+      d:'Tu método tiene todo para convertirse en una app con IA: estructura, clientes y el dolor que lo justifica. Es el momento.',
+      r:['Agendá una charla: sos candidato ideal para el programa de fundadores.','Definí qué módulo de tu método clonar primero.','Junta tus materiales existentes: aceleran el proceso.']};}
+    else if(score>=45){band={c:'var(--warn)',bg:'rgba(251,191,158,.15)',t:'Casi listo ✨',
+      d:'Tenés una base sólida. Con un par de ajustes (ordenar el método o documentarlo un poco más) tu app queda redonda. Eso lo trabajamos juntos.',
+      r:['Estructurá tu método en etapas claras (te ayudamos en el descubrimiento).','Documentá lo esencial: no hace falta que esté perfecto.','Agendá una charla para ver cómo cubrir lo que falta.']};}
+    else{band={c:'var(--accent2)',bg:'rgba(79,134,255,.15)',t:'Con potencial, falta base 🌱',
+      d:'Todavía te falta afianzar el método o la cartera de clientes. No es un "no": es un "primero esto". Igual podemos charlar y armar un plan.',
+      r:['Definí y prueba tu método con clientes reales primero.','Empezá a documentar cómo trabajás (aunque sea en notas).','Cuando tengas eso, clonarlo con IA es el siguiente paso natural.']};}
+    badge.textContent=band.t;badge.style.color=band.c;badge.style.background=band.bg;
+    title.textContent=band.t;text.textContent=band.d;
+    reco.innerHTML='';band.r.forEach(function(x){var li=document.createElement('li');li.textContent=x;reco.appendChild(li);});
+    document.getElementById('bar').style.width='100%';
+  }
+  function capture(e){
+    e.preventDefault();
+    // TODO: conectar a tu herramienta de email. Por ahora, redirige a agendar.
+    window.location.href='[AGENDA_LINK]';
+    return false;
+  }
+  function restart(){idx=0;score=0;document.getElementById('result').classList.add('hidden');document.getElementById('intro').classList.remove('hidden');}
+</script>
+</body>
+</html>
