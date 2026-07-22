@@ -124,9 +124,12 @@ cron). `SUPPORT_EMAIL`/reply-to pasan a salir de la config.
 - **F0 · Quick win:** ✅ **hecho (2026-06-27)** — dominio **`send.stlabs.ar`** verificado en Resend
   y **envío de la app andando** (probado con "enviar email de prueba" desde `/correo`). El gate de
   invitaciones (`sendTeamInvite`) ahora usa `mailCanSendExternal()` (lee `email_config`), así que las
-  invitaciones también salen por la config del admin sin tocar env vars. ⏳ **Falta solo Canal B**:
-  cargar el SMTP de Resend en **Supabase → Authentication → SMTP** (para password resets / mails de
-  Auth desde el dominio).
+  invitaciones también salen por la config del admin sin tocar env vars. ✅ **Canal B hecho
+  (2026-06-27, re-verificado en dashboard 2026-07-22)**: SMTP de Resend cargado en **Supabase →
+  Authentication → SMTP** — `smtp.resend.com:465`, user `resend`, sender `noreply@send.stlabs.ar`,
+  `smtp_pass` = la API key de Resend del **Vault** (la misma de la app; ⚠️ NO la de `.env.local`,
+  que es de otra cuenta). Plantillas recovery/email-change en flujo `token_hash`; recovery probado
+  200. Todos los mails (app + Auth) salen del dominio verificado.
 - **F1 · Sección admin "Correo":** ✅ **hecho (2026-06-26)** — migración `email_config` + Vault
   (`email_set/get_secret`) + sección admin **`/correo`** (form remitente/reply-to/soporte/key +
   **enviar email de prueba**) + refactor de `lib/email.ts` a **DB-config con fallback a env** (el
@@ -167,11 +170,13 @@ Reemplazá `stlabs.ar` por el dominio elegido. Recomendado un **subdominio** de 
    - Confirmar que `RESEND_API_KEY = re_…` está cargada.
    - **Redeploy.** A partir de acá `canSendExternalEmail()` = true → el cron y el link DISC entregan a
      cualquier destinatario (ya no solo a la cuenta Resend).
-3. **Supabase Auth — SMTP de Resend (Canal B)**
+3. ✅ **Supabase Auth — SMTP de Resend (Canal B) — YA APLICADO** (2026-06-27, re-verificado 2026-07-22)
    - En Resend → **SMTP**: host `smtp.resend.com`, port `465` (SSL) o `587` (TLS), user `resend`,
      pass = una API key de Resend.
    - Supabase (proyecto `fozhnfxehbbgqaerprgf`) → **Authentication → SMTP Settings → Enable Custom
-     SMTP**: cargar host/port/user/pass + **Sender** `noreply@stlabs.ar` / "The Business Multiplier".
+     SMTP**: host/port/user/pass + **Sender** `noreply@send.stlabs.ar` / "The Business Multiplier".
+   - Estado actual: **Custom SMTP ON** con esos valores; `smtp_pass` = API key del Vault. Solo se
+     cambia por **dashboard o Management API** (no MCP). Ver §"Migración de dominio" abajo.
 4. **`SUPPORT_EMAIL` (#7):** cambiar el placeholder `tbm@stlabs.ar` en `apps/web/src/lib/credits.ts`
    por la casilla real de contacto (ej. `hola@stlabs.ar`). *(cambio de 1 línea — lo hago cuando se
    confirme la dirección.)*
@@ -179,3 +184,29 @@ Reemplazá `stlabs.ar` por el dominio elegido. Recomendado un **subdominio** de 
    - Test DISC: `/equipo` → "enviar por email" a una casilla externa → debe llegar.
    - Cron: `/api/cron/daily` (con bearer) o esperar 11:00 UTC → digest a arquitectos.
    - Auth: invitar / reset password → mail desde el dominio propio.
+
+---
+
+## 8. Migración de dominio — puntos a cambiar
+
+> El dominio de envío hoy es **`send.stlabs.ar`** (cuenta Resend de prod, DNS en Cloudflare). Si
+> alguna vez se migra a otro dominio, el remitente vive en **varios lugares independientes** — no
+> alcanza con cambiar uno. Checklist único (repasarlos TODOS):
+
+1. **Resend — verificar el dominio nuevo.** Domains → Add Domain → cargar SPF/DKIM (y DMARC) en el
+   DNS del dominio nuevo hasta el estado **Verified**. Si es otra cuenta de Resend, generar ahí una
+   API key nueva (cuidado con el GOTCHA de las 2 cuentas).
+2. **App / Canal A — Admin `/correo`** (`email_config` + Vault): `from_email` y `reply_to` al dominio
+   nuevo + la **API key** de la cuenta Resend dueña del dominio. Sin redeploy (lee de la DB). Fallback
+   env vars `RESEND_FROM` / `RESEND_API_KEY` en Vercel por si la tabla no está seteada.
+3. **Auth / Canal B — Supabase Auth SMTP** (proyecto `fozhnfxehbbgqaerprgf` → Authentication →
+   Emails/SMTP): actualizar el **Sender email** al dominio nuevo y la **smtp_pass** si cambió la API
+   key. ⚠️ **Solo por dashboard o Management API** (`/v1/projects/<ref>/config/auth` con un PAT
+   `sbp_…`) — **no** por MCP ni por el repo → es el punto que más fácil se olvida.
+4. **`SUPPORT_EMAIL` / reply-to**: si el buzón de contacto cambia con el dominio, ajustar
+   `email_config.support_email` (admin) o el placeholder de `apps/web/src/lib/credits.ts`.
+5. **Redirect URLs / Site URL** de Auth: solo si además cambia el **dominio del sitio** (no el de
+   envío) — Authentication → URL Configuration.
+
+> Riesgo de drift relacionado: `auditoria.md` · **CRON-15** (SMTP de Auth gestionado a mano →
+> cuidar la rotación de la key para que Canal A y Canal B no queden desincronizados).

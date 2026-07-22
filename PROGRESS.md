@@ -125,8 +125,10 @@
 >     reusando `auth/confirm` con `type=recovery`. Middleware: `/forgot-password` público,
 >     `/reset-password` fuera del gate de onboarding. Modelo final: contraseña primaria + reset por
 >     email + SSO; el email NO es punto único de falla del login diario.
->   - ⏳ **Config (ops):** cargar el **SMTP de Resend en Supabase Auth** + agregar `…/auth/confirm` y
->     `…/reset-password` a Redirect URLs, para que el mail de recovery se entregue confiable.
+>   - ✅ **Config (ops) hecha:** **SMTP de Resend en Supabase Auth** cargado (`smtp.resend.com`,
+>     sender `noreply@send.stlabs.ar`) + Redirect URLs de `…/auth/confirm` / `…/reset-password`;
+>     plantillas recovery/email-change en flujo `token_hash`. Recovery probado 200 (2026-06-27),
+>     **re-verificado en el dashboard 2026-07-22**. Detalle en `docs/EMAIL_ADMIN_CONFIG.md`.
 > - ✅ **Circuito de cuentas/sesiones endurecido (P0+P1)**: auditoría completa por rol.
 >   - **Gate global de contraseña temporal**: nueva página `(auth)/set-password` + check en
 >     `middleware.ts` que fuerza el cambio a **cualquier** rol con `user_metadata.must_change_password`
@@ -274,8 +276,10 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
   la DB con **fallback a env** (cron seguro); el `SUPPORT_EMAIL` de #7 sale de la config. ✅ **F0
   hecho (2026-06-27)**: dominio `send.stlabs.ar` verificado en Resend + envío de la app andando
   (probado desde `/correo`). `sendTeamInvite` ahora usa `mailCanSendExternal()` (lee `email_config`)
-  → invitaciones por Resend sin env vars. ⏳ Falta solo cargar el SMTP de Resend en **Supabase Auth**
-  (password resets / mails de login desde el dominio).
+  → invitaciones por Resend sin env vars. ✅ **Canal B hecho**: SMTP de Resend cargado en **Supabase
+  Auth** (`smtp.resend.com`, sender `noreply@send.stlabs.ar`) → password resets / mails de login
+  salen del dominio propio. Verificado en el dashboard (2026-07-22). Puntos a tocar si se migra de
+  dominio: `docs/EMAIL_ADMIN_CONFIG.md` §"Migración de dominio".
 - ✅ **S16 Mejora #4 — Naming LOS → LOST / ARQI** *(copy hecho 2026-06-20)* — barrido
   D1+D2 del copy visible: "Nivel LOS"→**"Nivel de Delegación"** (Cadete→Socio, el término
   canónico de Dilio) en UI/tour/workbooks/export, y "A.R.Q.U.I."→**"ARQI"** (4 pilares).

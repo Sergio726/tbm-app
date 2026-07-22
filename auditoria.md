@@ -471,6 +471,7 @@ Ver T7. `ai_get_api_key()` devuelve el secreto fijo `'ai_provider_api_key'` sin 
 ### CRON-15 ⚪ BAJO — SMTP de Supabase Auth gestionado a mano: riesgo de drift al rotar la key (a verificar)
 **Evidencia (docs):** `docs/EMAIL_ADMIN_CONFIG.md:170-174` — el SMTP de Auth se carga a mano en el dashboard de Supabase con la API key de Resend; hay dos copias de la credencial (Vault + dashboard) sin sync. Al rotar la key desde el panel, Auth sigue con la vieja y, al revocarla, deja de mandar mails en silencio.
 **Recomendación:** key de Resend dedicada para SMTP de Auth con permisos mínimos, o procedimiento de rotación de 2 pasos documentado en `/correo`.
+**Estado (2026-07-22):** SMTP de Auth **verificado OK** en el dashboard (Custom SMTP ON, `smtp.resend.com`, sender `noreply@send.stlabs.ar`). El checklist de qué tocar al migrar de dominio / rotar la key vive ahora en `docs/EMAIL_ADMIN_CONFIG.md` §8 "Migración de dominio". El riesgo de drift sigue vigente (dos copias de la key: Vault + dashboard de Auth).
 
 ---
 
