@@ -14,7 +14,7 @@ config multi-LLM por OpenRouter desde el admin, chat con streaming, contexto rea
 RAG sobre el método (corpus curado), UX del panel legible.
 
 **Pendiente del backlog previo:**
-- **Fase 2:** A4 Stripe *(post-beta)* · verificación E2E del flujo de créditos *(manual)* · fixes del QA de DC.
+- **Fase 2:** A4 Stripe *(post-beta)* · ~~verificación E2E del flujo de créditos~~ ✅ **hecho (2026-07-22)** · fixes del QA de DC.
 - **Fase 3 (bloqueado por Dilio):** B3+B4 (3 gráficas DISC de intensidad) · A3.2 (365 meditaciones) · C1 (mapa visual LOST).
 - **Fase 4 (venta):** A5 (dashboard de métricas de la startup) · A6 (enterprise readiness: GDPR, planes, SOC2/SSO).
 

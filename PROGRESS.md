@@ -290,8 +290,8 @@ Leyenda · ✅ Completo · 🟡 Parcial · ❌ Pendiente · 🚫 No iniciado (op
 ### Fase 2 — Monetizar (panel god-mode + créditos) · EN CURSO (A0/A1/A2/A3 en `main` + deployados)
 > **Deploy 2026-06-20:** `fase2` mergeado a `main`. Vercel **web** repuntado a Root Directory
 > `apps/web` (prod live, 200). Proyecto Vercel **admin** nuevo (`tbm-app-admin`, Root Directory
-> `apps/admin`) live en `https://tbm-app-admin.vercel.app` (login + guard OK). Pendiente: subdominio
-> propio para el admin + verificación E2E del gating de créditos con sesión real.
+> `apps/admin`) live en `https://tbm-app-admin.vercel.app` (login + guard OK). ✅ **Gating de
+> créditos verificado E2E (2026-07-22)** contra la DB viva. Pendiente: subdominio propio para el admin.
 *Recién acá el cobro. Decidido: monorepo, misma DB Supabase, 1 crédito = 1 DISC. Beta:
 **regalar créditos** (carga manual), Stripe después. Crédito se descuenta al **generar el link
 DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fase2-monetizacion`.*
@@ -337,7 +337,14 @@ DISC**. Plan completo: `docs/GODMODE_Y_ROADMAP_STARTUP.md` + memoria `project-fa
   sin créditos → bloquea) que **reemplaza el INSERT client-side** + RPC **`grant_credits`**
   (carga/regalo, solo platform_admin). Web: server action `generateDiscLink` + chip de saldo
   en `/equipo` + aviso "sin créditos". Admin: saldo por empresa + form "Cargar créditos".
-  STLabs seedeada con 25 (beta). Builds verdes. ⏳ E2E runtime pendiente (necesita sesión).
+  STLabs seedeada con 25 (beta). Builds verdes. ✅ **E2E verificado (2026-07-22)** contra la DB
+  viva (`fozhnfxehbbgqaerprgf`), impersonando por `request.jwt.claims` en escenarios reversibles
+  (savepoint+rollback, sin dejar rastro): cobro de 1 al generar link nuevo (saldo 10→9 + fila
+  `consume` −1 con `balance_after`), reuso de pendiente **sin** cobrar (10→10), saldo 0 →
+  `sin_creditos`, caller no-arquitecto → `no_autorizado`, y `grant_credits` de no-admin →
+  `no_autorizado`. **Nota:** la versión viva de las RPC difiere de `migration_fase2_credits.sql`
+  (el ledger sumó `product`/`balance_after`/`request_id` y `ref` = id del assessment) — la fuente
+  de verdad son `migration_fase2c_ledger.sql` / `fase2d_integridad.sql`.
 - **A4** — Stripe: compra de créditos por el líder + webhooks → ledger + cupones +
   Stripe Tax. *(reemplaza E1 parte 2)*
 
