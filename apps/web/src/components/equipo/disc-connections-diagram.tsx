@@ -40,11 +40,17 @@ export function DiscConnectionsDiagram({
   return (
     <div>
       <svg
-        width={size}
-        height={size}
+        viewBox={`0 0 ${size} ${size}`}
         role="img"
         aria-label="Mapa de conexiones y fricciones DISC: perímetro = conexión natural, diagonales = temperamentos cruzados"
-        style={{ display: "block", margin: "0 auto", overflow: "visible" }}
+        style={{
+          display: "block",
+          margin: "0 auto",
+          overflow: "visible",
+          width: "100%",
+          maxWidth: size,
+          height: "auto",
+        }}
       >
         {EDGES.map((e) => {
           const [x1, y1] = pt(e.a);

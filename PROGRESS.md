@@ -7,7 +7,28 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
-**Última actualización:** 2026-06-28 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** **DC-6 — Historial + uso/costos + rate-limit** (conversaciones persistentes en `ai_conversations`/`ai_messages`, captura de tokens por mensaje, retomar/listar charlas en el panel, tope de 50 msgs/usuario/hora, readout de uso 30d en el admin). Antes: **DC-3 — Acciones / tool use** (DC ejecuta: generar link DISC, crear tarea Pase de Estafeta, invitar colaborador; patrón propose→confirm, gateado por feature flag + solo arquitectos) + **fix sesión del colaborador** (define contraseña al aceptar la invitación → puede volver a entrar por `/login` sin depender de un magic link reenviado). Antes: B1, B2 (IA DISC), C1, D1/D2. PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
+> **Novedades 2026-07-21 (Fase 2 · pulido pre-beta §2·B — rama `prebeta-pulido`):** pase de
+> calidad UX sobre `apps/web` (typecheck + build verdes; el único fallo de build es el type-check
+> preexistente de `vitest.config.ts`, ajeno). Frentes:
+> - ✅ **Estados de carga (#4)**: primitiva `components/ui/skeleton.tsx` (`Skeleton`/`SkeletonCard`/
+>   `SkeletonGrid`/`PageSkeleton`, clase `.tbm-skeleton` con fallback reduced-motion) + `loading.tsx`
+>   en dashboard/workbooks/delegacion/equipo/plan-90d/rituales (antes 0 en toda la app). **Dashboard
+>   paralelizado**: 3 queries iniciales (scorecards/kpis/energía) y los 2 counts finales
+>   (notificaciones/tareas) pasaron de serie a `Promise.all`.
+> - ✅ **Manejo de errores (#5)**: sistema de toasts compartido `components/ui/toast.tsx`
+>   (`ToastProvider`+`useToast`, montado en el layout `(dashboard)`); `account-form` migrado al hook
+>   (elimina su toast ad-hoc). `error.tsx` por segmento (dashboard/equipo/delegacion/plan-90d/workbooks)
+>   vía `components/ui/segment-error.tsx` (reset + Sentry, sin tirar la app entera).
+> - ✅ **Mobile (#3)**: kanban de Delegación de 4 columnas fijas → responsive (`grid-cols-1
+>   sm:grid-cols-2 lg:grid-cols-4`); SVG de conexiones DISC con `viewBox` + ancho fluido.
+> - ✅ **Empty states (#2)**: callout de bienvenida de primera vez en `/diagnostico`.
+> - ✅ **Test DISC público (#8)**: wordmark de marca en pantalla (`public-brand-header.tsx`),
+>   `metadata`/OpenGraph (+`noindex`), badge "completado" unificado en `DiscResult` (antes duplicado),
+>   pantalla de link inválido en tarjeta branded.
+> - **Diferido**: consolidar 4 `EmptyState` locales duplicados (bajo valor/riesgo). **Fuera de
+>   alcance**: hardening RLS #6 (todo lo accionable ya aplicado; `leaked-password` requiere Supabase Pro).
+
+**Última actualización:** 2026-07-21 · **Completitud:** 🎉 **TODO el código de S0–S17 está implementado** · **Última pieza cerrada:** **DC-6 — Historial + uso/costos + rate-limit** (conversaciones persistentes en `ai_conversations`/`ai_messages`, captura de tokens por mensaje, retomar/listar charlas en el panel, tope de 50 msgs/usuario/hora, readout de uso 30d en el admin). Antes: **DC-3 — Acciones / tool use** (DC ejecuta: generar link DISC, crear tarea Pase de Estafeta, invitar colaborador; patrón propose→confirm, gateado por feature flag + solo arquitectos) + **fix sesión del colaborador** (define contraseña al aceptar la invitación → puede volver a entrar por `/login` sin depender de un magic link reenviado). Antes: B1, B2 (IA DISC), C1, D1/D2. PostHog + Sentry activos en prod. Lo que queda es configuración/operación (incl. `ANTHROPIC_API_KEY`) + decisiones de Dilio (D3/D4).
 
 > **Novedades 2026-06-27 (sesión correo + invitaciones + DC):**
 > - ✅ **Correo operativo (Resend + `send.stlabs.ar`)**: F1 = sección admin **`/correo`** (`email_config`

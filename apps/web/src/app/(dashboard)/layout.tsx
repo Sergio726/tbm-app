@@ -5,6 +5,7 @@ import { TourProvider } from "@/components/layout/tour-provider";
 import { PostHogIdentify } from "@/components/analytics/posthog-identify";
 import { DcLauncher } from "@/components/dashboard/dc-launcher";
 import { getDcPublicPersona } from "@/lib/dc-persona";
+import { ToastProvider } from "@/components/ui/toast";
 import { redirect } from "next/navigation";
 
 function SuspendedScreen() {
@@ -102,6 +103,7 @@ export default async function DashboardLayout({
   const dcPersona = await getDcPublicPersona();
 
   return (
+    <ToastProvider>
     <div className="min-h-screen bg-tbm-bg">
       {/* Sidebar fijo */}
       <Sidebar
@@ -150,5 +152,6 @@ export default async function DashboardLayout({
         companyId={profile?.company_id ?? null}
       />
     </div>
+    </ToastProvider>
   );
 }

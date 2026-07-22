@@ -171,7 +171,6 @@ export function DiscTest({
   if (phase === "done" && done) {
     return (
       <div className="max-w-xl mx-auto px-4 py-8">
-        <p className="text-center text-tbm-green text-sm mb-4">✓ Test completado</p>
         <DiscResult
           segments={done.segments}
           raw={done.raw}

@@ -14,7 +14,6 @@ import {
   Building2,
   Shield,
   AlertCircle,
-  X,
   Compass,
   Sun,
 } from "lucide-react";
@@ -22,6 +21,7 @@ import { createBrowserClient } from "@/lib/supabase/client";
 import { RestartTourButton } from "./restart-tour-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LIGHT_THEME_READY } from "@/lib/theme-flags";
+import { useToast } from "@/components/ui/toast";
 import type { Profile } from "@/types/database";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -149,13 +149,6 @@ function getPasswordStrength(p: string): { score: number; label: string; color: 
   if (score <= 3) return { score, label: "Media", color: "var(--semaforo-amarillo)" };
   return { score, label: "Fuerte", color: "var(--semaforo-verde)" };
 }
-
-// ─── toast system ──────────────────────────────────────────────────────────────
-
-type ToastType = "success" | "error" | "info";
-interface ToastState { id: number; type: ToastType; message: string }
-
-let toastCounter = 0;
 
 // ─── timezone combobox ─────────────────────────────────────────────────────────
 
@@ -340,18 +333,9 @@ export function AccountForm({
   const [showPass2, setShowPass2] = useState(false);
   const [passBusy, setPassBusy] = useState(false);
 
-  // ── toasts ───────────────────────────────────────────────────────────────────
-  const [toasts, setToasts] = useState<ToastState[]>([]);
-
-  const addToast = useCallback((type: ToastType, message: string) => {
-    const id = ++toastCounter;
-    setToasts((prev) => [...prev, { id, type, message }]);
-    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 3000);
-  }, []);
-
-  const removeToast = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+  // ── toasts (sistema compartido, montado en el layout del dashboard) ──────────
+  // `toast.show(type, message)` conserva la firma del viejo `addToast`.
+  const addToast = useToast().show;
 
   // ── dirty detection ──────────────────────────────────────────────────────────
   const initialValues = useMemo(() => ({
@@ -868,16 +852,6 @@ export function AccountForm({
         <RestartTourButton userId={profile.id} />
       </section>
 
-      {/* ── Toast container ── */}
-      <div
-        className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"
-        aria-live="polite"
-        aria-label="Notificaciones"
-      >
-        {toasts.map((t) => (
-          <Toast key={t.id} toast={t} onDismiss={removeToast} />
-        ))}
-      </div>
     </div>
   );
 }
@@ -936,60 +910,3 @@ function CheckItem({ ok, label, error }: { ok: boolean; label: string; error?: b
   );
 }
 
-function Toast({
-  toast,
-  onDismiss,
-}: {
-  toast: ToastState;
-  onDismiss: (id: number) => void;
-}) {
-  const icons: Record<ToastType, React.ReactNode> = {
-    success: <Check size={14} strokeWidth={2.5} />,
-    error: <AlertCircle size={14} />,
-    info: <Mail size={14} />,
-  };
-  const colors: Record<ToastType, { bg: string; border: string; icon: string }> = {
-    success: {
-      bg: "rgba(16,185,129,0.12)",
-      border: "rgba(16,185,129,0.3)",
-      icon: "var(--semaforo-verde)",
-    },
-    error: {
-      bg: "rgba(239,68,68,0.12)",
-      border: "rgba(239,68,68,0.3)",
-      icon: "var(--semaforo-rojo)",
-    },
-    info: {
-      bg: "rgba(59,130,246,0.12)",
-      border: "rgba(59,130,246,0.3)",
-      icon: "var(--accent-light)",
-    },
-  };
-  const c = colors[toast.type];
-
-  return (
-    <div
-      className="tbm-toast pointer-events-auto flex items-start gap-3 rounded-xl px-4 py-3 shadow-lg"
-      style={{
-        background: "var(--bg-elevated)",
-        border: `1px solid ${c.border}`,
-        minWidth: 280,
-        maxWidth: 380,
-      }}
-      role="status"
-    >
-      <span className="mt-0.5 shrink-0" style={{ color: c.icon }}>
-        {icons[toast.type]}
-      </span>
-      <span className="text-sm leading-snug text-fg flex-1">{toast.message}</span>
-      <button
-        type="button"
-        onClick={() => onDismiss(toast.id)}
-        aria-label="Cerrar notificación"
-        className="shrink-0 mt-0.5 text-fg-muted hover:text-fg transition-colors"
-      >
-        <X size={13} />
-      </button>
-    </div>
-  );
-}

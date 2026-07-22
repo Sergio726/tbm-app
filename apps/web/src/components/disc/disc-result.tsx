@@ -63,6 +63,10 @@ export function DiscResult({
         </div>
       </div>
 
+      {/* Badge "completado" — fuente única (antes se duplicaba en page.tsx y
+          en la fase "done" del test). Oculto en la impresión. */}
+      <p className="no-print text-center text-sm text-tbm-green">✓ Test completado</p>
+
       {/* Acción: descargar como PDF (oculto en la impresión) */}
       <div className="flex justify-end no-print">
         <button

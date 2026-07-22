@@ -90,6 +90,31 @@ export default async function DiagnosticoPage() {
         </p>
       </header>
 
+      {!lastScorecard && (
+        <div
+          className="mb-6"
+          style={{
+            padding: "16px 18px",
+            borderRadius: 14,
+            border: "1px solid rgba(91,138,255,0.25)",
+            background: "linear-gradient(135deg, rgba(91,138,255,0.10), rgba(91,138,255,0.03))",
+          }}
+        >
+          <div className="mb-1 flex items-center gap-2">
+            <span style={{ fontSize: 18 }}>🧭</span>
+            <span className="text-[13.5px] font-semibold text-fg">
+              Tu línea base — primera evaluación
+            </span>
+          </div>
+          <p className="text-[13px] leading-relaxed text-fg-muted">
+            Vas a puntuar las 8 áreas de tu empresa (~2 minutos). No hay respuestas
+            correctas: puntuá con honestidad cómo está <em>hoy</em>. Este primer registro
+            es tu punto de partida — contra él vas a medir el avance de cada ciclo de 90
+            días.
+          </p>
+        </div>
+      )}
+
       <DiagnosticoForm
         userId={user.id}
         companyId={profile.company_id}

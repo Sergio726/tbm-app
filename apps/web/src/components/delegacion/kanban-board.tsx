@@ -154,14 +154,9 @@ export function KanbanBoard({ initialTasks, team }: KanbanBoardProps) {
         })}
       </div>
 
-      {/* Tablero */}
-      <div
-        className="grid gap-4"
-        style={{
-          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-          alignItems: "start",
-        }}
-      >
+      {/* Tablero — responsive: 1 columna en mobile, 2 en tablet, 4 en desktop
+          (antes eran 4 columnas fijas que se comprimían ilegibles en celular). */}
+      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {COLUMNS.map((col) => {
           const colTasks = tasksByStatus(col.status);
           return (

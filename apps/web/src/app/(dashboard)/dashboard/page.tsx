@@ -535,39 +535,43 @@ export default async function DashboardPage() {
   const company = (profile as { companies?: { name: string } | null }).companies ?? null;
   const firstName = profile.full_name?.split(" ")[0] ?? "Arquitecto";
 
-  // Historial completo de scorecards (ascendente) — alimenta semáforos,
-  // tendencia por área y Hero Strip (baseline, promedio, delta)
-  const { data: scorecardRows } = await supabase
-    .from("scorecards")
-    .select("*")
-    .eq("company_id", profile.company_id!)
-    .order("created_at", { ascending: true });
-  const scorecardHistory = (scorecardRows ?? []) as Scorecard[];
-  const latestScorecard = scorecardHistory.at(-1) ?? null;
-
-  // KPIs de la semana
+  // Fechas base (puras) — se calculan antes para poder lanzar las queries en paralelo
   const today = new Date();
   const monday = new Date(today);
   monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
   const weekDate = monday.toISOString().split("T")[0];
-
-  const { data: kpis } = await supabase
-    .from("kpis")
-    .select("*")
-    .eq("company_id", profile.company_id!)
-    .eq("week_date", weekDate)
-    .eq("is_active", true)
-    .order("created_at", { ascending: true })
-    .limit(5);
-
-  // Energía de hoy
   const todayStr = today.toISOString().split("T")[0];
-  const { data: energyToday } = await supabase
-    .from("energy_logs")
-    .select("level")
-    .eq("user_id", user.id)
-    .eq("log_date", todayStr)
-    .single();
+
+  // Estas 3 queries solo dependen del perfil ya resuelto → en paralelo (perf pre-beta):
+  //  · Historial de scorecards (semáforos, tendencia por área, Hero Strip)
+  //  · KPIs de la semana · Energía de hoy
+  const [
+    { data: scorecardRows },
+    { data: kpis },
+    { data: energyToday },
+  ] = await Promise.all([
+    supabase
+      .from("scorecards")
+      .select("*")
+      .eq("company_id", profile.company_id!)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("kpis")
+      .select("*")
+      .eq("company_id", profile.company_id!)
+      .eq("week_date", weekDate)
+      .eq("is_active", true)
+      .order("created_at", { ascending: true })
+      .limit(5),
+    supabase
+      .from("energy_logs")
+      .select("level")
+      .eq("user_id", user.id)
+      .eq("log_date", todayStr)
+      .single(),
+  ]);
+  const scorecardHistory = (scorecardRows ?? []) as Scorecard[];
+  const latestScorecard = scorecardHistory.at(-1) ?? null;
 
   // ── S12/S13: datos reales para Hero Strip + Rituales de hoy ──
   const thirtyDaysAgo = new Date(today);
@@ -730,21 +734,23 @@ export default async function DashboardPage() {
   });
   const teamTotal = teamWithEnergy.length;
 
-  // Notificaciones no leídas (badge de la campana)
-  const { count: unreadCount } = await supabase
-    .from("notifications")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id)
-    .is("read_at", null);
-
-  // Tareas asignadas a mí por vencer (hoy o vencidas) sin completar — para el saludo JARVIS
+  // Dos counts independientes entre sí → en paralelo (perf pre-beta):
+  //  · Notificaciones no leídas (badge de la campana)
+  //  · Tareas asignadas a mí por vencer (hoy o vencidas) sin completar — saludo JARVIS
   const endOfTodayStr = `${todayStr}T23:59:59`;
-  const { count: tasksDueCount } = await supabase
-    .from("tasks")
-    .select("*", { count: "exact", head: true })
-    .eq("assigned_to", user.id)
-    .neq("status", "done")
-    .lte("when_deadline", endOfTodayStr);
+  const [{ count: unreadCount }, { count: tasksDueCount }] = await Promise.all([
+    supabase
+      .from("notifications")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .is("read_at", null),
+    supabase
+      .from("tasks")
+      .select("*", { count: "exact", head: true })
+      .eq("assigned_to", user.id)
+      .neq("status", "done")
+      .lte("when_deadline", endOfTodayStr),
+  ]);
 
   // Horarios y modo desde ritual_configs
   const fmtTime = (t: string | null | undefined) => (t ? t.slice(0, 5) : null);
