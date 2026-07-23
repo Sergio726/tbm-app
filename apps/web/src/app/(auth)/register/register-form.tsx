@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { AuthCard } from "@/components/auth/auth-card";
+import { checkPendingInvite } from "@/app/(auth)/accept-invite/actions";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -30,6 +31,15 @@ export function RegisterForm() {
     if (form.password.length < 8) {
       setError("La contraseña debe tener al menos 8 caracteres.");
       setLoading(false);
+      return;
+    }
+
+    // Si el email ya tiene una invitación de equipo pendiente, mandarlo a
+    // aceptarla (unirse como colaborador) en vez de crear una empresa nueva.
+    // Evita invitaciones huérfanas y que el invitado nazca como Arquitecto.
+    const pendingInvite = await checkPendingInvite(form.email);
+    if (pendingInvite) {
+      router.push(`/accept-invite?token=${encodeURIComponent(pendingInvite.token)}`);
       return;
     }
 

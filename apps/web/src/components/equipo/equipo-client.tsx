@@ -19,6 +19,7 @@ import { TeamSidebar } from "./team-sidebar";
 import { MemberDetail } from "./member-detail";
 import { EmptyDetail } from "./empty-detail";
 import { InviteModal } from "./invite-modal";
+import { PendingInvites, type PendingInvite } from "./pending-invites";
 import { MemberReportModal } from "./member-report-modal";
 import { AuthorityMatrixPanel, type AuthorityMatrixRow } from "./authority-matrix-panel";
 import { DangerousCrossings } from "./dangerous-crossings";
@@ -33,6 +34,7 @@ export function EquipoClient({
   assessments,
   authorityMatrix,
   creditBalance,
+  pendingInvites,
 }: {
   team: Profile[];
   currentUserId: string;
@@ -41,6 +43,7 @@ export function EquipoClient({
   assessments: DiscAssessmentLite[];
   authorityMatrix: AuthorityMatrixRow | null;
   creditBalance: number;
+  pendingInvites: PendingInvite[];
 }) {
   const router = useRouter();
 
@@ -330,13 +333,16 @@ export function EquipoClient({
         }
       >
         {isArquitecto && (
-          <TeamSidebar
-            team={team}
-            currentUserId={currentUserId}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            isArquitecto={isArquitecto}
-          />
+          <div className="flex flex-col gap-2.5">
+            <TeamSidebar
+              team={team}
+              currentUserId={currentUserId}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              isArquitecto={isArquitecto}
+            />
+            <PendingInvites companyId={companyId} invites={pendingInvites} />
+          </div>
         )}
 
         {selected && draft ? (

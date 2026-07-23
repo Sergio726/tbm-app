@@ -117,3 +117,25 @@ estado (Pendiente / Aceptada) · fecha · botón **Reenviar**.
 - Quedan como mejora real, independientes del correo: **#1** (feedback del copiar), y los **textos /
   validación temprana** de `/accept-invite` (#3.1, #3.2) + el **reintento OTP** ante "domain not
   verified" (#2 robustez).
+
+---
+
+## Cierre (2026-07-23) — rediseño del flujo por token propio
+
+Se reescribió el flujo completo (rama `fix/invitaciones-token-robusto`), reemplazando el magic
+link OTP de Supabase por el **`token` propio de `invitations`** (link `/accept-invite?token=…`,
+reusable 7 días, inmune a pre-fetch). Esto **cierra la causa raíz** del "queda en pendiente"
+(#3.2 / dead-end del link) y varios de los ítems de arriba:
+
+- **#3.1/#3.2 (validación temprana + textos):** `/accept-invite` valida el token **al montar**
+  (`getInviteInfo`) y ya no depende de una sesión previa; mensajes claros para inválido/expirado/
+  usado/ya-vinculado.
+- **Mejora "panel del Arquitecto":** implementado en `components/equipo/pending-invites.tsx`
+  (email + estado + vencimiento + **Reenviar** + **Cancelar**).
+- **#2 (dominio):** el fallback manual sigue existiendo, pero el link manual ahora **también es
+  el token propio** (no un OTP que caduca en 1h), así que compartirlo por WhatsApp funciona igual.
+- Se agregó guard en `/register` (redirige a aceptar si hay invitación pendiente) y expiración
+  automática en el cron diario.
+
+Detalle completo en `SPEC.md` §11. Pendiente operativo: aplicar
+`supabase/migration_invitations_token_accept.sql` (la MCP pedía re-auth).

@@ -785,10 +785,36 @@ WorkbookProgress (progreso de sesiones)
 > Problemas detectados que **no** son decisiones de diseño (esos van en
 > [PENDIENTES_REVISION.md](./PENDIENTES_REVISION.md)) sino defectos a corregir.
 
-### 🐛 BUG · Invitación de equipo se queda en "pendiente" — pendiente de revisión
+### ✅ BUG (RESUELTO) · Invitación de equipo se quedaba en "pendiente"
 
-**Estado:** detectado 2026-07-23 · sin resolver · prioridad alta
+**Estado:** detectado 2026-07-23 · **resuelto 2026-07-23** (rama `fix/invitaciones-token-robusto`).
 **Rol afectado:** Arquitecto invitando colaboradores (`/equipo` → "Invitar colaborador").
+**Síntoma:** el Arquitecto invitaba a un colaborador y este nunca aparecía en el equipo;
+la fila quedaba en `invitations.status='pending'` para siempre.
+
+**Fix aplicado (raíz + UI):**
+- **Token propio en vez de OTP.** `sendTeamInvite` ahora arma el link
+  `/accept-invite?token=<invitations.token>` (unique, 256-bit, 7 días de `expires_at`,
+  reusable e inmune a pre-fetch). Se eliminaron `generateLink`/`signInWithOtp`/
+  `inviteUserByEmail`. → causas #1 y #5.
+- **Aceptación sin sesión previa.** `/accept-invite` valida el token al montar
+  (`getInviteInfo`) y en el submit un server action (`acceptTeamInvite`, admin/service_role)
+  crea o actualiza el usuario con la contraseña elegida (`createUser({email_confirm:true})`),
+  vincula el perfil (verificando fila afectada) y marca `accepted`; el browser hace
+  `signInWithPassword` + nav dura a `/dashboard`. → causa #6.
+- **Panel de invitaciones pendientes** en `/equipo` con **Reenviar** y **Cancelar**
+  (`components/equipo/pending-invites.tsx` + `cancelInvite`). → causa #2.
+- **Email ya vinculado** a otra empresa → mensaje claro (`code:'already_linked'`). → causa #4.
+- **Guard en `/register`** (`checkPendingInvite`): si el email tiene invitación pendiente,
+  redirige a `/accept-invite` en vez de crear empresa nueva. → causa #3.
+- **Expiración** automática (`pending → expired`) en el cron diario + migración
+  `supabase/migration_invitations_token_accept.sql` (policy DELETE del arquitecto + índice
+  `company_id,status`). ⚠️ **La migración quedó pendiente de aplicar** (la MCP de Supabase
+  pedía re-auth); el código no depende de ella (`cancelInvite` usa admin client filtrado).
+
+<details>
+<summary>Diagnóstico original (2026-07-23)</summary>
+
 **Síntoma:** el Arquitecto invita a un colaborador y este nunca aparece en el equipo;
 la fila queda en `invitations.status='pending'` para siempre.
 
@@ -827,6 +853,8 @@ seteado (el roster se arma solo desde `profiles`, no desde `invitations`).
 (2) usar token propio de `invitations` (ya existen `token` y `expires_at`, 7 días) validado
 server-side en vez del OTP de 1 h; (3) manejar email ya registrado/ya vinculado con mensaje
 claro; (4) detectar invitación pendiente en `/register` y redirigir a `/accept-invite`.
+
+</details>
 
 > Ver análisis operativo relacionado en [QA_INVITACIONES_2026-06.md](./QA_INVITACIONES_2026-06.md).
 

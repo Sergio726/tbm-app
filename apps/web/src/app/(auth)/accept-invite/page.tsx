@@ -1,9 +1,10 @@
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { AuthCard } from "@/components/auth/auth-card";
+import { getInviteInfo, acceptTeamInvite } from "./actions";
 
 export default function AcceptInvitePage() {
   return (
@@ -20,12 +21,8 @@ export default function AcceptInvitePage() {
 }
 
 function AcceptInviteContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createBrowserClient();
-
-  const companyId = searchParams.get("company");
-  const linkError = searchParams.get("error");
+  const token = searchParams.get("token");
 
   const [fullName, setFullName] = useState("");
   const [cargo, setCargo] = useState("");
@@ -33,169 +30,104 @@ function AcceptInviteContent() {
   const [password2, setPassword2] = useState("");
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [checkingSession, setCheckingSession] = useState(true);
-  const [hasSession, setHasSession] = useState(false);
-  const [error, setError] = useState(
-    linkError === "invalid_link"
-      ? "Este link de invitación expiró o ya se usó (sirve una sola vez y solo el más reciente). Pedile al Arquitecto que te reenvíe la invitación y abrí el último email que te llegue."
-      : ""
-  );
+
+  // Validación de la invitación al montar (arregla el mensaje engañoso previo).
+  const [checking, setChecking] = useState(true);
+  const [inviteEmail, setInviteEmail] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState("");
-  const [signOutNeeded, setSignOutNeeded] = useState(false);
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push("/login");
-  }
-
-  useEffect(() => {
-    if (companyId) {
-      supabase
-        .from("companies")
-        .select("name")
-        .eq("id", companyId)
-        .maybeSingle()
-        .then(({ data }: { data: { name: string } | null }) => {
-          if (data) setCompanyName(data.name);
-        });
-    }
-  }, [companyId, supabase]);
+  const [error, setError] = useState("");
+  const [fatal, setFatal] = useState(false); // link inválido/expirado/usado → sin form
 
   useEffect(() => {
     let cancelled = false;
-
-    async function checkSession() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!cancelled) {
-        setHasSession(!!user);
-        setCheckingSession(false);
+    async function check() {
+      if (!token) {
+        if (!cancelled) {
+          setError("Falta el token de invitación. Abrí el link completo que te llegó por email.");
+          setFatal(true);
+          setChecking(false);
+        }
+        return;
       }
+      const info = await getInviteInfo(token);
+      if (cancelled) return;
+      if (info.ok) {
+        setInviteEmail(info.email);
+        setCompanyName(info.companyName);
+      } else {
+        setError(info.error);
+        setFatal(true);
+      }
+      setChecking(false);
     }
-
-    checkSession();
+    check();
     return () => {
       cancelled = true;
     };
-  }, [supabase]);
+  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token) return;
     if (!fullName.trim()) {
       setError("Ingresá tu nombre completo");
       return;
     }
-
     if (password.length < 8) {
       setError("Creá una contraseña de al menos 8 caracteres para poder volver a entrar.");
       return;
     }
-
     if (password !== password2) {
       setError("Las contraseñas no coinciden.");
       return;
     }
 
-    if (!companyId) {
-      setError("Link de invitación inválido (falta la empresa).");
-      return;
-    }
-
     setLoading(true);
     setError("");
-    setSignOutNeeded(false);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const result = await acceptTeamInvite({
+        token,
+        fullName: fullName.trim(),
+        cargo: cargo.trim(),
+        password,
+      });
 
-      if (!user) {
-        throw new Error(
-          "No hay sesión activa. Abrí el link del email en este mismo dispositivo y navegador."
-        );
+      if (!result.ok) {
+        setError(result.error);
+        // Links que ya no sirven → ocultar el form.
+        if (result.code === "invalid" || result.code === "expired" || result.code === "used") {
+          setFatal(true);
+        }
+        setLoading(false);
+        return;
       }
 
-      // 1. No degradar a un Arquitecto / dueño de empresa que abrió el link
-      //    en su propia sesión (caso clásico: el invitante clickea el link).
-      const { data: me } = await supabase
-        .from("profiles")
-        .select("role, company_id")
-        .eq("id", user.id)
-        .single();
-
-      const { data: ownedCompany } = await supabase
-        .from("companies")
-        .select("id")
-        .eq("owner_id", user.id)
-        .maybeSingle();
-
-      if (me?.role === "arquitecto" || ownedCompany) {
-        setSignOutNeeded(true);
-        throw new Error(
-          "Esta sesión es de una cuenta de Arquitecto. Cerrá sesión y abrí la invitación con el email al que te invitaron."
+      // Crear la sesión en el browser con la misma contraseña que se acaba de
+      // fijar server-side. Navegación DURA (no router.push): Safari/ITP no adjunta
+      // las cookies recién escritas a un fetch RSC soft → el middleware no vería
+      // la sesión (mismo patrón que login-form).
+      const supabase = createBrowserClient();
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: result.email,
+        password,
+      });
+      if (signInErr) {
+        // La cuenta quedó creada y vinculada; solo falló el auto-login.
+        setError(
+          "Tu cuenta quedó lista, pero no pudimos iniciar sesión automáticamente. Entrá desde /login con tu email y contraseña."
         );
+        setLoading(false);
+        return;
       }
-
-      // 2. Verificar que exista una invitación pendiente para ESTE email + empresa.
-      const { data: invite } = await supabase
-        .from("invitations")
-        .select("id, status")
-        .eq("company_id", companyId)
-        .eq("email", user.email!)
-        .maybeSingle();
-
-      if (!invite) {
-        throw new Error(
-          "No encontramos una invitación para tu email en esta empresa. Pedile al Arquitecto que te reinvite."
-        );
-      }
-
-      // 3. Setear la contraseña → el colaborador puede volver a entrar por /login
-      //    (la cuenta se creó por magic link y NO tenía contraseña). Sin esto, al
-      //    cerrar sesión quedaba dependiendo de que el Arquitecto le reenvíe el link.
-      const { error: pwdErr } = await supabase.auth.updateUser({ password });
-      if (pwdErr) {
-        throw new Error(
-          pwdErr.message?.toLowerCase().includes("password")
-            ? "Esa contraseña es muy débil o ya fue usada. Probá con otra."
-            : "No pudimos guardar tu contraseña. Probá de nuevo."
-        );
-      }
-
-      // 4. Vincular perfil → empresa como colaborador (chequeando el error).
-      const { error: profErr } = await supabase
-        .from("profiles")
-        .update({
-          full_name: fullName.trim(),
-          cargo: cargo.trim() || null,
-          company_id: companyId,
-          role: "colaborador",
-          onboarding_completed: true,
-        })
-        .eq("id", user.id);
-
-      if (profErr) throw profErr;
-
-      // 5. Marcar la invitación como aceptada.
-      await supabase
-        .from("invitations")
-        .update({ status: "accepted", accepted_at: new Date().toISOString() })
-        .eq("company_id", companyId)
-        .eq("email", user.email!);
-
-      router.push("/dashboard");
+      window.location.assign("/dashboard");
     } catch (err: unknown) {
-      setError(
-        err instanceof Error ? err.message : "Error al completar el perfil."
-      );
-    } finally {
+      setError(err instanceof Error ? err.message : "Error al completar el perfil.");
       setLoading(false);
     }
   };
 
-  if (checkingSession) {
+  if (checking) {
     return (
       <div className="text-center text-tbm-text-secondary p-8">
         Verificando tu invitación…
@@ -210,123 +142,120 @@ function AcceptInviteContent() {
           🎯
         </div>
         <h2 className="text-xl font-bold text-fg">Te invitaron al equipo</h2>
-        {companyName && (
+        {companyName && !fatal && (
           <p className="text-tbm-text-secondary text-sm mt-1">
             Vas a unirte a{" "}
             <span className="text-fg font-medium">{companyName}</span> en The
             Business Multiplier
           </p>
         )}
+        {inviteEmail && !fatal && (
+          <p className="text-tbm-text-secondary text-xs mt-1">
+            Como <span className="text-fg font-medium">{inviteEmail}</span>
+          </p>
+        )}
       </div>
 
-      {!hasSession && !error && (
-        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm">
-          Para continuar, abrí el link que te llegó por email. Si ya lo abriste
-          y ves este mensaje, pedile al Arquitecto que te reenvíe la invitación.
+      {error && (
+        <div className="p-3 rounded-lg bg-tbm-red/10 border border-tbm-red/30 text-tbm-red text-sm">
+          {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
-            Tu nombre completo
-          </label>
-          <input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="Juan García"
-            className="tbm-input w-full"
-            required
-          />
-        </div>
+      {fatal ? (
+        <a
+          href="/login"
+          className="tbm-btn-primary w-full inline-flex items-center justify-center"
+        >
+          Ir a iniciar sesión
+        </a>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
+              Tu nombre completo
+            </label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Juan García"
+              className="tbm-input w-full"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
-            Tu cargo o rol
-          </label>
-          <input
-            type="text"
-            value={cargo}
-            onChange={(e) => setCargo(e.target.value)}
-            placeholder="Gerente de Operaciones"
-            className="tbm-input w-full"
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
+              Tu cargo o rol
+            </label>
+            <input
+              type="text"
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+              placeholder="Gerente de Operaciones"
+              className="tbm-input w-full"
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
-            Creá tu contraseña
-          </label>
-          <div className="relative">
+          <div>
+            <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
+              Creá tu contraseña
+            </label>
+            <div className="relative">
+              <input
+                type={showPwd ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mínimo 8 caracteres"
+                className="tbm-input w-full pr-16"
+                autoComplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPwd((s) => !s)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-fg"
+              >
+                {showPwd ? "ocultar" : "ver"}
+              </button>
+            </div>
+            <p className="mt-1.5 text-xs text-tbm-text-secondary">
+              La vas a usar para entrar a la app cada vez que vuelvas.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
+              Repetí la contraseña
+            </label>
             <input
               type={showPwd ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mínimo 8 caracteres"
-              className="tbm-input w-full pr-16"
+              value={password2}
+              onChange={(e) => setPassword2(e.target.value)}
+              placeholder="Repetí tu contraseña"
+              className="tbm-input w-full"
               autoComplete="new-password"
               required
             />
-            <button
-              type="button"
-              onClick={() => setShowPwd((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-tbm-text-secondary hover:text-fg"
-            >
-              {showPwd ? "ocultar" : "ver"}
-            </button>
           </div>
-          <p className="mt-1.5 text-xs text-tbm-text-secondary">
-            La vas a usar para entrar a la app cada vez que vuelvas.
-          </p>
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-tbm-text-secondary mb-1.5">
-            Repetí la contraseña
-          </label>
-          <input
-            type={showPwd ? "text" : "password"}
-            value={password2}
-            onChange={(e) => setPassword2(e.target.value)}
-            placeholder="Repetí tu contraseña"
-            className="tbm-input w-full"
-            autoComplete="new-password"
-            required
-          />
-        </div>
-
-        {error && (
-          <div className="p-3 rounded-lg bg-tbm-red/10 border border-tbm-red/30 text-tbm-red text-sm">
-            {error}
-          </div>
-        )}
-
-        {signOutNeeded && (
           <button
-            type="button"
-            onClick={handleSignOut}
-            className="w-full rounded-lg border border-tbm-border px-4 py-2 text-sm font-medium text-tbm-text-secondary transition-colors hover:bg-tbm-elevated hover:text-fg"
+            type="submit"
+            disabled={loading}
+            className="tbm-btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Cerrar sesión y volver a /login
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-4 h-4 border-2 border-border border-t-transparent rounded-full animate-spin" />
+                Completando perfil...
+              </span>
+            ) : (
+              "Unirme al equipo →"
+            )}
           </button>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading || signOutNeeded || !hasSession}
-          className="tbm-btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-border border-t-transparent rounded-full animate-spin" />
-              Completando perfil...
-            </span>
-          ) : (
-            "Unirme al equipo →"
-          )}
-        </button>
-      </form>
+        </form>
+      )}
     </div>
   );
 }

@@ -53,6 +53,14 @@ export async function GET(request: Request) {
   const cutoff72h = new Date(now.getTime() - 72 * 3_600_000).toISOString();
   const stats = { companies: 0, overdueNotifs: 0, emails: 0, cycleReminders: 0, errors: 0 };
 
+  // Expirar invitaciones vencidas (pending → expired). Barrido global, una vez.
+  // Mantiene limpio el panel de "Invitaciones pendientes" del Arquitecto.
+  await supabase
+    .from("invitations")
+    .update({ status: "expired" })
+    .eq("status", "pending")
+    .lt("expires_at", now.toISOString());
+
   // CRON-1: sin límite (procesa TODAS las empresas). El .limit(100) previo dejaba
   // la empresa 101+ sin procesar en silencio. A gran escala este loop secuencial
   // excede los 60s y hay que pasar al patrón dispatcher+worker (T6 en auditoria.md);

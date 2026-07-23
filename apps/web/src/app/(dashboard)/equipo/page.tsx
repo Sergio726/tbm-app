@@ -61,6 +61,16 @@ export default async function EquipoPage() {
     .eq("company_id", profile.company_id!)
     .maybeSingle();
 
+  // Invitaciones pendientes (aún no aceptadas) — solo para el panel del Arquitecto.
+  const { data: pendingInvites } = isArquitecto
+    ? await supabase
+        .from("invitations")
+        .select("id, email, created_at, expires_at")
+        .eq("company_id", profile.company_id!)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+    : { data: [] };
+
   return (
     <EquipoClient
       team={(team ?? []) as Profile[]}
@@ -70,6 +80,7 @@ export default async function EquipoPage() {
       assessments={assessments ?? []}
       authorityMatrix={authorityMatrix ?? null}
       creditBalance={credits?.balance ?? 0}
+      pendingInvites={pendingInvites ?? []}
     />
   );
 }

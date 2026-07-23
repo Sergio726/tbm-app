@@ -45,31 +45,14 @@ export type SendTeamInviteResult =
   | { ok: true; via: "manual"; link: string; reason?: string }
   | { ok: false; error: string };
 
-async function buildInviteLink(
-  admin: NonNullable<ReturnType<typeof createAdminClient>>,
-  origin: string,
-  nextPath: string,
-  email: string
-): Promise<string | null> {
-  const confirmBase = `${origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`;
-  const { data, error } = await admin.auth.admin.generateLink({
-    type: "magiclink",
-    email,
-    options: { redirectTo: confirmBase },
-  });
-  const props = data?.properties;
-  if (error || !props?.hashed_token) {
-    console.error("sendTeamInvite: generateLink", error);
-    return null;
-  }
-  // IMPORTANTE: usar el verification_type que devuelve Supabase (para usuarios
-  // nuevos/sin confirmar suele ser 'signup', no 'magiclink'). Hardcodear
-  // 'magiclink' hacía que verifyOtp rechazara el token → "link inválido".
-  const vtype = props.verification_type || "magiclink";
-  return `${origin}/auth/confirm?token_hash=${encodeURIComponent(props.hashed_token)}&type=${encodeURIComponent(vtype)}&next=${encodeURIComponent(nextPath)}`;
-}
-
-/** Envía invitación de equipo con magic link que funciona en cualquier dispositivo. */
+/**
+ * Envía invitación de equipo usando el `token` propio de la tabla `invitations`
+ * (unique, 256-bit, 7 días de vida). Reemplaza al magic link OTP de Supabase, que
+ * era de un solo uso / ~1h y lo quemaban los pre-fetch de email (SafeLinks,
+ * antivirus, proxies de Gmail) → el invitado llegaba sin sesión y no podía aceptar.
+ * El link `/accept-invite?token=…` es reusable dentro de la ventana de 7 días y no
+ * depende de ninguna sesión previa. Reinvitar al mismo email refresca `expires_at`.
+ */
 export async function sendTeamInvite(input: {
   email: string;
   companyId: string;
@@ -101,26 +84,6 @@ export async function sendTeamInvite(input: {
   const companyName =
     (profile as { companies?: { name: string } | null }).companies?.name ?? "tu equipo";
 
-  const { data: existingRows } = await supabase
-    .from("invitations")
-    .select("id")
-    .eq("company_id", input.companyId)
-    .eq("email", email)
-    .limit(1);
-
-  if (!existingRows?.[0]?.id) {
-    const { error: invErr } = await supabase.from("invitations").insert({
-      company_id: input.companyId,
-      invited_by: user.id,
-      email,
-      role: "colaborador",
-    });
-    if (invErr) {
-      console.error("sendTeamInvite: insert invitation", invErr);
-      return { ok: false, error: "No se pudo crear la invitación." };
-    }
-  }
-
   // T2: NUNCA confiar en el origin del cliente para links con token embebido.
   const origin = trustedOrigin(input.origin);
   if (!origin) {
@@ -130,79 +93,109 @@ export async function sendTeamInvite(input: {
     };
   }
 
-  const nextPath = `/accept-invite?company=${input.companyId}`;
-  const redirectTo = `${origin}${nextPath}`;
-  const confirmRedirect = `${origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`;
+  // Upsert de la invitación pendiente (unique company_id+email) y traer su token.
+  const expiresAt = new Date(Date.now() + 7 * 24 * 3_600_000).toISOString();
+  const { data: existing } = await supabase
+    .from("invitations")
+    .select("id, token")
+    .eq("company_id", input.companyId)
+    .eq("email", email)
+    .maybeSingle();
 
-  const admin = createAdminClient();
-  if (!admin) {
-    return { ok: false, error: "Falta SUPABASE_SERVICE_ROLE_KEY en el servidor (Vercel)." };
+  let token: string | null = null;
+  if (existing?.id) {
+    const { data: upd, error: updErr } = await supabase
+      .from("invitations")
+      .update({ status: "pending", expires_at: expiresAt })
+      .eq("id", existing.id)
+      .select("token")
+      .single();
+    if (updErr || !upd?.token) {
+      console.error("sendTeamInvite: update invitation", updErr);
+      return { ok: false, error: "No se pudo actualizar la invitación." };
+    }
+    token = upd.token;
+  } else {
+    const { data: ins, error: invErr } = await supabase
+      .from("invitations")
+      .insert({
+        company_id: input.companyId,
+        invited_by: user.id,
+        email,
+        role: "colaborador",
+        expires_at: expiresAt,
+      })
+      .select("token")
+      .single();
+    if (invErr || !ins?.token) {
+      console.error("sendTeamInvite: insert invitation", invErr);
+      return { ok: false, error: "No se pudo crear la invitación." };
+    }
+    token = ins.token;
   }
 
-  // Camino B: correo configurado con dominio verificado (admin o env) → email en
-  // español + link cross-device.
-  if (await mailCanSendExternal()) {
-    const inviteLink = await buildInviteLink(admin, origin, nextPath, email);
-    if (!inviteLink) {
-      return { ok: false, error: "No se pudo generar el link de invitación." };
-    }
+  const link = `${origin}/accept-invite?token=${encodeURIComponent(token)}`;
 
+  // Con dominio verificado en Resend → email en español. Si no hay dominio
+  // verificado o el envío falla → link manual para compartir por WhatsApp/etc.
+  if (await mailCanSendExternal()) {
     const emailResult = await sendEmail({
       to: email,
       subject: `Te invitaron a ${companyName} — The Business Multiplier`,
-      html: buildInviteHtml({ link: inviteLink, companyName }),
+      html: buildInviteHtml({ link, companyName }),
     });
-
     if (emailResult.ok) return { ok: true, via: "email" };
-
-    // Resend falló: no intentar OTP (generateLink ya corrió y lo bloquea).
-    return {
-      ok: true,
-      via: "manual",
-      link: inviteLink,
-      reason: emailResult.error,
-    };
-  }
-
-  // Sin dominio verificado en Resend: Supabase envía el email (sin generateLink previo).
-  const { error: otpErr } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      shouldCreateUser: true,
-      emailRedirectTo: redirectTo,
-    },
-  });
-
-  if (!otpErr) {
-    return { ok: true, via: "email" };
-  }
-
-  console.error("sendTeamInvite: signInWithOtp falló", otpErr.message);
-
-  const { error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
-    redirectTo: confirmRedirect,
-  });
-
-  if (!inviteErr) {
-    return { ok: true, via: "email" };
-  }
-
-  console.error("sendTeamInvite: inviteUserByEmail falló", inviteErr.message);
-
-  const inviteLink = await buildInviteLink(admin, origin, nextPath, email);
-  if (!inviteLink) {
-    const detail = [otpErr.message, inviteErr.message].filter(Boolean).join(" · ");
-    return { ok: false, error: detail || "No se pudo enviar la invitación." };
+    return { ok: true, via: "manual", link, reason: emailResult.error };
   }
 
   return {
     ok: true,
     via: "manual",
-    link: inviteLink,
+    link,
     reason:
-      otpErr.message ||
       "Configurá el correo (dominio verificado) en el panel de admin → Correo para envío automático.",
   };
+}
+
+/**
+ * Cancela (borra) una invitación pendiente. Usa el admin client filtrando por la
+ * `company_id` del Arquitecto que llama, así funciona aunque la policy DELETE de
+ * `invitations` no esté aplicada todavía. Borrar libera el par (company_id,email)
+ * para poder reinvitar.
+ */
+export async function cancelInvite(input: {
+  id: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "No hay sesión activa." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, company_id")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "arquitecto" || !profile.company_id) {
+    return { ok: false, error: "Solo el Arquitecto puede cancelar invitaciones." };
+  }
+
+  const admin = createAdminClient();
+  if (!admin) {
+    return { ok: false, error: "Falta configuración del servidor (service role)." };
+  }
+
+  const { error } = await admin
+    .from("invitations")
+    .delete()
+    .eq("id", input.id)
+    .eq("company_id", profile.company_id);
+  if (error) {
+    console.error("cancelInvite:", error);
+    return { ok: false, error: "No se pudo cancelar la invitación." };
+  }
+  return { ok: true };
 }
 
 function escapeHtml(s: string): string {
