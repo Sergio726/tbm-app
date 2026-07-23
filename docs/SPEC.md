@@ -780,5 +780,57 @@ WorkbookProgress (progreso de sesiones)
 
 ---
 
+## 11. BUGS / PENDIENTES DE REVISIÓN
+
+> Problemas detectados que **no** son decisiones de diseño (esos van en
+> [PENDIENTES_REVISION.md](./PENDIENTES_REVISION.md)) sino defectos a corregir.
+
+### 🐛 BUG · Invitación de equipo se queda en "pendiente" — pendiente de revisión
+
+**Estado:** detectado 2026-07-23 · sin resolver · prioridad alta
+**Rol afectado:** Arquitecto invitando colaboradores (`/equipo` → "Invitar colaborador").
+**Síntoma:** el Arquitecto invita a un colaborador y este nunca aparece en el equipo;
+la fila queda en `invitations.status='pending'` para siempre.
+
+**Flujo actual:** un solo botón (`InviteModal`) dispara `sendTeamInvite()`
+(`apps/web/src/app/(dashboard)/equipo/actions.ts`), que tiene 4 caminos de entrega
+según la config de correo: (1) Resend + `generateLink` magic link **[el de producción hoy]**,
+(2) `signInWithOtp`, (3) `admin.inviteUserByEmail`, (4) link manual. Quien acepta pasa por
+`/accept-invite`, que setea contraseña, hace `update profiles set company_id, role='colaborador'`
+(autorizado por el trigger `enforce_profile_role_company`, Caso B) y marca la invitación
+`accepted`. El colaborador solo aparece en el roster cuando su `profiles.company_id` queda
+seteado (el roster se arma solo desde `profiles`, no desde `invitations`).
+
+**Causas encontradas (orden de impacto):**
+
+1. **🔴 Magic link de un solo uso y ~1 h de TTL, quemado por pre-fetch de email.**
+   `/auth/confirm` (`route.ts`) hace `verifyOtp`, que consume el token en la primera
+   petición. SafeLinks (Outlook), antivirus y proxies de Gmail **pre-abren** los links y
+   consumen el token → cuando el usuario real hace clic, ya está usado → sin sesión →
+   `error=invalid_link` → no puede completar → la invitación **nunca** pasa a `accepted`.
+2. **🔴 No existe NINGUNA UI de invitaciones pendientes** (ni en `/equipo` ni en admin).
+   El roster sale solo de `profiles`; las `invitations` en `pending` son invisibles y no
+   hay forma de **reenviar** ni **cancelar**. El bug se vuelve indiagnosticable.
+3. **🟠 Colisión con auto-registro (`/register`).** Si el invitado se anota por su cuenta
+   con el mismo email, crea su propia empresa como `arquitecto` y la invitación queda
+   huérfana en `pending` (y `/accept-invite` luego lo bloquea por ser arquitecto/owner).
+4. **🟠 Email ya vinculado a otra empresa.** El trigger Caso B exige `old.company_id is null`;
+   invitar a alguien que ya está en otra empresa hace fallar el `update` (excepción `42501`)
+   → accept rompe → queda `pending`, sin mensaje claro.
+5. **🟠 Camino OTP sin dominio verificado** usa `emailRedirectTo=/accept-invite` directo,
+   salteando `/auth/confirm`; `/accept-invite` no hace `exchangeCodeForSession` → probable
+   "No hay sesión activa" → pendiente. Latente (prod usa Resend).
+6. **🟡 `/accept-invite`** no verifica filas afectadas en el `update profiles` ni chequea
+   `invitation.status` antes de aceptar.
+
+**Recomendación (a evaluar):** (1) panel de invitaciones pendientes con reenviar/cancelar;
+(2) usar token propio de `invitations` (ya existen `token` y `expires_at`, 7 días) validado
+server-side en vez del OTP de 1 h; (3) manejar email ya registrado/ya vinculado con mensaje
+claro; (4) detectar invitación pendiente en `/register` y redirigir a `/accept-invite`.
+
+> Ver análisis operativo relacionado en [QA_INVITACIONES_2026-06.md](./QA_INVITACIONES_2026-06.md).
+
+---
+
 *Documento generado en Fase ARCHITECTURE — The Business Multiplier App*  
 *Próximo paso: Validación con Dilio → Ejecución (Sprint 0)*
