@@ -42,7 +42,8 @@
 > - 🔴 **Prioridad 1 — S21:** Dilio reportó el **25/07** que su equipo no logra conectarse. El fix de
 >   invitaciones `0763fff` es del **23/07**, o sea **el reporte es posterior y no está cubierto**.
 >   Registrado como bug abierto en [`docs/SPEC.md`](docs/SPEC.md) §11. Incluye aplicar la migración
->   `migration_invitations_token_accept.sql`, que **quedó sin aplicar**.
+>   `migration_invitations_token_accept.sql`, **aplicada el 2026-07-29** (registro #30 en
+>   `supabase/README.md`) — no era la causa, ningún path dependía de ella.
 > - 🔍 **S21 también:** `/super-coach` **sí existe**, pero su guard (`page.tsx:28`) redirige al
 >   dashboard cuando no hay `coach_assignments` — muy probablemente por eso Dilio dice *"entro y no
 >   veo nada"*. **Verificar datos antes de construir.**
