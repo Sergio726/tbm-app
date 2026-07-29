@@ -397,9 +397,9 @@ DISC, presentaciones LOST unificadas.)*
 
 | Ítem | Qué es | Sprint | Estado |
 |---|---|---|---|
-| **K1** | Bug de acceso de colaboradores | **S21** ·E1 | 🔴 abierto |
-| **C0** | Panel del coach invisible para Dilio | **S21** ·E2 | 🔍 verificar datos |
-| **F1** | Sprints anclados al año calendario | **S21** ·E3 | ❌ |
+| **K1** | Bug de acceso de colaboradores | **S21** ·E1 | ✅ **mitigado** ¹ |
+| **C0** | Panel del coach invisible para Dilio | **S21** ·E2 | ✅ **hecho** |
+| **F1** | Sprints anclados al año calendario | **S21** ·E3 | ✅ **hecho** |
 | **I1** | Ficha de rol + derechos de decisión ($) | **S22** ·E1 | ❌ |
 | **J1** | Insignia de nivel + aviso de ascenso | **S22** ·E2 | 🟡 · decisión §2 |
 | **A1** | Despertador matinal con voz de DC | **S23** ·E2 | 🟡 |
@@ -425,6 +425,16 @@ DISC, presentaciones LOST unificadas.)*
 
 **Cobertura:** los 25 ítems de este documento están asignados. **~218h desbloqueadas
 hoy** (S21–S29); ~42h esperando insumos (S30, S31, L1). Total ~260h.
+
+> ¹ **K1 está mitigado, no cerrado.** El alta ya **no depende del correo** (link copiable
+> desde el modal, el panel de pendientes y DC), así que el bloqueo operativo desapareció.
+> Pero la **causa raíz del correo sigue sin diagnosticar**: falta el caso concreto de Juanjo
+> y revisar deliverability (SPF/DKIM/DMARC, logs de Resend). Es tarea paralela, ya sin
+> urgencia.
+
+> **✅ S21 cerrado el 2026-07-29** (`bd93280`). Detalle en [`SPRINTS.md`](SPRINTS.md) § S21.
+> El borrado de rocas planificado (E3b) se **descartó**: el dry-run reveló que eran datos de
+> un cliente real, no de prueba.
 
 ### Las tres claves del orden
 

@@ -785,11 +785,26 @@ WorkbookProgress (progreso de sesiones)
 > Problemas detectados que **no** son decisiones de diseño (esos van en
 > [PENDIENTES_REVISION.md](./PENDIENTES_REVISION.md)) sino defectos a corregir.
 
-### 🔴 BUG (ABIERTO) · Colaboradores que no logran conectarse — reporte del 25/07
+### 🟡 BUG (MITIGADO) · Colaboradores que no logran conectarse — reporte del 25/07
 
-**Estado:** **abierto** · reportado por Dilio en la Meet del **2026-07-25**.
-**Plan:** [SPRINT 21 · Entregable 1](./SPRINTS.md) (~6h) — es el ítem de mayor prioridad
-del bloque jul-2026.
+**Estado:** **mitigado el 2026-07-29** (`bd93280`, S21·E1) · **causa raíz aún sin
+diagnosticar**. Reportado por Dilio en la Meet del **2026-07-25**.
+
+> **Qué se arregló.** Se encontró y cerró un agujero estructural: `sendTeamInvite`
+> **descartaba el link** cuando el proveedor de correo respondía OK
+> (`equipo/actions.ts:147` → `return { ok: true, via: "email" }`, sin `link`). El fallback de
+> copiar link solo se renderizaba **cuando el envío fallaba**. O sea que el único escenario
+> sin salida era justamente el de Dilio: el mail "sale bien" pero no llega (spam, filtro
+> corporativo, greylisting) — y el panel de pendientes solo ofrecía *Reenviar* (otro mail que
+> tampoco iba a llegar) y *Cancelar*.
+>
+> Ahora el link vuelve **siempre**, está disponible en el modal, en cada invitación pendiente
+> (`getInviteLink`, on-demand) y en la respuesta de DC. **El alta ya no depende del correo.**
+
+> **Qué sigue abierto.** El **diagnóstico de por qué el correo no llega**: falta el caso
+> concreto de **Juanjo** (chat "Plataformas") y la revisión de deliverability — SPF / DKIM /
+> DMARC y logs de Resend por destinatario. Ya **no es bloqueante** para dar de alta gente,
+> así que baja de prioridad, pero no está resuelto.
 **Rol afectado:** colaboradores invitados a una empresa (caso concreto: el equipo de Dilio).
 
 **Reporte textual:** *"los chicos me estaban contando que están teniendo problemas para

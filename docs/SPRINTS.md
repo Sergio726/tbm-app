@@ -2380,8 +2380,20 @@ S21 (fixes)  ──┬─→ S22 (rol + insignia)
 ---
 
 ## SPRINT 21 — Confianza: acceso, panel del coach y calendario *(Añadido 2026-07-29)*
-**Estado:** 🔮 Planificado — no implementado
-**Origen:** OBSERVACIONES jul-2026 §K1, §C0, §F1 · **Estimado:** ~14h
+**Estado:** ✅ **Implementado 2026-07-29** (`bd93280`)
+**Origen:** OBSERVACIONES jul-2026 §K1, §C0, §F1 · **Estimado:** ~14h → **real ~18h**
+(E2 creció con el home de coach; se ahorró la UI de asignación, que ya existía)
+
+> **Cerrado con auditorías por entregable.** Baseline previo: type-check 0 · 11 tests ·
+> build 0 · lint 35 warnings. Final: type-check 0 · **30/30 tests** · build 0 · lint 35
+> (**idéntico al baseline, cero warnings nuevos**) · 22/22 páginas estáticas.
+>
+> **Lo que encontraron los gates:**
+> - **Gate 1** detectó que los consumidores de `SendTeamInviteResult` eran **cuatro**, no
+>   tres: faltaban `lib/jarvis-tools.ts` (la herramienta de DC) y `onboarding/page.tsx`.
+> - Al cablear E3 apareció que un `<input type="date">` vacío rompía el render del form
+>   (parseo de `""`) → blindado con fallback a hoy.
+> - El **dry-run de E3b evitó borrar datos de cliente real** (ver abajo).
 **Objetivo:** Reparar las tres cosas que hoy le están costando confianza al cliente. Ninguna
 es una feature nueva: dos son bugs y una es una regla de negocio faltante. Es el sprint más
 barato del bloque y el que más percepción cambia.
@@ -2427,6 +2439,32 @@ meses… nuestro año sprint casa con el año calendario"*.
   `start_date` activo **más antiguo** — es un contador flotante. Pasa a "Día X de N ·
   trimestre jul-sep", anclado al calendario.
 - **Copy** que explique el recorte, para que no se lea como un bug.
+
+**Implementado:** nuevo `lib/quarters.ts` — módulo **puro con aritmética en UTC**. La mezcla
+que había (`isoDate` usa UTC pero `addDays` de `plan90d.ts` usa getters locales) corre la
+fecha un día en offsets negativos, o sea la zona de **todos** los usuarios de TBM
+(Argentina/Colombia). **19 tests unitarios** cubren bordes 30/09 vs 01/10, año bisiesto,
+arranque el último día del trimestre, y que un ciclo que entra completo **no** se recorte.
+
+### E3b · Limpieza de rocas de prueba — ❌ **descartado tras el dry-run (2026-07-29)**
+
+Se planificó borrar las rocas existentes porque se asumían de prueba. **El dry-run mostró que
+no lo eran** y la tarea se canceló sin ejecutar nada destructivo.
+
+- **3 de las 5 son de Soul Valley** (cliente real — tiene su propia
+  `supabase/migration_soulvalley_admin_coach.sql`), cargadas el **2026-07-24**, un día antes
+  de la Meet con Dilio, con objetivos de negocio reales.
+- **1 de STLabs con 60% de avance** ya registrado.
+- **Solo 2 de las 5 cruzan de trimestre.** Las 3 de Soul Valley van 01/07 → 29/09: **ya
+  cumplen la regla nueva** sin tocarlas.
+
+**Decisión (Sebas, 2026-07-29): no borrar nada.** La regla aplica a las rocas nuevas, las 2
+que cruzan vencen igual dentro de Q3, y no había beneficio que justificara borrar datos de
+cliente.
+
+> **Aprendizaje:** el paso "dry-run + confirmación sobre la lista real" antes de un borrado
+> no es burocracia — acá evitó perder datos de un cliente. Los supuestos sobre qué es "data
+> de prueba" se verifican contra la base, no de memoria.
 
 ### ✅ Criterio de éxito del Sprint 21
 Un colaborador invitado entra sin depender de que el correo llegue · Dilio abre
@@ -2834,7 +2872,7 @@ puede darse de baja del canal sin perder el email.
 
 | Sprint | Tema | Estimado | Estado | Ítems |
 |---|---|---|---|---|
-| **S21** | Confianza: acceso, coach y calendario | ~14h | 🔮 | K1, C0, F1 |
+| **S21** | Confianza: acceso, coach y calendario | ~18h | ✅ **hecho** | K1, C0, F1 |
 | **S22** | Rol y progresión de la persona | ~18h | 🔮 | I1, J1 |
 | **S23** | Despertador diario (voz de DC) | ~20h | 🔮 | A1 *(absorbe S19)* |
 | **S24** | DC proactivo + delegación asistida | ~26h | 🔮 | G1, B1, B2 *(cierra S18·E4)* |

@@ -8,6 +8,33 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
+> **Novedades 2026-07-29 (S21 implementado — `bd93280`):** primer sprint del bloque jul-2026,
+> cerrado con auditorías por entregable. Baseline previo: type-check 0 · 11 tests · build 0 ·
+> lint 35. Final: type-check 0 · **30/30 tests** · build 0 · **lint 35 idéntico al baseline**.
+> - ✅ **E1 — El alta de colaboradores ya no depende del correo (§K1).** La raíz era que
+>   `sendTeamInvite` **descartaba el link** cuando el proveedor respondía OK
+>   (`equipo/actions.ts:147`): si el mail salía "bien" pero caía en spam, el Arquitecto no
+>   tenía salida (el panel solo ofrecía *Reenviar*, otro mail que tampoco llega). Ahora el
+>   link vuelve **siempre**, hay nueva action `getInviteLink` (mismo guard que `cancelInvite`,
+>   token **on-demand** para no dejarlos todos en el HTML), botón "Link" en el panel de
+>   pendientes, y DC también lo entrega. **K1 queda mitigado, no cerrado**: falta el
+>   diagnóstico de deliverability con Juanjo.
+> - ✅ **E2 — El coach dejó de estar atrapado (§C0).** El *"entro y no veo nada, solamente dos
+>   opciones"* tenía causa exacta: `sidebar.tsx:92` hacía `visibleModules = hasCompany ?
+>   MODULES : []` y el coach se crea **sin empresa por diseño**. Además `/super-coach` rebotaba
+>   a `/dashboard`, que rebotaba a `/onboarding` (el de empresa). Nuevo `COACH_MODULES` + flag
+>   `isCoachRole` (separado de `isCoach` = tiene asignaciones) + estado vacío explicativo.
+>   **No se construyó UI de asignación: el admin ya la tenía** (`assignCoach`).
+> - ✅ **E3 — Rocas ancladas al trimestre calendario (§F1).** Nuevo `lib/quarters.ts`, puro y
+>   con aritmética **UTC** (la mezcla previa —`isoDate` UTC + `addDays` local— corría la fecha
+>   un día en la zona de todos los usuarios de TBM). **19 tests**: bordes 30/09 vs 01/10, año
+>   bisiesto, arranque el último día del trimestre.
+> - ❌ **E3b descartado:** el dry-run mostró que las rocas **no eran de prueba** (3 de Soul
+>   Valley, cliente real, cargadas el 24/07; 1 con 60% de avance) y que **solo 2 de 5** cruzan
+>   de trimestre. Decisión: **no borrar nada**.
+> - **Hallazgo de los gates:** los consumidores de `SendTeamInviteResult` eran **cuatro**, no
+>   tres — faltaban `lib/jarvis-tools.ts` y `onboarding/page.tsx`.
+>
 > **Novedades 2026-07-29 (feedback Dilio 25/07 → plan S21–S31):** se analizó la transcripción de
 > la Meet del 25/07 y se convirtió en **11 sprints planificados (S21–S31)** + 1 tarea suelta,
 > documentados en [`docs/SPRINTS.md`](docs/SPRINTS.md) § BLOQUE JUL-2026. Los 25 ítems del feedback
