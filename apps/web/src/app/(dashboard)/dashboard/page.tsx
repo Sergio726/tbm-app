@@ -519,16 +519,17 @@ export default async function DashboardPage() {
     .single();
   if (!profile) redirect("/login");
 
+  // Coach dedicado (rol `coach`, sin empresa propia): no hace el onboarding de
+  // empresa ni tiene un dashboard de empresa → su home es el panel Super Coach.
+  // Va ANTES del check de onboarding y NO depende de tener asignaciones: antes,
+  // un coach sin empresas asignadas caía en `/onboarding` (el de empresa, que no
+  // le corresponde) y, si ya lo había completado, se colaba al dashboard de
+  // empresa con `company_id = null` y todas las queries vacías (§C0).
+  if (profile.role === "coach" && !profile.company_id) {
+    redirect("/super-coach");
+  }
+
   if (!profile.onboarding_completed) {
-    // Coach dedicado (asignado, sin empresa propia): no hace el onboarding de empresa
-    // ni tiene un dashboard de empresa → lo mandamos directo a su panel Super Coach.
-    if (!profile.company_id) {
-      const { count } = await supabase
-        .from("coach_assignments")
-        .select("id", { count: "exact", head: true })
-        .eq("coach_id", user.id);
-      if ((count ?? 0) > 0) redirect("/super-coach");
-    }
     redirect("/onboarding");
   }
 

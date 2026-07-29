@@ -84,6 +84,11 @@ export default async function DashboardLayout({
     /* tabla inexistente → sin panel */
   }
 
+  // El rol `coach` existe aunque todavía no tenga empresas asignadas. Sin esta
+  // distinción, un coach recién creado no veía NADA: nav vacío y sin acceso al
+  // panel (§C0). `isCoach` = tiene asignaciones · `isCoachRole` = es coach.
+  const isCoachRole = profile?.role === "coach";
+
   const companyName = (profile?.companies as { name: string } | null)?.name;
   const initials = profile?.full_name
     ?.split(" ")
@@ -115,6 +120,7 @@ export default async function DashboardLayout({
         isArquitecto={profile?.role === "arquitecto"}
         avatarUrl={profile?.avatar_url ?? undefined}
         isCoach={isCoach}
+        isCoachRole={isCoachRole}
         hasCompany={!!profile?.company_id}
       />
 
@@ -135,7 +141,10 @@ export default async function DashboardLayout({
         userRole={profile?.role ?? "colaborador"}
         userId={user.id}
         hasCompany={!!profile?.company_id}
-        isCoach={isCoach}
+        // En ⌘K alcanza con "puede entrar al panel": un coach sin asignaciones
+        // también necesita llegar a /super-coach (aunque sea para ver por qué
+        // está vacío).
+        isCoach={isCoach || isCoachRole}
       />
 
       {/* Tour guiado de onboarding (S11) — auto-arranca la primera vez */}

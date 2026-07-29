@@ -301,7 +301,12 @@ export async function executeTool(
       if (r.via === "manual") {
         return { ok: true, message: `Generé la invitación pero el envío automático no está disponible. Pasale este link:\n\n${r.link}` };
       }
-      return { ok: true, message: `✅ Invitación enviada a **${email}**. Cuando acepte y complete su perfil, aparece en Mi Equipo.` };
+      // El link va también cuando el email salió bien: si no llega (spam, filtro
+      // corporativo), el Arquitecto ya lo tiene a mano y no queda sin salida (§K1).
+      return {
+        ok: true,
+        message: `✅ Invitación enviada a **${email}**. Cuando acepte y complete su perfil, aparece en Mi Equipo.\n\nSi no le llega, pasale este link directo:\n\n${r.link}`,
+      };
     }
 
     default:

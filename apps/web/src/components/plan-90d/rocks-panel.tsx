@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Plus, Target } from "lucide-react";
 import type { Rock, Profile } from "@/types/database";
-import { daysSince } from "@/lib/plan90d";
+import { isoDate } from "@/lib/dates";
+import { quarterProgress } from "@/lib/quarters";
 import { RockCard } from "./rock-card";
 import { RockForm } from "./rock-form";
 
@@ -39,12 +40,12 @@ export function RocksPanel({
   const otherRocks = rocks.filter((r) => r.status !== "active");
   const canAddRock = activeRocks.length < 5;
 
-  // "Día X de 90" del trimestre: el primer inicio activo más antiguo
-  const oldestActive = activeRocks.reduce<Rock | null>((acc, r) => {
-    if (!acc) return r;
-    return new Date(r.start_date) < new Date(acc.start_date) ? r : acc;
-  }, null);
-  const quarterDay = oldestActive ? daysSince(oldestActive.start_date) : null;
+  // Contador anclado al TRIMESTRE CALENDARIO, no a la roca activa más antigua.
+  // Antes flotaba con la primera roca creada, así que dos empresas podían estar
+  // en "día 12" en fechas distintas. El año de sprints casa con el calendario
+  // (§F1), así que el día lo define el trimestre, no los datos.
+  // `isoDate()` es UTC → mismo valor en server y cliente (sin hydration mismatch).
+  const quarter = quarterProgress(isoDate());
 
   return (
     <div className="flex flex-col gap-5">
@@ -54,11 +55,9 @@ export function RocksPanel({
           <h2 className="font-bold text-fg" style={{ fontSize: 16 }}>
             Rocas del trimestre
           </h2>
-          {quarterDay !== null && (
-            <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
-              Día {Math.min(quarterDay, 90)} de 90 del trimestre
-            </p>
-          )}
+          <p style={{ fontSize: 13, color: "var(--fg-muted)", marginTop: 2 }}>
+            Día {quarter.day} de {quarter.total} · trimestre {quarter.label}
+          </p>
         </div>
         {!showForm && (
           <button

@@ -21,6 +21,7 @@ import {
   CreditCard,
   Menu,
   X,
+  UserRound,
   type LucideIcon,
 } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
@@ -47,6 +48,18 @@ const MODULES: ModuleItem[] = [
   { label: "Diagnósticos", href: "/diagnosticos", Icon: LineChart },
 ];
 
+/**
+ * Nav del coach dedicado (rol `coach`, sin empresa propia). Antes veía el nav
+ * VACÍO porque los módulos son todos de empresa — Dilio lo reportó como "entro
+ * y no veo nada, solamente dos opciones" (§C0). Estas 3 rutas no dependen de
+ * `company_id`, así que le funcionan todas.
+ */
+const COACH_MODULES: ModuleItem[] = [
+  { label: "Mis empresas", href: "/super-coach", Icon: GraduationCap },
+  { label: "Notificaciones", href: "/notificaciones", Icon: Bell },
+  { label: "Mi cuenta", href: "/cuenta", Icon: UserRound },
+];
+
 interface SidebarProps {
   userId: string;
   companyName?: string;
@@ -57,6 +70,8 @@ interface SidebarProps {
   /** true si el rol es arquitecto (para relabelar el nav del colaborador). */
   isArquitecto?: boolean;
   avatarUrl?: string;
+  /** true si el rol del perfil es `coach`, tenga o no empresas asignadas. */
+  isCoachRole?: boolean;
   /** true si el usuario tiene empresas asignadas como coach (S9). */
   isCoach?: boolean;
   /**
@@ -81,15 +96,18 @@ export function Sidebar({
   userStatusLabel,
   userName,
   isCoach,
+  isCoachRole = false,
   userRole,
   isArquitecto,
   avatarUrl,
   hasCompany = true,
 }: SidebarProps) {
   const pathname = usePathname();
-  // Coach dedicado (sin empresa): solo ve el panel Super Coach. Los módulos de
-  // empresa se ocultan porque sus guardas server-side lo rebotarían igual.
-  const visibleModules = hasCompany ? MODULES : [];
+  // Coach dedicado (sin empresa): los módulos de empresa se ocultan porque sus
+  // guardas server-side lo rebotarían igual, pero recibe su propia nav en vez de
+  // un sidebar vacío (§C0).
+  const isDedicatedCoach = !hasCompany && isCoachRole;
+  const visibleModules = hasCompany ? MODULES : isDedicatedCoach ? COACH_MODULES : [];
   const router = useRouter();
   const { restart: restartTour } = useRestartTour(userId);
   const [signingOut, setSigningOut] = useState(false);
@@ -313,8 +331,10 @@ export function Sidebar({
             );
           })}
 
-          {/* Panel Super Coach — solo visible para coaches asignados (S9) */}
-          {isCoach && (
+          {/* Panel Super Coach — atajo para el Arquitecto que ADEMÁS coachea (S9).
+              El coach dedicado no lo ve acá: ya tiene "Mis empresas" en su nav,
+              y renderizar ambos duplicaba el mismo destino. */}
+          {isCoach && !isDedicatedCoach && (
             <Link
               href="/super-coach"
               data-tour="nav-super-coach"

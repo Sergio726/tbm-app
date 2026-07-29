@@ -20,12 +20,39 @@ export default async function SuperCoachPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Guard: sin asignaciones no hay panel
   const { data: assignments } = await supabase
     .from("coach_assignments")
     .select("company_id")
     .eq("coach_id", user.id);
-  if (!assignments || assignments.length === 0) redirect("/dashboard");
+
+  // Sin asignaciones: estado vacío explicativo, NO redirect. El rebote a
+  // /dashboard hacía que el módulo pareciera inexistente — Dilio lo reportó como
+  // "entro y no veo nada" (§C0). Además, un coach sin empresa propia terminaba
+  // rebotado al onboarding de empresa, que no le corresponde.
+  if (!assignments || assignments.length === 0) {
+    return (
+      <div className="mx-auto max-w-2xl px-5 py-16">
+        <div className="rounded-2xl border border-border bg-[var(--surface)] p-8 text-center">
+          <div
+            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
+            style={{ background: "rgba(52,211,153,0.12)", color: "var(--success-text)" }}
+          >
+            <GraduationCap size={26} strokeWidth={1.6} />
+          </div>
+          <h1 className="m-0 text-[19px] font-bold text-fg">Panel Super Coach</h1>
+          <p className="mx-auto mt-2 max-w-md text-[13.5px] leading-relaxed text-fg-muted">
+            Todavía no tenés empresas asignadas. Cuando el administrador te asigne
+            las empresas que vas a acompañar, vas a ver acá su semáforo, el avance
+            de sus Rocas y qué se está quedando atrás.
+          </p>
+          <p className="mt-4 text-[12px] text-fg-subtle">
+            Pedile al administrador que te asigne empresas desde el panel de
+            administración → Coaches.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const companyIds = assignments.map((a) => a.company_id);
 
