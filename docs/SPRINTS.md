@@ -52,6 +52,21 @@
 | **S15** | Cierre de Migración Supabase | — | Proyecto nuevo en prod (Vercel) + SMTP propio + prueba real de colaborador |
 | **S16** | Mejoras y Correcciones (Mi Equipo) | — | 19 bugs resueltos del módulo Mi Equipo (4 ALTA + 9 MEDIA + 6 BAJA) |
 | **S17** | Multiplicador (M8) + Bienvenida JARVIS + Re-tour | — | Módulo Multiplicador de Liderazgo real + saludo contextual en login + re-acceso al tour |
+| **S18** | Asistente IA Conversacional | — | 🔮 Propuesto. Etapas 1–3 **ya implementadas** como DC (DC-1…DC-9); la **Etapa 4 (proactividad)** la cierra S24 |
+| **S19** | Notificaciones por Email | — | 🔮 Propuesto → **absorbido por S23**, que lo reemplaza con el pedido concreto de Dilio |
+| **S20** | Diagrama de Dependencias en Tiempo Real | — | 🔮 Propuesto, sin fecha |
+| | **── BLOQUE JUL-2026 (feedback Dilio 25/07) ──** | | ver [`OBSERVACIONES_DILIO_2026-07.md`](OBSERVACIONES_DILIO_2026-07.md) |
+| **S21** | Confianza: acceso, coach y calendario | — | Alta de colaboradores reparada + panel del coach visible + sprints anclados al año calendario |
+| **S22** | Rol y progresión de la persona | — | Ficha de rol con derechos de decisión ($) + insignia de nivel visible |
+| **S23** | Despertador diario (voz de DC) | — | Email matinal a todos los roles, con la persona de DC y los hábitos que cada uno declaró |
+| **S24** | DC proactivo + delegación asistida | — | DC deja de ser pasivo: interviene mientras el usuario delega. **Patrón reusable** por S25 y S27 |
+| **S25** | KPIs en cascada: estructura | — | De los 5 Grandes al aporte de cada responsable y su actividad diaria |
+| **S26** | KPIs: seguimiento y alerta predictiva | — | "Parabrisas, no retrovisor": avisa a mitad de mes, no al vencer |
+| **S27** | Super Coach: señales multi-empresa | — | Adopción, rezagos y equipos desbalanceados de todas las empresas alumnas |
+| **S28** | Super Coach: intervención | — | Mensajería coach ↔ empresa + asistente IA que vigila todas las compañías |
+| **S29** | Capacitación: grabar → SOP en PDF | — | Grabar in-app → transcribir → manual de 2 páginas con títulos en forma de pregunta |
+| **S30** | Madurez del empresario | — | ⛔ Bloqueado: "¿seguís siendo el cuello de botella?" + aviso de retroceso |
+| **S31** | Canal WhatsApp | — | ⛔ Bloqueado: suma WhatsApp a la capa de canal de S23/S26/S28 |
 
 ---
 
@@ -2225,7 +2240,12 @@ presente. Con `prefers-reduced-motion` se salta a la versión estática.
 ---
 
 ## SPRINT 18 — Asistente IA Conversacional integrado *(Propuesto 2026-06-14)*
-**Estado:** 🔮 Futuro — documentado, no implementado  
+**Estado:** 🟡 **Parcialmente implementado** *(actualizado 2026-07-29)* — las **Etapas 1, 2
+y 3 ya están en producción** como **DC** (piezas DC-1…DC-9: launcher global, persona
+configurable, contexto de datos con RLS, tool use con patrón propose→confirm, historial y
+rate-limit). La **Etapa 4 (proactividad y memoria)** sigue abierta y la cierra el
+[**SPRINT 24**](#sprint-24--dc-proactivo--delegación-asistida-añadido-2026-07-29), tras el
+pedido de Dilio del 25/07.  
 **Objetivo:** Un chat con un agente de IA embebido en la app que ayude al usuario a interactuar con el sistema: responder dudas, guiarlo entre módulos, ejecutar acciones y dar contexto sobre sus datos. Se implementa por etapas incrementales para acotar riesgo y costo.
 
 ### Etapa 1 — Chat informativo (read-only / RAG sobre la app)
@@ -2255,7 +2275,12 @@ presente. Con `prefers-reduced-motion` se salta a la versión estática.
 ---
 
 ## SPRINT 19 — Módulo de Notificaciones por Email *(Propuesto 2026-06-14)*
-**Estado:** 🔮 Futuro — documentado, no implementado  
+**Estado:** 🔁 **Absorbido por el [SPRINT 23](#sprint-23--despertador-diario-aquí-dc-tu-executive-coach-añadido-2026-07-29)** *(2026-07-29)* — este sprint planteaba un módulo
+de notificaciones genérico; el pedido de Dilio del 25/07 es más concreto y más chico
+(despertador matinal con voz de DC + preferencias por usuario), así que S23 lo reemplaza y
+se queda con el módulo de configuración y la capa de canal. **No implementar S19 por
+separado.** Esta sección se conserva como referencia de diseño (tipos de notificación y
+consideraciones técnicas siguen siendo válidos).  
 **Objetivo:** El sistema envía emails automáticos sobre vencimientos de tareas y un reporte semanal del estado del negocio. Todo se configura desde un **módulo de Notificaciones** propio.
 
 ### Tipos de notificación
@@ -2307,6 +2332,564 @@ presente. Con `prefers-reduced-motion` se salta a la versión estática.
 - Vista read-only primero; edición de dependencias (arrastrar conexiones) como etapa posterior.
 
 **Criterio de éxito:** El dueño abre el diagrama y, sin leer listas, identifica en segundos qué tarea/persona es el cuello de botella que está frenando al resto.
+
+---
+
+# BLOQUE JUL-2026 — Sprints S21–S31 *(Añadido 2026-07-29)*
+
+> **Origen único:** [`OBSERVACIONES_DILIO_2026-07.md`](OBSERVACIONES_DILIO_2026-07.md) —
+> transcripción de la Meet Dilio ↔ Sebas del **25/07/2026**, cruzada contra el estado
+> real del repo. Cada sprint referencia los ítems (A1, B1, C0…) de ese documento;
+> **no dupliques la justificación acá** — vive allá.
+>
+> **Cómo leer este bloque:** los sprints están en **orden de dependencia**, no de
+> importancia. S21 repara lo que hoy rompe la confianza del cliente; S24 construye el
+> patrón de IA proactiva que S25 y S26 reusan; S30 y S31 están **bloqueados por
+> insumos externos** y van al final aunque su valor sea alto.
+>
+> **Regla del proyecto que aplica acá:** *un módulo a la vez* (regla 2). Estos sprints
+> están dimensionados para cerrarse de a uno, con su migración y su verificación.
+
+## Mapa de dependencias
+
+```
+S21 (fixes)  ──┬─→ S22 (rol + insignia)
+               │
+               ├─→ S23 (despertador) ──────────────┐
+               │                                    │
+               └─→ S24 (DC proactivo) ──┬─→ S25 (KPIs estructura) ─→ S26 (KPIs seguimiento)
+                                        │                                  │
+                                        └─→ S27 (coach: señales) ─→ S28 (coach: intervención)
+                                                                           │
+                        S29 (capacitación → SOP)  [independiente]          │
+                                                                           │
+                        S30 (madurez) ⛔ insumo Dilio                       │
+                        S31 (WhatsApp) ⛔ credenciales ←────────────────────┘
+                             (S23/S26/S28 ganan canal WhatsApp al cerrarse S31)
+```
+
+**Lecturas del mapa:**
+- **S24 es el cuello de botella del bloque.** El patrón de intervención proactiva de IA
+  se diseña una vez ahí y lo consumen S25 (sugerir KPIs) y S27 (narrar alertas). Si se
+  hace tres veces por separado, son tres asistentes distintos y tres mantenimientos.
+- **S31 (WhatsApp) no bloquea nada**, pero mejora S23, S26 y S28 retroactivamente: los
+  tres se construyen contra una capa de canal abstracta, y WhatsApp entra como canal
+  adicional sin tocar la lógica de negocio.
+- **S29 es independiente**: puede adelantarse si Dilio lo prioriza.
+
+---
+
+## SPRINT 21 — Confianza: acceso, panel del coach y calendario *(Añadido 2026-07-29)*
+**Estado:** ✅ **Implementado 2026-07-29** (`bd93280`)
+**Origen:** OBSERVACIONES jul-2026 §K1, §C0, §F1 · **Estimado:** ~14h → **real ~18h**
+(E2 creció con el home de coach; se ahorró la UI de asignación, que ya existía)
+
+> **Cerrado con auditorías por entregable.** Baseline previo: type-check 0 · 11 tests ·
+> build 0 · lint 35 warnings. Final: type-check 0 · **30/30 tests** · build 0 · lint 35
+> (**idéntico al baseline, cero warnings nuevos**) · 22/22 páginas estáticas.
+>
+> **Lo que encontraron los gates:**
+> - **Gate 1** detectó que los consumidores de `SendTeamInviteResult` eran **cuatro**, no
+>   tres: faltaban `lib/jarvis-tools.ts` (la herramienta de DC) y `onboarding/page.tsx`.
+> - Al cablear E3 apareció que un `<input type="date">` vacío rompía el render del form
+>   (parseo de `""`) → blindado con fallback a hoy.
+> - El **dry-run de E3b evitó borrar datos de cliente real** (ver abajo).
+**Objetivo:** Reparar las tres cosas que hoy le están costando confianza al cliente. Ninguna
+es una feature nueva: dos son bugs y una es una regla de negocio faltante. Es el sprint más
+barato del bloque y el que más percepción cambia.
+
+### Entregable 1 — Alta de colaboradores que no llega (~6h) 🔴
+**Contexto crítico:** el fix `0763fff` (token propio de invitación) es del **23/07**;
+Dilio reportó el problema el **25/07**. El reporte es **posterior al fix** → no está cubierto.
+
+- **Diagnóstico primero, código después.** Hablar con **Juanjo** (chat "Plataformas"),
+  conseguir el email exacto que falló y reproducir el alta end-to-end.
+- **Aplicar la migración pendiente** `supabase/migration_invitations_token_accept.sql`
+  — quedó sin aplicar (la MCP de Supabase pedía re-auth; ver SPEC.md §11). Sin ella no
+  corre la expiración `pending → expired` ni el índice `(company_id, status)`.
+- Revisar **deliverability** del dominio de envío: SPF, DKIM, DMARC y reputación;
+  logs de Resend por destinatario (entregado / rebotado / marcado spam).
+- **Fallback que no dependa del correo:** botón "Copiar link de invitación" en `/equipo`,
+  junto al panel de invitaciones pendientes que ya existe. El Arquitecto lo manda por
+  WhatsApp y listo. *Esto solo cierra la clase entera de fallos de email.*
+- **Instrumentar:** registrar estado de envío por invitación para que el próximo reporte
+  sea diagnosticable sin adivinar.
+
+### Entregable 2 — Activar el panel Super Coach para Dilio (~2h)
+Dilio: *"vos entras y no ves nada"*. El panel **existe** (`/super-coach`, capa 1: semáforo
+por empresa alumna); el guard lo esconde.
+
+- **Verificar en la base** si la cuenta de Dilio tiene filas en `coach_assignments`.
+  Si no las tiene, es un alta de datos — no una feature.
+- **Cambiar el guard** (`super-coach/page.tsx:28`): hoy hace
+  `redirect("/dashboard")` cuando no hay asignaciones. Reemplazar por un **estado vacío
+  explicativo** ("todavía no tenés empresas asignadas") para que el módulo nunca más
+  parezca inexistente.
+- **UI en `apps/admin`** para asignar empresas a un coach, así no se hace por SQL.
+
+### Entregable 3 — Sprints anclados al año calendario (~6h)
+Dilio: *"si la persona empieza tarde, no puede poner los sprints fuera del rango de los tres
+meses… nuestro año sprint casa con el año calendario"*.
+
+- Nuevo `lib/quarters.ts`: trimestre calendario de una fecha (**ene-mar · abr-jun ·
+  jul-sep · oct-dic**), inicio/fin, días restantes.
+- **Validar** `rocks.start_date` / `end_date` contra los límites del trimestre, en el form
+  y en la base. Quien arranca tarde **recorta**; no se extiende al trimestre siguiente.
+- `components/plan-90d/rocks-panel.tsx:42-47`: hoy el "Día X de 90" se calcula desde el
+  `start_date` activo **más antiguo** — es un contador flotante. Pasa a "Día X de N ·
+  trimestre jul-sep", anclado al calendario.
+- **Copy** que explique el recorte, para que no se lea como un bug.
+
+**Implementado:** nuevo `lib/quarters.ts` — módulo **puro con aritmética en UTC**. La mezcla
+que había (`isoDate` usa UTC pero `addDays` de `plan90d.ts` usa getters locales) corre la
+fecha un día en offsets negativos, o sea la zona de **todos** los usuarios de TBM
+(Argentina/Colombia). **19 tests unitarios** cubren bordes 30/09 vs 01/10, año bisiesto,
+arranque el último día del trimestre, y que un ciclo que entra completo **no** se recorte.
+
+### E3b · Limpieza de rocas de prueba — ❌ **descartado tras el dry-run (2026-07-29)**
+
+Se planificó borrar las rocas existentes porque se asumían de prueba. **El dry-run mostró que
+no lo eran** y la tarea se canceló sin ejecutar nada destructivo.
+
+- **3 de las 5 son de Soul Valley** (cliente real — tiene su propia
+  `supabase/migration_soulvalley_admin_coach.sql`), cargadas el **2026-07-24**, un día antes
+  de la Meet con Dilio, con objetivos de negocio reales.
+- **1 de STLabs con 60% de avance** ya registrado.
+- **Solo 2 de las 5 cruzan de trimestre.** Las 3 de Soul Valley van 01/07 → 29/09: **ya
+  cumplen la regla nueva** sin tocarlas.
+
+**Decisión (Sebas, 2026-07-29): no borrar nada.** La regla aplica a las rocas nuevas, las 2
+que cruzan vencen igual dentro de Q3, y no había beneficio que justificara borrar datos de
+cliente.
+
+> **Aprendizaje:** el paso "dry-run + confirmación sobre la lista real" antes de un borrado
+> no es burocracia — acá evitó perder datos de un cliente. Los supuestos sobre qué es "data
+> de prueba" se verifican contra la base, no de memoria.
+
+### ✅ Criterio de éxito del Sprint 21
+Un colaborador invitado entra sin depender de que el correo llegue · Dilio abre
+`/super-coach` y ve sus empresas (o un mensaje que le dice por qué no) · una roca creada
+el 20 de agosto termina el 30 de septiembre, no el 18 de noviembre.
+
+---
+
+## SPRINT 22 — Rol y progresión de la persona *(Añadido 2026-07-29)*
+**Estado:** 🔮 Planificado — no implementado
+**Origen:** OBSERVACIONES jul-2026 §I1, §J1 · **Estimado:** ~18h
+**Objetivo:** Que cada persona sepa **qué se espera de ella**, **hasta dónde puede decidir
+sola** y **en qué nivel está**. Hoy lo primero y lo segundo no existen, y lo tercero está
+enterrado.
+
+### Entregable 1 — Ficha de rol con derechos de decisión (~12h)
+Dilio: *"el rol tiene que decirle a la persona qué hace, cómo lo hace, las expectativas que
+se tienen con él, los resultados que buscamos… y sus derechos: podés decidir hasta $X sin
+preguntarme a mí. No me preguntes, ejecuta"*.
+
+- **Hoy:** `profiles` tiene `cargo` (texto libre) y `los_level`. Nada más.
+- **Modelo:** ficha por persona con campos estructurados — *qué hace · cómo lo hace ·
+  expectativas · resultados esperados al tenerlo en el equipo · derechos de decisión ·
+  **tope de decisión en $** (monto + moneda)*.
+- **UI del líder:** definir/editar la ficha desde `/equipo`.
+- **UI de la persona:** su ficha en modo lectura, visible desde su propio perfil. El punto
+  de Dilio es que **la persona la vea**, no que el líder la archive.
+- **Enganche con Delegación:** si una tarea implica un monto por encima del tope de quien
+  la recibe, el wizard lo advierte. Es el uso concreto del "derecho", no un campo decorativo.
+
+### Entregable 2 — Insignia de nivel de delegación (~6h)
+Los 5 niveles (**Cadete → Investigador → Delegado → Doctor → Socio**) ya existen en
+`LOS_LEVELS` (`lib/disc.ts`) y se muestran en `/equipo`. Sebas: *"está al final del método,
+no es tan fácil encontrarlo"*.
+
+- **Insignia junto al nombre** en el header/sidebar del propio colaborador — *"que él entre
+  y tenga la insignia de cadete, de investigador"*.
+- **Notificación + email al subir de nivel** — *"si sube de rango porque lo hace bien, que
+  aparezca que subió de rango"*.
+- ⚠️ **Bloqueante de diseño:** ¿el nivel lo **asigna el líder** o lo **calcula el sistema**?
+  Dilio dudó en voz alta (*"me gustaría que el líder lo considera un cadete"*). Está en
+  [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §2 — **confirmar antes de codear el
+  disparador del ascenso**. La insignia en sí se puede hacer sin esperar.
+
+### ✅ Criterio de éxito del Sprint 22
+Un colaborador entra y ve, sin buscar: su insignia de nivel y su ficha de rol con el monto
+hasta el que puede decidir solo. El líder define esa ficha en menos de 3 minutos.
+
+---
+
+## SPRINT 23 — Despertador diario ("aquí DC, tu executive coach") *(Añadido 2026-07-29)*
+**Estado:** 🔮 Planificado — no implementado
+**Origen:** OBSERVACIONES jul-2026 §A1 · **Absorbe el S19 propuesto** (notificaciones por
+email) · **Estimado:** ~20h
+**Objetivo:** Que el sistema **despierte** a cada persona con la voz de DC y le recuerde lo
+que ella misma dijo que hace todos los días. Hoy hay un digest, pero no despierta a nadie.
+
+> **Este sprint reemplaza al SPRINT 19 propuesto.** S19 planteaba un módulo de
+> notificaciones por email genérico; se integra acá con el pedido concreto de Dilio, que es
+> más específico y más chico. Al cerrarse S23, marcar S19 como *absorbido*.
+
+### Entregable 1 — Preferencias de notificación por usuario (~6h)
+- Toggles por tipo de notificación, hora preferida, canal (email hoy; WhatsApp entra en S31).
+- Persistidas por usuario con defaults por empresa. Link de gestión en cada email.
+- **Diseñar la capa de canal como abstracción desde el día 1** (`enviar(canal, plantilla,
+  destinatario)`), para que S31 sume WhatsApp sin reescribir la lógica.
+
+### Entregable 2 — Email matinal a **todos los roles**, con voz de DC (~8h)
+**Hoy** (`api/cron/daily/route.ts` §B) el digest tiene 4 problemas, todos a corregir:
+1. Va **solo al Arquitecto** → debe ir a **todos los roles**.
+2. Es **condicional**: `if (lines.length === 0) continue` (línea 212) → si está todo al día
+   no llega nada. Un despertador que a veces no suena no es un despertador. **Debe llegar
+   siempre**, con contenido positivo cuando no hay pendientes.
+3. El copy es genérico (*"🧭 TBM hoy"*) → adoptar la **persona de DC**, que ya existe en
+   `lib/dc-persona.ts`. Dilio lo dictó casi textual: *"buenos días, aquí DC, tu executive
+   coach, recuerda hacer tu pre-game"*.
+4. **No usa los hábitos declarados** del usuario, que ya están en `user_habits` /
+   `habit_logs` desde A3.1 (jun-2026). Es la pieza que Dilio pidió explícitamente: *"que le
+   sugiera a la persona lo que él dijo que hace diariamente"*.
+
+### Entregable 3 — Hora de envío y husos horarios (~6h)
+- Dilio menciona las **5 am**. Hoy el cron corre **una vez al día**, así que no puede
+  respetar la hora local de cada persona.
+- Pasar a un barrido **horario** que filtre por zona horaria + hora preferida, con
+  idempotencia (un envío por persona por día) y log para evitar duplicados.
+
+### ✅ Criterio de éxito del Sprint 23
+Un colaborador en otro huso horario recibe, a la hora que eligió, un email con la voz de DC
+que le nombra sus propios hábitos y su Pre-game pendiente — y lo recibe **también** los días
+en que tiene todo al día.
+
+---
+
+## SPRINT 24 — DC proactivo + delegación asistida *(Añadido 2026-07-29)*
+**Estado:** 🔮 Planificado — no implementado
+**Origen:** OBSERVACIONES jul-2026 §G1, §B1, §B2 · **Cierra la Etapa 4 del SPRINT 18** ·
+**Estimado:** ~26h
+**Objetivo:** Que DC deje de esperar a que lo invoquen. Sebas lo diagnosticó en la meet y
+Dilio lo confirmó: *"—hoy la IA es pasiva, cuando yo la invoco recién me contesta.
+—Clave, clave, porque así la gente va teniendo el ejercicio más profesional"*.
+
+> **Sprint pivote del bloque.** Acá se diseña **una vez** el patrón de intervención
+> proactiva que después consumen S25 (sugerir KPIs) y S27 (narrar alertas del coach).
+> Hacerlo tres veces por separado = tres asistentes distintos que mantener.
+
+### Entregable 1 — Patrón de intervención proactiva reusable (~10h)
+- Contrato único: *contexto del formulario → evaluación → intervención (sugerencia /
+  advertencia / bloqueo) → aceptar · editar · ignorar*.
+- Debe ser **barato y silencioso**: no dispara en cada tecla, no interrumpe al que ya
+  escribe bien, y degrada a nada si falta `ANTHROPIC_API_KEY` (mismo criterio que
+  `lib/ai-report.ts`).
+- Reusa la infra de DC ya construida: adapters, rate-limit (50 msg/usuario/hora),
+  historial y feature flags del admin.
+
+### Entregable 2 — Gate de calidad en el wizard de delegación (~10h)
+Dilio: *"si voy a delegar algo, el sistema debe impedir que yo delegue mal… debe decirme:
+a pesar de que estás escribiendo esto, la delegación está incompleta"* — y además
+**sugerirle la redacción**.
+
+- **La estructura ya está**: `components/delegacion/task-wizard.tsx` (687 líneas) pide
+  QUÉ (Definition of Done) · POR QUÉ · CÓMO · CUÁNDO · CHECK LOOP. **No faltan campos.**
+- **Falta el juicio.** Hoy solo se valida que el campo no esté vacío; nada detecta *"esto
+  está escrito como actividad, no como entregable"*.
+- Por paso: evaluación de calidad + **reescritura sugerida** que el usuario acepta o edita.
+- ⚠️ **Decisión de producto abierta:** Dilio dijo *"impedir"* — literalmente bloqueante.
+  Un gate duro apoyado en un modelo falible es riesgoso (bloquea a alguien que escribió
+  bien). Ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §3. **Confirmar con Dilio
+  antes de implementar el bloqueo.** Mientras tanto: advertencia fuerte, no bloqueo.
+
+### Entregable 3 — ¿Campo "DÓNDE"? (~2h, condicionado)
+Dilio enumeró *"¿Qué? ¿Por qué? ¿Cuándo? ¿Cómo? ¿Dónde?"*. El wizard tiene los cuatro
+primeros. **No inventarlo:** preguntarle si el "dónde" es un campo real (canal/sistema donde
+se entrega el trabajo) o una forma de hablar. Ver `PENDIENTES_REVISION.md` §4.
+
+### Entregable 4 — Acompañamiento en workbooks (~4h)
+Aplicar el mismo patrón mientras el usuario completa un workbook, que es donde Dilio ubicó
+el problema de fondo: *"hay gente que no sabe eso"*.
+
+### ✅ Criterio de éxito del Sprint 24
+Un Arquitecto escribe "hacer el reporte" en el paso QUÉ y, sin pedirlo, DC le señala que eso
+es una actividad y le ofrece un entregable concreto que puede aceptar de un clic.
+
+---
+
+## SPRINT 25 — KPIs en cascada: estructura *(Añadido 2026-07-29)*
+**Estado:** 🔮 Planificado — no implementado
+**Origen:** OBSERVACIONES jul-2026 §E1, §E2, §E5 · **Estimado:** ~30h
+**Objetivo:** Que los 5 Grandes estratégicos **bajen** hasta la actividad diaria de cada
+persona. Es el pedido más grande y el más alineado con el discurso del método.
+
+**El ejemplo textual de Dilio, que sirve de caso de prueba:**
+> 5 clientes/mes = $25.000 → responsables: Sebastián (3) y Dilio (2) → cada uno con su
+> aporte en dinero, sus **llamadas** y sus **propuestas enviadas**.
+
+### Entregable 1 — Modelo de datos jerárquico (~8h)
+- **Hoy:** `/dashboard/kpis` (384 líneas) es una lista **semanal y plana** (nombre, target,
+  unidad, leading/lagging, owner). **No hay jerarquía** contra `rituales/5-grandes`.
+- **Nuevo:** meta estratégica → aporte por responsable → actividades diarias derivadas.
+  Tres niveles, con el total del padre validado contra la suma de los hijos (si el objetivo
+  son 5 clientes y los aportes suman 4, el sistema lo dice).
+- Respetar lo ya decidido en `PENDIENTES_REVISION.md` §1: **cada colaborador ve y autocrea
+  solo los suyos**; el Arquitecto ve los de toda la empresa. No reabrir esa decisión.
+
+### Entregable 2 — Flujo obligatorio desde los 5 Grandes (~10h)
+Dilio: *"el sistema tiene que **obligar** a que la persona describa claramente a cada
+implicado cuáles son los indicadores con los que él aportaría al tema general"*.
+
+- Al definir un Grande en `rituales/5-grandes`: asignar responsables y, **por cada uno**,
+  su aporte medible. No se puede cerrar el Grande con responsables sin indicador.
+- Es el único "obligar" del bloque que **no** es discutible: acá no hay juicio de un modelo,
+  hay campos requeridos.
+
+### Entregable 3 — Sugerencia de KPIs con IA (~8h)
+Dilio: *"ahí el sistema tiene que sugerirle cosas a la persona porque si no, no lo van a
+poder hacer. A veces la gente no sabe cómo asignar un KPI"*.
+Reusa el patrón de S24 · propone actividades diarias a partir de la meta y del rol.
+
+### Entregable 4 — Autogestión del colaborador (~4h)
+Dilio, cuando Sebas preguntó si el colaborador puede armar los suyos: *"no, no, él también
+puede armar su propia estructura para lograrlo, y eso es muy importante lo que acabas de
+preguntar, porque nosotros predicamos una **cultura de autogestión**"*.
+- El RLS ya deja que vea y cree los suyos (decidido 2026-07-05). **Revisar el form**, que
+  parece pensado para el Arquitecto, y completar lo que falte del lado del colaborador.
+
+### ✅ Criterio de éxito del Sprint 25
+Se carga el ejemplo de Dilio completo (5 clientes / $25.000 / 3 y 2 / llamadas y propuestas)
+sin salir del flujo, y cada responsable ve sus actividades diarias derivadas.
+
+---
+
+## SPRINT 26 — KPIs: seguimiento diario y alerta predictiva *(Añadido 2026-07-29)*
+**Estado:** 🔮 Planificado — no implementado
+**Origen:** OBSERVACIONES jul-2026 §E3, §E4 · **Depende de:** S25 · **Estimado:** ~22h
+**Objetivo:** Implementar el principio que Dilio repitió como consigna del método:
+
+> *"No miremos el retrovisor, siempre el parabrisas. No lleguemos al final del mes para
+> decir: no lo lograste, y marcar el semáforo en rojo."*
+
+### Entregable 1 — Check diario de actividades (~8h)
+Dilio: *"diariamente el sistema le tiene que decir al responsable: ¿hiciste las llamadas?
+¿mandaste las propuestas? ¿tocaste la puerta?"*.
+- Marcado **diario** (hoy el módulo es semanal). Debe costar un toque, como el checklist de
+  hábitos del Pre-game — mismo patrón de UX, ya probado.
+
+### Entregable 2 — Motor de proyección (~8h)
+- Ritmo actual vs. días restantes del mes → ¿llega o no llega?
+- Dispara **antes** del vencimiento, no al vencer. Ese es todo el punto.
+- Definir umbrales y evitar el ruido: una alerta que suena siempre deja de leerse.
+
+### Entregable 3 — Alertas a las dos puntas (~6h)
+- **Al colaborador:** *"estás atrasado en este KPI, no lo vas a lograr en el mes"*.
+- **Al líder:** *"Fulanito lleva tres días sin avanzar en el tema"*.
+- Canal: email vía la capa de S23. **WhatsApp** es el canal que Dilio prefiere y entra solo
+  al cerrarse S31 — sin reescribir nada, porque la capa de canal ya es abstracta.
+
+### ✅ Criterio de éxito del Sprint 26
+Un colaborador que va atrasado se entera **a mitad de mes** de que no va a llegar, y su
+líder se entera de que lleva tres días sin moverse — ninguno de los dos tuvo que abrir la app.
+
+---
+
+## SPRINT 27 — Super Coach: señales y alertas multi-empresa *(Añadido 2026-07-29)*
+**Estado:** 🔮 Planificado — no implementado
+**Origen:** OBSERVACIONES jul-2026 §C1, §C2, §C3, §C4 · **Depende de:** S21·E2 ·
+**Estimado:** ~28h
+**Objetivo:** Construir la capa 2 del panel del coach: **qué está pasando** en todas las
+empresas alumnas.
+
+> **Por qué importa comercialmente.** Dilio fue explícito: *"esto para la consultora, para
+> Newway se vuelve muy importante, porque cuando nosotros asignamos cosas por hacer,
+> implementar, ahí nos damos cuenta si la gente lo está haciendo o no"*. **Este bloque es el
+> producto para la consultora**, no un extra del panel.
+
+### Entregable 1 — Adopción: *"¿están utilizando el sistema?"* (~8h)
+- **Hoy** el panel ya muestra semáforo de scorecard, War-Ups cerrados en 7 días y progreso
+  de rocas. **Falta** una métrica explícita de **uso** (Pre-games completados, logins,
+  workbooks avanzando) y su **tendencia** — que es lo que Dilio nombró primero.
+
+### Entregable 2 — Alertas de rezago cross-empresa (~10h)
+Dilio: *"encuentra rápidamente las alertas de las cosas que se van quedando relegadas en el
+tiempo, para que el consultor pueda intervenir y decir: ey, esto se nos está quedando, ¿qué
+pasó?"*.
+- Bandeja única ordenada por **antigüedad del atasco**, no por empresa. El coach entra y ve
+  lo más podrido primero.
+
+### Entregable 3 — DISC de todas las empresas (~6h)
+- **Cuidado con el RLS.** Hoy `disc_assessments` es **solo arquitecto** (auditado en jun-2026
+  §B1). Hay que abrir un carril para el rol coach **sin romper** la regla de que un
+  colaborador no ve a sus compañeros. Es un cambio de seguridad: se audita antes de mergear.
+
+### Entregable 4 — Alerta de equipo desbalanceado (~4h)
+Dilio: *"puede alertar que hay un equipo desbalanceado desde su constitución: mira,
+contrataste cinco dominantes en esa área, aquí vamos a tener problemas de conexión"*.
+- **Ya existe casi todo:** B6 (jun-2026) construyó el rombo y `detectPairCrossings` con
+  `TBM_DISC_CRUCES`, y dejó las heurísticas de composición como señal secundaria — que es
+  exactamente lo que pide acá. **Falta subir esa señal al panel del coach** a nivel "esta
+  empresa tiene un problema de constitución de equipo". Es integración, no motor nuevo.
+
+### ✅ Criterio de éxito del Sprint 27
+Dilio abre el panel una vez por semana y, sin entrar a ninguna empresa, sabe cuál está
+abandonando el sistema y cuál tiene un problema de composición de equipo.
+
+---
+
+## SPRINT 28 — Super Coach: intervención *(Añadido 2026-07-29)*
+**Estado:** 🔮 Planificado — no implementado
+**Origen:** OBSERVACIONES jul-2026 §C5, §C6 · **Depende de:** S24, S27 · **Estimado:** ~30h
+**Objetivo:** Que el coach no solo **vea** sino que **actúe**. Sin esto, S27 es un tablero
+bonito que obliga a salir de la app para hacer algo.
+
+### Entregable 1 — Mensajería interna coach ↔ empresa (~18h)
+Dilio: *"puede interactuar con el líder, puede interactuar con el equipo. Cuando alguien se
+está relegando, él puede interactuar"*.
+- **No existe mensajería en el repo.** Es el entregable más caro del sprint.
+- **Evaluar primero la alternativa barata:** reusar el canal de **notificaciones + email**
+  que ya existe (mensaje dirigido con contexto) en vez de construir un inbox completo con
+  hilos, no leídos y tiempo real. Decidir con una demo de la versión barata en la mano —
+  puede que alcance.
+- Debe partir **desde la alerta**: el coach ve el rezago y responde ahí mismo, sin buscar a
+  la persona.
+
+### Entregable 2 — Asistente IA del coach, multi-empresa (~12h)
+Dilio: *"que esté vigilando todas las compañías, los puntos críticos que se van quedando, y
+alertándome: esta empresa se está quedando, aquí no están registrando nada, aquí no se está
+documentando nada"*.
+- Es DC con **scope cross-empresa** y en modo **push** en vez de pull.
+- **Depende de S27**: la IA narra señales, no las inventa. Sin las señales de S27 esto es
+  un modelo alucinando sobre datos que no tiene.
+- Reusa el patrón proactivo de S24.
+
+### ✅ Criterio de éxito del Sprint 28
+El coach recibe "esta empresa lleva 2 semanas sin documentar nada" y, desde esa misma
+alerta, le escribe al líder sin salir del panel.
+
+---
+
+## SPRINT 29 — Capacitación: grabar → transcribir → SOP en PDF *(Añadido 2026-07-29)*
+**Estado:** 🔮 Planificado — no implementado
+**Origen:** OBSERVACIONES jul-2026 §D1, §D2 · **Independiente** (puede adelantarse) ·
+**Estimado:** ~30h
+**Objetivo:** Que el empresario capture un proceso **hablando**, y el sistema le devuelva el
+manual escrito. Es el entregable con más "wow" del bloque.
+
+### Entregable 1 — Grabación dentro del sistema (~14h)
+Dilio: *"yo debiese tener una opción que me permita a mí grabar el video"*.
+- **Hoy** (`components/plan-90d/activo-form.tsx:128-131`) el campo es un **input de texto**
+  con `placeholder="Link al video (Loom, YouTube…)"`. Es exactamente la fricción que Dilio
+  señaló: *"te dice sube un link… no lo puede hacer directamente"*.
+- Sebas en la meet: *"el sistema debería tener la capacidad de grabar"*, porque Loom implica
+  cuenta, pago y dos pasos más para el empresario. **Menos pasos es el requisito.**
+- `MediaRecorder` + `getUserMedia` (pantalla + cámara) → subida a Supabase Storage.
+  Verificar límites de tamaño y soporte en navegadores antes de comprometerse.
+- Ubicación: la pestaña de mentoría que cuelga de las **5 Rocas**, donde Dilio ya la ubicó.
+
+### Entregable 2 — Transcripción + SOP en PDF de máx. 2 páginas (~16h)
+Dilio: *"grabar, transcribir y generar el proceso en un PDF de máximo dos hojas. **No puede
+ser más porque nadie lee esa vaina**, y que los títulos queden bien establecidos para que sea
+fácil encontrarlos: ¿cómo hacer tal cosa? ¿cómo hacer tal otra?"*.
+
+- Pipeline: audio → transcripción → resumen a SOP con IA → PDF con `@react-pdf/renderer`
+  (ya en el stack).
+- **Dos requisitos duros, no sugerencias:**
+  1. **Tope de 2 páginas** — forzado en el prompt **y validado al renderizar**. Si se pasa,
+     se re-resume; no se publica un SOP de 5 páginas.
+  2. **Títulos en forma de pregunta** (*"¿Cómo hacer X?"*), porque el criterio de Dilio es
+     que se encuentren rápido, no que estén completos.
+- El PDF queda como **Activo** de la empresa, buscable.
+
+### ✅ Criterio de éxito del Sprint 29
+Un empresario graba 10 minutos explicando cómo se cierra la caja y obtiene, sin editar nada,
+un PDF de 2 páginas con títulos en forma de pregunta que su equipo puede seguir.
+
+---
+
+## SPRINT 30 — Estado de madurez del empresario *(Añadido 2026-07-29)*
+**Estado:** ⛔ **Bloqueado** — necesita insumo de Dilio
+**Origen:** OBSERVACIONES jul-2026 §H1 · **Estimado:** ~18h (post-desbloqueo)
+**Objetivo:** Que el sistema le diga al dueño **dónde está parado** y le avise **si
+retrocede**.
+
+Dilio: *"el sistema tiene que estar concatenado e irle diciendo al dueño dónde se encuentra:
+¿sigue siendo el cuello de botella? ¿ya tenés equipo? Tres o cuatro parámetros… cuello de
+botella es el peor estado, la parte más baja de la productividad. Un segundo nivel que
+permita ver que ya empezamos un proceso de transformación, inicio de arquitectura"*.
+Y lo que más remarcó: *"si se va cayendo la vaina, le avisa: **estás volviendo a ser el
+cuello de botella**"*.
+
+- **Hoy:** *"cuello de botella"* aparece **solo como texto** en `lib/workbook-sessions.ts`.
+  No hay estado calculado ni visible en ningún lado.
+- **Trabajo previsto:** definir los niveles con criterios medibles (delegación activa, % de
+  decisiones que no pasan por el dueño, LOS del equipo), mostrarlos en el dashboard, y
+  **detectar el retroceso** — que es la mitad del pedido y la más fácil de olvidar.
+
+### ⛔ Qué falta para arrancar
+Dilio dio **N0** (cuello de botella) y **N1** (inicio de arquitectura). **Faltan los nombres
+canónicos y los umbrales de los 3-4 niveles.** Sin eso, cualquier escala que inventemos va a
+chocar con su metodología. Registrado en `PENDIENTES_REVISION.md` §5.
+
+### ✅ Criterio de éxito del Sprint 30
+El dueño ve su nivel en el dashboard y, si vuelve a concentrar decisiones, el sistema se lo
+dice antes de que él lo note.
+
+---
+
+## SPRINT 31 — Canal WhatsApp *(Añadido 2026-07-29)*
+**Estado:** ⛔ **Bloqueado** — faltan credenciales
+**Origen:** OBSERVACIONES jul-2026 §A2 · **Mejora retroactivamente:** S23, S26, S28 ·
+**Estimado:** ~20h (post-desbloqueo)
+**Objetivo:** Sumar WhatsApp como canal, que es donde Dilio quiere que ocurra el seguimiento:
+*"si nosotros conectamos el WhatsApp de la persona, el seguimiento de la plataforma se hace
+más fácil"*.
+
+**Buena noticia del 25/07:** la API **ya está contratada**. Textual: *"—¿Ya la tienen? —Sí,
+sí, ya la tienen"*. Se la habían dado a **Mike** para correr su CRM. **Contacto: Juan José**,
+canal "Plataformas".
+
+### Tareas
+- Conseguir credenciales (Juanjo) y `lib/whatsapp.ts`, espejo de `lib/email.ts`.
+- Campo de **teléfono verificado** en `profiles` + **opt-in / opt-out** explícito.
+- Enchufarlo a la capa de canal de S23 — **sin tocar la lógica de negocio** de S23/S26/S28.
+- Mensajes de Dilio a portear: despertador matinal (*"buenos días, aquí DC, tu executive
+  coach"*), atraso de KPI al colaborador, y aviso al líder (*"Fulanito lleva tres días sin
+  avanzar"*).
+
+### ⚠️ El cuello de botella real no es el código
+WhatsApp exige **message templates aprobados por Meta** para todo mensaje iniciado por el
+negocio. La aprobación tiene tiempos propios y puede rechazar copys. **Arrancar el trámite
+apenas se tengan las credenciales**, en paralelo al desarrollo — no después.
+
+### ✅ Criterio de éxito del Sprint 31
+Un usuario recibe a las 5 am su recordatorio de Pre-game por WhatsApp, con la voz de DC, y
+puede darse de baja del canal sin perder el email.
+
+---
+
+## Tareas sueltas del bloque jul-2026 (sin sprint propio)
+
+| # | Tarea | Estado | Nota |
+|---|---|---|---|
+| L1 | Aplicar paleta + tipografía de marca | ⛔ Bloqueado | Espera el manual de marca de Dilio (lo trabaja con Juan). Sebas: *"es sencillo"* — el theming ya está tokenizado desde jun-2026. **Antes:** barrido de colores hardcodeados fuera de `var(--…)`. ~4h |
+
+---
+
+## Resumen del bloque jul-2026
+
+| Sprint | Tema | Estimado | Estado | Ítems |
+|---|---|---|---|---|
+| **S21** | Confianza: acceso, coach y calendario | ~18h | ✅ **hecho** | K1, C0, F1 |
+| **S22** | Rol y progresión de la persona | ~18h | 🔮 | I1, J1 |
+| **S23** | Despertador diario (voz de DC) | ~20h | 🔮 | A1 *(absorbe S19)* |
+| **S24** | DC proactivo + delegación asistida | ~26h | 🔮 | G1, B1, B2 *(cierra S18·E4)* |
+| **S25** | KPIs en cascada: estructura | ~30h | 🔮 | E1, E2, E5 |
+| **S26** | KPIs: seguimiento y alerta predictiva | ~22h | 🔮 | E3, E4 |
+| **S27** | Super Coach: señales multi-empresa | ~28h | 🔮 | C1–C4 |
+| **S28** | Super Coach: intervención | ~30h | 🔮 | C5, C6 |
+| **S29** | Capacitación: grabar → SOP en PDF | ~30h | 🔮 | D1, D2 |
+| **S30** | Madurez del empresario | ~18h | ⛔ | H1 |
+| **S31** | Canal WhatsApp | ~20h | ⛔ | A2 |
+| — | Branding (tarea suelta) | ~4h | ⛔ | L1 |
+
+**Total estimado:** ~260h · **Desbloqueado hoy:** ~218h (S21–S29).
+
+> Las estimaciones son de trabajo de implementación, sin contar QA con Dilio ni las
+> decisiones de producto pendientes. Los sprints marcados ⛔ **no se estiman en el
+> cronograma** hasta que llegue el insumo.
 
 ---
 

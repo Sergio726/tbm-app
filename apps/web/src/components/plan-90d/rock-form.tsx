@@ -4,7 +4,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import type { Profile } from "@/types/database";
 import { isoDate } from "@/lib/dates";
-import { addDays } from "@/lib/plan90d";
+import { clampToQuarterEnd, isClamped, quarterLabel } from "@/lib/quarters";
 
 interface RockFormProps {
   team: Pick<Profile, "id" | "full_name" | "cargo">[];
@@ -35,7 +35,16 @@ export function RockForm({
   const [criteria, setCriteria] = useState("");
   const [startDate, setStartDate] = useState(today);
 
-  const endDate = isoDate(addDays(new Date(startDate), 90));
+  // El `<input type="date">` puede quedar vacío si el usuario borra el campo →
+  // caeríamos a parsear "" y romper el render. Se usa hoy como fallback.
+  const startValid = /^\d{4}-\d{2}-\d{2}$/.test(startDate);
+  const effectiveStart = startValid ? startDate : today;
+
+  // El ciclo cierra con el trimestre calendario: quien arranca tarde recorta,
+  // no se pasa al trimestre siguiente (regla de Dilio — §F1).
+  const endDate = clampToQuarterEnd(effectiveStart, 90);
+  const clamped = isClamped(effectiveStart, 90);
+  const trimestre = quarterLabel(effectiveStart);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -148,7 +157,7 @@ export function RockForm({
           </div>
           <div className="flex-1">
             <label className="mb-1 block text-xs font-medium" style={{ color: "var(--fg-subtle)" }}>
-              Fin (auto +90d)
+              Fin (cierra el trimestre {trimestre})
             </label>
             <input
               type="text"
@@ -163,6 +172,15 @@ export function RockForm({
             />
           </div>
         </div>
+
+        {clamped && (
+          <p className="text-[11.5px] leading-relaxed" style={{ color: "var(--warn-text)" }}>
+            El año de sprints casa con el año calendario, así que esta Roca cierra
+            con el trimestre <strong>{trimestre}</strong> en vez de durar 90 días
+            completos. Arrancar tarde recorta el ciclo — no lo empuja al trimestre
+            siguiente.
+          </p>
+        )}
 
         <div className="flex gap-2 pt-1">
           <button

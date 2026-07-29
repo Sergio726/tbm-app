@@ -40,8 +40,15 @@ function buildInviteHtml(opts: { link: string; companyName: string }): string {
 </html>`;
 }
 
+/**
+ * `link` va SIEMPRE, también cuando el email salió bien. Antes solo se devolvía
+ * en el camino `manual` (envío fallido) y eso dejaba al Arquitecto sin salida
+ * cuando el proveedor respondía OK pero el correo no llegaba (spam, filtro
+ * corporativo, greylisting). Reportado por Dilio el 2026-07-25 — ver
+ * `docs/OBSERVACIONES_DILIO_2026-07.md` §K1.
+ */
 export type SendTeamInviteResult =
-  | { ok: true; via: "email" }
+  | { ok: true; via: "email"; link: string }
   | { ok: true; via: "manual"; link: string; reason?: string }
   | { ok: false; error: string };
 
@@ -144,7 +151,7 @@ export async function sendTeamInvite(input: {
       subject: `Te invitaron a ${companyName} — The Business Multiplier`,
       html: buildInviteHtml({ link, companyName }),
     });
-    if (emailResult.ok) return { ok: true, via: "email" };
+    if (emailResult.ok) return { ok: true, via: "email", link };
     return { ok: true, via: "manual", link, reason: emailResult.error };
   }
 
@@ -154,6 +161,63 @@ export async function sendTeamInvite(input: {
     link,
     reason:
       "Configurá el correo (dominio verificado) en el panel de admin → Correo para envío automático.",
+  };
+}
+
+/**
+ * Devuelve el link `/accept-invite?token=…` de una invitación pendiente ya creada,
+ * para que el Arquitecto pueda compartirlo por fuera del email (WhatsApp, etc.)
+ * cuando el correo no llega. Complementa a `sendTeamInvite`: acá no se envía nada
+ * ni se toca `expires_at`, solo se lee el token existente.
+ *
+ * Seguridad: mismo guard que `cancelInvite` (solo Arquitecto) + filtro explícito
+ * por su `company_id`, encima del RLS. El token NO se precarga en el listado de
+ * `/equipo` a propósito: se pide on-demand para no dejar todos los tokens de la
+ * empresa en el HTML de la página.
+ */
+export async function getInviteLink(input: {
+  id: string;
+  origin: string;
+}): Promise<{ ok: true; link: string } | { ok: false; error: string }> {
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "No hay sesión activa." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, company_id")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "arquitecto" || !profile.company_id) {
+    return { ok: false, error: "Solo el Arquitecto puede obtener el link." };
+  }
+
+  // T2: nunca confiar en el origin del cliente para links con token embebido.
+  const origin = trustedOrigin(input.origin);
+  if (!origin) {
+    return {
+      ok: false,
+      error: "Falta configurar NEXT_PUBLIC_APP_URL en el servidor.",
+    };
+  }
+
+  const { data: inv, error } = await supabase
+    .from("invitations")
+    .select("token")
+    .eq("id", input.id)
+    .eq("company_id", profile.company_id)
+    .maybeSingle();
+  if (error) {
+    console.error("getInviteLink:", error);
+    return { ok: false, error: "No se pudo obtener el link." };
+  }
+  if (!inv?.token) return { ok: false, error: "No se encontró la invitación." };
+
+  return {
+    ok: true,
+    link: `${origin}/accept-invite?token=${encodeURIComponent(inv.token)}`,
   };
 }
 

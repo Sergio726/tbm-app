@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, Send, X, MailWarning } from "lucide-react";
-import { sendTeamInvite, cancelInvite } from "@/app/(dashboard)/equipo/actions";
+import { Clock, Send, X, MailWarning, Link2 } from "lucide-react";
+import { sendTeamInvite, cancelInvite, getInviteLink } from "@/app/(dashboard)/equipo/actions";
 
 export type PendingInvite = {
   id: string;
@@ -31,8 +31,45 @@ export function PendingInvites({
   const [flash, setFlash] = useState<{ id: string; kind: "resent" | "error"; msg?: string } | null>(
     null
   );
+  // Link revelado on-demand (no se precarga: evita dejar todos los tokens de la
+  // empresa en el HTML). Es la salida cuando el email no llega — §K1.
+  const [revealed, setRevealed] = useState<{ id: string; link: string } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   if (invites.length === 0) return null;
+
+  async function showLink(inv: PendingInvite) {
+    if (busy) return;
+    if (revealed?.id === inv.id) {
+      setRevealed(null);
+      return;
+    }
+    setBusy(inv.id);
+    setFlash(null);
+    setCopied(false);
+    try {
+      const res = await getInviteLink({ id: inv.id, origin: window.location.origin });
+      if (res.ok) {
+        setRevealed({ id: inv.id, link: res.link });
+      } else {
+        setFlash({ id: inv.id, kind: "error", msg: res.error });
+      }
+    } catch {
+      setFlash({ id: inv.id, kind: "error", msg: "No se pudo obtener el link." });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function copyRevealed(link: string) {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* clipboard bloqueado → el textarea permite copiar a mano */
+    }
+  }
 
   async function resend(inv: PendingInvite) {
     if (busy) return;
@@ -123,6 +160,16 @@ export function PendingInvites({
                 </button>
                 <button
                   type="button"
+                  onClick={() => showLink(inv)}
+                  disabled={working}
+                  aria-expanded={revealed?.id === inv.id}
+                  aria-label={`Ver link de invitación de ${inv.email}`}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-[8px] border border-white/[0.08] px-2.5 py-1.5 text-[11.5px] font-semibold text-fg-muted transition hover:border-[#5b8aff]/40 hover:text-[#bcd0ff] disabled:opacity-50"
+                >
+                  <Link2 size={12} /> Link
+                </button>
+                <button
+                  type="button"
                   onClick={() => cancel(inv)}
                   disabled={working}
                   aria-label={`Cancelar invitación de ${inv.email}`}
@@ -131,6 +178,30 @@ export function PendingInvites({
                   <X size={12} /> Cancelar
                 </button>
               </div>
+
+              {revealed?.id === inv.id && (
+                <div className="mt-2 space-y-1.5">
+                  <p className="text-[10.5px] leading-relaxed text-fg-muted">
+                    Compartilo por WhatsApp si el email no llegó. Vale hasta que
+                    venza la invitación.
+                  </p>
+                  <textarea
+                    readOnly
+                    value={revealed.link}
+                    rows={2}
+                    onFocus={(e) => e.currentTarget.select()}
+                    aria-label={`Link de invitación de ${inv.email}`}
+                    className="w-full rounded-[8px] border border-white/[0.08] bg-black/20 p-1.5 text-[10px] text-fg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => copyRevealed(revealed.link)}
+                    className="w-full rounded-[8px] border border-white/[0.08] px-2.5 py-1.5 text-[11px] font-semibold text-fg transition hover:bg-elevated"
+                  >
+                    {copied ? "Copiado ✓" : "Copiar link"}
+                  </button>
+                </div>
+              )}
 
               {f?.kind === "resent" && (
                 <div className="mt-1.5 text-[10.5px] font-medium text-[#34d399]">

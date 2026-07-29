@@ -785,6 +785,58 @@ WorkbookProgress (progreso de sesiones)
 > Problemas detectados que **no** son decisiones de diseño (esos van en
 > [PENDIENTES_REVISION.md](./PENDIENTES_REVISION.md)) sino defectos a corregir.
 
+### 🟡 BUG (MITIGADO) · Colaboradores que no logran conectarse — reporte del 25/07
+
+**Estado:** **mitigado el 2026-07-29** (`bd93280`, S21·E1) · **causa raíz aún sin
+diagnosticar**. Reportado por Dilio en la Meet del **2026-07-25**.
+
+> **Qué se arregló.** Se encontró y cerró un agujero estructural: `sendTeamInvite`
+> **descartaba el link** cuando el proveedor de correo respondía OK
+> (`equipo/actions.ts:147` → `return { ok: true, via: "email" }`, sin `link`). El fallback de
+> copiar link solo se renderizaba **cuando el envío fallaba**. O sea que el único escenario
+> sin salida era justamente el de Dilio: el mail "sale bien" pero no llega (spam, filtro
+> corporativo, greylisting) — y el panel de pendientes solo ofrecía *Reenviar* (otro mail que
+> tampoco iba a llegar) y *Cancelar*.
+>
+> Ahora el link vuelve **siempre**, está disponible en el modal, en cada invitación pendiente
+> (`getInviteLink`, on-demand) y en la respuesta de DC. **El alta ya no depende del correo.**
+
+> **Qué sigue abierto.** El **diagnóstico de por qué el correo no llega**: falta el caso
+> concreto de **Juanjo** (chat "Plataformas") y la revisión de deliverability — SPF / DKIM /
+> DMARC y logs de Resend por destinatario. Ya **no es bloqueante** para dar de alta gente,
+> así que baja de prioridad, pero no está resuelto.
+**Rol afectado:** colaboradores invitados a una empresa (caso concreto: el equipo de Dilio).
+
+**Reporte textual:** *"los chicos me estaban contando que están teniendo problemas para
+conectarse al sistema. Pregúntale a **Juanjo** ahí en el chat de plataformas qué le pasó,
+por qué no se pudo conectar. No sé si es que no le llega el correo."*
+Hipótesis de Sebas en la misma llamada: *"capaz que va a spam"*.
+
+**⚠️ Por qué NO está cubierto por el fix de abajo:** el fix de token propio (`0763fff`) se
+mergeó el **2026-07-23**; este reporte es del **2026-07-25**, **dos días después**. Es un
+fallo distinto o un residuo no cubierto — **no asumir que ya está arreglado**.
+
+**Sospechas a descartar, en orden:**
+1. **Deliverability del dominio de envío** — SPF / DKIM / DMARC, reputación, y si el correo
+   está cayendo en spam o siendo rebotado. Revisar logs de Resend por destinatario.
+2. **La migración `supabase/migration_invitations_token_accept.sql` quedó SIN APLICAR**
+   (ver el detalle del bug resuelto, abajo: la MCP de Supabase pedía re-auth). Sin ella no
+   corre la expiración `pending → expired` ni el índice `(company_id, status)`. El código no
+   depende de ella, pero conviene aplicarla antes de seguir diagnosticando.
+3. **Caso de datos específico** — email ya vinculado a otra empresa, o invitación vieja
+   colisionando con el flujo nuevo.
+
+**Acciones:**
+- Conseguir con **Juanjo** el email exacto que falló y **reproducir el alta end-to-end**
+  antes de tocar código.
+- **Fallback estructural:** botón "Copiar link de invitación" en `/equipo` — el Arquitecto
+  lo manda por WhatsApp y el alta deja de depender del correo. *Cierra la clase entera de
+  fallos, no solo este caso.*
+- **Instrumentar** el estado de envío por invitación, para que el próximo reporte sea
+  diagnosticable sin adivinar.
+
+---
+
 ### ✅ BUG (RESUELTO) · Invitación de equipo se quedaba en "pendiente"
 
 **Estado:** detectado 2026-07-23 · **resuelto 2026-07-23** (rama `fix/invitaciones-token-robusto`).

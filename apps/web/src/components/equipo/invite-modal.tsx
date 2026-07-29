@@ -21,8 +21,21 @@ export function InviteModal({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
-  const [manualLink, setManualLink] = useState("");
-  const [manualReason, setManualReason] = useState("");
+  // El link viene SIEMPRE (salga o no el email) para que el alta nunca dependa
+  // de que el correo llegue. `failedReason` vacío = el envío salió bien.
+  const [link, setLink] = useState("");
+  const [failedReason, setFailedReason] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* clipboard bloqueado (contexto no seguro) → el textarea permite copiar a mano */
+    }
+  }
 
   // Cerrar con Escape (accesibilidad de modal).
   useEffect(() => {
@@ -49,14 +62,13 @@ export function InviteModal({
       });
       if (!result.ok) throw new Error(result.error);
 
+      setLink(result.link);
       if (result.via === "manual") {
-        setManualLink(result.link);
-        setManualReason(result.reason ?? "");
+        setFailedReason(result.reason ?? "");
       }
       setSent(true);
-      if (result.via === "email") {
-        setTimeout(onDone, 1200);
-      }
+      // Sin auto-cierre: aunque el email haya salido, dejamos el link a mano
+      // para que el Arquitecto pueda compartirlo si no llega.
     } catch (e) {
       console.error("Error invitando:", e);
       setError(
@@ -102,43 +114,52 @@ export function InviteModal({
         </div>
 
         {sent ? (
-          manualLink ? (
-            <div className="space-y-3 py-2">
-              <p className="text-[13px] text-amber-200/90">
-                No pudimos enviar el email automáticamente. Copiá este link y
-                compartilo con {email.trim()} (WhatsApp, etc.):
-              </p>
-              {manualReason && (
-                <p className="text-[11px] text-red-300/90 leading-relaxed">
-                  Motivo: {manualReason}
+          <div className="space-y-3 py-2">
+            {failedReason ? (
+              <>
+                <p className="text-[13px] text-amber-200/90">
+                  No pudimos enviar el email automáticamente. Copiá este link y
+                  compartilo con {email.trim()} (WhatsApp, etc.):
                 </p>
-              )}
-              <textarea
-                readOnly
-                value={manualLink}
-                rows={3}
-                className="w-full rounded-lg border border-border bg-black/20 p-2 text-[11px] text-fg"
-              />
-              <button
-                type="button"
-                onClick={() => navigator.clipboard.writeText(manualLink)}
-                className="w-full rounded-[10px] border border-border px-3 py-2.5 text-[13px] font-medium text-fg hover:bg-elevated"
-              >
-                Copiar link
-              </button>
-              <button
-                type="button"
-                onClick={onDone}
-                className="w-full rounded-[10px] px-3 py-2.5 text-[13px] text-fg-muted hover:text-fg"
-              >
-                Listo
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 py-2 text-[13.5px] text-[#34d399]">
-              <Check size={16} /> Invitación enviada a {email.trim()}.
-            </div>
-          )
+                <p className="text-[11px] leading-relaxed text-red-300/90">
+                  Motivo: {failedReason}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 text-[13.5px] text-[#34d399]">
+                  <Check size={16} /> Invitación enviada a {email.trim()}.
+                </div>
+                <p className="text-[12px] leading-relaxed text-fg-muted">
+                  ¿No le llega? A veces el correo cae en spam o lo bloquea el
+                  filtro de la empresa. Compartile este link directo:
+                </p>
+              </>
+            )}
+
+            <textarea
+              readOnly
+              value={link}
+              rows={3}
+              onFocus={(e) => e.currentTarget.select()}
+              aria-label="Link de invitación"
+              className="w-full rounded-lg border border-border bg-black/20 p-2 text-[11px] text-fg"
+            />
+            <button
+              type="button"
+              onClick={copyLink}
+              className="w-full rounded-[10px] border border-border px-3 py-2.5 text-[13px] font-medium text-fg hover:bg-elevated"
+            >
+              {copied ? "Copiado ✓" : "Copiar link"}
+            </button>
+            <button
+              type="button"
+              onClick={onDone}
+              className="w-full rounded-[10px] px-3 py-2.5 text-[13px] text-fg-muted hover:text-fg"
+            >
+              Listo
+            </button>
+          </div>
         ) : (
           <>
             <TextInput
