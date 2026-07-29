@@ -785,6 +785,43 @@ WorkbookProgress (progreso de sesiones)
 > Problemas detectados que **no** son decisiones de diseño (esos van en
 > [PENDIENTES_REVISION.md](./PENDIENTES_REVISION.md)) sino defectos a corregir.
 
+### 🔴 BUG (ABIERTO) · Colaboradores que no logran conectarse — reporte del 25/07
+
+**Estado:** **abierto** · reportado por Dilio en la Meet del **2026-07-25**.
+**Plan:** [SPRINT 21 · Entregable 1](./SPRINTS.md) (~6h) — es el ítem de mayor prioridad
+del bloque jul-2026.
+**Rol afectado:** colaboradores invitados a una empresa (caso concreto: el equipo de Dilio).
+
+**Reporte textual:** *"los chicos me estaban contando que están teniendo problemas para
+conectarse al sistema. Pregúntale a **Juanjo** ahí en el chat de plataformas qué le pasó,
+por qué no se pudo conectar. No sé si es que no le llega el correo."*
+Hipótesis de Sebas en la misma llamada: *"capaz que va a spam"*.
+
+**⚠️ Por qué NO está cubierto por el fix de abajo:** el fix de token propio (`0763fff`) se
+mergeó el **2026-07-23**; este reporte es del **2026-07-25**, **dos días después**. Es un
+fallo distinto o un residuo no cubierto — **no asumir que ya está arreglado**.
+
+**Sospechas a descartar, en orden:**
+1. **Deliverability del dominio de envío** — SPF / DKIM / DMARC, reputación, y si el correo
+   está cayendo en spam o siendo rebotado. Revisar logs de Resend por destinatario.
+2. **La migración `supabase/migration_invitations_token_accept.sql` quedó SIN APLICAR**
+   (ver el detalle del bug resuelto, abajo: la MCP de Supabase pedía re-auth). Sin ella no
+   corre la expiración `pending → expired` ni el índice `(company_id, status)`. El código no
+   depende de ella, pero conviene aplicarla antes de seguir diagnosticando.
+3. **Caso de datos específico** — email ya vinculado a otra empresa, o invitación vieja
+   colisionando con el flujo nuevo.
+
+**Acciones:**
+- Conseguir con **Juanjo** el email exacto que falló y **reproducir el alta end-to-end**
+  antes de tocar código.
+- **Fallback estructural:** botón "Copiar link de invitación" en `/equipo` — el Arquitecto
+  lo manda por WhatsApp y el alta deja de depender del correo. *Cierra la clase entera de
+  fallos, no solo este caso.*
+- **Instrumentar** el estado de envío por invitación, para que el próximo reporte sea
+  diagnosticable sin adivinar.
+
+---
+
 ### ✅ BUG (RESUELTO) · Invitación de equipo se quedaba en "pendiente"
 
 **Estado:** detectado 2026-07-23 · **resuelto 2026-07-23** (rama `fix/invitaciones-token-robusto`).

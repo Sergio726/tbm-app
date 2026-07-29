@@ -387,31 +387,69 @@ DISC, presentaciones LOST unificadas.)*
 
 ---
 
-## Orden sugerido de ataque
+## Plan de trabajo — dónde vive cada ítem
 
-**Ahora — desbloquea o repara:**
-1. **K1** — bug de acceso. Es lo único que hoy le está costando usuarios reales.
-2. **C0** — verificar `coach_assignments` de Dilio. Puede convertir *"no veo nada"*
-   en *"ah, sí está"* con un alta de datos.
-3. **F1** — sprints anclados al calendario. Regla acotada, bajo riesgo.
+> **Estos ítems ya están planificados como sprints.** El plan ejecutable, con
+> entregables, estimaciones y criterios de éxito, vive en
+> [`SPRINTS.md`](SPRINTS.md) § **BLOQUE JUL-2026 (S21–S31)**. Este documento
+> queda como el **porqué** (la voz de Dilio + el cruce contra el código);
+> `SPRINTS.md` es el **cómo**. No dupliques el plan acá.
 
-**Siguiente — alto valor, esfuerzo medio:**
-4. **A1** — despertador por email con voz de DC + hábitos ya guardados.
-5. **J1** — insignia de nivel + aviso de ascenso.
-6. **C1 + C2** — adopción y alertas de rezago en el panel del coach.
+| Ítem | Qué es | Sprint | Estado |
+|---|---|---|---|
+| **K1** | Bug de acceso de colaboradores | **S21** ·E1 | 🔴 abierto |
+| **C0** | Panel del coach invisible para Dilio | **S21** ·E2 | 🔍 verificar datos |
+| **F1** | Sprints anclados al año calendario | **S21** ·E3 | ❌ |
+| **I1** | Ficha de rol + derechos de decisión ($) | **S22** ·E1 | ❌ |
+| **J1** | Insignia de nivel + aviso de ascenso | **S22** ·E2 | 🟡 · decisión §2 |
+| **A1** | Despertador matinal con voz de DC | **S23** ·E2 | 🟡 |
+| **G1** | DC pasivo → proactivo | **S24** ·E1 | ❌ |
+| **B1** | Gate de calidad en delegación | **S24** ·E2 | 🟡 · decisión §3 |
+| **B2** | ¿Campo "DÓNDE"? | **S24** ·E3 | 🔍 · decisión §4 |
+| **E1** | Cascada desde los 5 Grandes | **S25** ·E2 | ❌ |
+| **E2** | Sugerencia de KPIs con IA | **S25** ·E3 | ❌ |
+| **E5** | Autogestión del colaborador | **S25** ·E4 | 🟡 |
+| **E3** | Check diario de actividades | **S26** ·E1 | ❌ |
+| **E4** | Alerta predictiva ("parabrisas") | **S26** ·E2-3 | ❌ |
+| **C1** | Adopción por empresa | **S27** ·E1 | 🟡 |
+| **C2** | Alertas de rezago cross-empresa | **S27** ·E2 | ❌ |
+| **C3** | DISC de todas las empresas | **S27** ·E3 | 🟡 |
+| **C4** | Equipo desbalanceado | **S27** ·E4 | 🟡 |
+| **C5** | Mensajería coach ↔ empresa | **S28** ·E1 | ❌ |
+| **C6** | Asistente IA multi-empresa | **S28** ·E2 | ❌ |
+| **D1** | Grabación in-app | **S29** ·E1 | ❌ |
+| **D2** | Transcripción → SOP en PDF (2 pág.) | **S29** ·E2 | ❌ |
+| **H1** | Madurez del empresario | **S30** | ⛔ · decisión §5 |
+| **A2** | Canal WhatsApp | **S31** | ⛔ credenciales |
+| **L1** | Paleta + tipografía de marca | tarea suelta | ⛔ manual de marca |
 
-**Bloques grandes — merecen sesión dedicada cada uno:**
-7. **E1-E5** — KPIs en cascada con alerta predictiva. *El más pedido y el más
-   alineado con el discurso del método ("parabrisas, no retrovisor").*
-8. **D1 + D2** — grabar → transcribir → SOP en PDF de 2 páginas.
-9. **C5 + C6** — mensajería y asistente IA multi-empresa del coach.
-10. **G1 + B1** — Jarvis proactivo (diseñar el patrón una vez, aplicarlo en
-    delegación y KPIs).
-11. **I1** — ficha de rol con derechos de decisión.
-12. **H1** — indicador de cuello de botella (espera insumo de Dilio).
+**Cobertura:** los 25 ítems de este documento están asignados. **~218h desbloqueadas
+hoy** (S21–S29); ~42h esperando insumos (S30, S31, L1). Total ~260h.
 
-**Al final:** A2 (WhatsApp, cuando lleguen credenciales y plantillas Meta),
-L1 (branding).
+### Las tres claves del orden
+
+1. **S21 va primero y no se discute** — es el único sprint que repara cosas que hoy
+   le están costando usuarios y confianza al cliente. Es también el más barato (~14h).
+2. **S24 es el cuello de botella** — el patrón de IA proactiva se diseña una vez ahí y
+   lo consumen S25 (sugerir KPIs) y S27 (narrar alertas). Saltearlo significa
+   construir tres asistentes distintos.
+3. **S31 (WhatsApp) no bloquea a nadie** — S23, S26 y S28 se construyen contra una capa
+   de canal abstracta, así que WhatsApp entra después sin reescribir lógica de negocio.
+   Por eso está último pese a que Dilio lo pidió temprano.
+
+### Decisiones que hay que sacarle a Dilio para no frenarse
+
+Registradas en [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §2–§5:
+
+| # | Decisión | Frena |
+|---|---|---|
+| §2 | ¿El nivel de delegación lo asigna el líder o lo calcula el sistema? | S22 ·E2 (parcial) |
+| §3 | La validación de delegación, ¿bloquea o solo advierte? | S24 ·E2 |
+| §4 | ¿El "¿DÓNDE?" es un campo real? | S24 ·E3 (chico) |
+| §5 | Nombres y umbrales de los niveles de madurez | **S30 entero** |
+
+Solo **§5 bloquea un sprint completo**. Las otras tres tienen camino alternativo:
+se construye la versión conservadora y se ajusta cuando Dilio confirme.
 
 ---
 

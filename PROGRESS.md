@@ -4,9 +4,26 @@
 > Mantenelo actualizado en cada PR o commit que cierre/abra una pieza de un sprint.
 > Plan completo: [`docs/SPRINTS.md`](docs/SPRINTS.md) (incluye CHANGELOG v1.1).
 > Feedback del cliente jun-2026 (post-S17, para implementar): [`docs/OBSERVACIONES_DILIO_2026-06.md`](docs/OBSERVACIONES_DILIO_2026-06.md).
+> **Feedback del cliente jul-2026 (Meet 25/07) + plan S21–S31:** [`docs/OBSERVACIONES_DILIO_2026-07.md`](docs/OBSERVACIONES_DILIO_2026-07.md) (el porqué) → [`docs/SPRINTS.md`](docs/SPRINTS.md) § BLOQUE JUL-2026 (el cómo).
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
+> **Novedades 2026-07-29 (feedback Dilio 25/07 → plan S21–S31):** se analizó la transcripción de
+> la Meet del 25/07 y se convirtió en **11 sprints planificados (S21–S31)** + 1 tarea suelta,
+> documentados en [`docs/SPRINTS.md`](docs/SPRINTS.md) § BLOQUE JUL-2026. Los 25 ítems del feedback
+> están asignados: **~218h desbloqueadas** (S21–S29) y ~42h esperando insumos de Dilio (S30, S31, L1) — ~260h en total.
+> - 🔴 **Prioridad 1 — S21:** Dilio reportó el **25/07** que su equipo no logra conectarse. El fix de
+>   invitaciones `0763fff` es del **23/07**, o sea **el reporte es posterior y no está cubierto**.
+>   Registrado como bug abierto en [`docs/SPEC.md`](docs/SPEC.md) §11. Incluye aplicar la migración
+>   `migration_invitations_token_accept.sql`, que **quedó sin aplicar**.
+> - 🔍 **S21 también:** `/super-coach` **sí existe**, pero su guard (`page.tsx:28`) redirige al
+>   dashboard cuando no hay `coach_assignments` — muy probablemente por eso Dilio dice *"entro y no
+>   veo nada"*. **Verificar datos antes de construir.**
+> - 🔁 **S18** pasa a 🟡 parcial (Etapas 1–3 ya son DC; la Etapa 4 la cierra S24) y **S19 queda
+>   absorbido por S23** — no implementarlo por separado.
+> - ⏳ **4 decisiones de producto** pendientes de Dilio en [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md) §2–§5.
+>   Solo §5 (umbrales de madurez) bloquea un sprint entero (S30).
+>
 > **Novedades 2026-07-21 (Fase 2 · pulido pre-beta §2·B — rama `prebeta-pulido`):** pase de
 > calidad UX sobre `apps/web` (typecheck + build verdes; el único fallo de build es el type-check
 > preexistente de `vitest.config.ts`, ajeno). Frentes:
