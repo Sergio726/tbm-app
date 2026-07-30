@@ -8,6 +8,36 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
+> **Novedades 2026-07-30 (S23 implementado — el despertador diario):** baseline y final
+> **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests **30 → 50**.
+> ⚠️ **Requiere aplicar `supabase/migration_s23_notification_prefs.sql`** — aunque el cron
+> **no se rompe sin ella** (verificado: degrada a "todos reciben"), la UI de `/cuenta` no puede
+> guardar preferencias hasta que exista la tabla.
+> - ✅ **E2 — El digest pasó a ser un despertador (§A1).** Los 4 problemas, corregidos: iba solo
+>   al Arquitecto → **va a todos los miembros**; era condicional (`if (lines.length === 0)
+>   continue`, así que en un día tranquilo no llegaba nada) → **sale siempre**, con copy de
+>   refuerzo; copy genérico → **voz de DC** (*"Buenos días, {nombre}. Acá DC, tu executive
+>   coach"*, nombre configurable desde el admin); y ahora **lista los hábitos que la persona
+>   eligió** (`user_habits`), que era el pedido explícito de Dilio y el digest ignoraba.
+>   Nuevo `lib/daily-digest.ts` **puro** (sin queries ni envío) con **20 tests**.
+> - ✅ **E1 — Preferencias (`notification_prefs`) + sección "Avisos" en `/cuenta`.** RLS
+>   `user_id = auth.uid()`: acá el **dueño sí escribe** (a diferencia de `role_charters` de S22,
+>   que es una evaluación del líder). **Sin fila = todo activado**, así que nadie queda sin
+>   avisos por no haber configurado nada. Capa de canal (`lib/notify-channels.ts`) lista para
+>   que S31 enchufe WhatsApp sin tocar la lógica. **Cierra el S19 propuesto.**
+> - ✅ **E3 parcial — se arregló un bug real de husos.** El cron calculaba el "hoy" con la zona
+>   de la **empresa** para todos, así que a un miembro en otro huso el Pre-game podía marcarse
+>   pendiente estando hecho. Ahora es **por persona**, lo que además hace que la zona horaria
+>   que el usuario ya configuraba en `/cuenta` **por fin tenga efecto**. + idempotencia por
+>   persona/día (sin tabla nueva). **El barrido horario que respeta la hora elegida queda como
+>   S23b** — decisión del usuario de no tocar la infra del cron; la UI lo dice explícitamente
+>   en vez de prometerlo.
+> - **Lo que encontró el dry-run del Gate 2** (el cron manda correos reales, así que se
+>   inspeccionó antes de enviar): **volumen real 4 correos/corrida** (antes 3) → el riesgo de
+>   rate limit que marcaba el plan **queda descartado con datos**; y **un usuario real ya tiene
+>   zona propia distinta a la de su empresa** (`America/Argentina/Salta`), o sea que el bug de
+>   E3 no era teórico.
+>
 > **Novedades 2026-07-29 (S22 implementado):** ficha de rol + insignia de nivel. Baseline y
 > final **idénticos**: type-check 0 · 30/30 tests · build 0 · lint 35 warnings/0 errores.
 > ✅ **`supabase/migration_s22_role_charter.sql` aplicada el 2026-07-30** (registro #31 en

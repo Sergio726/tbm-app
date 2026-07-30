@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
+import { deliver, effectivePrefs, activeChannels } from "@/lib/notify-channels";
+import { buildDailyDigest } from "@/lib/daily-digest";
+import { DC_DEFAULTS } from "@/lib/dc-persona";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -81,23 +84,40 @@ export async function GET(request: Request) {
     // CRON-4: aislar el fallo de una empresa para que no tumbe a las demás.
     try {
 
-    const [{ data: profiles }, { data: config }] = await Promise.all([
+    const [{ data: profiles }, { data: config }, { data: prefsRows }] = await Promise.all([
       supabase
+        // S23 · E3: `timezone` viaja para resolver el "hoy" POR PERSONA. Antes se
+        // usaba solo la zona de la empresa, así que a un miembro en otro huso el
+        // día podía estar corrido → el Pre-game se marcaba pendiente cuando ya
+        // estaba hecho (o al revés). Es un bug, no una preparación.
         .from("profiles")
-        .select("id, full_name, email, role")
+        .select("id, full_name, email, role, timezone")
         .eq("company_id", company.id),
       supabase
         .from("ritual_configs")
         .select("timezone")
         .eq("company_id", company.id)
         .maybeSingle(),
+      // S23 · E1: preferencias. "Sin fila" = todo activado (ver PREFS_DEFAULTS).
+      // Resiliente por diseño: si la migración todavía no se aplicó, el select
+      // devuelve `data: null` (supabase-js no lanza) → mapa vacío → defaults →
+      // todos reciben. Verificado: el cron no se cae por falta de la tabla.
+      supabase
+        .from("notification_prefs")
+        .select("user_id, daily_digest, task_alerts, weekly_report, channel_email, preferred_hour")
+        .eq("company_id", company.id),
     ]);
 
-    const tz = config?.timezone ?? "America/Bogota";
-    const todayLocal = localISODate(now, tz);
-    const weekdayLocal = localWeekday(now, tz); // 0=domingo … 6=sábado
+    const companyTz = config?.timezone ?? "America/Bogota";
+    // "Hoy" de la EMPRESA — se sigue usando para lo que es del equipo (War Up).
+    const todayLocal = localISODate(now, companyTz);
+    const weekdayLocal = localWeekday(now, companyTz); // 0=domingo … 6=sábado
     const arquitectos = (profiles ?? []).filter((p) => p.role === "arquitecto");
     const nameById = new Map((profiles ?? []).map((p) => [p.id, p.full_name]));
+    const prefsByUser = new Map((prefsRows ?? []).map((p) => [p.user_id, p]));
+
+    /** Zona de la persona, con fallback a la de la empresa. */
+    const tzOf = (p: { timezone?: string | null }) => p.timezone?.trim() || companyTz;
 
     // ── A. Tareas sin movimiento en 72h ─────────────────────────
     const { data: overdueTasks } = await supabase
@@ -136,10 +156,13 @@ export async function GET(request: Request) {
         stats.overdueNotifs += recipients.length;
       }
 
-      // Email al colaborador asignado
+      // Email al colaborador asignado — respeta `task_alerts` (S23 · E1).
+      // La notificación in-app de arriba se manda igual: es pasiva, no interrumpe.
       const assignee = (profiles ?? []).find((p) => p.id === task.assigned_to);
-      if (assignee?.email) {
-        const r = await sendEmail({
+      const assigneePrefs = effectivePrefs(prefsByUser.get(task.assigned_to ?? ""));
+      if (assignee?.email && assigneePrefs.taskAlerts && assigneePrefs.channelEmail) {
+        const r = await deliver({
+          channel: "email",
           to: assignee.email,
           subject: "⏰ Tarea sin movimiento hace 72h — TBM",
           html: simpleEmail({
@@ -156,14 +179,34 @@ export async function GET(request: Request) {
       }
     }
 
-    // ── B. Digest matinal al Arquitecto ─────────────────────────
-    const [{ data: preGamesHoy }, { data: warUpHoy }, { data: rocks }, { data: weeklyReport }] =
-      await Promise.all([
+    // ── B. Despertador diario a TODO el equipo (S23 · §A1) ──────
+    //
+    // Dilio: "sería bueno que el sistema te despierte con un correo… buenos días,
+    // aquí DC, tu executive coach, recuerda hacer tu pre-game… y que le sugiera a
+    // la persona lo que él dijo que hace diariamente".
+    //
+    // Cambios respecto del digest viejo:
+    //  1. Iba solo al Arquitecto → va a TODOS los miembros con email.
+    //  2. Era condicional (`if (lines.length === 0) continue`) → ahora sale
+    //     siempre; en un día tranquilo el copy es de refuerzo. Un despertador que
+    //     a veces no suena no es un despertador.
+    //  3. Copy genérico → voz de DC (nombre configurable desde el admin).
+    //  4. No usaba los hábitos declarados → ahora los lista (user_habits).
+    const [
+      { data: preGamesHoy },
+      { data: warUpHoy },
+      { data: rocks },
+      { data: weeklyReport },
+      { data: habits },
+      { data: habitLogsHoy },
+    ] = await Promise.all([
         supabase
           .from("pre_games")
-          .select("user_id")
+          .select("user_id, log_date")
           .eq("company_id", company.id)
-          .eq("log_date", todayLocal),
+          // Se traen 3 días y se filtra por persona más abajo: cada miembro puede
+          // estar en otro huso, así que "hoy" no es el mismo para todos.
+          .gte("log_date", localISODate(new Date(now.getTime() - 36 * 3_600_000), companyTz)),
         supabase
           .from("war_ups")
           .select("id, status")
@@ -182,48 +225,103 @@ export async function GET(request: Request) {
           .order("week_start", { ascending: false })
           .limit(1)
           .maybeSingle(),
+        // Hábitos que cada persona ELIGIÓ (A3.1 de jun-2026). Es la pieza que
+        // Dilio pidió explícitamente y que el digest viejo ignoraba.
+        supabase
+          .from("user_habits")
+          .select("id, user_id, label, emoji, sort_order")
+          .eq("company_id", company.id)
+          .eq("is_active", true)
+          .order("sort_order", { ascending: true }),
+        supabase
+          .from("habit_logs")
+          .select("habit_id, user_id, log_date")
+          .gte("log_date", localISODate(new Date(now.getTime() - 36 * 3_600_000), companyTz)),
       ]);
 
-    for (const arq of arquitectos) {
-      if (!arq.email) continue;
+    const dcName = await getDcName();
 
-      const preGameDone = (preGamesHoy ?? []).some((p) => p.user_id === arq.id);
-      const warUpStarted = !!warUpHoy;
-      const overdueCount = (overdueTasks ?? []).length;
-      const lines: string[] = [];
+    for (const person of profiles ?? []) {
+      if (!person.email) continue;
 
-      if (!preGameDone) lines.push("☀️ Tu <strong>Pre-game de hoy</strong> está pendiente.");
-      if (!warUpStarted) lines.push("⚡ El <strong>War Up</strong> de hoy todavía no se inició.");
-      if (overdueCount > 0)
-        lines.push(
-          `⏰ Hay <strong>${overdueCount} ${overdueCount === 1 ? "tarea" : "tareas"} sin movimiento</strong> hace más de 72h.`
-        );
-      if (weekdayLocal === 1 && (rocks ?? []).length > 0) {
-        lines.push(
-          `🏔️ Lunes de check-in: ${(rocks ?? [])
-            .map((r) => `${escapeHtml(r.title)} (${r.progress ?? 0}%)`)
-            .join(" · ")}.`
-        );
-      }
-      if (weekdayLocal === 0 && weeklyReport) {
-        lines.push("📊 El <strong>Reporte Semanal</strong> de tu equipo está listo.");
-      }
+      // E1: respeta las preferencias. Sin fila = todo activado.
+      const prefs = effectivePrefs(prefsByUser.get(person.id));
+      if (!prefs.dailyDigest) continue;
+      if (!activeChannels(prefs).includes("email")) continue;
 
-      if (lines.length === 0) continue; // todo en orden — sin spam
+      // E3: el "hoy" de ESTA persona, en SU huso.
+      const personTz = tzOf(person);
+      const personToday = localISODate(now, personTz);
+      const personWeekday = localWeekday(now, personTz);
 
-      const r = await sendEmail({
-        to: arq.email,
-        subject: `🧭 TBM hoy — ${company.name}`,
+      // E3 · idempotencia: si ya se le mandó el despertador hoy, no repetir.
+      // Cubre reintentos del cron y deploys que lo redisparen.
+      const { count: alreadySent } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", person.id)
+        .eq("type", "daily_digest")
+        .eq("href", `/dashboard?digest=${personToday}`);
+      if ((alreadySent ?? 0) > 0) continue;
+
+      const isArquitecto = person.role === "arquitecto";
+      const myHabits = (habits ?? []).filter((h) => h.user_id === person.id);
+      const doneHabitIds = new Set(
+        (habitLogsHoy ?? [])
+          .filter((l) => l.user_id === person.id && l.log_date === personToday)
+          .map((l) => l.habit_id)
+      );
+
+      const content = buildDailyDigest({
+        dcName,
+        firstName: person.full_name?.split(" ")[0] ?? "",
+        companyName: company.name,
+        weekday: personWeekday,
+        preGameDone: (preGamesHoy ?? []).some(
+          (p) => p.user_id === person.id && p.log_date === personToday
+        ),
+        habits: myHabits.map((h) => ({
+          label: h.label,
+          emoji: h.emoji,
+          done: doneHabitIds.has(h.id),
+        })),
+        // Solo las tareas de esta persona, no el total de la empresa (el digest
+        // viejo mandaba el conteo global al Arquitecto).
+        overdueTaskCount: (overdueTasks ?? []).filter((t) => t.assigned_to === person.id).length,
+        // El War Up es del equipo: solo le corresponde al Arquitecto.
+        warUpPending: isArquitecto ? !warUpHoy : null,
+        rocks: isArquitecto
+          ? (rocks ?? []).map((r) => ({ title: r.title, progress: r.progress ?? 0 }))
+          : [],
+        weeklyReportReady: prefs.weeklyReport && !!weeklyReport,
+      });
+
+      const r = await deliver({
+        channel: "email",
+        to: person.email,
+        subject: content.subject,
         html: simpleEmail({
-          title: `Buen día, ${arq.full_name?.split(" ")[0] ?? "Arquitecto"}`,
-          lines,
+          title: content.greeting,
+          lines: content.lines,
           cta: { label: "Abrir mi Dashboard", path: "/dashboard" },
+          // S19 (absorbido): link para gestionar qué se recibe.
+          footerNote: "Podés elegir qué avisos recibir desde Mi cuenta.",
         }),
       });
-      if (r.ok) stats.emails++;
+      if (r.ok) {
+        stats.emails++;
+        // Marca de idempotencia (no es una notificación para la campana: el href
+        // lleva la fecha justamente para que el count de arriba la encuentre).
+        await supabase.from("notifications").insert({
+          company_id: company.id,
+          user_id: person.id,
+          type: "daily_digest",
+          title: content.subject,
+          href: `/dashboard?digest=${personToday}`,
+          read_at: new Date().toISOString(),
+        });
+      }
 
-      // Dedup futura: nada que guardar — el digest se arma on the fly,
-      // y el cron corre una sola vez al día.
       void nameById;
     }
 
@@ -338,6 +436,22 @@ function localWeekday(d: Date, timeZone: string): number {
   }
 }
 
+/**
+ * Nombre del asistente para el saludo. El admin puede renombrarlo (DC-2), así que
+ * se lee de `ai_config`; si no está configurado o falla, cae al default "DC".
+ * Se resuelve UNA vez por corrida del cron, no por persona.
+ */
+async function getDcName(): Promise<string> {
+  try {
+    const admin = createAdminClient();
+    if (!admin) return DC_DEFAULTS.name;
+    const { data } = await admin.from("ai_config").select("persona_name").maybeSingle();
+    return data?.persona_name?.trim() || DC_DEFAULTS.name;
+  } catch {
+    return DC_DEFAULTS.name;
+  }
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -350,8 +464,16 @@ function simpleEmail(opts: {
   title: string;
   lines: string[];
   cta?: { label: string; path: string };
+  /** Nota al pie + link a preferencias (S19 absorbido por S23). */
+  footerNote?: string;
 }): string {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://tbm-app.vercel.app";
+  const footerHtml = opts.footerNote
+    ? `<p style="font-size:11.5px;line-height:1.5;color:#94a3b8;margin:20px 0 0;border-top:1px solid #e6e9f0;padding-top:14px;">
+         ${opts.footerNote}
+         <a href="${appUrl}/cuenta" style="color:#2563EB;">Gestionar avisos</a>.
+       </p>`
+    : "";
   const ctaHtml = opts.cta
     ? `<a href="${appUrl}${opts.cta.path}"
          style="display:inline-block;background:linear-gradient(135deg,#2563EB,#1D4ED8);color:#fff;
@@ -372,6 +494,7 @@ function simpleEmail(opts: {
         )
         .join("")}
       ${ctaHtml}
+      ${footerHtml}
     </div>
     <p style="text-align:center;font-size:11px;color:#94a3b8;margin-top:16px;">
       The Business Multiplier · método de Dilio Donado

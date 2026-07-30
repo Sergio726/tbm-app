@@ -22,7 +22,11 @@ import { RestartTourButton } from "./restart-tour-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LIGHT_THEME_READY } from "@/lib/theme-flags";
 import { useToast } from "@/components/ui/toast";
-import type { Profile } from "@/types/database";
+import type { Profile, NotificationPrefs } from "@/types/database";
+import {
+  NotificationPrefsForm,
+  NotificationPrefsIcon,
+} from "./notification-prefs-form";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -300,10 +304,13 @@ export function AccountForm({
   profile,
   email,
   companyName,
+  notificationPrefs = null,
 }: {
   profile: Profile;
   email: string;
   companyName: string | null;
+  /** S23 · E1. `null` = sin fila todavía → todo activado por default. */
+  notificationPrefs?: NotificationPrefs | null;
 }) {
   const router = useRouter();
   const supabase = createBrowserClient();
@@ -836,6 +843,16 @@ export function AccountForm({
           <ThemeToggle />
         </section>
       )}
+
+      {/* ── Avisos — preferencias de notificación (S23 · E1) ── */}
+      <section className="tbm-card mt-5 p-6 tbm-rise" style={{ animationDelay: "165ms" }}>
+        <SectionTitle Icon={NotificationPrefsIcon} label="Avisos" color="#fbbf24" />
+        <NotificationPrefsForm
+          userId={profile.id}
+          companyId={profile.company_id}
+          initial={notificationPrefs}
+        />
+      </section>
 
       {/* ── Ayuda — tour guiado (S11) ── */}
       <section

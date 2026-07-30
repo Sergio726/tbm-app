@@ -894,6 +894,52 @@ export type Database = {
           },
         ]
       }
+      // S23 · Preferencias de notificación. A diferencia de role_charters, estas
+      // las gobierna el propio usuario. "Sin fila" = todo activado.
+      notification_prefs: {
+        Row: {
+          user_id: string
+          company_id: string | null
+          daily_digest: boolean
+          task_alerts: boolean
+          weekly_report: boolean
+          preferred_hour: number | null
+          channel_email: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          company_id?: string | null
+          daily_digest?: boolean
+          task_alerts?: boolean
+          weekly_report?: boolean
+          preferred_hour?: number | null
+          channel_email?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          company_id?: string | null
+          daily_digest?: boolean
+          task_alerts?: boolean
+          weekly_report?: boolean
+          preferred_hour?: number | null
+          channel_email?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_prefs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       // S22 · Ficha de rol ("rights"): qué hace la persona, cómo, qué se espera
       // de ella, y hasta cuánto puede decidir sin preguntar. La define el líder.
       role_charters: {
@@ -2170,6 +2216,7 @@ export type KPI = Database["public"]["Tables"]["kpis"]["Row"];
 export type EnergyLog = Database["public"]["Tables"]["energy_logs"]["Row"];
 export type Invitation = Database["public"]["Tables"]["invitations"]["Row"];
 export type RoleCharter = Database["public"]["Tables"]["role_charters"]["Row"];
+export type NotificationPrefs = Database["public"]["Tables"]["notification_prefs"]["Row"];
 
 // Sprint 2 — Rituales
 export type RitualConfig = Database["public"]["Tables"]["ritual_configs"]["Row"];
