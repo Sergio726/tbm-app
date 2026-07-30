@@ -819,10 +819,10 @@ fallo distinto o un residuo no cubierto — **no asumir que ya está arreglado**
 **Sospechas a descartar, en orden:**
 1. **Deliverability del dominio de envío** — SPF / DKIM / DMARC, reputación, y si el correo
    está cayendo en spam o siendo rebotado. Revisar logs de Resend por destinatario.
-2. **La migración `supabase/migration_invitations_token_accept.sql` quedó SIN APLICAR**
-   (ver el detalle del bug resuelto, abajo: la MCP de Supabase pedía re-auth). Sin ella no
-   corre la expiración `pending → expired` ni el índice `(company_id, status)`. El código no
-   depende de ella, pero conviene aplicarla antes de seguir diagnosticando.
+2. ~~La migración `supabase/migration_invitations_token_accept.sql` sin aplicar.~~
+   ✅ **Aplicada el 2026-07-29** (registro #30 en `supabase/README.md`). **Descartada como
+   causa:** solo agrega la policy DELETE del Arquitecto y el índice `(company_id, status)`,
+   y ningún path del código dependía de ellas (`cancelInvite` borra con el admin client).
 3. **Caso de datos específico** — email ya vinculado a otra empresa, o invitación vieja
    colisionando con el flujo nuevo.
 
@@ -861,8 +861,9 @@ la fila quedaba en `invitations.status='pending'` para siempre.
   redirige a `/accept-invite` en vez de crear empresa nueva. → causa #3.
 - **Expiración** automática (`pending → expired`) en el cron diario + migración
   `supabase/migration_invitations_token_accept.sql` (policy DELETE del arquitecto + índice
-  `company_id,status`). ⚠️ **La migración quedó pendiente de aplicar** (la MCP de Supabase
-  pedía re-auth); el código no depende de ella (`cancelInvite` usa admin client filtrado).
+  `company_id,status`). ✅ **Migración aplicada el 2026-07-29** (registro #30 en
+  `supabase/README.md`); el código nunca dependió de ella (`cancelInvite` usa admin client
+  filtrado).
 
 <details>
 <summary>Diagnóstico original (2026-07-23)</summary>

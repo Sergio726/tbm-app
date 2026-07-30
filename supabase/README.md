@@ -41,6 +41,7 @@ Supabase **sí** llega al proyecto nuevo (apply_migration/execute_sql). Correr *
 | 27 | `migration_email_config.sql` | **Email · F1**: tabla `email_config` (remitente/reply-to/soporte del correo de la app) + wrappers de Vault `email_set_secret`/`email_get_secret` (SECURITY DEFINER, solo service-role) para la key de Resend. RLS sin policies (solo service-role) | ✅ aplicada (2026-06-26) |
 | 28 | `migration_invitations_invitee_rls.sql` | **Fix invitaciones**: policies para que el invitado **vea y acepte** su propia invitación (`invitations` por `auth.email()`). Antes solo el Arquitecto tenía policies → /accept-invite no encontraba la invitación del colaborador | ✅ aplicada (2026-06-27) |
 | 29 | `migration_companies_invitee_select.sql` | **Fix /accept-invite**: policy para que el invitado lea la **empresa que lo invitó** (mostrar su nombre), scopeado por `auth.email()`. Antes solo owner/coach podían leer `companies` → 406 + nombre vacío | ✅ aplicada (2026-06-27) |
+| 30 | `migration_invitations_token_accept.sql` | **Invitaciones por token propio**: policy DELETE del Arquitecto sobre las invitaciones de su empresa + índice `(company_id, status)` para el panel de pendientes. Creada junto al fix `0763fff` (2026-07-23) pero **quedó sin registrar ni aplicar** hasta ahora. El código no dependía de ella: `cancelInvite` borra con el admin client (service_role) | ✅ aplicada (2026-07-29) |
 
 ## Limpieza puntual (no es migración de esquema)
 
