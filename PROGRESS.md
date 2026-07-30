@@ -8,7 +8,7 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
-> **Novedades 2026-07-30 (S24 implementado — DC deja de ser pasivo · S25 bloqueado):**
+> **Novedades 2026-07-30 (S24 implementado — DC deja de ser pasivo · S25 desbloqueado):**
 > Baseline y final **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests
 > **50 → 73**. ⚠️ Requiere `supabase/migration_s24_dc_reviews.sql` **y prender el flag
 > `features.proactive`** — hoy está OFF a propósito, así que el patrón está **inerte**.

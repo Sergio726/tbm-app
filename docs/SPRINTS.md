@@ -2347,7 +2347,7 @@ consideraciones técnicas siguen siendo válidos).
 >
 > **Cómo leer este bloque:** los sprints están en **orden de dependencia**, no de
 > importancia. S21 repara lo que hoy rompe la confianza del cliente; S24 construye el
-> patrón de IA proactiva que S25 y S26 reusan; S30 y S31 están **bloqueados por
+> patrón de IA proactiva que S25 y S27 reusan; S30 y S31 están **bloqueados por
 > insumos externos** y van al final aunque su valor sea alto.
 >
 > **Regla del proyecto que aplica acá:** *un módulo a la vez* (regla 2). Estos sprints
@@ -2778,6 +2778,24 @@ como atributo. Eso saca el cuarto nivel que se había estimado en +8h.
 **Encaja con S21:** las Rocas ya están **ancladas al trimestre calendario** (`lib/quarters.ts`),
 así que *"el primer trimestre"* es preciso y calcular los meses restantes es directo.
 
+### ⚠️ La cadencia es una REFERENCIA, no una cuota mensual
+
+Aclaración de Sebas (2026-07-30), y es la que define el seguimiento:
+
+> *"Se puede dar que el primer mes no llegue a los 5, que el segundo mes tampoco y tal vez el
+> último mes sí lo logre, como también puede lograrlo antes. **Pero debe saber qué está haciendo
+> o no está haciendo para lograr el objetivo.**"*
+
+- **El compromiso es el total del trimestre (15), no 5 por mes.** `2 + 4 + 9 = 15` cierra igual.
+- **Sin semáforo mensual pass/fail.** Marcar rojo en el mes 1 a quien todavía puede recuperar es
+  el *"retrovisor"* que Dilio critica. El ritmo responde *"¿voy bien para llegar?"*, no aprueba
+  ni desaprueba el mes.
+- **Seguimiento = acumulado + proyección** sobre el trimestre: cuánto lleva, cuánto falta,
+  cuántos meses quedan, a qué ritmo tendría que ir. Misma aritmética de "parabrisas" de S26·§E4,
+  pero **trimestral**.
+- **Lo diario son las ACTIVIDADES** (llamadas, propuestas) — lo único que la persona controla.
+  El resultado es consecuencia. De ahí *"debe saber qué está haciendo o no está haciendo"*.
+
 > ⚠️ **Deuda que S25 tiene que resolver:** `kpis` (`migration_sprint1.sql:53`) y
 > `leading_indicators` (`migration_sprint10_plan90d.sql:73`) son **dos tablas casi idénticas**
 > para lo mismo, y **las dos están en uso** (3 y 5 archivos). Hay que elegir una y migrar la otra.
@@ -2843,9 +2861,18 @@ Dilio: *"diariamente el sistema le tiene que decir al responsable: ¿hiciste las
   hábitos del Pre-game — mismo patrón de UX, ya probado.
 
 ### Entregable 2 — Motor de proyección (~8h)
-- Ritmo actual vs. días restantes del mes → ¿llega o no llega?
+- Ritmo actual vs. tiempo restante → ¿llega o no llega?
 - Dispara **antes** del vencimiento, no al vencer. Ese es todo el punto.
 - Definir umbrales y evitar el ruido: una alerta que suena siempre deja de leerse.
+
+> ⚠️ **Corregido (2026-07-30): la proyección es sobre el TRIMESTRE, no sobre el mes.**
+> Sebas: *"se puede dar que el primer mes no llegue a los 5, que el segundo tampoco y tal vez
+> el último sí lo logre… pero debe saber qué está haciendo o no está haciendo para lograr el
+> objetivo"*. El compromiso es el total del trimestre (`2+4+9 = 15` cierra igual), así que
+> **nada de semáforo mensual pass/fail**: marcarle rojo en el mes 1 a quien todavía puede
+> recuperar es justo el *"retrovisor"* que el método critica. Se proyecta **acumulado vs. meses
+> restantes del trimestre**, y lo que se pregunta a diario son las **actividades** (llamadas,
+> propuestas) — lo único que la persona controla. Ver `PENDIENTES_REVISION.md` §6.
 
 ### Entregable 3 — Alertas a las dos puntas (~6h)
 - **Al colaborador:** *"estás atrasado en este KPI, no lo vas a lograr en el mes"*.

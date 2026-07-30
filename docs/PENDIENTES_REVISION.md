@@ -190,6 +190,29 @@ expresa y se sigue una meta **trimestral**. Su ejemplo, traducido al modelo:
 el ritmo mensual como atributo de la meta. Se evita el cuarto nivel que se había estimado en
 +8h.
 
+### ⚠️ La cadencia es una REFERENCIA, no una cuota mensual
+
+Aclaración de Sebas, y es la que define cómo se hace el seguimiento:
+
+> *"Se puede dar que el primer mes no llegue a los 5, que el segundo mes tampoco y tal vez el
+> último mes sí lo logre, como también puede lograrlo antes. **Pero debe saber qué está haciendo
+> o no está haciendo para lograr el objetivo.**"*
+
+Consecuencias concretas para el modelo:
+
+1. **El compromiso es el TOTAL del trimestre (15), no 5 por mes.** Un mes con 2 no es un
+   incumplimiento: es un dato. `2 + 4 + 9 = 15` cierra igual.
+2. **Nada de semáforo mensual pass/fail.** Marcarle rojo en el mes 1 a alguien que todavía puede
+   recuperar es exactamente *"mirarse el retrovisor"* que Dilio critica. El ritmo sirve para
+   responder **"¿voy bien para llegar?"**, no para aprobar o desaprobar el mes.
+3. **El seguimiento es acumulado + proyección:** cuánto lleva, cuánto falta, cuántos meses
+   quedan, y a qué ritmo tendría que ir de acá en adelante. Es la misma aritmética de "parabrisas"
+   de S26 §E4, pero **sobre el trimestre**, no sobre el mes.
+4. **Lo que se marca a diario son las ACTIVIDADES** (llamadas, propuestas), que es lo único que
+   la persona controla directamente. El resultado (clientes cerrados) es consecuencia. De ahí el
+   *"debe saber qué está haciendo o no está haciendo"*: la pregunta diaria es sobre el esfuerzo,
+   no sobre el número final.
+
 **Encaja con S21:** las Rocas ya quedaron **ancladas al trimestre calendario**
 (`lib/quarters.ts`), así que *"el primer trimestre"* tiene un significado preciso y el cómputo
 de "cuántos meses quedan" es directo.
