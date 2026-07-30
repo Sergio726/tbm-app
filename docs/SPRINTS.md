@@ -2240,12 +2240,13 @@ presente. Con `prefers-reduced-motion` se salta a la versión estática.
 ---
 
 ## SPRINT 18 — Asistente IA Conversacional integrado *(Propuesto 2026-06-14)*
-**Estado:** 🟡 **Parcialmente implementado** *(actualizado 2026-07-29)* — las **Etapas 1, 2
-y 3 ya están en producción** como **DC** (piezas DC-1…DC-9: launcher global, persona
-configurable, contexto de datos con RLS, tool use con patrón propose→confirm, historial y
-rate-limit). La **Etapa 4 (proactividad y memoria)** sigue abierta y la cierra el
-[**SPRINT 24**](#sprint-24--dc-proactivo--delegación-asistida-añadido-2026-07-29), tras el
-pedido de Dilio del 25/07.  
+**Estado:** ✅ **Completo** *(actualizado 2026-07-30)* — las **Etapas 1, 2 y 3** están en
+producción como **DC** (DC-1…DC-9: launcher global, persona configurable, contexto de datos con
+RLS, tool use con patrón propose→confirm, historial y rate-limit), y la **Etapa 4
+(proactividad)** la cerró el [**SPRINT 24**](#sprint-24--dc-proactivo--delegación-asistida-añadido-2026-07-29):
+DC interviene sobre formularios sin que lo invoquen (delegación + workbooks), detrás del flag
+`features.proactive`. *(La "memoria" que mencionaba la Etapa 4 quedó cubierta por DC-6:
+conversaciones persistentes en `ai_conversations`/`ai_messages`.)*  
 **Objetivo:** Un chat con un agente de IA embebido en la app que ayude al usuario a interactuar con el sistema: responder dudas, guiarlo entre módulos, ejecutar acciones y dar contexto sobre sus datos. Se implementa por etapas incrementales para acotar riesgo y costo.
 
 ### Etapa 1 — Chat informativo (read-only / RAG sobre la app)
@@ -2666,9 +2667,23 @@ en que tiene todo al día.
 ---
 
 ## SPRINT 24 — DC proactivo + delegación asistida *(Añadido 2026-07-29)*
-**Estado:** 🔮 Planificado — no implementado
+**Estado:** ✅ **Implementado 2026-07-30** — ⚠️ requiere `supabase/migration_s24_dc_reviews.sql`
+y **prender el flag `features.proactive`** (hoy OFF: el patrón está inerte a propósito)
 **Origen:** OBSERVACIONES jul-2026 §G1, §B1, §B2 · **Cierra la Etapa 4 del SPRINT 18** ·
-**Estimado:** ~26h
+**Estimado:** ~26h → **real ~22h** (E3 no se hizo: espera a Dilio)
+
+> **Cerrado con auditorías.** Baseline y final **idénticos**: type-check 0 · build 0 (22/22
+> páginas) · **lint 35 warnings / 0 errores**. Tests: **50 → 73** (+23 de `dc-review`).
+>
+> **Estado real en producción, verificado:** `ai_config.enabled = true` (openrouter ·
+> `gemini-2.5-flash`, barato para este patrón) y `features = {"rag":true,"actions":false}` —
+> **sin `proactive`**, así que hoy el endpoint devuelve `silent("proactive_off")` **sin llamar
+> al modelo ni una vez**. Los formularios funcionan exactamente como antes.
+>
+> **Lo que atrapó el Gate 3:** si se prendía el flag **sin** aplicar la migración, la query
+> del rate limit fallaba y `count ?? 0` la trataba como "0 usos" → **gasto sin techo**. Se
+> cambió a **fail-closed**: sin log de reviews, no se evalúa. Preferible que el patrón no
+> funcione antes que gastar sin control.
 **Objetivo:** Que DC deje de esperar a que lo invoquen. Sebas lo diagnosticó en la meet y
 Dilio lo confirmó: *"—hoy la IA es pasiva, cuando yo la invoco recién me contesta.
 —Clave, clave, porque así la gente va teniendo el ejercicio más profesional"*.
@@ -2701,10 +2716,26 @@ a pesar de que estás escribiendo esto, la delegación está incompleta"* — y 
   bien). Ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §3. **Confirmar con Dilio
   antes de implementar el bloqueo.** Mientras tanto: advertencia fuerte, no bloqueo.
 
-### Entregable 3 — ¿Campo "DÓNDE"? (~2h, condicionado)
+**Implementado:** nuevo `lib/dc-review.ts` — **módulo puro** (no hace red ni toca Supabase:
+decide *si vale la pena evaluar*, arma el prompt y parsea) con **23 tests**, de los cuales un
+bloque entero cubre que **el modelo devuelva basura** (JSON inválido, markdown alrededor,
+veredicto inventado, `{`×2000) sin romper la UI. Endpoint `api/dc/review` + hook
+`use-dc-review` (on-blur, cache por hash) + `components/ui/dc-hint.tsx`.
+
+**Controles de gasto**, que son el riesgo dominante: flag OFF por default · umbral de longitud
+revalidado en servidor · cache por hash en cliente · `maxTokens: 320` y `temperature: 0.3` ·
+**rate limit propio (`ai_reviews`), separado del chat** — el de DC son 50 msg/hora de
+conversación y un formulario los agotaría, dejando al usuario sin chat.
+
+**Ningún camino devuelve 500 por culpa de la IA:** todo lo que no sea una review útil responde
+`{ result: null }` con 200 y la UI no muestra nada. Un error visible en el módulo central de la
+app es peor que no ayudar.
+
+### Entregable 3 — ¿Campo "DÓNDE"? — ❌ **no se hizo, a propósito**
 Dilio enumeró *"¿Qué? ¿Por qué? ¿Cuándo? ¿Cómo? ¿Dónde?"*. El wizard tiene los cuatro
-primeros. **No inventarlo:** preguntarle si el "dónde" es un campo real (canal/sistema donde
-se entrega el trabajo) o una forma de hablar. Ver `PENDIENTES_REVISION.md` §4.
+primeros. `PENDIENTES_REVISION.md` §4 **sigue abierto**: no sabemos si el "dónde" es un campo
+real (canal/sistema donde se entrega) o una forma de hablar. **No se inventa** — un campo de
+más en el paso crítico de la app cuesta más que uno de menos.
 
 ### Entregable 4 — Acompañamiento en workbooks (~4h)
 Aplicar el mismo patrón mientras el usuario completa un workbook, que es donde Dilio ubicó
@@ -2717,8 +2748,29 @@ es una actividad y le ofrece un entregable concreto que puede aceptar de un clic
 ---
 
 ## SPRINT 25 — KPIs en cascada: estructura *(Añadido 2026-07-29)*
-**Estado:** 🔮 Planificado — no implementado
+**Estado:** ⛔ **Bloqueado (2026-07-30)** — necesita que Dilio aclare **a qué se anclan "los
+cinco grandes estratégicos"**. Ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §6.
 **Origen:** OBSERVACIONES jul-2026 §E1, §E2, §E5 · **Estimado:** ~30h
+
+> **Por qué se bloqueó al ir a implementarlo.** El plan original decía *"al definir un Grande
+> en `rituales/5-grandes`: asignar responsables y su aporte medible"*. Al explorar el código
+> apareció que **eso no encaja**: *"Los 5 Grandes"* del método son las **5 cosas del día**
+> (`METODO_TBM_CANONICO.md:171`, parte del Pre-Game nocturno) y la tabla `los_5_grandes` es
+> **diaria** (`for_date` + `unique(company_id, for_date)`, **sin responsables**).
+>
+> El ejemplo de Dilio —**5 clientes mensuales = $25.000** repartidos entre dos personas— no
+> cabe ahí. Lo más parecido que existe son las **Rocas** del Plan 90D (1-5 por trimestre, ya
+> con `owner_id`), pero son **trimestrales** y él habló de **mensuales**.
+>
+> Construir el modelo jerárquico sobre una suposición, siendo el sprint más grande del bloque,
+> era el riesgo que no valía correr. **Decisión de Sebas: preguntarle a Dilio primero.**
+>
+> ⚠️ **Deuda que S25 tendrá que resolver:** `kpis` y `leading_indicators` son **dos tablas
+> casi idénticas** para lo mismo, y **las dos están en uso**. Habrá que elegir una.
+>
+> **Lo que sigue siendo válido del plan de abajo:** E2 (flujo obligatorio) y E4 (autogestión)
+> no dependen del anclaje. E1 (modelo jerárquico) sí. E3 (sugerencia con IA) además espera el
+> patrón de S24 — que ya está hecho, así que ese ya no bloquea.
 **Objetivo:** Que los 5 Grandes estratégicos **bajen** hasta la actividad diaria de cada
 persona. Es el pedido más grande y el más alineado con el discurso del método.
 
@@ -2982,8 +3034,8 @@ puede darse de baja del canal sin perder el email.
 | **S21** | Confianza: acceso, coach y calendario | ~18h | ✅ **hecho** | K1, C0, F1 |
 | **S22** | Rol y progresión de la persona | ~22h | ✅ **hecho** | I1, J1 (+E0 seguridad) |
 | **S23** | Despertador diario (voz de DC) | ~18h | ✅ **hecho** | A1 *(absorbe S19)* · E3 parcial → S23b |
-| **S24** | DC proactivo + delegación asistida | ~26h | 🔮 | G1, B1, B2 *(cierra S18·E4)* |
-| **S25** | KPIs en cascada: estructura | ~30h | 🔮 | E1, E2, E5 |
+| **S24** | DC proactivo + delegación asistida | ~22h | ✅ **hecho** | G1, B1 *(cierra S18·E4)* · B2 espera a Dilio |
+| **S25** | KPIs en cascada: estructura | ~30h | ⛔ **bloqueado** | E1, E2, E5 · espera §6 |
 | **S26** | KPIs: seguimiento y alerta predictiva | ~22h | 🔮 | E3, E4 |
 | **S27** | Super Coach: señales multi-empresa | ~28h | 🔮 | C1–C4 |
 | **S28** | Super Coach: intervención | ~30h | 🔮 | C5, C6 |

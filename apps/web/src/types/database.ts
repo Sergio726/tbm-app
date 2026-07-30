@@ -894,6 +894,52 @@ export type Database = {
           },
         ]
       }
+      // S24 · Log de intervenciones de DC proactivo. Sostiene el rate limit propio
+      // (separado del chat) y permite medir el costo del patrón. Solo service_role.
+      ai_reviews: {
+        Row: {
+          id: string
+          user_id: string
+          company_id: string | null
+          kind: string
+          verdict: string | null
+          cache_key: string | null
+          model: string | null
+          chars_in: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          company_id?: string | null
+          kind: string
+          verdict?: string | null
+          cache_key?: string | null
+          model?: string | null
+          chars_in?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          company_id?: string | null
+          kind?: string
+          verdict?: string | null
+          cache_key?: string | null
+          model?: string | null
+          chars_in?: number | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       // S23 · Preferencias de notificación. A diferencia de role_charters, estas
       // las gobierna el propio usuario. "Sin fila" = todo activado.
       notification_prefs: {

@@ -16,6 +16,8 @@ import { createClient } from "@/lib/supabase/client";
 import { capture } from "@/lib/analytics";
 import { LOS_LEVELS } from "@/lib/disc";
 import { notify } from "@/lib/notifications";
+import { useDcReview } from "@/hooks/use-dc-review";
+import { DcHint } from "@/components/ui/dc-hint";
 import { DeadlinePicker } from "./deadline-picker";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -197,6 +199,13 @@ export function TaskWizard({ userId, companyId, team }: TaskWizardProps) {
         step={currentStep}
         value={currentValue}
         onChange={(v) => patch(currentStep.key, v)}
+        // Contexto para que la sugerencia de DC hable del caso real y no en
+        // abstracto (a quién se delega y con qué autonomía).
+        reviewContext={{
+          asignado:
+            team.find((m) => m.id === data.assigned_to)?.full_name ?? "",
+          nivel_requerido: data.los_required ? `N${data.los_required}` : "",
+        }}
       />
 
       {/* Selector de asignado + nivel de delegación (solo en paso 5) */}
@@ -397,14 +406,30 @@ function StepCard({
   step,
   value,
   onChange,
+  reviewContext,
 }: {
   step: (typeof STEPS)[0];
   value: string;
   onChange: (v: string) => void;
+  /** Contexto para la review de DC (ej. a quién se delega). */
+  reviewContext?: Record<string, string>;
 }) {
   const Icon = step.icon;
 
   const isDatetime = step.type === "datetime";
+
+  // DC proactivo (S24 · §B1). Solo en los pasos donde la redacción decide si la
+  // delegación sirve: QUÉ (Definition of Done) y POR QUÉ (contexto). En CÓMO y
+  // CHECK LOOP el texto es más operativo y una sugerencia molestaría más de lo
+  // que ayuda. Si el flag está OFF o falta la key, `review` no devuelve nada y
+  // esto se comporta igual que antes.
+  const reviewKind =
+    step.key === "what_dod"
+      ? ("delegation_dod" as const)
+      : step.key === "why_context"
+        ? ("delegation_why" as const)
+        : null;
+  const dc = useDcReview(reviewKind ?? "delegation_dod");
 
   return (
     <div
@@ -476,15 +501,34 @@ function StepCard({
 
       {/* Campo */}
       {step.type === "textarea" ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={step.placeholder}
-          rows={4}
-          autoFocus
-          className="w-full resize-y rounded-xl border bg-white/[0.035] px-4 py-3 text-sm leading-relaxed text-fg outline-none transition placeholder:text-fg-subtle focus:border-[#5b8aff]/50 focus:ring-2 focus:ring-[#5b8aff]/15"
-          style={{ borderColor: "var(--border)" }}
-        />
+        <>
+          <textarea
+            value={value}
+            onChange={(e) => {
+              onChange(e.target.value);
+              // Editar invalida el hint anterior: ya no aplica a este texto.
+              if (dc.result) dc.clear();
+            }}
+            // On-blur, no por tecla: interrumpir mientras alguien escribe es
+            // justo lo que no queremos (y multiplicaría el costo).
+            onBlur={() => {
+              if (reviewKind) void dc.review(value, reviewContext);
+            }}
+            placeholder={step.placeholder}
+            rows={4}
+            autoFocus
+            className="w-full resize-y rounded-xl border bg-white/[0.035] px-4 py-3 text-sm leading-relaxed text-fg outline-none transition placeholder:text-fg-subtle focus:border-[#5b8aff]/50 focus:ring-2 focus:ring-[#5b8aff]/15"
+            style={{ borderColor: "var(--border)" }}
+          />
+          <DcHint
+            result={dc.result}
+            onAccept={(s) => {
+              onChange(s);
+              dc.clear();
+            }}
+            onDismiss={dc.dismiss}
+          />
+        </>
       ) : (
         <DeadlinePicker value={value} onChange={onChange} />
       )}

@@ -62,6 +62,15 @@ export function actionsEnabled(features: unknown): boolean {
   return (features as { actions?: boolean } | null)?.actions === true;
 }
 
+/**
+ * ¿DC proactivo (S24) activo? Default OFF, igual que `actions`: interviene sobre
+ * formularios, así que se prende recién cuando el copy se validó con Dilio — y
+ * porque cada intervención cuesta tokens.
+ */
+export function proactiveEnabled(features: unknown): boolean {
+  return (features as { proactive?: boolean } | null)?.proactive === true;
+}
+
 /** Lee solo los campos públicos de la persona (para el layout → launcher/panel). */
 export async function getDcPublicPersona(): Promise<DcPublicPersona> {
   const fallback: DcPublicPersona = {

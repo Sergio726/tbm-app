@@ -166,3 +166,41 @@ que son ejecución vs. dirección.
 vaina, le avisa: estás volviendo a ser el cuello de botella"*. Los umbrales tienen que
 servir para bajar de nivel, no solo para subir (y necesitan histéresis, o el indicador
 oscila).
+
+---
+
+## 6. ¿A qué se anclan "los cinco grandes estratégicos"? — ⛔ BLOQUEANTE (Dilio)
+
+**Bloquea:** **S25 entero** (~30h), que es el sprint más pedido del bloque. Detectado el
+2026-07-30 al preparar S25.
+
+**El problema.** Dilio dijo: *"cuando tú estableces los **cinco grandes estratégicos**, el
+sistema tiene que obligar a que la persona describa… los indicadores con los que él aportaría
+al tema general"*, y su ejemplo fue **5 clientes mensuales = $25.000**, repartidos entre
+Sebastián (3) y Dilio (2).
+
+**Pero "Los 5 Grandes" del método son otra cosa.** Verificado en dos lugares:
+- `docs/METODO_TBM_CANONICO.md:171` — *"Pre-Game… incluye **Los 5 Grandes**: 5 cosas"*, del
+  **día**, cargadas la noche anterior.
+- `los_5_grandes` (`supabase/migration_sprint2.sql:65`) — `for_date date not null` con
+  `unique (company_id, for_date)` y **sin responsables**. Es un ritual **diario**.
+
+O sea que el ejemplo de Dilio (una meta mensual con reparto entre personas) **no cabe** en la
+tabla que lleva ese nombre. Hay que decidir a qué se ancla la cascada:
+
+**Opciones:**
+- (a) **Son las Rocas del Plan 90D.** Es lo más parecido que existe: *"los 1-5 resultados más
+  importantes del trimestre"*, ya con `owner_id` y `success_criteria`. Cero tablas nuevas para
+  el nivel 1. **Pero son trimestrales y Dilio dijo mensuales.**
+- (b) **Es un nivel mensual nuevo**, entre la Roca y el KPI. Más fiel a *"cinco clientes
+  mensuales"*, pero suma un cuarto nivel al modelo (~8h extra).
+- (c) Es otra cosa del método que todavía no está en el app.
+
+**Qué preguntarle, concretamente:** *"cuando decís «los cinco grandes estratégicos», ¿son las
+Rocas del trimestre, o son metas mensuales que cuelgan de las Rocas?"*. Con eso alcanza para
+desbloquear las ~30h.
+
+> **Deuda relacionada, detectada en el mismo análisis:** `kpis` (`migration_sprint1.sql:53`) y
+> `leading_indicators` (`migration_sprint10_plan90d.sql:73`) son **dos tablas casi idénticas**
+> (indicador semanal con dueño, meta y `week_date`) y **las dos están en uso** (3 y 5 archivos
+> respectivamente). S25 va a tener que elegir una y migrar la otra. No se toca antes.
