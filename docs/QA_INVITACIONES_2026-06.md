@@ -137,5 +137,6 @@ reusable 7 días, inmune a pre-fetch). Esto **cierra la causa raíz** del "queda
 - Se agregó guard en `/register` (redirige a aceptar si hay invitación pendiente) y expiración
   automática en el cron diario.
 
-Detalle completo en `SPEC.md` §11. Pendiente operativo: aplicar
-`supabase/migration_invitations_token_accept.sql` (la MCP pedía re-auth).
+Detalle completo en `SPEC.md` §11. ✅ **Sin pendientes operativos:**
+`supabase/migration_invitations_token_accept.sql` se aplicó el **2026-07-29**
+(registro #30 en `supabase/README.md`).

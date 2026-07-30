@@ -2404,9 +2404,10 @@ Dilio reportó el problema el **25/07**. El reporte es **posterior al fix** → 
 
 - **Diagnóstico primero, código después.** Hablar con **Juanjo** (chat "Plataformas"),
   conseguir el email exacto que falló y reproducir el alta end-to-end.
-- **Aplicar la migración pendiente** `supabase/migration_invitations_token_accept.sql`
-  — quedó sin aplicar (la MCP de Supabase pedía re-auth; ver SPEC.md §11). Sin ella no
-  corre la expiración `pending → expired` ni el índice `(company_id, status)`.
+- ✅ **Migración `supabase/migration_invitations_token_accept.sql` aplicada (2026-07-29)**,
+  registrada como #30 en `supabase/README.md`. **No era la causa del problema**: solo suma la
+  policy DELETE del Arquitecto y el índice `(company_id, status)`, y ningún path dependía de
+  ellas. *(La expiración `pending → expired` la hace el cron con service_role, sin schema.)*
 - Revisar **deliverability** del dominio de envío: SPF, DKIM, DMARC y reputación;
   logs de Resend por destinatario (entregado / rebotado / marcado spam).
 - **Fallback que no dependa del correo:** botón "Copiar link de invitación" en `/equipo`,
@@ -2474,8 +2475,8 @@ el 20 de agosto termina el 30 de septiembre, no el 18 de noviembre.
 ---
 
 ## SPRINT 22 — Rol y progresión de la persona *(Añadido 2026-07-29)*
-**Estado:** ✅ **Implementado 2026-07-29** — ⚠️ **requiere aplicar
-`supabase/migration_s22_role_charter.sql`**
+**Estado:** ✅ **Implementado 2026-07-29** · migración
+`supabase/migration_s22_role_charter.sql` **aplicada el 2026-07-30** (registro #31)
 **Origen:** OBSERVACIONES jul-2026 §I1, §J1 · **Estimado:** ~18h → **real ~22h**
 (el extra es el E0 de seguridad, que no estaba previsto)
 

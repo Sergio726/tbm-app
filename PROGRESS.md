@@ -10,7 +10,9 @@
 
 > **Novedades 2026-07-29 (S22 implementado):** ficha de rol + insignia de nivel. Baseline y
 > final **idénticos**: type-check 0 · 30/30 tests · build 0 · lint 35 warnings/0 errores.
-> ⚠️ **Requiere aplicar `supabase/migration_s22_role_charter.sql`.**
+> ✅ **`supabase/migration_s22_role_charter.sql` aplicada el 2026-07-30** (registro #31 en
+> `supabase/README.md`); verificado contra la base: la tabla `role_charters` y sus 7 columnas
+> responden.
 > - 🔒 **E0 — Campos de autoridad blindados (no estaba previsto, y era la base de todo).**
 >   `profiles` mezcla datos del usuario con datos que el **líder** define sobre él, y tenían la
 >   misma protección: la policy *"Usuario puede editar su propio perfil"* usa
@@ -75,7 +77,8 @@
 > - 🔴 **Prioridad 1 — S21:** Dilio reportó el **25/07** que su equipo no logra conectarse. El fix de
 >   invitaciones `0763fff` es del **23/07**, o sea **el reporte es posterior y no está cubierto**.
 >   Registrado como bug abierto en [`docs/SPEC.md`](docs/SPEC.md) §11. Incluye aplicar la migración
->   `migration_invitations_token_accept.sql`, que **quedó sin aplicar**.
+>   `migration_invitations_token_accept.sql`, **aplicada el 2026-07-29** (registro #30 en
+>   `supabase/README.md`) — no era la causa, ningún path dependía de ella.
 > - 🔍 **S21 también:** `/super-coach` **sí existe**, pero su guard (`page.tsx:28`) redirige al
 >   dashboard cuando no hay `coach_assignments` — muy probablemente por eso Dilio dice *"entro y no
 >   veo nada"*. **Verificar datos antes de construir.**
