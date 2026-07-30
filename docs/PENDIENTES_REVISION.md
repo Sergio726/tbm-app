@@ -166,3 +166,104 @@ que son ejecución vs. dirección.
 vaina, le avisa: estás volviendo a ser el cuello de botella"*. Los umbrales tienen que
 servir para bajar de nivel, no solo para subir (y necesitan histéresis, o el indicador
 oscila).
+
+---
+
+## 6. ¿A qué se anclan "los cinco grandes estratégicos"? — ✅ RESUELTO (2026-07-30)
+
+**Decisión (Sebas, sobre la intención de Dilio): se anclan a la ROCA del trimestre.**
+
+*"Lo que Dilio se refiere ahí es al trimestre: tiene un objetivo, lograr 5 clientes por mes en
+el primer trimestre, es decir 3×5 = 15."*
+
+Es decir: **el "5 clientes mensuales" no es un nivel nuevo, es la cadencia** con la que se
+expresa y se sigue una meta **trimestral**. Su ejemplo, traducido al modelo:
+
+| Nivel | Ejemplo de Dilio | Dónde vive |
+|---|---|---|
+| **Meta del trimestre** | 15 clientes · $75.000 en Q1 | `rocks` (ya existe, con `owner_id` y `success_criteria`) |
+| **Cadencia** | 5 clientes / $25.000 **por mes** | nuevo: ritmo mensual de la Roca |
+| **Reparto** | Sebastián 3/mes (9 en Q1) · Dilio 2/mes (6) | nuevo: aporte por responsable |
+| **Actividad** | llamadas · propuestas enviadas | nuevo: indicadores derivados |
+
+**No hace falta una tabla de "metas mensuales"** entre la Roca y el KPI: alcanza con guardar
+el ritmo mensual como atributo de la meta. Se evita el cuarto nivel que se había estimado en
++8h.
+
+### ⚠️ La cadencia es una REFERENCIA, no una cuota mensual
+
+Aclaración de Sebas, y es la que define cómo se hace el seguimiento:
+
+> *"Se puede dar que el primer mes no llegue a los 5, que el segundo mes tampoco y tal vez el
+> último mes sí lo logre, como también puede lograrlo antes. **Pero debe saber qué está haciendo
+> o no está haciendo para lograr el objetivo.**"*
+
+Consecuencias concretas para el modelo:
+
+1. **El compromiso es el TOTAL del trimestre (15), no 5 por mes.** Un mes con 2 no es un
+   incumplimiento: es un dato. `2 + 4 + 9 = 15` cierra igual.
+2. **Nada de semáforo mensual pass/fail.** Marcarle rojo en el mes 1 a alguien que todavía puede
+   recuperar es exactamente *"mirarse el retrovisor"* que Dilio critica. El ritmo sirve para
+   responder **"¿voy bien para llegar?"**, no para aprobar o desaprobar el mes.
+3. **El seguimiento es acumulado + proyección:** cuánto lleva, cuánto falta, cuántos meses
+   quedan, y a qué ritmo tendría que ir de acá en adelante. Es la misma aritmética de "parabrisas"
+   de S26 §E4, pero **sobre el trimestre**, no sobre el mes.
+4. **Lo que se marca a diario son las ACTIVIDADES** (llamadas, propuestas), que es lo único que
+   la persona controla directamente. El resultado (clientes cerrados) es consecuencia. De ahí el
+   *"debe saber qué está haciendo o no está haciendo"*: la pregunta diaria es sobre el esfuerzo,
+   no sobre el número final.
+
+**Encaja con S21:** las Rocas ya quedaron **ancladas al trimestre calendario**
+(`lib/quarters.ts`), así que *"el primer trimestre"* tiene un significado preciso y el cómputo
+de "cuántos meses quedan" es directo.
+
+> **Ojo con el alcance al implementar:** el ejemplo de Dilio **mezcla S25 y S26**. La
+> estructura (meta → reparto → actividades) es S25; el *"diariamente el sistema le tiene que
+> decir: ¿hiciste las llamadas?"* y los avisos por WhatsApp son S26. Él lo piensa como una
+> sola cosa, así que conviene **mostrárselo junto** cuando esté.
+
+<details>
+<summary>Contexto original del bloqueo (2026-07-30)</summary>
+
+**Bloqueaba:** **S25 entero** (~30h), el sprint más pedido del bloque. Detectado al preparar S25.
+
+**El problema.** Dilio dijo: *"cuando tú estableces los **cinco grandes estratégicos**, el
+sistema tiene que obligar a que la persona describa… los indicadores con los que él aportaría
+al tema general"*, y su ejemplo fue **5 clientes mensuales = $25.000**, repartidos entre
+Sebastián (3) y Dilio (2).
+
+**Pero "Los 5 Grandes" del método son otra cosa.** Verificado en dos lugares:
+- `docs/METODO_TBM_CANONICO.md:171` — *"Pre-Game… incluye **Los 5 Grandes**: 5 cosas"*, del
+  **día**, cargadas la noche anterior.
+- `los_5_grandes` (`supabase/migration_sprint2.sql:65`) — `for_date date not null` con
+  `unique (company_id, for_date)` y **sin responsables**. Es un ritual **diario**.
+
+O sea que el ejemplo de Dilio (una meta mensual con reparto entre personas) **no cabe** en la
+tabla que lleva ese nombre. Hay que decidir a qué se ancla la cascada:
+
+**Opciones:**
+- (a) **Son las Rocas del Plan 90D.** Es lo más parecido que existe: *"los 1-5 resultados más
+  importantes del trimestre"*, ya con `owner_id` y `success_criteria`. Cero tablas nuevas para
+  el nivel 1. **Pero son trimestrales y Dilio dijo mensuales.**
+- (b) **Es un nivel mensual nuevo**, entre la Roca y el KPI. Más fiel a *"cinco clientes
+  mensuales"*, pero suma un cuarto nivel al modelo (~8h extra).
+- (c) Es otra cosa del método que todavía no está en el app.
+
+**Qué preguntarle, concretamente:** *"cuando decís «los cinco grandes estratégicos», ¿son las
+Rocas del trimestre, o son metas mensuales que cuelgan de las Rocas?"*. Con eso alcanza para
+desbloquear las ~30h.
+
+**→ Resuelto sin preguntarle:** ganó **(a)**. Sebas aclaró la intención — la meta es del
+**trimestre** y el "por mes" es la cadencia. No se agrega el nivel de (b).
+
+</details>
+
+> **~~Deuda relacionada~~ — descartada (2026-07-30).** Se había anotado que `kpis` y
+> `leading_indicators` eran *"dos tablas casi idénticas"* a unificar. **Es incorrecto:** el
+> esquema se parece, pero son **dos conceptos distintos del método** (`SPEC.md:76-77`):
+> · `leading_indicators` = los **5 Leading Indicators del BOS** — métricas predictivas de la
+>   **empresa**, con dueño y meta semanal. Viven en Plan 90D.
+> · `kpis` = el **"Número único por colaborador"** — el KPI que justifica el salario de cada
+>   miembro. Vive en el dashboard.
+> No hay nada que unificar. **S25 no las toca**: su cascada es un tercer concepto (el aporte de
+> cada responsable a una Roca).

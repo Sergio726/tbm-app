@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useDcReview } from "@/hooks/use-dc-review";
+import { DcHint } from "@/components/ui/dc-hint";
 
 interface Props {
   exerciseKey: string;
@@ -23,11 +25,20 @@ export function ExerciseText({
     typeof savedResponse.text === "string" ? savedResponse.text : ""
   );
 
+  // DC proactivo (S24 · E4). Es el lugar donde Dilio ubicó el problema de fondo:
+  // "hay gente que no sabe eso". Acá el tono es más suave que en delegación —
+  // es un ejercicio de reflexión, no un entregable con criterio de aceptación.
+  // Con el flag OFF o sin key, no aparece nada y esto queda igual que antes.
+  const dc = useDcReview("workbook_answer");
+
   return (
     <div className="space-y-3">
       <textarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => {
+          setText(e.target.value);
+          if (dc.result) dc.clear();
+        }}
         rows={6}
         placeholder={placeholder}
         className="w-full resize-none rounded-xl border bg-transparent p-4 text-sm leading-relaxed outline-none transition-all"
@@ -39,9 +50,19 @@ export function ExerciseText({
         onFocus={(e) =>
           (e.currentTarget.style.borderColor = "rgba(91,138,255,0.4)")
         }
-        onBlur={(e) =>
-          (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")
-        }
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+          void dc.review(text);
+        }}
+      />
+
+      <DcHint
+        result={dc.result}
+        onAccept={(s) => {
+          setText(s);
+          dc.clear();
+        }}
+        onDismiss={dc.dismiss}
       />
 
       {integration === "pre_games" && (

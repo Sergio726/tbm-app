@@ -8,6 +8,66 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
+> **Novedades 2026-07-30 (S25 implementado — la cascada de KPIs):** baseline y final
+> **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests **73 → 96**.
+> ⚠️ Requiere `supabase/migration_s25_kpi_cascade.sql`.
+> - ✅ **La cascada cuelga de la ROCA del trimestre** (§6): `rocks` suma la meta medible y dos
+>   tablas nuevas llevan el reparto (`rock_contributions`) y las actividades
+>   (`contribution_activities`). El ejemplo de Dilio se carga completo: 15 clientes / $75.000 en
+>   Q1 → Sebastián 9 · Dilio 6 → llamadas y propuestas.
+> - ✅ **El "obligar" de Dilio, sin IA:** `checkSplit` es aritmética — si la meta son 15 y los
+>   aportes suman 14, el sistema lo dice, y el aviso se ve **sin abrir el panel**. Es la única
+>   validación no discutible del bloque (a diferencia del gate de S24, que sí es un juicio).
+> - ✅ **Las dos reglas del modelo, respetadas en el código:** las metas son del **trimestre**
+>   (el form dice *"si querés 5 por mes, poné 15 — el ritmo se calcula solo"*) y **no existe
+>   semáforo mensual**: `computeProgress` compara el acumulado con el tiempo transcurrido y
+>   devuelve el **ritmo necesario de acá en adelante**. El caso `2+4+9 = 15` está testeado.
+> - ✅ **Autogestión (§E5):** el colaborador edita su aporte y sus actividades; quitar un
+>   responsable es del Arquitecto (si no, la cascada se vacía sola).
+> - **Corrección de un diagnóstico mío:** había anotado que `kpis` y `leading_indicators` eran
+>   "dos tablas casi idénticas a unificar". **Es falso** — son dos conceptos del método
+>   (`SPEC.md:76-77`): los 5 del BOS vs. el número único por colaborador. No había deuda y S25
+>   no las toca.
+>
+> **Novedades 2026-07-30 (S24 implementado — DC deja de ser pasivo · S25 desbloqueado):**
+> Baseline y final **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests
+> **50 → 73**. ⚠️ Requiere `supabase/migration_s24_dc_reviews.sql` **y prender el flag
+> `features.proactive`** — hoy está OFF a propósito, así que el patrón está **inerte**.
+> - ✅ **E1 — El patrón proactivo, que es el pivote del bloque (§G1).** Sebas lo diagnosticó y
+>   Dilio lo confirmó (*"—hoy la IA es pasiva… —Clave, clave"*). Nuevo `lib/dc-review.ts`:
+>   **módulo puro** (no hace red ni toca Supabase) con el contrato
+>   `review({kind, value, context}) → {verdict, message, suggestion?}` que **van a heredar S25 y
+>   S27** — agregar un caso es agregar un prompt, no escribir otro asistente. **23 tests**, con
+>   un bloque entero dedicado a que el modelo devuelva basura sin romper la UI.
+> - ✅ **E2 — Gate de calidad en delegación (§B1).** El wizard ya tenía la estructura; lo que
+>   faltaba era el **juicio**. Ahora, al salir del campo QUÉ, DC detecta *"esto es una actividad,
+>   no un entregable"* y ofrece una reescritura aceptable de un clic. **Advierte, no bloquea**:
+>   Dilio dijo "impedir", pero el juicio lo pone un modelo falible y un falso positivo trabaría a
+>   alguien que escribió bien, en el módulo central de la app. La decisión sigue en
+>   `PENDIENTES_REVISION` §3 y se cierra mostrándole esto funcionando.
+> - ✅ **E4 — Mismo patrón en workbooks**, donde Dilio ubicó el problema de fondo (*"hay gente
+>   que no sabe eso"*). Acotado al ejercicio de **texto libre**.
+> - ❌ **E3 (campo "DÓNDE") no se hizo a propósito:** `PENDIENTES_REVISION` §4 sigue abierto y un
+>   campo de más en el paso crítico cuesta más que uno de menos.
+> - 🔒 **Controles de gasto** (el riesgo dominante, porque esto se dispara desde un formulario y
+>   no desde un chat): flag OFF por default · umbral de longitud revalidado en servidor · cache
+>   por hash en cliente · `maxTokens: 320` · **rate limit propio (`ai_reviews`) separado del
+>   chat**, porque el de DC son 50 msg/hora de conversación y un formulario los agotaría.
+> - **Lo que atrapó el Gate 3:** con el flag prendido y **sin** la migración, la query del rate
+>   limit fallaba y `count ?? 0` la leía como "0 usos" → **gasto sin techo**. Se pasó a
+>   **fail-closed**: sin log, no evalúa.
+> - ✅ **S25: bloqueado y desbloqueado el mismo día** (ver `PENDIENTES_REVISION` §6). Al ir a
+>   implementarlo apareció que *"Los 5 Grandes"* del método son **las 5 cosas del día**
+>   (`METODO_TBM_CANONICO.md:171`) y `los_5_grandes` es una tabla **diaria sin responsables** —
+>   el ejemplo de Dilio (5 clientes mensuales repartidos entre dos personas) **no cabía ahí**. Se
+>   paró antes de construir el sprint más grande sobre una suposición.
+>   **Resuelto:** Sebas aclaró que *"se refiere al trimestre: 5 clientes por mes en el primer
+>   trimestre, o sea 3×5 = 15"*. Entonces **la cascada cuelga de `rocks`** y el "por mes" es la
+>   **cadencia** de una meta trimestral, no un nivel aparte → se cae el cuarto nivel y S25 baja
+>   de ~30h a ~22h. Encaja con S21, que ya ancló las Rocas al trimestre calendario.
+>   **Deuda que S25 deberá resolver:** `kpis` y `leading_indicators` son dos tablas casi
+>   idénticas y **las dos están en uso**.
+>
 > **Novedades 2026-07-30 (S23 implementado — el despertador diario):** baseline y final
 > **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests **30 → 50**.
 > ⚠️ **Requiere aplicar `supabase/migration_s23_notification_prefs.sql`** — aunque el cron

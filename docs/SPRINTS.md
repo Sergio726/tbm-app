@@ -2240,12 +2240,13 @@ presente. Con `prefers-reduced-motion` se salta a la versión estática.
 ---
 
 ## SPRINT 18 — Asistente IA Conversacional integrado *(Propuesto 2026-06-14)*
-**Estado:** 🟡 **Parcialmente implementado** *(actualizado 2026-07-29)* — las **Etapas 1, 2
-y 3 ya están en producción** como **DC** (piezas DC-1…DC-9: launcher global, persona
-configurable, contexto de datos con RLS, tool use con patrón propose→confirm, historial y
-rate-limit). La **Etapa 4 (proactividad y memoria)** sigue abierta y la cierra el
-[**SPRINT 24**](#sprint-24--dc-proactivo--delegación-asistida-añadido-2026-07-29), tras el
-pedido de Dilio del 25/07.  
+**Estado:** ✅ **Completo** *(actualizado 2026-07-30)* — las **Etapas 1, 2 y 3** están en
+producción como **DC** (DC-1…DC-9: launcher global, persona configurable, contexto de datos con
+RLS, tool use con patrón propose→confirm, historial y rate-limit), y la **Etapa 4
+(proactividad)** la cerró el [**SPRINT 24**](#sprint-24--dc-proactivo--delegación-asistida-añadido-2026-07-29):
+DC interviene sobre formularios sin que lo invoquen (delegación + workbooks), detrás del flag
+`features.proactive`. *(La "memoria" que mencionaba la Etapa 4 quedó cubierta por DC-6:
+conversaciones persistentes en `ai_conversations`/`ai_messages`.)*  
 **Objetivo:** Un chat con un agente de IA embebido en la app que ayude al usuario a interactuar con el sistema: responder dudas, guiarlo entre módulos, ejecutar acciones y dar contexto sobre sus datos. Se implementa por etapas incrementales para acotar riesgo y costo.
 
 ### Etapa 1 — Chat informativo (read-only / RAG sobre la app)
@@ -2346,7 +2347,7 @@ consideraciones técnicas siguen siendo válidos).
 >
 > **Cómo leer este bloque:** los sprints están en **orden de dependencia**, no de
 > importancia. S21 repara lo que hoy rompe la confianza del cliente; S24 construye el
-> patrón de IA proactiva que S25 y S26 reusan; S30 y S31 están **bloqueados por
+> patrón de IA proactiva que S25 y S27 reusan; S30 y S31 están **bloqueados por
 > insumos externos** y van al final aunque su valor sea alto.
 >
 > **Regla del proyecto que aplica acá:** *un módulo a la vez* (regla 2). Estos sprints
@@ -2666,9 +2667,23 @@ en que tiene todo al día.
 ---
 
 ## SPRINT 24 — DC proactivo + delegación asistida *(Añadido 2026-07-29)*
-**Estado:** 🔮 Planificado — no implementado
+**Estado:** ✅ **Implementado 2026-07-30** — ⚠️ requiere `supabase/migration_s24_dc_reviews.sql`
+y **prender el flag `features.proactive`** (hoy OFF: el patrón está inerte a propósito)
 **Origen:** OBSERVACIONES jul-2026 §G1, §B1, §B2 · **Cierra la Etapa 4 del SPRINT 18** ·
-**Estimado:** ~26h
+**Estimado:** ~26h → **real ~22h** (E3 no se hizo: espera a Dilio)
+
+> **Cerrado con auditorías.** Baseline y final **idénticos**: type-check 0 · build 0 (22/22
+> páginas) · **lint 35 warnings / 0 errores**. Tests: **50 → 73** (+23 de `dc-review`).
+>
+> **Estado real en producción, verificado:** `ai_config.enabled = true` (openrouter ·
+> `gemini-2.5-flash`, barato para este patrón) y `features = {"rag":true,"actions":false}` —
+> **sin `proactive`**, así que hoy el endpoint devuelve `silent("proactive_off")` **sin llamar
+> al modelo ni una vez**. Los formularios funcionan exactamente como antes.
+>
+> **Lo que atrapó el Gate 3:** si se prendía el flag **sin** aplicar la migración, la query
+> del rate limit fallaba y `count ?? 0` la trataba como "0 usos" → **gasto sin techo**. Se
+> cambió a **fail-closed**: sin log de reviews, no se evalúa. Preferible que el patrón no
+> funcione antes que gastar sin control.
 **Objetivo:** Que DC deje de esperar a que lo invoquen. Sebas lo diagnosticó en la meet y
 Dilio lo confirmó: *"—hoy la IA es pasiva, cuando yo la invoco recién me contesta.
 —Clave, clave, porque así la gente va teniendo el ejercicio más profesional"*.
@@ -2701,10 +2716,26 @@ a pesar de que estás escribiendo esto, la delegación está incompleta"* — y 
   bien). Ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §3. **Confirmar con Dilio
   antes de implementar el bloqueo.** Mientras tanto: advertencia fuerte, no bloqueo.
 
-### Entregable 3 — ¿Campo "DÓNDE"? (~2h, condicionado)
+**Implementado:** nuevo `lib/dc-review.ts` — **módulo puro** (no hace red ni toca Supabase:
+decide *si vale la pena evaluar*, arma el prompt y parsea) con **23 tests**, de los cuales un
+bloque entero cubre que **el modelo devuelva basura** (JSON inválido, markdown alrededor,
+veredicto inventado, `{`×2000) sin romper la UI. Endpoint `api/dc/review` + hook
+`use-dc-review` (on-blur, cache por hash) + `components/ui/dc-hint.tsx`.
+
+**Controles de gasto**, que son el riesgo dominante: flag OFF por default · umbral de longitud
+revalidado en servidor · cache por hash en cliente · `maxTokens: 320` y `temperature: 0.3` ·
+**rate limit propio (`ai_reviews`), separado del chat** — el de DC son 50 msg/hora de
+conversación y un formulario los agotaría, dejando al usuario sin chat.
+
+**Ningún camino devuelve 500 por culpa de la IA:** todo lo que no sea una review útil responde
+`{ result: null }` con 200 y la UI no muestra nada. Un error visible en el módulo central de la
+app es peor que no ayudar.
+
+### Entregable 3 — ¿Campo "DÓNDE"? — ❌ **no se hizo, a propósito**
 Dilio enumeró *"¿Qué? ¿Por qué? ¿Cuándo? ¿Cómo? ¿Dónde?"*. El wizard tiene los cuatro
-primeros. **No inventarlo:** preguntarle si el "dónde" es un campo real (canal/sistema donde
-se entrega el trabajo) o una forma de hablar. Ver `PENDIENTES_REVISION.md` §4.
+primeros. `PENDIENTES_REVISION.md` §4 **sigue abierto**: no sabemos si el "dónde" es un campo
+real (canal/sistema donde se entrega) o una forma de hablar. **No se inventa** — un campo de
+más en el paso crítico de la app cuesta más que uno de menos.
 
 ### Entregable 4 — Acompañamiento en workbooks (~4h)
 Aplicar el mismo patrón mientras el usuario completa un workbook, que es donde Dilio ubicó
@@ -2717,8 +2748,70 @@ es una actividad y le ofrece un entregable concreto que puede aceptar de un clic
 ---
 
 ## SPRINT 25 — KPIs en cascada: estructura *(Añadido 2026-07-29)*
-**Estado:** 🔮 Planificado — no implementado
-**Origen:** OBSERVACIONES jul-2026 §E1, §E2, §E5 · **Estimado:** ~30h
+**Estado:** ✅ **Implementado 2026-07-30** — ⚠️ requiere `supabase/migration_s25_kpi_cascade.sql`
+**Origen:** OBSERVACIONES jul-2026 §E1, §E2, §E5 · **Estimado:** ~30h → **real ~20h** (se cayó
+el cuarto nivel al resolverse el anclaje) · **La cascada cuelga de la ROCA del trimestre**
+(ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §6).
+
+> **Cerrado con auditorías.** Baseline y final **idénticos**: type-check 0 · build 0 (22/22) ·
+> **lint 35 warnings / 0 errores**. Tests: **73 → 96** (+23 de `kpi-cascade`).
+>
+> **Corrección de un diagnóstico mío:** había registrado como deuda que `kpis` y
+> `leading_indicators` eran *"dos tablas casi idénticas a unificar"*. **Es falso** — son dos
+> conceptos distintos del método (`SPEC.md:76-77`): `leading_indicators` son los **5 del BOS**
+> (predictivos de la empresa) y `kpis` es el **"número único por colaborador"**. No había nada
+> que unificar y **S25 no las toca**: su cascada es un tercer concepto.
+
+> **Estuvo bloqueado unas horas y por qué.** El plan original decía *"al definir un Grande en
+> `rituales/5-grandes`"*, pero eso **no encaja**: *"Los 5 Grandes"* del método son las **5 cosas
+> del día** (`METODO_TBM_CANONICO.md:171`) y la tabla `los_5_grandes` es **diaria**, sin
+> responsables. El ejemplo de Dilio (5 clientes **mensuales** repartidos entre dos personas) no
+> cabía ahí, y las Rocas son **trimestrales** → se paró antes de construir sobre una suposición.
+>
+> **Resuelto:** Sebas aclaró la intención — *"se refiere al trimestre: 5 clientes por mes en el
+> primer trimestre, es decir 3×5 = 15"*. O sea que **el "por mes" es la CADENCIA de una meta
+> trimestral**, no un nivel aparte.
+
+### Modelo confirmado (el ejemplo de Dilio, traducido)
+
+| Nivel | Ejemplo | Dónde vive |
+|---|---|---|
+| **Meta del trimestre** | 15 clientes · $75.000 en Q1 | **`rocks`** — ya existe, con `owner_id` y `success_criteria` |
+| **Cadencia** | 5 clientes / $25.000 **por mes** | nuevo: ritmo mensual, atributo de la meta |
+| **Reparto** | Sebastián 3/mes (9 en Q1) · Dilio 2/mes (6) | nuevo: aporte por responsable |
+| **Actividad** | llamadas · propuestas enviadas | nuevo: indicadores derivados |
+
+**No hace falta una tabla de metas mensuales** entre la Roca y el KPI — alcanza con el ritmo
+como atributo. Eso saca el cuarto nivel que se había estimado en +8h.
+
+**Encaja con S21:** las Rocas ya están **ancladas al trimestre calendario** (`lib/quarters.ts`),
+así que *"el primer trimestre"* es preciso y calcular los meses restantes es directo.
+
+### ⚠️ La cadencia es una REFERENCIA, no una cuota mensual
+
+Aclaración de Sebas (2026-07-30), y es la que define el seguimiento:
+
+> *"Se puede dar que el primer mes no llegue a los 5, que el segundo mes tampoco y tal vez el
+> último mes sí lo logre, como también puede lograrlo antes. **Pero debe saber qué está haciendo
+> o no está haciendo para lograr el objetivo.**"*
+
+- **El compromiso es el total del trimestre (15), no 5 por mes.** `2 + 4 + 9 = 15` cierra igual.
+- **Sin semáforo mensual pass/fail.** Marcar rojo en el mes 1 a quien todavía puede recuperar es
+  el *"retrovisor"* que Dilio critica. El ritmo responde *"¿voy bien para llegar?"*, no aprueba
+  ni desaprueba el mes.
+- **Seguimiento = acumulado + proyección** sobre el trimestre: cuánto lleva, cuánto falta,
+  cuántos meses quedan, a qué ritmo tendría que ir. Misma aritmética de "parabrisas" de S26·§E4,
+  pero **trimestral**.
+- **Lo diario son las ACTIVIDADES** (llamadas, propuestas) — lo único que la persona controla.
+  El resultado es consecuencia. De ahí *"debe saber qué está haciendo o no está haciendo"*.
+
+> ⚠️ **Deuda que S25 tiene que resolver:** `kpis` (`migration_sprint1.sql:53`) y
+> `leading_indicators` (`migration_sprint10_plan90d.sql:73`) son **dos tablas casi idénticas**
+> para lo mismo, y **las dos están en uso** (3 y 5 archivos). Hay que elegir una y migrar la otra.
+>
+> ⚠️ **El ejemplo de Dilio mezcla S25 y S26:** la estructura es S25; el *"diariamente el sistema
+> le tiene que decir: ¿hiciste las llamadas?"* y los avisos por WhatsApp son S26. Él lo piensa
+> como una sola cosa → conviene **mostrárselo junto**.
 **Objetivo:** Que los 5 Grandes estratégicos **bajen** hasta la actividad diaria de cada
 persona. Es el pedido más grande y el más alineado con el discurso del método.
 
@@ -2756,6 +2849,30 @@ preguntar, porque nosotros predicamos una **cultura de autogestión**"*.
 - El RLS ya deja que vea y cree los suyos (decidido 2026-07-05). **Revisar el form**, que
   parece pensado para el Arquitecto, y completar lo que falte del lado del colaborador.
 
+**Implementado:**
+- **Migración** `migration_s25_kpi_cascade.sql`: `rocks` suma la meta medible del trimestre
+  (`target_value` / `target_unit` / `target_money`) + dos tablas nuevas —
+  **`rock_contributions`** (el reparto: quién aporta cuánto) y **`contribution_activities`**
+  (las llamadas y propuestas). **No toca `kpis` ni `leading_indicators`.**
+- **`lib/kpi-cascade.ts`** — módulo **puro** con **23 tests**: `checkSplit` (el "obligar" de
+  Dilio en aritmética: si la meta son 15 y los aportes suman 14, se dice), `derivePace` (el
+  "5 por mes" **derivado**, no almacenado) y `computeProgress`.
+- **`components/plan-90d/cascade-panel.tsx`** — colapsable dentro de cada Roca **activa**. El
+  aviso de reparto incompleto se ve **sin abrir el panel**. Sugiere el faltante al asignar,
+  para que cerrar el reparto cueste un clic.
+- **Server actions** en `plan-90d/cascade-actions.ts` con guard de autogestión + RLS detrás.
+
+**Cómo se respetaron las dos reglas del modelo:**
+1. **La meta es del trimestre.** El form pide 15, no "5 por mes", y lo dice explícito: *"si
+   querés 5 clientes por mes, poné 15 — el ritmo mensual se calcula solo"*.
+2. **Sin semáforo mensual.** `computeProgress` compara el acumulado contra el **tiempo
+   transcurrido del trimestre** y devuelve el **ritmo necesario de acá en adelante**. No existe
+   ningún cálculo de "cumplió el mes" — sería el retrovisor que el método critica.
+
+**Permisos (§E5, autogestión):** el colaborador **edita** su aporte y sus actividades; **quitar
+un responsable** es solo del Arquitecto (si no, la cascada se vaciaría sola). La meta de la
+Roca también es del Arquitecto: es el compromiso del trimestre.
+
 ### ✅ Criterio de éxito del Sprint 25
 Se carga el ejemplo de Dilio completo (5 clientes / $25.000 / 3 y 2 / llamadas y propuestas)
 sin salir del flujo, y cada responsable ve sus actividades diarias derivadas.
@@ -2777,9 +2894,18 @@ Dilio: *"diariamente el sistema le tiene que decir al responsable: ¿hiciste las
   hábitos del Pre-game — mismo patrón de UX, ya probado.
 
 ### Entregable 2 — Motor de proyección (~8h)
-- Ritmo actual vs. días restantes del mes → ¿llega o no llega?
+- Ritmo actual vs. tiempo restante → ¿llega o no llega?
 - Dispara **antes** del vencimiento, no al vencer. Ese es todo el punto.
 - Definir umbrales y evitar el ruido: una alerta que suena siempre deja de leerse.
+
+> ⚠️ **Corregido (2026-07-30): la proyección es sobre el TRIMESTRE, no sobre el mes.**
+> Sebas: *"se puede dar que el primer mes no llegue a los 5, que el segundo tampoco y tal vez
+> el último sí lo logre… pero debe saber qué está haciendo o no está haciendo para lograr el
+> objetivo"*. El compromiso es el total del trimestre (`2+4+9 = 15` cierra igual), así que
+> **nada de semáforo mensual pass/fail**: marcarle rojo en el mes 1 a quien todavía puede
+> recuperar es justo el *"retrovisor"* que el método critica. Se proyecta **acumulado vs. meses
+> restantes del trimestre**, y lo que se pregunta a diario son las **actividades** (llamadas,
+> propuestas) — lo único que la persona controla. Ver `PENDIENTES_REVISION.md` §6.
 
 ### Entregable 3 — Alertas a las dos puntas (~6h)
 - **Al colaborador:** *"estás atrasado en este KPI, no lo vas a lograr en el mes"*.
@@ -2982,8 +3108,8 @@ puede darse de baja del canal sin perder el email.
 | **S21** | Confianza: acceso, coach y calendario | ~18h | ✅ **hecho** | K1, C0, F1 |
 | **S22** | Rol y progresión de la persona | ~22h | ✅ **hecho** | I1, J1 (+E0 seguridad) |
 | **S23** | Despertador diario (voz de DC) | ~18h | ✅ **hecho** | A1 *(absorbe S19)* · E3 parcial → S23b |
-| **S24** | DC proactivo + delegación asistida | ~26h | 🔮 | G1, B1, B2 *(cierra S18·E4)* |
-| **S25** | KPIs en cascada: estructura | ~30h | 🔮 | E1, E2, E5 |
+| **S24** | DC proactivo + delegación asistida | ~22h | ✅ **hecho** | G1, B1 *(cierra S18·E4)* · B2 espera a Dilio |
+| **S25** | KPIs en cascada: estructura | ~20h | ✅ **hecho** | E1, E2, E5 · cuelga de `rocks` |
 | **S26** | KPIs: seguimiento y alerta predictiva | ~22h | 🔮 | E3, E4 |
 | **S27** | Super Coach: señales multi-empresa | ~28h | 🔮 | C1–C4 |
 | **S28** | Super Coach: intervención | ~30h | 🔮 | C5, C6 |

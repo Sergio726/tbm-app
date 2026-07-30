@@ -9,6 +9,8 @@ import type {
   IdeaParking,
   Decision,
   ProcessAsset,
+  RockContribution,
+  ContributionActivity,
 } from "@/types/database";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { isoDate } from "@/lib/dates";
@@ -40,6 +42,9 @@ interface PlanClientProps {
   initialDecisions: Decision[];
   initialAssets: ProcessAsset[];
   team: Pick<Profile, "id" | "full_name" | "cargo" | "disc_letters">[];
+  /** S25 · cascada de KPIs (el RLS ya acotó el alcance). */
+  contributions: RockContribution[];
+  activities: ContributionActivity[];
 }
 
 export function PlanClient({
@@ -51,6 +56,8 @@ export function PlanClient({
   initialDecisions,
   initialAssets,
   team,
+  contributions,
+  activities,
 }: PlanClientProps) {
   const [tab, setTab] = useState<Tab>("rocks");
   const [rocks, setRocks] = useState<Rock[]>(initialRocks);
@@ -486,6 +493,9 @@ export function PlanClient({
             onCreateRock={handleCreateRock}
             onUpdateProgress={handleUpdateProgress}
             onUpdateStatus={handleUpdateRockStatus}
+            isArquitecto={currentProfile.role === "arquitecto"}
+            contributions={contributions}
+            activities={activities}
           />
         )}
         {tab === "bos" && (

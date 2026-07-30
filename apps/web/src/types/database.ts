@@ -894,6 +894,150 @@ export type Database = {
           },
         ]
       }
+      // S25 · Cascada de KPIs: cuánto aporta cada responsable a una Roca del
+      // trimestre. El total es TRIMESTRAL (no cuota mensual): el ritmo se deriva.
+      rock_contributions: {
+        Row: {
+          id: string
+          rock_id: string
+          company_id: string
+          owner_id: string
+          target_value: number
+          target_money: number | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          rock_id: string
+          company_id: string
+          owner_id: string
+          target_value?: number
+          target_money?: number | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          rock_id?: string
+          company_id?: string
+          owner_id?: string
+          target_value?: number
+          target_money?: number | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rock_contributions_rock_id_fkey"
+            columns: ["rock_id"]
+            isOneToOne: false
+            referencedRelation: "rocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      // S25 · Las actividades que llevan a ese aporte ("tantas llamadas, tantas
+      // propuestas"). Son lo único que la persona controla → S26 las pregunta a diario.
+      contribution_activities: {
+        Row: {
+          id: string
+          contribution_id: string
+          company_id: string
+          owner_id: string
+          name: string
+          unit: string | null
+          weekly_target: number
+          sort_order: number
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          contribution_id: string
+          company_id: string
+          owner_id: string
+          name: string
+          unit?: string | null
+          weekly_target?: number
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          contribution_id?: string
+          company_id?: string
+          owner_id?: string
+          name?: string
+          unit?: string | null
+          weekly_target?: number
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contribution_activities_contribution_id_fkey"
+            columns: ["contribution_id"]
+            isOneToOne: false
+            referencedRelation: "rock_contributions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      // S24 · Log de intervenciones de DC proactivo. Sostiene el rate limit propio
+      // (separado del chat) y permite medir el costo del patrón. Solo service_role.
+      ai_reviews: {
+        Row: {
+          id: string
+          user_id: string
+          company_id: string | null
+          kind: string
+          verdict: string | null
+          cache_key: string | null
+          model: string | null
+          chars_in: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          company_id?: string | null
+          kind: string
+          verdict?: string | null
+          cache_key?: string | null
+          model?: string | null
+          chars_in?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          company_id?: string | null
+          kind?: string
+          verdict?: string | null
+          cache_key?: string | null
+          model?: string | null
+          chars_in?: number | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       // S23 · Preferencias de notificación. A diferencia de role_charters, estas
       // las gobierna el propio usuario. "Sin fila" = todo activado.
       notification_prefs: {
@@ -1203,6 +1347,10 @@ export type Database = {
           progress: number
           status: string
           created_at: string
+          // S25 · meta medible del trimestre (el ritmo mensual se DERIVA de acá).
+          target_value: number | null
+          target_unit: string | null
+          target_money: number | null
         }
         Insert: {
           id?: string
@@ -1214,6 +1362,9 @@ export type Database = {
           end_date: string
           progress?: number
           status?: string
+          target_value?: number | null
+          target_unit?: string | null
+          target_money?: number | null
           created_at?: string
         }
         Update: {
@@ -1227,6 +1378,9 @@ export type Database = {
           progress?: number
           status?: string
           created_at?: string
+          target_value?: number | null
+          target_unit?: string | null
+          target_money?: number | null
         }
         Relationships: [
           {
@@ -2217,6 +2371,8 @@ export type EnergyLog = Database["public"]["Tables"]["energy_logs"]["Row"];
 export type Invitation = Database["public"]["Tables"]["invitations"]["Row"];
 export type RoleCharter = Database["public"]["Tables"]["role_charters"]["Row"];
 export type NotificationPrefs = Database["public"]["Tables"]["notification_prefs"]["Row"];
+export type RockContribution = Database["public"]["Tables"]["rock_contributions"]["Row"];
+export type ContributionActivity = Database["public"]["Tables"]["contribution_activities"]["Row"];
 
 // Sprint 2 — Rituales
 export type RitualConfig = Database["public"]["Tables"]["ritual_configs"]["Row"];
