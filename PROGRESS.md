@@ -35,13 +35,17 @@
 > - **Lo que atrapó el Gate 3:** con el flag prendido y **sin** la migración, la query del rate
 >   limit fallaba y `count ?? 0` la leía como "0 usos" → **gasto sin techo**. Se pasó a
 >   **fail-closed**: sin log, no evalúa.
-> - ⛔ **S25 quedó BLOQUEADO** (ver `PENDIENTES_REVISION` §6). Al ir a implementarlo apareció que
->   *"Los 5 Grandes"* del método son **las 5 cosas del día** (`METODO_TBM_CANONICO.md:171`) y
->   `los_5_grandes` es una tabla **diaria sin responsables** — el ejemplo de Dilio (5 clientes
->   mensuales repartidos entre dos personas) **no cabe ahí**. Las Rocas del Plan 90D son lo más
->   parecido pero son trimestrales. Construir el modelo del sprint más grande sobre una
->   suposición era el riesgo que no valía correr. **Deuda detectada de paso:** `kpis` y
->   `leading_indicators` son dos tablas casi idénticas y **las dos están en uso**.
+> - ✅ **S25: bloqueado y desbloqueado el mismo día** (ver `PENDIENTES_REVISION` §6). Al ir a
+>   implementarlo apareció que *"Los 5 Grandes"* del método son **las 5 cosas del día**
+>   (`METODO_TBM_CANONICO.md:171`) y `los_5_grandes` es una tabla **diaria sin responsables** —
+>   el ejemplo de Dilio (5 clientes mensuales repartidos entre dos personas) **no cabía ahí**. Se
+>   paró antes de construir el sprint más grande sobre una suposición.
+>   **Resuelto:** Sebas aclaró que *"se refiere al trimestre: 5 clientes por mes en el primer
+>   trimestre, o sea 3×5 = 15"*. Entonces **la cascada cuelga de `rocks`** y el "por mes" es la
+>   **cadencia** de una meta trimestral, no un nivel aparte → se cae el cuarto nivel y S25 baja
+>   de ~30h a ~22h. Encaja con S21, que ya ancló las Rocas al trimestre calendario.
+>   **Deuda que S25 deberá resolver:** `kpis` y `leading_indicators` son dos tablas casi
+>   idénticas y **las dos están en uso**.
 >
 > **Novedades 2026-07-30 (S23 implementado — el despertador diario):** baseline y final
 > **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests **30 → 50**.

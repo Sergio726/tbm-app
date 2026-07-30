@@ -2748,29 +2748,43 @@ es una actividad y le ofrece un entregable concreto que puede aceptar de un clic
 ---
 
 ## SPRINT 25 — KPIs en cascada: estructura *(Añadido 2026-07-29)*
-**Estado:** ⛔ **Bloqueado (2026-07-30)** — necesita que Dilio aclare **a qué se anclan "los
-cinco grandes estratégicos"**. Ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §6.
-**Origen:** OBSERVACIONES jul-2026 §E1, §E2, §E5 · **Estimado:** ~30h
+**Estado:** ✅ **Desbloqueado (2026-07-30)** — listo para implementar. **La cascada cuelga de la
+ROCA del trimestre.** Ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §6.
+**Origen:** OBSERVACIONES jul-2026 §E1, §E2, §E5 · **Estimado:** ~30h → **~22h** (se cae el
+cuarto nivel) · **Ya no depende de nada:** el patrón de IA de E3 lo entregó S24.
 
-> **Por qué se bloqueó al ir a implementarlo.** El plan original decía *"al definir un Grande
-> en `rituales/5-grandes`: asignar responsables y su aporte medible"*. Al explorar el código
-> apareció que **eso no encaja**: *"Los 5 Grandes"* del método son las **5 cosas del día**
-> (`METODO_TBM_CANONICO.md:171`, parte del Pre-Game nocturno) y la tabla `los_5_grandes` es
-> **diaria** (`for_date` + `unique(company_id, for_date)`, **sin responsables**).
+> **Estuvo bloqueado unas horas y por qué.** El plan original decía *"al definir un Grande en
+> `rituales/5-grandes`"*, pero eso **no encaja**: *"Los 5 Grandes"* del método son las **5 cosas
+> del día** (`METODO_TBM_CANONICO.md:171`) y la tabla `los_5_grandes` es **diaria**, sin
+> responsables. El ejemplo de Dilio (5 clientes **mensuales** repartidos entre dos personas) no
+> cabía ahí, y las Rocas son **trimestrales** → se paró antes de construir sobre una suposición.
 >
-> El ejemplo de Dilio —**5 clientes mensuales = $25.000** repartidos entre dos personas— no
-> cabe ahí. Lo más parecido que existe son las **Rocas** del Plan 90D (1-5 por trimestre, ya
-> con `owner_id`), pero son **trimestrales** y él habló de **mensuales**.
+> **Resuelto:** Sebas aclaró la intención — *"se refiere al trimestre: 5 clientes por mes en el
+> primer trimestre, es decir 3×5 = 15"*. O sea que **el "por mes" es la CADENCIA de una meta
+> trimestral**, no un nivel aparte.
+
+### Modelo confirmado (el ejemplo de Dilio, traducido)
+
+| Nivel | Ejemplo | Dónde vive |
+|---|---|---|
+| **Meta del trimestre** | 15 clientes · $75.000 en Q1 | **`rocks`** — ya existe, con `owner_id` y `success_criteria` |
+| **Cadencia** | 5 clientes / $25.000 **por mes** | nuevo: ritmo mensual, atributo de la meta |
+| **Reparto** | Sebastián 3/mes (9 en Q1) · Dilio 2/mes (6) | nuevo: aporte por responsable |
+| **Actividad** | llamadas · propuestas enviadas | nuevo: indicadores derivados |
+
+**No hace falta una tabla de metas mensuales** entre la Roca y el KPI — alcanza con el ritmo
+como atributo. Eso saca el cuarto nivel que se había estimado en +8h.
+
+**Encaja con S21:** las Rocas ya están **ancladas al trimestre calendario** (`lib/quarters.ts`),
+así que *"el primer trimestre"* es preciso y calcular los meses restantes es directo.
+
+> ⚠️ **Deuda que S25 tiene que resolver:** `kpis` (`migration_sprint1.sql:53`) y
+> `leading_indicators` (`migration_sprint10_plan90d.sql:73`) son **dos tablas casi idénticas**
+> para lo mismo, y **las dos están en uso** (3 y 5 archivos). Hay que elegir una y migrar la otra.
 >
-> Construir el modelo jerárquico sobre una suposición, siendo el sprint más grande del bloque,
-> era el riesgo que no valía correr. **Decisión de Sebas: preguntarle a Dilio primero.**
->
-> ⚠️ **Deuda que S25 tendrá que resolver:** `kpis` y `leading_indicators` son **dos tablas
-> casi idénticas** para lo mismo, y **las dos están en uso**. Habrá que elegir una.
->
-> **Lo que sigue siendo válido del plan de abajo:** E2 (flujo obligatorio) y E4 (autogestión)
-> no dependen del anclaje. E1 (modelo jerárquico) sí. E3 (sugerencia con IA) además espera el
-> patrón de S24 — que ya está hecho, así que ese ya no bloquea.
+> ⚠️ **El ejemplo de Dilio mezcla S25 y S26:** la estructura es S25; el *"diariamente el sistema
+> le tiene que decir: ¿hiciste las llamadas?"* y los avisos por WhatsApp son S26. Él lo piensa
+> como una sola cosa → conviene **mostrárselo junto**.
 **Objetivo:** Que los 5 Grandes estratégicos **bajen** hasta la actividad diaria de cada
 persona. Es el pedido más grande y el más alineado con el discurso del método.
 
@@ -3035,7 +3049,7 @@ puede darse de baja del canal sin perder el email.
 | **S22** | Rol y progresión de la persona | ~22h | ✅ **hecho** | I1, J1 (+E0 seguridad) |
 | **S23** | Despertador diario (voz de DC) | ~18h | ✅ **hecho** | A1 *(absorbe S19)* · E3 parcial → S23b |
 | **S24** | DC proactivo + delegación asistida | ~22h | ✅ **hecho** | G1, B1 *(cierra S18·E4)* · B2 espera a Dilio |
-| **S25** | KPIs en cascada: estructura | ~30h | ⛔ **bloqueado** | E1, E2, E5 · espera §6 |
+| **S25** | KPIs en cascada: estructura | ~22h | 🔮 **listo para implementar** | E1, E2, E5 · cuelga de `rocks` (§6 resuelto) |
 | **S26** | KPIs: seguimiento y alerta predictiva | ~22h | 🔮 | E3, E4 |
 | **S27** | Super Coach: señales multi-empresa | ~28h | 🔮 | C1–C4 |
 | **S28** | Super Coach: intervención | ~30h | 🔮 | C5, C6 |

@@ -169,10 +169,40 @@ oscila).
 
 ---
 
-## 6. ¿A qué se anclan "los cinco grandes estratégicos"? — ⛔ BLOQUEANTE (Dilio)
+## 6. ¿A qué se anclan "los cinco grandes estratégicos"? — ✅ RESUELTO (2026-07-30)
 
-**Bloquea:** **S25 entero** (~30h), que es el sprint más pedido del bloque. Detectado el
-2026-07-30 al preparar S25.
+**Decisión (Sebas, sobre la intención de Dilio): se anclan a la ROCA del trimestre.**
+
+*"Lo que Dilio se refiere ahí es al trimestre: tiene un objetivo, lograr 5 clientes por mes en
+el primer trimestre, es decir 3×5 = 15."*
+
+Es decir: **el "5 clientes mensuales" no es un nivel nuevo, es la cadencia** con la que se
+expresa y se sigue una meta **trimestral**. Su ejemplo, traducido al modelo:
+
+| Nivel | Ejemplo de Dilio | Dónde vive |
+|---|---|---|
+| **Meta del trimestre** | 15 clientes · $75.000 en Q1 | `rocks` (ya existe, con `owner_id` y `success_criteria`) |
+| **Cadencia** | 5 clientes / $25.000 **por mes** | nuevo: ritmo mensual de la Roca |
+| **Reparto** | Sebastián 3/mes (9 en Q1) · Dilio 2/mes (6) | nuevo: aporte por responsable |
+| **Actividad** | llamadas · propuestas enviadas | nuevo: indicadores derivados |
+
+**No hace falta una tabla de "metas mensuales"** entre la Roca y el KPI: alcanza con guardar
+el ritmo mensual como atributo de la meta. Se evita el cuarto nivel que se había estimado en
++8h.
+
+**Encaja con S21:** las Rocas ya quedaron **ancladas al trimestre calendario**
+(`lib/quarters.ts`), así que *"el primer trimestre"* tiene un significado preciso y el cómputo
+de "cuántos meses quedan" es directo.
+
+> **Ojo con el alcance al implementar:** el ejemplo de Dilio **mezcla S25 y S26**. La
+> estructura (meta → reparto → actividades) es S25; el *"diariamente el sistema le tiene que
+> decir: ¿hiciste las llamadas?"* y los avisos por WhatsApp son S26. Él lo piensa como una
+> sola cosa, así que conviene **mostrárselo junto** cuando esté.
+
+<details>
+<summary>Contexto original del bloqueo (2026-07-30)</summary>
+
+**Bloqueaba:** **S25 entero** (~30h), el sprint más pedido del bloque. Detectado al preparar S25.
 
 **El problema.** Dilio dijo: *"cuando tú estableces los **cinco grandes estratégicos**, el
 sistema tiene que obligar a que la persona describa… los indicadores con los que él aportaría
@@ -199,6 +229,11 @@ tabla que lleva ese nombre. Hay que decidir a qué se ancla la cascada:
 **Qué preguntarle, concretamente:** *"cuando decís «los cinco grandes estratégicos», ¿son las
 Rocas del trimestre, o son metas mensuales que cuelgan de las Rocas?"*. Con eso alcanza para
 desbloquear las ~30h.
+
+**→ Resuelto sin preguntarle:** ganó **(a)**. Sebas aclaró la intención — la meta es del
+**trimestre** y el "por mes" es la cadencia. No se agrega el nivel de (b).
+
+</details>
 
 > **Deuda relacionada, detectada en el mismo análisis:** `kpis` (`migration_sprint1.sql:53`) y
 > `leading_indicators` (`migration_sprint10_plan90d.sql:73`) son **dos tablas casi idénticas**
