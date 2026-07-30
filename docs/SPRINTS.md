@@ -2275,7 +2275,9 @@ pedido de Dilio del 25/07.
 ---
 
 ## SPRINT 19 — Módulo de Notificaciones por Email *(Propuesto 2026-06-14)*
-**Estado:** 🔁 **Absorbido por el [SPRINT 23](#sprint-23--despertador-diario-aquí-dc-tu-executive-coach-añadido-2026-07-29)** *(2026-07-29)* — este sprint planteaba un módulo
+**Estado:** ✅ **Absorbido y cerrado por el [SPRINT 23](#sprint-23--despertador-diario-aquí-dc-tu-executive-coach-añadido-2026-07-29)** *(implementado 2026-07-30)* — S23 entregó el módulo de
+preferencias (`notification_prefs` + sección "Avisos" en `/cuenta`), el link de gestión al pie
+de cada correo y la capa de canal. Este sprint planteaba un módulo
 de notificaciones genérico; el pedido de Dilio del 25/07 es más concreto y más chico
 (despertador matinal con voz de DC + preferencias por usuario), así que S23 lo reemplaza y
 se queda con el módulo de configuración y la capa de canal. **No implementar S19 por
@@ -2581,9 +2583,30 @@ hasta el que puede decidir solo. El líder define esa ficha en menos de 3 minuto
 ---
 
 ## SPRINT 23 — Despertador diario ("aquí DC, tu executive coach") *(Añadido 2026-07-29)*
-**Estado:** 🔮 Planificado — no implementado
+**Estado:** ✅ **Implementado 2026-07-30** — ⚠️ **requiere aplicar
+`supabase/migration_s23_notification_prefs.sql`** *(el cron no se rompe sin ella: degrada a
+"todos reciben" — verificado — pero la UI de `/cuenta` no puede guardar)*
 **Origen:** OBSERVACIONES jul-2026 §A1 · **Absorbe el S19 propuesto** (notificaciones por
-email) · **Estimado:** ~20h
+email) · **Estimado:** ~20h → **real ~18h** (E3 se acotó, ver abajo)
+
+> **Cerrado con auditorías por entregable.** Baseline y final **idénticos**: type-check 0 ·
+> build 0 (22/22 páginas) · **lint 35 warnings / 0 errores**. Tests: **30 → 50** (+20 de
+> `daily-digest`).
+>
+> **Decisión del usuario:** el cron **sigue corriendo 1×/día** (`0 11 * * *`, sin tocar la
+> infra de Dokploy) y la hora es **por persona con default de empresa**. Las dos cosas chocan:
+> con un cron diario **la hora elegida no puede respetarse todavía**. Así que E3 se partió — se
+> entrega lo que sí tiene efecto y el barrido horario queda como **S23b**. La UI dice
+> explícitamente que la hora aún no cambia el envío, en vez de prometerlo.
+>
+> **Lo que encontró el dry-run del Gate 2** (el cron manda correos reales, así que se
+> inspeccionó antes de enviar nada):
+> - **Volumen real: 4 correos por corrida** (antes 3). El riesgo de rate limit de Resend que
+>   marcaba el plan **queda descartado con datos**, no por optimismo.
+> - **Un usuario real ya tiene zona propia distinta a la de su empresa**
+>   (`America/Argentina/Salta`), y 3 de 4 usan el fallback. O sea que el bug de E3 no era
+>   teórico.
+> - Un colaborador con **0 hábitos** cargados cubre ese caso borde con datos reales.
 **Objetivo:** Que el sistema **despierte** a cada persona con la voz de DC y le recuerde lo
 que ella misma dijo que hace todos los días. Hoy hay un digest, pero no despierta a nadie.
 
@@ -2610,11 +2633,30 @@ que ella misma dijo que hace todos los días. Hoy hay un digest, pero no despier
    `habit_logs` desde A3.1 (jun-2026). Es la pieza que Dilio pidió explícitamente: *"que le
    sugiera a la persona lo que él dijo que hace diariamente"*.
 
-### Entregable 3 — Hora de envío y husos horarios (~6h)
-- Dilio menciona las **5 am**. Hoy el cron corre **una vez al día**, así que no puede
-  respetar la hora local de cada persona.
-- Pasar a un barrido **horario** que filtre por zona horaria + hora preferida, con
-  idempotencia (un envío por persona por día) y log para evitar duplicados.
+**Implementado:** nuevo `lib/daily-digest.ts` — **módulo puro** (recibe el estado resuelto,
+devuelve asunto + líneas; sin queries ni envío) con **20 tests**. Ahí viven las dos reglas del
+sprint: *siempre hay contenido* y *los hábitos son los que la persona eligió*. El cron quedó
+fino. Nuevo `lib/notify-channels.ts` con `deliver()` + `effectivePrefs()`.
+
+> **Bonus no planificado:** el email de tarea vencida también pasó a respetar `task_alerts`.
+> La notificación **in-app** se sigue mandando siempre — es pasiva, no interrumpe.
+
+### Entregable 3 — Husos horarios (~4h de las ~6h estimadas)
+
+**Entregado — el bug que sí existía:** el cron calculaba `todayLocal` con la zona de la
+**empresa** para todos. Con un miembro en otro huso, su *"hoy"* podía estar corrido → el
+Pre-game se marcaba pendiente cuando ya estaba hecho, o al revés. Ahora se resuelve **por
+persona** (`profiles.timezone` con fallback a `ritual_configs.timezone`). Esto también hace
+que la zona horaria que el usuario ya configuraba en `/cuenta` **por fin tenga efecto**: antes
+la guardaba y no la usaba nadie.
+
+**Entregado — idempotencia:** marca por persona/día en `notifications`
+(`type: 'daily_digest'`, insertada ya leída para que no ensucie la campana), así un reintento
+del cron o un redeploy no duplican el correo. Sin tabla nueva.
+
+**Queda para S23b (documentado, no hecho):** el barrido horario que respeta `preferred_hour`.
+Es cambiar el Schedule de Dokploy a `0 * * * *` + filtrar por hora local. Se hace de una sola
+pieza cuando se decida; el modelo ya está guardado.
 
 ### ✅ Criterio de éxito del Sprint 23
 Un colaborador en otro huso horario recibe, a la hora que eligió, un email con la voz de DC
@@ -2939,7 +2981,7 @@ puede darse de baja del canal sin perder el email.
 |---|---|---|---|---|
 | **S21** | Confianza: acceso, coach y calendario | ~18h | ✅ **hecho** | K1, C0, F1 |
 | **S22** | Rol y progresión de la persona | ~22h | ✅ **hecho** | I1, J1 (+E0 seguridad) |
-| **S23** | Despertador diario (voz de DC) | ~20h | 🔮 | A1 *(absorbe S19)* |
+| **S23** | Despertador diario (voz de DC) | ~18h | ✅ **hecho** | A1 *(absorbe S19)* · E3 parcial → S23b |
 | **S24** | DC proactivo + delegación asistida | ~26h | 🔮 | G1, B1, B2 *(cierra S18·E4)* |
 | **S25** | KPIs en cascada: estructura | ~30h | 🔮 | E1, E2, E5 |
 | **S26** | KPIs: seguimiento y alerta predictiva | ~22h | 🔮 | E3, E4 |

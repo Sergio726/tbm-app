@@ -10,7 +10,8 @@ export type NotificationType =
   | "scorecard_updated"
   | "coaching_note"
   | "cycle_reminder"
-  | "los_level_up";
+  | "los_level_up"
+  | "daily_digest";
 
 export const NOTIF_META: Record<
   NotificationType,
@@ -26,6 +27,10 @@ export const NOTIF_META: Record<
   cycle_reminder: { icon: "🗓️", color: "#8b5cf6" },
   // S22 · §J1 — "si sube de rango porque lo hace bien, que aparezca que subió".
   los_level_up: { icon: "🎖️", color: "var(--success-text)" },
+  // S23 · §A1 — marca de idempotencia del despertador diario. Se inserta ya
+  // leída (`read_at`), así que no aparece como pendiente en la campana: su
+  // función es evitar que una segunda corrida del cron duplique el correo.
+  daily_digest: { icon: "☀️", color: "var(--warn-text)" },
 };
 
 export function notifMeta(type: string) {
