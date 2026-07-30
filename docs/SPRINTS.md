@@ -2338,6 +2338,37 @@ consideraciones técnicas siguen siendo válidos).
 
 ---
 
+## SPRINT 21b — Tour: fix del coach + contenido nuevo *(2026-07-30)*
+**Estado:** ✅ **Implementado** · **Real:** ~4h
+
+**El bug que arregla — lo introduje yo en S21.** Ese sprint le dio al coach dedicado su propio
+sidebar (`COACH_MODULES`), pero `tourStepsForRole` seguía haciendo
+`role === "arquitecto" ? … : COLABORADOR_STEPS` → **el coach caía en los pasos del
+colaborador**, que apuntan a `nav-delegacion`, `nav-feedback`, `nav-rituales` y `semaforos`.
+Ninguno existe para él: los `nav-*` los genera el sidebar desde `visibleModules`, y `semaforos`
+vive en `/dashboard`, al que S21 justamente dejó de mandarlo. De ~7 pasos, casi todos apuntaban
+a la nada.
+
+Estaba **latente**: los dos coaches (Dilio incluido) tienen `tour_completed = true`. Se activaba
+al tocar *"Repetir tour"*.
+
+*Por qué se escapó: el Gate 2 de S21 verificó que el **sidebar** no se rompiera para ningún rol,
+pero no que el **tour** siguiera teniendo sentido con un sidebar nuevo.*
+
+**Hecho:**
+- `COACH_STEPS` propio (Mis empresas · Mi cuenta · DC), y el caso `coach` **antes** del fallback.
+  También en **mobile**, que decide por rol aparte y era fácil de olvidar.
+- **Contenido nuevo:** insignia de nivel + ficha de rol para el colaborador (S22, anclado a
+  `nav-equipo` porque ahí vive la ficha), Avisos en el paso de Mi cuenta (S23) y la cascada en
+  el de Plan 90D (S25).
+- **29 tests** que cruzan rol → selectores contra las listas reales del sidebar, para que la
+  regresión no vuelva.
+
+> **DC proactivo (S24) NO se menciona a propósito:** está detrás de un flag en OFF, y anunciar
+> en el tour algo que el usuario no puede ver es peor que no decirlo.
+
+---
+
 # BLOQUE JUL-2026 — Sprints S21–S31 *(Añadido 2026-07-29)*
 
 > **Origen único:** [`OBSERVACIONES_DILIO_2026-07.md`](OBSERVACIONES_DILIO_2026-07.md) —
@@ -2655,9 +2686,23 @@ la guardaba y no la usaba nadie.
 (`type: 'daily_digest'`, insertada ya leída para que no ensucie la campana), así un reintento
 del cron o un redeploy no duplican el correo. Sin tabla nueva.
 
-**Queda para S23b (documentado, no hecho):** el barrido horario que respeta `preferred_hour`.
-Es cambiar el Schedule de Dokploy a `0 * * * *` + filtrar por hora local. Se hace de una sola
-pieza cuando se decida; el modelo ya está guardado.
+**S23b — ✅ hecho el 2026-07-30.** El filtro por hora está implementado y es **compatible con
+las dos frecuencias de cron**: nuevo `lib/digest-schedule.ts` (puro, **21 tests**) con la regla
+*"si ya pasó tu hora y todavía no recibiste el de hoy, va"*. Con el Schedule diario manda igual
+que antes; con `CRON_HOURLY=true` + `0 * * * *` respeta la hora de cada uno.
+
+Se conectó además **`ritual_configs.pre_game_reminder`** (existía desde el sprint 2 con default
+`'07:00'` y el cron la ignoraba) como fallback: preferencia personal → hora de la empresa →
+mandar igual. Y se sumó un **dead man's switch** (`CRON_HEARTBEAT_URL`) para enterarse si el
+cron deja de correr.
+
+> **Verificado contra producción (Gate 2):** con el cron actual, los destinatarios son **los
+> mismos 4 de siempre** — sin regresión. `ritual_configs` está **vacía** (ninguna empresa
+> configuró rituales), así que hoy nadie tiene hora objetivo y todos reciben en la corrida del
+> día, que es el comportamiento seguro.
+>
+> ⚠️ **Requiere dos pasos manuales en Dokploy** para activarse: Schedule `0 * * * *` **y**
+> `CRON_HOURLY=true`. Con uno solo sigue funcionando como diario, a propósito.
 
 ### ✅ Criterio de éxito del Sprint 23
 Un colaborador en otro huso horario recibe, a la hora que eligió, un email con la voz de DC

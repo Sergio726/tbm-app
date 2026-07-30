@@ -5,9 +5,38 @@ import { sendEmail } from "@/lib/email";
 import { deliver, effectivePrefs, activeChannels } from "@/lib/notify-channels";
 import { buildDailyDigest } from "@/lib/daily-digest";
 import { DC_DEFAULTS } from "@/lib/dc-persona";
+import {
+  localHour,
+  resolveTargetHour,
+  isDigestDue,
+  isHourlyCron,
+} from "@/lib/digest-schedule";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
+
+/**
+ * S23b · Avisa a un servicio de monitoreo que la corrida terminó bien
+ * (Healthchecks.io, Better Stack, Cronitor: todos aceptan un GET a una URL).
+ * El servicio alerta cuando el ping **deja de llegar**.
+ *
+ * Nunca puede tumbar el cron: si el monitoreo está caído o la URL es inválida, se
+ * traga el error. Sin `CRON_HEARTBEAT_URL` configurada, no hace nada — mismo
+ * criterio de degradación que el resto del sistema.
+ */
+async function pingHeartbeat(): Promise<void> {
+  const url = process.env.CRON_HEARTBEAT_URL;
+  if (!url) return;
+  try {
+    await fetch(url, {
+      method: "GET",
+      // Un monitoreo lento no puede retrasar el cron.
+      signal: AbortSignal.timeout(5_000),
+    });
+  } catch (e) {
+    console.error("cron: heartbeat falló (no bloqueante)", e);
+  }
+}
 
 /** CRON-14: comparación de secreto en tiempo constante. */
 function safeEqual(a: string, b: string): boolean {
@@ -54,6 +83,10 @@ export async function GET(request: Request) {
 
   const now = new Date();
   const cutoff72h = new Date(now.getTime() - 72 * 3_600_000).toISOString();
+  // S23b · ¿el Schedule corre cada hora? Se DECLARA por env porque vive en
+  // Dokploy y este proceso no puede verlo. Default false = comportamiento actual,
+  // así que desplegar esto sin tocar la infra no cambia a quién le llega el correo.
+  const hourlyCron = isHourlyCron(process.env.CRON_HOURLY);
   const stats = { companies: 0, overdueNotifs: 0, emails: 0, cycleReminders: 0, errors: 0 };
 
   // Expirar invitaciones vencidas (pending → expired). Barrido global, una vez.
@@ -94,8 +127,10 @@ export async function GET(request: Request) {
         .select("id, full_name, email, role, timezone")
         .eq("company_id", company.id),
       supabase
+        // S23b: `pre_game_reminder` existe desde el sprint 2 con default '07:00' y
+        // el cron la ignoraba. Ahora es el fallback de la hora del despertador.
         .from("ritual_configs")
-        .select("timezone")
+        .select("timezone, pre_game_reminder")
         .eq("company_id", company.id)
         .maybeSingle(),
       // S23 · E1: preferencias. "Sin fila" = todo activado (ver PREFS_DEFAULTS).
@@ -254,6 +289,14 @@ export async function GET(request: Request) {
       const personToday = localISODate(now, personTz);
       const personWeekday = localWeekday(now, personTz);
 
+      // S23b · ¿le toca en ESTA corrida? Con cron diario manda siempre (igual que
+      // antes); con cron horario, solo a partir de su hora local. La idempotencia
+      // de abajo evita que las corridas siguientes dupliquen.
+      const targetHour = resolveTargetHour(prefs.preferredHour, config?.pre_game_reminder);
+      if (!isDigestDue({ currentHour: localHour(now, personTz), targetHour, hourlyCron })) {
+        continue;
+      }
+
       // E3 · idempotencia: si ya se le mandó el despertador hoy, no repetir.
       // Cubre reintentos del cron y deploys que lo redisparen.
       const { count: alreadySent } = await supabase
@@ -409,6 +452,13 @@ export async function GET(request: Request) {
   }
 
   // CRON-4: si hubo errores, devolver ok:false para que el monitor de cron lo marque.
+  // S23b · dead man's switch. Si el cron deja de correr (contenedor caído, Schedule
+  // borrado), hoy no se entera nadie hasta que alguien nota que no llegan los
+  // correos. Con esto, el servicio de monitoreo avisa por la AUSENCIA del ping.
+  // Solo se pinguea si la corrida terminó sin errores: un fallo tiene que verse
+  // como fallo, no como "todo bien".
+  if (stats.errors === 0) await pingHeartbeat();
+
   return NextResponse.json({ ok: stats.errors === 0, ...stats });
 }
 

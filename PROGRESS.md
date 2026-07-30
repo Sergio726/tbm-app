@@ -8,6 +8,33 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
+> **Novedades 2026-07-30 (S21b + S23b — tour y hora del despertador):** baseline y final
+> **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests **96 → 146**.
+> Sin migraciones.
+> - 🐛 **S21b — arreglé un bug que había introducido yo en S21.** Ese sprint le dio al coach su
+>   propio sidebar, pero `tourStepsForRole` lo seguía mandando a los pasos del **colaborador**,
+>   que apuntan a módulos que él no tiene (`nav-delegacion`, `nav-feedback`, `semaforos`…). De
+>   ~7 pasos, casi todos apuntaban a la nada. Estaba **latente** (ambos coaches tienen
+>   `tour_completed = true`) y se activaba al tocar "Repetir tour". **Por qué se escapó:** el
+>   Gate 2 de S21 verificó que el *sidebar* no se rompiera, pero no que el *tour* siguiera
+>   teniendo sentido con un sidebar nuevo. Ahora hay **29 tests** que cruzan rol → selectores.
+> - ✅ **S21b — el tour ya menciona lo nuevo:** insignia de nivel + ficha de rol (S22), Avisos
+>   (S23) y la cascada del Plan 90D (S25). **DC proactivo no se menciona**: está detrás de un
+>   flag en OFF y anunciar lo que no se puede ver es peor que callarlo.
+> - ✅ **S23b — la hora elegida ya se respeta**, con `lib/digest-schedule.ts` (puro, **21 tests**)
+>   **compatible con las dos frecuencias de cron**: regla *"si ya pasó tu hora y todavía no
+>   recibiste el de hoy, va"*. Con Schedule diario manda igual que antes; con `CRON_HOURLY=true`
+>   + `0 * * * *`, a la hora de cada uno. **Verificado contra producción: los mismos 4
+>   destinatarios con ambas frecuencias** — era el riesgo dominante (un filtro mal hecho dejaba
+>   a todos sin correo).
+> - ✅ **Se conectó `ritual_configs.pre_game_reminder`** (existía desde el sprint 2 con default
+>   `'07:00'` y el cron la ignoraba) como fallback de hora. Hoy `ritual_configs` está **vacía**,
+>   así que nadie tiene hora objetivo y todos reciben en la corrida del día.
+> - ✅ **Dead man's switch** (`CRON_HEARTBEAT_URL`): el cron pinguea al terminar bien y el
+>   servicio avisa si **deja de correr**. Envuelto para no poder tumbar el cron.
+> - ⚠️ **Dos pasos manuales en Dokploy** para activar la hora: Schedule `0 * * * *` **y**
+>   `CRON_HOURLY=true`. Con uno solo sigue como diario, a propósito.
+>
 > **Novedades 2026-07-30 (S25 implementado — la cascada de KPIs):** baseline y final
 > **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests **73 → 96**.
 > ⚠️ Requiere `supabase/migration_s25_kpi_cascade.sql`.

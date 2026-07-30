@@ -60,6 +60,19 @@ curl -fsS -X GET https://app.tudominio.com/api/cron/daily \
 ```
 
 - En Dokploy: **Schedules** → cron `0 11 * * *` (o el horario que prefieras) con ese comando.
+
+> **S23b · para que cada persona reciba el despertador a SU hora** (`notification_prefs.preferred_hour`):
+> 1. cambiá el Schedule a **`0 * * * *`** (cada hora), y
+> 2. agregá **`CRON_HOURLY=true`** a las variables del servicio `web`.
+>
+> Hacen falta **las dos cosas**. Con una sola, el cron sigue comportándose como
+> diario: manda en la corrida del día, sin filtrar por hora. Es a propósito — así
+> desplegar el código no cambia a quién le llega hasta que decidas activarlo.
+>
+> **Opcional, recomendado:** `CRON_HEARTBEAT_URL` con una URL de Healthchecks.io
+> (o similar). El endpoint la pinguea al terminar bien, y el servicio te avisa si
+> el cron **deja de correr** — hoy eso no se nota hasta que alguien pregunta por
+> qué no llegan los correos.
 - Usá el **mismo `CRON_SECRET`** que cargaste en el servicio `web`.
 - Sin esto, DC deja de mandar el digest matinal, la alerta de tareas vencidas y el
   recordatorio de "armá el próximo ciclo".

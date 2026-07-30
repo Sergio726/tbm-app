@@ -95,9 +95,10 @@ export function NotificationPrefsForm({
         />
       </div>
 
-      {/* Hora preferida. Se guarda pero TODAVÍA no cambia el momento del envío:
-          el cron corre una vez al día. La nota lo dice explícitamente en vez de
-          prometer algo que no pasa. */}
+      {/* Hora preferida (S23b). Ya se respeta, siempre que el cron corra cada hora
+          (`CRON_HOURLY=true` + Schedule horario en Dokploy). Con el schedule diario
+          el correo sale en la corrida del día, como antes — por eso el copy dice
+          "a partir de" y no promete una hora exacta. */}
       <div className="mt-4 rounded-[11px] border border-white/[0.07] bg-white/[0.02] p-3.5">
         <label
           className="mb-1.5 block text-[12px] font-semibold"
@@ -119,8 +120,8 @@ export function NotificationPrefsForm({
           ))}
         </select>
         <p className="mt-2 text-[11px] leading-relaxed" style={{ color: "var(--fg-subtle)" }}>
-          ⓘ Por ahora el correo sale a un horario fijo para todos. Tu elección queda
-          guardada y va a aplicarse cuando activemos el envío por hora.
+          ⓘ El correo sale <strong>a partir de</strong> esa hora, en tu zona horaria
+          (la que tenés configurada más arriba). Nunca llega dos veces el mismo día.
         </p>
       </div>
 
