@@ -8,6 +8,41 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
+> **Novedades 2026-07-29 (S22 implementado):** ficha de rol + insignia de nivel. Baseline y
+> final **idénticos**: type-check 0 · 30/30 tests · build 0 · lint 35 warnings/0 errores.
+> ✅ **`supabase/migration_s22_role_charter.sql` aplicada el 2026-07-30** (registro #31 en
+> `supabase/README.md`); verificado contra la base: la tabla `role_charters` y sus 7 columnas
+> responden.
+> - 🔒 **E0 — Campos de autoridad blindados (no estaba previsto, y era la base de todo).**
+>   `profiles` mezcla datos del usuario con datos que el **líder** define sobre él, y tenían la
+>   misma protección: la policy *"Usuario puede editar su propio perfil"* usa
+>   `using (auth.uid() = id)` y **Postgres no restringe columnas dentro de una policy** → fila
+>   entera. El trigger `enforce_profile_role_company` solo cubría `role`/`company_id`. O sea que
+>   **un colaborador podía subirse el nivel, revertir la evaluación de su líder, bajarse la meta
+>   de KPI o falsear su DISC** desde la consola. Tolerable con campos informativos, inaceptable
+>   con el **tope de decisión en $**, que es una autorización. Ahora el trigger exige ser
+>   Arquitecto de la empresa para tocar `los_level`, `los_target`, `alignment`, `kpi_*` y todo el
+>   bloque `disc_*`. Verificado que no rompe: `submit_disc` es `security definer`, `/cuenta` solo
+>   toca campos propios, `/equipo` y `/workbooks` son solo-arquitecto.
+> - ✅ **E1 — Ficha de rol (§I1).** Tabla `role_charters` (RLS: la persona **lee** la suya, solo
+>   el Arquitecto escribe) + server action `saveRoleCharter` + `charter-section.tsx` en dos modos.
+>   El **tope de decisión va primero en la UI**: es el dato accionable. No duplica
+>   `authority_matrix` (bandas por empresa) — comparte moneda y guarda el derecho individual.
+> - ✅ **E2 — Insignia de nivel (§J1).** `los-badge.tsx` en el sidebar, con el `los_level` viajando
+>   desde el layout **sin query nueva**, + notificación `los_level_up` (🎖️) al ascender.
+>   **La duda de Dilio no bloqueaba**: hoy ya lo asigna el líder a mano, así que el aviso se colgó
+>   del flujo existente (`PENDIENTES_REVISION.md` §2 actualizado).
+> - ✅ **E3 — Enganche con Delegación, scope corregido.** El plan decía "advertir por monto", pero
+>   `tasks` **no tiene campo de monto** y Dilio nunca lo pidió ahí. El wizard ya pedía
+>   `los_required` y ya recibía el `los_level` — nunca los cruzaba. Ahora advierte la brecha de
+>   nivel. **Informa, no bloquea.**
+> - **Correcciones a los docs:** los niveles son **Cadete → Investigador → Recomendador → Ejecutor
+>   → Socio** (`lib/disc.ts` es la fuente), no "Delegado → Doctor" como decía `SPRINTS.md`.
+>   Nueva ambigüedad registrada: `cargo` lo editan usuario **y** líder (`PENDIENTES_REVISION` §3.b).
+> - **Hallazgos de los gates:** un `useEffect` redundante subía el lint a 36 → se **borró** (el
+>   `key` del padre ya remonta el componente) en vez de silenciar el warning; y `/workbooks`
+>   también escribe campos DISC — es solo-arquitecto, pero había que verificarlo antes de blindar.
+>
 > **Novedades 2026-07-29 (S21 implementado — `bd93280`):** primer sprint del bloque jul-2026,
 > cerrado con auditorías por entregable. Baseline previo: type-check 0 · 11 tests · build 0 ·
 > lint 35. Final: type-check 0 · **30/30 tests** · build 0 · **lint 35 idéntico al baseline**.

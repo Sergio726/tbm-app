@@ -52,7 +52,12 @@ KPIs que cargaba el Arquitecto y lo quiso revisar.
 
 ## 2. Nivel de delegación: ¿lo asigna el líder o lo calcula el sistema? — ⏳ PENDIENTE (Dilio)
 
-**Bloquea:** S22 · Entregable 2 (insignia de nivel + aviso de ascenso).
+**Ya NO bloquea nada** *(actualizado 2026-07-29, al implementar S22)*. Se verificó que **hoy
+ya lo asigna el líder a mano** (`los-section.tsx:50-62`, con `editable`), así que S22 colgó la
+insignia y el aviso de ascenso del flujo que **ya existía**. La pregunta sigue abierta solo
+para decidir si además se agrega un **cálculo automático**; si Dilio lo pide, se suma el
+disparador sin rehacer lo hecho. La opción (c) híbrida es la que menos trabajo requiere desde
+acá, porque el paso manual del líder ya está construido.
 
 **Hoy:** los 5 niveles (**Cadete → Investigador → Delegado → Doctor → Socio**) viven en
 `LOS_LEVELS` (`lib/disc.ts`) y se muestran en `/equipo`. El valor está en
@@ -103,6 +108,24 @@ módulo central de la app. El costo del falso positivo es alto y silencioso.
 
 **Cómo destrabarlo:** mostrarle a Dilio la versión (b) funcionando. La discusión abstracta
 no se cierra; con la pantalla delante, sí.
+
+---
+
+## 3.b `cargo`: ¿lo define la persona o el líder? — ⏳ PENDIENTE (ambigüedad detectada)
+
+**Detectada al implementar S22·E0** (2026-07-29). No bloquea nada hoy.
+
+**Hoy lo editan los dos, sobre la misma columna:**
+- La persona, en `/cuenta` (`account-form.tsx:375`) — su "puesto" tal como lo describe ella.
+- El líder, en `/equipo` (`equipo-client.tsx:162`) — el cargo que le asigna.
+
+El último que guarda gana, sin aviso. Por eso `cargo` quedó **fuera** del blindaje de campos
+de autoridad de E0: si se blindaba, `/cuenta` dejaba de funcionar para todos los colaboradores.
+
+**Opciones:** (a) es del líder → sacarlo de `/cuenta`; (b) es de la persona → sacarlo de
+`/equipo` y que el líder use la nueva **ficha de rol** para describir el puesto (ya cubre
+"qué hace"); (c) dejarlo compartido y documentarlo. *Recomendación de Sebas: (b)* — la ficha
+de rol de S22 ya cumple ese propósito mejor que un texto libre.
 
 ---
 

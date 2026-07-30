@@ -894,6 +894,68 @@ export type Database = {
           },
         ]
       }
+      // S22 · Ficha de rol ("rights"): qué hace la persona, cómo, qué se espera
+      // de ella, y hasta cuánto puede decidir sin preguntar. La define el líder.
+      role_charters: {
+        Row: {
+          profile_id: string
+          company_id: string
+          mission: string | null
+          how: string | null
+          expectations: string | null
+          outcomes: string | null
+          rights: string | null
+          decision_limit_amount: number | null
+          decision_limit_currency: string | null
+          updated_by: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          profile_id: string
+          company_id: string
+          mission?: string | null
+          how?: string | null
+          expectations?: string | null
+          outcomes?: string | null
+          rights?: string | null
+          decision_limit_amount?: number | null
+          decision_limit_currency?: string | null
+          updated_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          profile_id?: string
+          company_id?: string
+          mission?: string | null
+          how?: string | null
+          expectations?: string | null
+          outcomes?: string | null
+          rights?: string | null
+          decision_limit_amount?: number | null
+          decision_limit_currency?: string | null
+          updated_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_charters_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_charters_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           id: string
@@ -2107,6 +2169,7 @@ export type MultiplicadorDiagnostic = Database["public"]["Tables"]["multiplicado
 export type KPI = Database["public"]["Tables"]["kpis"]["Row"];
 export type EnergyLog = Database["public"]["Tables"]["energy_logs"]["Row"];
 export type Invitation = Database["public"]["Tables"]["invitations"]["Row"];
+export type RoleCharter = Database["public"]["Tables"]["role_charters"]["Row"];
 
 // Sprint 2 — Rituales
 export type RitualConfig = Database["public"]["Tables"]["ritual_configs"]["Row"];

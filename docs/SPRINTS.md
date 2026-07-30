@@ -2475,11 +2475,44 @@ el 20 de agosto termina el 30 de septiembre, no el 18 de noviembre.
 ---
 
 ## SPRINT 22 — Rol y progresión de la persona *(Añadido 2026-07-29)*
-**Estado:** 🔮 Planificado — no implementado
-**Origen:** OBSERVACIONES jul-2026 §I1, §J1 · **Estimado:** ~18h
+**Estado:** ✅ **Implementado 2026-07-29** · migración
+`supabase/migration_s22_role_charter.sql` **aplicada el 2026-07-30** (registro #31)
+**Origen:** OBSERVACIONES jul-2026 §I1, §J1 · **Estimado:** ~18h → **real ~22h**
+(el extra es el E0 de seguridad, que no estaba previsto)
+
+> **Hallazgo que redefinió el sprint — E0.** `profiles` mezcla datos del usuario con datos
+> que el **líder** define sobre él, y ambos tenían la misma protección. La policy
+> *"Usuario puede editar su propio perfil"* (`schema.sql:105`) usa `using (auth.uid() = id)`
+> y **Postgres no permite restringir columnas dentro de una policy** → habilita la fila
+> entera. El trigger `enforce_profile_role_company` solo cubría `role` y `company_id`.
+> Resultado: **un colaborador podía subirse el nivel de delegación, revertir la evaluación
+> de su líder, bajarse la meta de KPI o falsear su DISC** desde la consola del navegador.
+> Tolerable mientras esos campos eran informativos; **inaceptable con el tope de decisión
+> en $**, que es una autorización. Se cerró antes de construir E1.
+>
+> **Cerrado con auditorías por entregable.** Baseline: type-check 0 · 30 tests · build 0 ·
+> lint 35 warnings/0 errores. Final: **idéntico** (30 tests, lint 35, build 22/22 páginas).
+> Los gates atraparon: un `useEffect` redundante que subía el lint a 36 (el `key` del padre
+> ya remonta el componente → se **borró** el effect en vez de silenciar el warning), y que
+> `/workbooks` también escribe campos DISC (es solo-arquitecto, así que el blindaje no lo
+> rompe — pero había que verificarlo antes).
 **Objetivo:** Que cada persona sepa **qué se espera de ella**, **hasta dónde puede decidir
 sola** y **en qué nivel está**. Hoy lo primero y lo segundo no existen, y lo tercero está
 enterrado.
+
+### Entregable 0 — Blindar los campos de autoridad (~5h) · **no estaba previsto**
+Migración `migration_s22_role_charter.sql`: extiende `enforce_profile_role_company` con una
+segunda guarda — si cambia un campo de **autoridad**, quien llama tiene que ser el
+**Arquitecto de esa empresa**. Reusa `auth_is_arquitecto()` / `auth_company_id()`.
+
+Campos blindados: `los_level`, `los_target`, `alignment`, `kpi_name`, `kpi_weekly_target` y
+**todo el bloque DISC** (`disc_letters/name/icon/status/state/temor/prime_plan/pdf_url`).
+
+Verificado que **no rompe** ningún flujo: `submit_disc` es `security definer` (exceptuada),
+`/cuenta` solo toca campos propios, y `/equipo` + `/workbooks` son solo-arquitecto.
+`cargo` queda **fuera a propósito**: hoy lo editan los dos (usuario en `/cuenta`, líder en
+`/equipo`) y blindarlo rompería `/cuenta` — ambigüedad conocida, documentada en
+`PENDIENTES_REVISION.md`.
 
 ### Entregable 1 — Ficha de rol con derechos de decisión (~12h)
 Dilio: *"el rol tiene que decirle a la persona qué hace, cómo lo hace, las expectativas que
@@ -2496,19 +2529,50 @@ preguntarme a mí. No me preguntes, ejecuta"*.
 - **Enganche con Delegación:** si una tarea implica un monto por encima del tope de quien
   la recibe, el wizard lo advierte. Es el uso concreto del "derecho", no un campo decorativo.
 
+**Implementado:** tabla `role_charters` (1:1 con `profiles`, RLS: SELECT = dueño + arquitecto ·
+escritura = **solo** arquitecto) + server action `saveRoleCharter` + `charter-section.tsx` con
+dos modos (líder edita / la persona lee). El **tope de decisión va primero en la UI**, no como
+un campo más: es el dato accionable.
+
+> **Nota de diseño:** ya existía `authority_matrix` con bandas de monto **por empresa**
+> (N1 autonomía total · N2 táctica · N3 requiere aprobación). No se duplicó: la ficha guarda
+> el derecho **individual** que pidió Dilio (*"tú puedes decidir hasta $X sin preguntarme"*) y
+> comparte la moneda por defecto (ARS) para no arrastrar dos unidades. *(Pendiente menor: hoy
+> la matriz de empresa solo la ve el Arquitecto — el colaborador no conoce las bandas.)*
+
 ### Entregable 2 — Insignia de nivel de delegación (~6h)
-Los 5 niveles (**Cadete → Investigador → Delegado → Doctor → Socio**) ya existen en
-`LOS_LEVELS` (`lib/disc.ts`) y se muestran en `/equipo`. Sebas: *"está al final del método,
-no es tan fácil encontrarlo"*.
+Los 5 niveles ya existen en `LOS_LEVELS` (`lib/disc.ts`) y se muestran en `/equipo`. Sebas:
+*"está al final del método, no es tan fácil encontrarlo"*.
+
+⚠️ **Corrección:** este doc decía *"Cadete → Investigador → Delegado → Doctor → Socio"*.
+Los nombres canónicos, según `lib/disc.ts:232-238` (**fuente de verdad**), son:
+**Cadete → Investigador → Recomendador → Ejecutor → Socio**.
 
 - **Insignia junto al nombre** en el header/sidebar del propio colaborador — *"que él entre
   y tenga la insignia de cadete, de investigador"*.
 - **Notificación + email al subir de nivel** — *"si sube de rango porque lo hace bien, que
   aparezca que subió de rango"*.
-- ⚠️ **Bloqueante de diseño:** ¿el nivel lo **asigna el líder** o lo **calcula el sistema**?
-  Dilio dudó en voz alta (*"me gustaría que el líder lo considera un cadete"*). Está en
-  [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §2 — **confirmar antes de codear el
-  disparador del ascenso**. La insignia en sí se puede hacer sin esperar.
+- ✅ **NO era bloqueante.** La duda de Dilio (*"¿lo asigna el líder o lo calcula el sistema?"*,
+  `PENDIENTES_REVISION.md` §2) no frenaba nada: **hoy ya lo asigna el líder a mano**
+  (`los-section.tsx:50-62`, con `editable`), así que el aviso de ascenso se colgó del flujo
+  que ya existía. Si Dilio después quiere cálculo automático, se suma el disparador sin
+  rehacer esto.
+
+**Implementado:** `los-badge.tsx` (componente compartido, colores frío→cálido por nivel, no
+renderiza si no hay nivel cargado) en el footer del sidebar — el `los_level` viaja desde el
+layout, **sin query nueva**. Notificación `los_level_up` (🎖️) al subir de nivel, solo hacia
+arriba y nunca a uno mismo.
+
+### Entregable 3 — Enganche con Delegación (~3h)
+⚠️ **Scope corregido.** Este doc decía *"si una tarea implica un monto por encima del tope, el
+wizard lo advierte"*, pero **`tasks` no tiene campo de monto** y Dilio **nunca pidió montos en
+tareas** — mencionó el tope al describir el **rol**. Agregar dinero al paso crítico de la app
+habría sido inventar un requisito.
+
+Lo que sí existía y nunca se cruzaba: el wizard **ya pedía** `los_required` y **ya recibía** el
+`los_level` de cada miembro. **Implementado:** advertencia cuando el nivel requerido supera el
+de la persona asignada, con cuántos niveles de brecha hay. **Informa, no bloquea** — el método
+TBM empuja a delegar hacia arriba; lo que no sirve es hacerlo sin verlo.
 
 ### ✅ Criterio de éxito del Sprint 22
 Un colaborador entra y ve, sin buscar: su insignia de nivel y su ficha de rol con el monto
@@ -2874,7 +2938,7 @@ puede darse de baja del canal sin perder el email.
 | Sprint | Tema | Estimado | Estado | Ítems |
 |---|---|---|---|---|
 | **S21** | Confianza: acceso, coach y calendario | ~18h | ✅ **hecho** | K1, C0, F1 |
-| **S22** | Rol y progresión de la persona | ~18h | 🔮 | I1, J1 |
+| **S22** | Rol y progresión de la persona | ~22h | ✅ **hecho** | I1, J1 (+E0 seguridad) |
 | **S23** | Despertador diario (voz de DC) | ~20h | 🔮 | A1 *(absorbe S19)* |
 | **S24** | DC proactivo + delegación asistida | ~26h | 🔮 | G1, B1, B2 *(cierra S18·E4)* |
 | **S25** | KPIs en cascada: estructura | ~30h | 🔮 | E1, E2, E5 |

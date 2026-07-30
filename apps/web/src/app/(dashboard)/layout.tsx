@@ -36,7 +36,8 @@ export default async function DashboardLayout({
   // Datos del perfil y empresa para el sidebar
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, role, avatar_url, company_id, companies(name)")
+    // `los_level` viaja para la insignia del sidebar (S22 · §J1) — sin query nueva.
+    .select("full_name, role, avatar_url, company_id, los_level, companies(name)")
     .eq("id", user.id)
     .single();
 
@@ -122,6 +123,9 @@ export default async function DashboardLayout({
         isCoach={isCoach}
         isCoachRole={isCoachRole}
         hasCompany={!!profile?.company_id}
+        // Insignia de nivel de delegación. Solo para quien está DENTRO de una
+        // empresa: un coach dedicado no tiene nivel en el sistema de delegación.
+        losLevel={profile?.company_id ? profile?.los_level : null}
       />
 
       {/* Contenido principal */}

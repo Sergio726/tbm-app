@@ -27,6 +27,7 @@ import {
 import { createBrowserClient } from "@/lib/supabase/client";
 import { resetAnalytics } from "@/lib/analytics";
 import { useRestartTour } from "@/hooks/use-restart-tour";
+import { LosBadge } from "@/components/equipo/los-badge";
 
 // ── Módulos TBM ──────────────────────────────────────────────
 type ModuleItem = {
@@ -72,6 +73,8 @@ interface SidebarProps {
   avatarUrl?: string;
   /** true si el rol del perfil es `coach`, tenga o no empresas asignadas. */
   isCoachRole?: boolean;
+  /** Nivel de delegación 1-5 para la insignia junto al nombre (S22 · §J1). */
+  losLevel?: number | null;
   /** true si el usuario tiene empresas asignadas como coach (S9). */
   isCoach?: boolean;
   /**
@@ -97,6 +100,7 @@ export function Sidebar({
   userName,
   isCoach,
   isCoachRole = false,
+  losLevel = null,
   userRole,
   isArquitecto,
   avatarUrl,
@@ -455,9 +459,14 @@ export function Sidebar({
                 <p className="truncate" style={{ fontSize: 13, fontWeight: 500 }}>
                   {userName ?? "Mi cuenta"}
                 </p>
-                <p className="truncate" style={{ fontSize: 11, color: "var(--fg-subtle)" }}>
-                  {userRole ?? userStatusLabel ?? "En sesión"}
-                </p>
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <p className="truncate" style={{ fontSize: 11, color: "var(--fg-subtle)" }}>
+                    {userRole ?? userStatusLabel ?? "En sesión"}
+                  </p>
+                  {/* Insignia de nivel: la persona ve dónde está sin entrar a
+                      ningún módulo. `LosBadge` no renderiza si no hay nivel. */}
+                  <LosBadge level={losLevel} size="sm" />
+                </div>
               </div>
             </Link>
             <div className="flex items-center" style={{ gap: 6 }}>
