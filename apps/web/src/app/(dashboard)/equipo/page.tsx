@@ -52,6 +52,14 @@ export default async function EquipoPage() {
     .maybeSingle();
   if (authorityError) console.error("equipo: error cargando authority_matrix", authorityError);
 
+  // Fichas de rol (S22 · §I1). El RLS decide el alcance solo: el Arquitecto
+  // recibe las de su empresa; un colaborador, únicamente la suya.
+  const { data: charters, error: chartersError } = await supabase
+    .from("role_charters")
+    .select("*")
+    .eq("company_id", profile.company_id!);
+  if (chartersError) console.error("equipo: error cargando role_charters", chartersError);
+
   const isArquitecto = profile.role === "arquitecto";
 
   // Saldo de créditos de la empresa (Fase 2 A3) — para el indicador del Arquitecto.
@@ -79,6 +87,7 @@ export default async function EquipoPage() {
       isArquitecto={isArquitecto}
       assessments={assessments ?? []}
       authorityMatrix={authorityMatrix ?? null}
+      charters={charters ?? []}
       creditBalance={credits?.balance ?? 0}
       pendingInvites={pendingInvites ?? []}
     />

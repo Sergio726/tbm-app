@@ -505,6 +505,15 @@ function AssigneeSelector({
   onAssign: (id: string) => void;
   onLos: (l: string) => void;
 }) {
+  // Brecha entre lo que pide la tarea y el nivel real de quien la recibe.
+  // `null` si falta alguno de los dos datos (no se advierte a ciegas).
+  const assignee = team.find((m) => m.id === assignedTo) ?? null;
+  const required = losRequired ? parseInt(losRequired, 10) : null;
+  const gap =
+    assignee?.los_level != null && required != null && Number.isFinite(required)
+      ? required - assignee.los_level
+      : null;
+
   return (
     <div
       className="mb-6 rounded-2xl border p-6"
@@ -681,6 +690,30 @@ function AssigneeSelector({
             );
           })}
         </div>
+
+        {/* Brecha de nivel (S22 · §I1/§J1). El wizard ya pedía el nivel requerido
+            y ya recibía el nivel de cada persona, pero nunca los cruzaba.
+            Informa, NO bloquea: el método TBM empuja a delegar hacia arriba, así
+            que estirar a alguien es válido — lo que no sirve es hacerlo sin verlo. */}
+        {gap != null && gap > 0 && assignee && (
+          <div
+            className="mt-3 rounded-xl border px-3.5 py-3"
+            style={{
+              borderColor: "rgba(251,191,36,0.32)",
+              background: "rgba(251,191,36,0.08)",
+            }}
+          >
+            <p style={{ fontSize: 12.5, color: "var(--warn-text)", fontWeight: 600 }}>
+              {assignee.full_name?.split(" ")[0] ?? "Esta persona"} está {gap}{" "}
+              {gap === 1 ? "nivel" : "niveles"} por debajo de lo que pide la tarea
+            </p>
+            <p style={{ fontSize: 11.5, lineHeight: 1.45, color: "var(--fg-muted)", marginTop: 4 }}>
+              Hoy está en <strong>N{assignee.los_level}</strong> y esta tarea requiere{" "}
+              <strong>N{losRequired}</strong>. Podés asignarla igual — estirar a alguien es
+              parte del método — pero dejale el contexto más explícito y un check loop más corto.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -9,7 +9,8 @@ export type NotificationType =
   | "war_up_started"
   | "scorecard_updated"
   | "coaching_note"
-  | "cycle_reminder";
+  | "cycle_reminder"
+  | "los_level_up";
 
 export const NOTIF_META: Record<
   NotificationType,
@@ -23,6 +24,8 @@ export const NOTIF_META: Record<
   scorecard_updated: { icon: "📊", color: "#a78bfa" },
   coaching_note: { icon: "🎓", color: "var(--success-text)" },
   cycle_reminder: { icon: "🗓️", color: "#8b5cf6" },
+  // S22 · §J1 — "si sube de rango porque lo hace bien, que aparezca que subió".
+  los_level_up: { icon: "🎖️", color: "var(--success-text)" },
 };
 
 export function notifMeta(type: string) {

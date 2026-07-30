@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Send, Trophy, Bell, X, FileText, AlertTriangle } from "lucide-react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import type { Profile } from "@/types/database";
+import type { Profile, RoleCharter } from "@/types/database";
 import { normalizeLetters } from "@/lib/disc";
 import { generateDiscLink } from "@/app/(dashboard)/equipo/actions";
+import { notify } from "@/lib/notifications";
+import { losLevelName } from "./los-badge";
 import {
   buildChecklist,
   draftFrom,
@@ -23,6 +25,7 @@ import { PendingInvites, type PendingInvite } from "./pending-invites";
 import { MemberReportModal } from "./member-report-modal";
 import { AuthorityMatrixPanel, type AuthorityMatrixRow } from "./authority-matrix-panel";
 import { DangerousCrossings } from "./dangerous-crossings";
+import { CharterSection } from "./charter-section";
 
 export type { DiscAssessmentLite } from "./types";
 
@@ -35,6 +38,7 @@ export function EquipoClient({
   authorityMatrix,
   creditBalance,
   pendingInvites,
+  charters,
 }: {
   team: Profile[];
   currentUserId: string;
@@ -44,6 +48,8 @@ export function EquipoClient({
   authorityMatrix: AuthorityMatrixRow | null;
   creditBalance: number;
   pendingInvites: PendingInvite[];
+  /** Fichas de rol visibles para quien mira (el RLS ya limitó el alcance). */
+  charters: RoleCharter[];
 }) {
   const router = useRouter();
 
@@ -172,6 +178,24 @@ export function EquipoClient({
         })
         .eq("id", selected.id);
       if (error) throw error;
+
+      // Ascenso de nivel → avisarle a la persona (§J1: "si sube de rango porque
+      // lo hace bien, que aparezca que subió de rango"). Solo al SUBIR, no al
+      // bajar, y nunca a uno mismo (`notify` ya corta con actorId === userId).
+      const prevLevel = selected.los_level ?? 1;
+      if (draft.los_level > prevLevel) {
+        const levelName = losLevelName(draft.los_level);
+        await notify(supabase, {
+          companyId,
+          userId: selected.id,
+          actorId: currentUserId,
+          type: "los_level_up",
+          title: `Subiste a N${draft.los_level}${levelName ? ` · ${levelName}` : ""}`,
+          body: "Tu nivel de delegación subió. Mirá qué cambia en tu ficha de rol.",
+          href: "/equipo",
+        });
+      }
+
       setSavedFlash(true);
       setTimeout(() => setSavedFlash(false), 2400);
       router.refresh();
@@ -376,6 +400,20 @@ export function EquipoClient({
               savedFlash={savedFlash}
               onSave={handleSave}
             />
+
+            {/* Ficha de rol (S22 · §I1). Guarda por su cuenta (server action),
+                así que va fuera del Draft de `profiles`. `key` fuerza el remount
+                al cambiar de miembro. */}
+            <div className="mt-4">
+              <CharterSection
+                key={selected.id}
+                profileId={selected.id}
+                memberName={selected.full_name}
+                losLevel={selected.los_level}
+                charter={charters.find((c) => c.profile_id === selected.id) ?? null}
+                editable={isArquitecto}
+              />
+            </div>
           </div>
         ) : (
           <EmptyDetail />

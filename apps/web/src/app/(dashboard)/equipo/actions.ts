@@ -222,6 +222,81 @@ export async function getInviteLink(input: {
 }
 
 /**
+ * Guarda la ficha de rol de un miembro (S22 · §I1). Upsert por `profile_id`.
+ *
+ * Seguridad en dos capas, a propósito:
+ *  1. Acá: solo Arquitecto, y el miembro tiene que ser de SU empresa (se lee la
+ *     `company_id` del miembro y se compara — no se confía en el input).
+ *  2. En la base: RLS de `role_charters` (INSERT/UPDATE solo arquitecto) + el
+ *     trigger de `profiles`. Esta action sola no alcanzaría: un cliente puede
+ *     llamar a Supabase directo salteándola. Lo que la hace segura es la capa 2;
+ *     lo que aporta acá es validación temprana y un error entendible.
+ */
+export async function saveRoleCharter(input: {
+  profileId: string;
+  mission: string;
+  how: string;
+  expectations: string;
+  outcomes: string;
+  rights: string;
+  decisionLimitAmount: number | null;
+  decisionLimitCurrency: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "No hay sesión activa." };
+
+  const { data: me } = await supabase
+    .from("profiles")
+    .select("role, company_id")
+    .eq("id", user.id)
+    .single();
+  if (me?.role !== "arquitecto" || !me.company_id) {
+    return { ok: false, error: "Solo el Arquitecto puede definir la ficha de rol." };
+  }
+
+  // El miembro debe pertenecer a la empresa del Arquitecto.
+  const { data: target } = await supabase
+    .from("profiles")
+    .select("company_id")
+    .eq("id", input.profileId)
+    .single();
+  if (!target || target.company_id !== me.company_id) {
+    return { ok: false, error: "Ese miembro no pertenece a tu equipo." };
+  }
+
+  if (input.decisionLimitAmount != null) {
+    if (!Number.isFinite(input.decisionLimitAmount) || input.decisionLimitAmount < 0) {
+      return { ok: false, error: "El tope de decisión tiene que ser un monto válido." };
+    }
+  }
+
+  const trim = (s: string) => (s.trim() === "" ? null : s.trim());
+  const { error } = await supabase.from("role_charters").upsert(
+    {
+      profile_id: input.profileId,
+      company_id: me.company_id,
+      mission: trim(input.mission),
+      how: trim(input.how),
+      expectations: trim(input.expectations),
+      outcomes: trim(input.outcomes),
+      rights: trim(input.rights),
+      decision_limit_amount: input.decisionLimitAmount,
+      decision_limit_currency: trim(input.decisionLimitCurrency) ?? "ARS",
+      updated_by: user.id,
+    },
+    { onConflict: "profile_id" }
+  );
+  if (error) {
+    console.error("saveRoleCharter:", error);
+    return { ok: false, error: "No se pudo guardar la ficha de rol." };
+  }
+  return { ok: true };
+}
+
+/**
  * Cancela (borra) una invitación pendiente. Usa el admin client filtrando por la
  * `company_id` del Arquitecto que llama, así funciona aunque la policy DELETE de
  * `invitations` no esté aplicada todavía. Borrar libera el par (company_id,email)
