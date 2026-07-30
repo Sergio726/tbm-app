@@ -8,6 +8,8 @@ import type {
   Decision,
   LeadingIndicator,
   ProcessAsset,
+  RockContribution,
+  ContributionActivity,
 } from "@/types/database";
 import { PlanClient } from "@/components/plan-90d/plan-client";
 
@@ -40,6 +42,8 @@ export default async function Plan90dPage() {
     { data: decisions },
     { data: team },
     { data: assets },
+    { data: contributions },
+    { data: activities },
   ] = await Promise.all([
     supabase
       .from("rocks")
@@ -72,6 +76,15 @@ export default async function Plan90dPage() {
       .select("*")
       .eq("company_id", companyId)
       .order("created_at", { ascending: false }),
+    // S25 · cascada de KPIs. El RLS acota el alcance solo: el Arquitecto ve el
+    // reparto completo; un colaborador, únicamente su propio aporte.
+    supabase.from("rock_contributions").select("*").eq("company_id", companyId),
+    supabase
+      .from("contribution_activities")
+      .select("*")
+      .eq("company_id", companyId)
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true }),
   ]);
 
   return (
@@ -84,6 +97,8 @@ export default async function Plan90dPage() {
       initialDecisions={(decisions ?? []) as Decision[]}
       initialAssets={(assets ?? []) as ProcessAsset[]}
       team={(team ?? []) as Pick<Profile, "id" | "full_name" | "cargo" | "disc_letters">[]}
+      contributions={(contributions ?? []) as RockContribution[]}
+      activities={(activities ?? []) as ContributionActivity[]}
     />
   );
 }

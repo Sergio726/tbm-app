@@ -2748,10 +2748,19 @@ es una actividad y le ofrece un entregable concreto que puede aceptar de un clic
 ---
 
 ## SPRINT 25 — KPIs en cascada: estructura *(Añadido 2026-07-29)*
-**Estado:** ✅ **Desbloqueado (2026-07-30)** — listo para implementar. **La cascada cuelga de la
-ROCA del trimestre.** Ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §6.
-**Origen:** OBSERVACIONES jul-2026 §E1, §E2, §E5 · **Estimado:** ~30h → **~22h** (se cae el
-cuarto nivel) · **Ya no depende de nada:** el patrón de IA de E3 lo entregó S24.
+**Estado:** ✅ **Implementado 2026-07-30** — ⚠️ requiere `supabase/migration_s25_kpi_cascade.sql`
+**Origen:** OBSERVACIONES jul-2026 §E1, §E2, §E5 · **Estimado:** ~30h → **real ~20h** (se cayó
+el cuarto nivel al resolverse el anclaje) · **La cascada cuelga de la ROCA del trimestre**
+(ver [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) §6).
+
+> **Cerrado con auditorías.** Baseline y final **idénticos**: type-check 0 · build 0 (22/22) ·
+> **lint 35 warnings / 0 errores**. Tests: **73 → 96** (+23 de `kpi-cascade`).
+>
+> **Corrección de un diagnóstico mío:** había registrado como deuda que `kpis` y
+> `leading_indicators` eran *"dos tablas casi idénticas a unificar"*. **Es falso** — son dos
+> conceptos distintos del método (`SPEC.md:76-77`): `leading_indicators` son los **5 del BOS**
+> (predictivos de la empresa) y `kpis` es el **"número único por colaborador"**. No había nada
+> que unificar y **S25 no las toca**: su cascada es un tercer concepto.
 
 > **Estuvo bloqueado unas horas y por qué.** El plan original decía *"al definir un Grande en
 > `rituales/5-grandes`"*, pero eso **no encaja**: *"Los 5 Grandes"* del método son las **5 cosas
@@ -2839,6 +2848,30 @@ puede armar su propia estructura para lograrlo, y eso es muy importante lo que a
 preguntar, porque nosotros predicamos una **cultura de autogestión**"*.
 - El RLS ya deja que vea y cree los suyos (decidido 2026-07-05). **Revisar el form**, que
   parece pensado para el Arquitecto, y completar lo que falte del lado del colaborador.
+
+**Implementado:**
+- **Migración** `migration_s25_kpi_cascade.sql`: `rocks` suma la meta medible del trimestre
+  (`target_value` / `target_unit` / `target_money`) + dos tablas nuevas —
+  **`rock_contributions`** (el reparto: quién aporta cuánto) y **`contribution_activities`**
+  (las llamadas y propuestas). **No toca `kpis` ni `leading_indicators`.**
+- **`lib/kpi-cascade.ts`** — módulo **puro** con **23 tests**: `checkSplit` (el "obligar" de
+  Dilio en aritmética: si la meta son 15 y los aportes suman 14, se dice), `derivePace` (el
+  "5 por mes" **derivado**, no almacenado) y `computeProgress`.
+- **`components/plan-90d/cascade-panel.tsx`** — colapsable dentro de cada Roca **activa**. El
+  aviso de reparto incompleto se ve **sin abrir el panel**. Sugiere el faltante al asignar,
+  para que cerrar el reparto cueste un clic.
+- **Server actions** en `plan-90d/cascade-actions.ts` con guard de autogestión + RLS detrás.
+
+**Cómo se respetaron las dos reglas del modelo:**
+1. **La meta es del trimestre.** El form pide 15, no "5 por mes", y lo dice explícito: *"si
+   querés 5 clientes por mes, poné 15 — el ritmo mensual se calcula solo"*.
+2. **Sin semáforo mensual.** `computeProgress` compara el acumulado contra el **tiempo
+   transcurrido del trimestre** y devuelve el **ritmo necesario de acá en adelante**. No existe
+   ningún cálculo de "cumplió el mes" — sería el retrovisor que el método critica.
+
+**Permisos (§E5, autogestión):** el colaborador **edita** su aporte y sus actividades; **quitar
+un responsable** es solo del Arquitecto (si no, la cascada se vaciaría sola). La meta de la
+Roca también es del Arquitecto: es el compromiso del trimestre.
 
 ### ✅ Criterio de éxito del Sprint 25
 Se carga el ejemplo de Dilio completo (5 clientes / $25.000 / 3 y 2 / llamadas y propuestas)
@@ -3076,7 +3109,7 @@ puede darse de baja del canal sin perder el email.
 | **S22** | Rol y progresión de la persona | ~22h | ✅ **hecho** | I1, J1 (+E0 seguridad) |
 | **S23** | Despertador diario (voz de DC) | ~18h | ✅ **hecho** | A1 *(absorbe S19)* · E3 parcial → S23b |
 | **S24** | DC proactivo + delegación asistida | ~22h | ✅ **hecho** | G1, B1 *(cierra S18·E4)* · B2 espera a Dilio |
-| **S25** | KPIs en cascada: estructura | ~22h | 🔮 **listo para implementar** | E1, E2, E5 · cuelga de `rocks` (§6 resuelto) |
+| **S25** | KPIs en cascada: estructura | ~20h | ✅ **hecho** | E1, E2, E5 · cuelga de `rocks` |
 | **S26** | KPIs: seguimiento y alerta predictiva | ~22h | 🔮 | E3, E4 |
 | **S27** | Super Coach: señales multi-empresa | ~28h | 🔮 | C1–C4 |
 | **S28** | Super Coach: intervención | ~30h | 🔮 | C5, C6 |

@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { Plus, Target } from "lucide-react";
-import type { Rock, Profile } from "@/types/database";
+import type { Rock, Profile, RockContribution, ContributionActivity } from "@/types/database";
 import { isoDate } from "@/lib/dates";
 import { quarterProgress } from "@/lib/quarters";
 import { RockCard } from "./rock-card";
 import { RockForm } from "./rock-form";
+import { CascadePanel } from "./cascade-panel";
 
 interface RocksPanelProps {
   rocks: Rock[];
@@ -23,6 +24,10 @@ interface RocksPanelProps {
   }) => void;
   onUpdateProgress: (rockId: string, progress: number, note: string) => void;
   onUpdateStatus: (rockId: string, status: string) => void;
+  /** S25 · cascada de KPIs por Roca. */
+  isArquitecto: boolean;
+  contributions: RockContribution[];
+  activities: ContributionActivity[];
 }
 
 export function RocksPanel({
@@ -33,6 +38,9 @@ export function RocksPanel({
   onCreateRock,
   onUpdateProgress,
   onUpdateStatus,
+  isArquitecto,
+  contributions,
+  activities,
 }: RocksPanelProps) {
   const [showForm, setShowForm] = useState(false);
 
@@ -121,14 +129,25 @@ export function RocksPanel({
 
       <div className="flex flex-col gap-3">
         {activeRocks.map((rock) => (
-          <RockCard
-            key={rock.id}
-            rock={rock}
-            team={team}
-            isPending={isPending}
-            onUpdateProgress={onUpdateProgress}
-            onUpdateStatus={onUpdateStatus}
-          />
+          <div key={rock.id}>
+            <RockCard
+              rock={rock}
+              team={team}
+              isPending={isPending}
+              onUpdateProgress={onUpdateProgress}
+              onUpdateStatus={onUpdateStatus}
+            />
+            {/* S25 · la cascada solo en Rocas ACTIVAS: repartir una roca cerrada
+                no tiene sentido, y en el historial sería ruido. */}
+            <CascadePanel
+              rock={rock}
+              team={team}
+              currentUserId={currentUserId}
+              isArquitecto={isArquitecto}
+              contributions={contributions}
+              activities={activities}
+            />
+          </div>
         ))}
       </div>
 

@@ -258,7 +258,12 @@ desbloquear las ~30h.
 
 </details>
 
-> **Deuda relacionada, detectada en el mismo análisis:** `kpis` (`migration_sprint1.sql:53`) y
-> `leading_indicators` (`migration_sprint10_plan90d.sql:73`) son **dos tablas casi idénticas**
-> (indicador semanal con dueño, meta y `week_date`) y **las dos están en uso** (3 y 5 archivos
-> respectivamente). S25 va a tener que elegir una y migrar la otra. No se toca antes.
+> **~~Deuda relacionada~~ — descartada (2026-07-30).** Se había anotado que `kpis` y
+> `leading_indicators` eran *"dos tablas casi idénticas"* a unificar. **Es incorrecto:** el
+> esquema se parece, pero son **dos conceptos distintos del método** (`SPEC.md:76-77`):
+> · `leading_indicators` = los **5 Leading Indicators del BOS** — métricas predictivas de la
+>   **empresa**, con dueño y meta semanal. Viven en Plan 90D.
+> · `kpis` = el **"Número único por colaborador"** — el KPI que justifica el salario de cada
+>   miembro. Vive en el dashboard.
+> No hay nada que unificar. **S25 no las toca**: su cascada es un tercer concepto (el aporte de
+> cada responsable a una Roca).

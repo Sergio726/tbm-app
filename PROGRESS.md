@@ -8,6 +8,27 @@
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
 
+> **Novedades 2026-07-30 (S25 implementado — la cascada de KPIs):** baseline y final
+> **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests **73 → 96**.
+> ⚠️ Requiere `supabase/migration_s25_kpi_cascade.sql`.
+> - ✅ **La cascada cuelga de la ROCA del trimestre** (§6): `rocks` suma la meta medible y dos
+>   tablas nuevas llevan el reparto (`rock_contributions`) y las actividades
+>   (`contribution_activities`). El ejemplo de Dilio se carga completo: 15 clientes / $75.000 en
+>   Q1 → Sebastián 9 · Dilio 6 → llamadas y propuestas.
+> - ✅ **El "obligar" de Dilio, sin IA:** `checkSplit` es aritmética — si la meta son 15 y los
+>   aportes suman 14, el sistema lo dice, y el aviso se ve **sin abrir el panel**. Es la única
+>   validación no discutible del bloque (a diferencia del gate de S24, que sí es un juicio).
+> - ✅ **Las dos reglas del modelo, respetadas en el código:** las metas son del **trimestre**
+>   (el form dice *"si querés 5 por mes, poné 15 — el ritmo se calcula solo"*) y **no existe
+>   semáforo mensual**: `computeProgress` compara el acumulado con el tiempo transcurrido y
+>   devuelve el **ritmo necesario de acá en adelante**. El caso `2+4+9 = 15` está testeado.
+> - ✅ **Autogestión (§E5):** el colaborador edita su aporte y sus actividades; quitar un
+>   responsable es del Arquitecto (si no, la cascada se vacía sola).
+> - **Corrección de un diagnóstico mío:** había anotado que `kpis` y `leading_indicators` eran
+>   "dos tablas casi idénticas a unificar". **Es falso** — son dos conceptos del método
+>   (`SPEC.md:76-77`): los 5 del BOS vs. el número único por colaborador. No había deuda y S25
+>   no las toca.
+>
 > **Novedades 2026-07-30 (S24 implementado — DC deja de ser pasivo · S25 desbloqueado):**
 > Baseline y final **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests
 > **50 → 73**. ⚠️ Requiere `supabase/migration_s24_dc_reviews.sql` **y prender el flag
