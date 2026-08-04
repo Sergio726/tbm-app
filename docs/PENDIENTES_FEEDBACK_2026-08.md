@@ -2,10 +2,19 @@
 
 > **Estado:** ❌ **PENDIENTE — sin implementar.** Documento de registro, no de plan cerrado.
 > **Registrado:** 2026-08-03.
-> **Cruce contra el código:** 2026-08-03 (estado real del repo verificado, ver §Estado hoy).
+> **Cruce contra el código:** 2026-08-03, contra `main` **post-S25** (incluye S22 rol/progresión,
+> S23 despertador, S24 DC proactivo, S25 cascada de KPIs). Ver §Estado hoy.
 > Relacionado: [`../PROGRESS.md`](../PROGRESS.md) ·
-> [`OBSERVACIONES_DILIO_2026-06.md`](OBSERVACIONES_DILIO_2026-06.md) (round anterior) ·
+> [`OBSERVACIONES_DILIO_2026-07.md`](OBSERVACIONES_DILIO_2026-07.md) (round anterior) ·
+> [`OBSERVACIONES_DILIO_2026-06.md`](OBSERVACIONES_DILIO_2026-06.md) ·
 > [`PENDIENTES_REVISION.md`](PENDIENTES_REVISION.md) (decisiones abiertas).
+>
+> **No duplica el round de julio:** se revisó `OBSERVACIONES_DILIO_2026-07.md` y ninguno de sus
+> bloques (A despertador · B delegación · C super coach · D SOP en PDF · E KPIs en cascada ·
+> F sprints calendario · G DC proactivo) pide gráficas por área, envío del informe al líder de área
+> ni una zona de informes para un rol gerencial. Es **feedback nuevo**. Sí hay **vecindad** con
+> C5 (mensajería coach→líder), D2 (informe en PDF) y E (cascada de KPIs) — conviene diseñarlo
+> mirando esos tres para no construir dos veces lo mismo.
 
 ---
 
@@ -43,7 +52,15 @@ Lo que **ya existe** y sirve de base:
   con fallback a env. F1.2 **no requiere infraestructura nueva de correo**, solo el flujo y el
   destinatario.
 - **IA para síntesis:** `ai-report.ts` + DC (contexto real de empresa/equipo + RAG del método).
-  F1.4 se apoya acá.
+  F1.4 se apoya acá. Además **S24** ya dejó a DC **proactivo** (patrón de intervención + gate en
+  delegación) → el "próximos pasos" puede colgar de ese patrón en vez de inventar uno nuevo.
+- **Precedente de "responsable" asignado:** **S25** (cascada de KPIs) modeló el aporte de un
+  **responsable por Roca** (`plan-90d/cascade-actions.ts`, `owner_id` con `onConflict rock_id,owner_id`
+  y validación de que pertenezca a la empresa). **Ojo:** es responsable **de una Roca**, no de un
+  **área** — pero es el patrón a imitar si se decide modelar áreas con dueño (P2).
+- **Ficha de rol:** **S22** agregó ficha de rol con derechos + insignia de nivel. Es sobre los
+  **Niveles de Delegación** (Cadete→Socio), **no** sobre roles de autenticación → **no aporta** el
+  rol "Gerente" de F1.3.
 
 Lo que **no existe** y hay que construir:
 
