@@ -7,6 +7,7 @@
 > **Feedback del cliente jul-2026 (Meet 25/07) + plan S21–S31:** [`docs/OBSERVACIONES_DILIO_2026-07.md`](docs/OBSERVACIONES_DILIO_2026-07.md) (el porqué) → [`docs/SPRINTS.md`](docs/SPRINTS.md) § BLOQUE JUL-2026 (el cómo).
 > Panel de plataforma + roadmap de startup (god mode, créditos, Stripe, métricas): [`docs/GODMODE_Y_ROADMAP_STARTUP.md`](docs/GODMODE_Y_ROADMAP_STARTUP.md).
 > Decisiones de producto a confirmar (en revisión): [`docs/PENDIENTES_REVISION.md`](docs/PENDIENTES_REVISION.md).
+> Feedback nuevo sin implementar (ago-2026): [`docs/PENDIENTES_FEEDBACK_2026-08.md`](docs/PENDIENTES_FEEDBACK_2026-08.md) — **F1: "Update" con gráficas por área + envío al líder de área + zona del Gerente + próximos pasos.**
 
 > **Novedades 2026-07-30 (S25 implementado — la cascada de KPIs):** baseline y final
 > **idénticos** (type-check 0 · build 0 · lint 35 warnings/0 errores); tests **73 → 96**.
